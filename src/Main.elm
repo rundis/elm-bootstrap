@@ -106,6 +106,7 @@ view : Model -> Html Msg
 view model =
     div []
         [ CDN.stylesheetFlex
+        , CDN.fontAwesome
         , Grid.container
             [ navbar
             , mainContent model
@@ -123,7 +124,8 @@ mainContent model =
             [ Grid.flexCol
                 [ Grid.flexColSize Grid.ExtraSmall Grid.Two ]
                 [ flexColStyle ]
-                [ text "Col 1 Row 1" ]
+                [ span [class "fa fa-car"] []
+                , text " Col 1 Row 1" ]
             , Grid.flexCol
                 [ Grid.flexColSize Grid.ExtraSmall Grid.None
                 , Grid.flexVAlign Grid.ExtraSmall Grid.Top
