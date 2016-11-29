@@ -4,6 +4,8 @@ import Bootstrap.CDN as CDN
 import Bootstrap.Grid as Grid
 import Bootstrap.Button as Button
 import Bootstrap.Dropdown as Dropdown
+import Bootstrap.Modal as Modal
+import Bootstrap.Navbar as Navbar
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -21,8 +23,9 @@ main =
 
 type alias Model =
     { dummy : String
-    , dropdownState: Dropdown.State
+    , dropdownState : Dropdown.State
     , splitDropState : Dropdown.State
+    , modalState : Modal.State
     }
 
 
@@ -31,6 +34,7 @@ init =
     ( { dummy = "init"
       , dropdownState = Dropdown.initialState "drop"
       , splitDropState = Dropdown.initialState "split"
+      , modalState = Modal.hiddenState
       }
     , Cmd.none
     )
@@ -45,6 +49,7 @@ type Msg
     | SplitMainMsg
     | SplitItem1Msg
     | SplitItem2Msg
+    | ModalMsg Modal.State
 
 
 update : Msg -> Model -> ( Model, Cmd msg )
@@ -60,7 +65,7 @@ update msg model =
             ( { model | dummy = "item2" }, Cmd.none )
 
         DropdownMsg state ->
-            ( {model | dropdownState = state}
+            ( { model | dropdownState = state }
             , Cmd.none
             )
 
@@ -74,29 +79,45 @@ update msg model =
             ( { model | dummy = "splititem2" }, Cmd.none )
 
         SplitMsg state ->
-            ( {model | splitDropState = state}
+            ( { model | splitDropState = state }
+            , Cmd.none
+            )
+
+        ModalMsg state ->
+            ( { model | modalState = state }
             , Cmd.none
             )
 
 
-
 subscriptions : Model -> Sub Msg
 subscriptions model =
---    Sub.none
+    --    Sub.none
     Sub.batch
         [ Dropdown.subscriptions
-            model.dropdownState DropdownMsg
+            model.dropdownState
+            DropdownMsg
         , Dropdown.subscriptions
-            model.splitDropState SplitMsg
+            model.splitDropState
+            SplitMsg
         ]
-
 
 
 view : Model -> Html Msg
 view model =
-    Grid.container
+    div []
         [ CDN.stylesheetFlex
-        , Grid.flexRow
+        , Grid.container
+            [ navbar
+            , mainContent model
+            ]
+
+        ]
+
+
+mainContent : Model -> Html Msg
+mainContent model =
+    Grid.container
+        [ Grid.flexRow
             [ Grid.flexVAlign Grid.ExtraSmall Grid.Bottom ]
             [ flexRowStyle ]
             [ Grid.flexCol
@@ -131,8 +152,8 @@ view model =
                     , Button.outline Button.Success
                     , Button.block
                     ]
-                    []
-                    [ text "Button" ]
+                    [ onClick <| ModalMsg Modal.visibleState ]
+                    [ text "Show modal" ]
                 ]
             ]
         , Grid.flexRow
@@ -145,19 +166,21 @@ view model =
                     (Dropdown.config
                         { toMsg = DropdownMsg
                         , buttonStyles =
-                            [Button.role Button.Warning]
+                            [ Button.role Button.Warning ]
                         , buttonChildren =
-                            [span
+                            [ span
                                 []
                                 [ text "MyDropdown "
-                                , span [class "tag tag-pill tag-info"] [text "(2)"]]]
+                                , span [ class "tag tag-pill tag-info" ] [ text "(2)" ]
+                                ]
+                            ]
                         , items =
                             [ Dropdown.dropdownItem
-                                [href "#", onClick Item1Msg]
-                                [text "Item 1"]
+                                [ href "#", onClick Item1Msg ]
+                                [ text "Item 1" ]
                             , Dropdown.dropdownItem
-                                [href "#", onClick Item2Msg]
-                                [text "Item 2"]
+                                [ href "#", onClick Item2Msg ]
+                                [ text "Item 2" ]
                             ]
                         }
                     )
@@ -170,29 +193,83 @@ view model =
                     (Dropdown.splitConfig
                         { toMsg = SplitMsg
                         , buttonStyles =
-                            [Button.role Button.Warning]
+                            [ Button.role Button.Warning ]
                         , buttonAttributes =
-                            [onClick SplitMainMsg]
+                            [ onClick SplitMainMsg ]
                         , buttonChildren =
-                            [text "My split drop"]
+                            [ text "My split drop" ]
                         , items =
                             [ Dropdown.dropdownItem
-                                [href "#", onClick SplitItem1Msg]
-                                [text "SplitItem 1"]
+                                [ href "#", onClick SplitItem1Msg ]
+                                [ text "SplitItem 1" ]
                             , Dropdown.dropdownItem
-                                [href "#", onClick SplitItem2Msg]
-                                [text "SplitItem 2"]
+                                [ href "#", onClick SplitItem2Msg ]
+                                [ text "SplitItem 2" ]
                             ]
                         }
                     )
                     model.splitDropState
                 ]
             , Grid.flexCol
-                [Grid.flexColSize Grid.ExtraSmall Grid.None]
-                [flexColStyle]
-                [text model.dummy]
+                [ Grid.flexColSize Grid.ExtraSmall Grid.None ]
+                [ flexColStyle ]
+                [ text model.dummy ]
             ]
-            , p [] []
+        , modal model.modalState
+        ]
+
+
+navbar : Html Msg
+navbar =
+    Navbar.navbar
+        [ Navbar.scheme Navbar.Dark Navbar.Primary
+          --, Navbar.fix Navbar.FixTop
+        ]
+        []
+        (Navbar.nav
+            [ Navbar.navItemLink
+                [href ""]
+                [ text "Hello" ]
+            ]
+        )
+
+
+modal : Modal.State -> Html Msg
+modal modalState =
+    div
+        []
+        [ Modal.modal
+            (Modal.config
+                { closeMsg = ModalMsg
+                , header = Just <| h4 [ class "modal-title" ] [ text "Modal header" ]
+                , body = Just <| modalBody
+                , footer =
+                    Just <|
+                        div []
+                            [ Button.button
+                                [ Button.outline Button.Primary ]
+                                [ onClick <| ModalMsg Modal.hiddenState ]
+                                [ text "Close" ]
+                            ]
+                , size = Just <| Modal.Small
+                }
+            )
+            modalState
+        ]
+
+
+modalBody =
+    Grid.containerFluid
+        [ Grid.row
+            [ Grid.flexCol
+                [ Grid.flexColSize Grid.ExtraSmall Grid.Six ]
+                []
+                [ text "Col 1" ]
+            , Grid.flexCol
+                [ Grid.flexColSize Grid.ExtraSmall Grid.Six ]
+                []
+                [ text "Col 2" ]
+            ]
         ]
 
 
@@ -201,7 +278,7 @@ flexRowStyle =
     style
         [ ( "min-height", "8rem" )
         , ( "background-color", "rgba(255, 0, 0, 0.1)" )
-        , ( "border", "1 px solid black")
+        , ( "border", "1 px solid black" )
         ]
 
 
