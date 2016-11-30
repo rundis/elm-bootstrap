@@ -1,14 +1,16 @@
 module Main exposing (..)
 
-import Bootstrap.CDN as CDN
-import Bootstrap.Grid as Grid
 import Bootstrap.Button as Button
+import Bootstrap.CDN as CDN
 import Bootstrap.Dropdown as Dropdown
+import Bootstrap.Grid as Grid
 import Bootstrap.Modal as Modal
 import Bootstrap.Navbar as Navbar
+import Bootstrap.Tab as Tab
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import Json.Decode as Json
 
 
 main : Program Never Model Msg
@@ -27,6 +29,7 @@ type alias Model =
     , splitDropState : Dropdown.State
     , navDropState : Dropdown.State
     , modalState : Modal.State
+    , tabState : Tab.State
     }
 
 
@@ -37,6 +40,7 @@ init =
       , splitDropState = Dropdown.initialState "split"
       , navDropState = Dropdown.initialState "navDrop"
       , modalState = Modal.hiddenState
+      , tabState = Tab.state 0
       }
     , Cmd.none
     )
@@ -53,6 +57,7 @@ type Msg
     | SplitItem1Msg
     | SplitItem2Msg
     | ModalMsg Modal.State
+    | TabMsg Tab.State
 
 
 update : Msg -> Model -> ( Model, Cmd msg )
@@ -96,6 +101,11 @@ update msg model =
             , Cmd.none
             )
 
+        TabMsg state ->
+            ( {model | tabState = state}
+            , Cmd.none
+            )
+
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
@@ -121,6 +131,7 @@ view model =
         , Grid.container
             [ navbar model
             , mainContent model
+            , tabs model
             ]
         ]
 
@@ -297,7 +308,7 @@ modal modalState =
         ]
 
 
-modalBody : Html msg
+modalBody : Html Msg
 modalBody =
     Grid.containerFluid
         [ Grid.row
@@ -311,6 +322,26 @@ modalBody =
                 [ text "Col 2" ]
             ]
         ]
+
+
+tabs : Model -> Html Msg
+tabs model =
+    Tab.tab
+        (Tab.config
+            { toMsg = TabMsg
+            , items =
+                [ Tab.tabItem
+                    { link = Tab.tabLink [] [text "Tab1"]
+                    , pane = Tab.tabPane [] [text "Tab Pane 1 Content"]
+                    }
+                , Tab.tabItem
+                    { link = Tab.tabLink [] [text "Tab2"]
+                    , pane = Tab.tabPane [] [text "Tab Pane 2 Content"]
+                    }
+                ]
+            }
+        )
+        model.tabState
 
 
 flexRowStyle : Attribute Msg
