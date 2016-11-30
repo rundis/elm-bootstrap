@@ -4,7 +4,9 @@ module Bootstrap.Navbar
         , fix
         , scheme
         , nav
+        , navBrand
         , navItemLink
+        , navCustomItem
         , NavbarStyles
         , Fix(..)
         , LinkModifier(..)
@@ -65,6 +67,21 @@ navbar styles attributes (Nav children) =
         [children]
 
 
+nav : List (NavItem msg) -> Nav msg
+nav navItems =
+    Nav <|
+        Html.ul
+            [class "nav navbar-nav"]
+            (List.map (\(NavItem item) -> item) navItems)
+
+
+navBrand : List (Html.Attribute msg) -> List (Html.Html msg) -> NavItem msg
+navBrand attributes children =
+    NavItem <|
+        Html.a
+            ([class "navbar-brand"] ++ attributes)
+            children
+
 navItemLink : List (Html.Attribute msg) -> List (Html.Html msg) -> NavItem msg
 navItemLink attributes children =
     NavItem <|
@@ -76,12 +93,10 @@ navItemLink attributes children =
             ]
 
 
-nav : List (NavItem msg) -> Nav msg
-nav navItems =
-    Nav <|
-        Html.ul
-            [class "nav navbar-nav"]
-            (List.map (\(NavItem item) -> item) navItems)
+
+navCustomItem : Html.Html msg -> NavItem msg
+navCustomItem elem =
+    NavItem elem
 
 
 
@@ -97,13 +112,6 @@ scheme modifier bgColor =
             { modifier = modifier
             , bgColor = bgColor
             }
-
-
-brand : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
-brand attributes children =
-    Html.a
-        (class "navbar-brand" :: attributes)
-        children
 
 
 

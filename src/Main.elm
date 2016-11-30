@@ -25,6 +25,7 @@ type alias Model =
     { dummy : String
     , dropdownState : Dropdown.State
     , splitDropState : Dropdown.State
+    , navDropState : Dropdown.State
     , modalState : Modal.State
     }
 
@@ -34,6 +35,7 @@ init =
     ( { dummy = "init"
       , dropdownState = Dropdown.initialState "drop"
       , splitDropState = Dropdown.initialState "split"
+      , navDropState = Dropdown.initialState "navDrop"
       , modalState = Modal.hiddenState
       }
     , Cmd.none
@@ -44,6 +46,7 @@ type Msg
     = NoOp
     | DropdownMsg Dropdown.State
     | SplitMsg Dropdown.State
+    | NavDropMsg Dropdown.State
     | Item1Msg
     | Item2Msg
     | SplitMainMsg
@@ -83,6 +86,11 @@ update msg model =
             , Cmd.none
             )
 
+        NavDropMsg state ->
+            ( { model | navDropState = state }
+            , Cmd.none
+            )
+
         ModalMsg state ->
             ( { model | modalState = state }
             , Cmd.none
@@ -99,6 +107,9 @@ subscriptions model =
         , Dropdown.subscriptions
             model.splitDropState
             SplitMsg
+        , Dropdown.subscriptions
+            model.navDropState
+            NavDropMsg
         ]
 
 
@@ -108,10 +119,9 @@ view model =
         [ CDN.stylesheetFlex
         , CDN.fontAwesome
         , Grid.container
-            [ navbar
+            [ navbar model
             , mainContent model
             ]
-
         ]
 
 
@@ -124,8 +134,9 @@ mainContent model =
             [ Grid.flexCol
                 [ Grid.flexColSize Grid.ExtraSmall Grid.Two ]
                 [ flexColStyle ]
-                [ span [class "fa fa-car"] []
-                , text " Col 1 Row 1" ]
+                [ span [ class "fa fa-car" ] []
+                , text " Col 1 Row 1"
+                ]
             , Grid.flexCol
                 [ Grid.flexColSize Grid.ExtraSmall Grid.None
                 , Grid.flexVAlign Grid.ExtraSmall Grid.Top
@@ -165,17 +176,15 @@ mainContent model =
                 [ Grid.flexColSize Grid.ExtraSmall Grid.Five ]
                 [ flexColStyle ]
                 [ Dropdown.dropdown
-                    (Dropdown.config
-                        { toMsg = DropdownMsg
-                        , buttonStyles =
-                            [ Button.role Button.Warning ]
-                        , buttonChildren =
-                            [ span
+                    (Dropdown.dropdownConfig
+                        { toggleMsg = DropdownMsg
+                        , toggleButton =
+                            Dropdown.dropdownToggle
+                                [ Button.role Button.Warning ]
                                 []
                                 [ text "MyDropdown "
                                 , span [ class "tag tag-pill tag-info" ] [ text "(2)" ]
                                 ]
-                            ]
                         , items =
                             [ Dropdown.dropdownItem
                                 [ href "#", onClick Item1Msg ]
@@ -192,14 +201,13 @@ mainContent model =
                 [ Grid.flexColSize Grid.ExtraSmall Grid.Five ]
                 [ flexColStyle ]
                 [ Dropdown.splitDropdown
-                    (Dropdown.splitConfig
-                        { toMsg = SplitMsg
-                        , buttonStyles =
-                            [ Button.role Button.Warning ]
-                        , buttonAttributes =
-                            [ onClick SplitMainMsg ]
-                        , buttonChildren =
-                            [ text "My split drop" ]
+                    (Dropdown.splitDropdownConfig
+                        { toggleMsg = SplitMsg
+                        , toggleButton =
+                            Dropdown.splitDropdownToggle
+                                [ Button.role Button.Warning ]
+                                [ onClick SplitMainMsg ]
+                                [ text "My split drop" ]
                         , items =
                             [ Dropdown.dropdownItem
                                 [ href "#", onClick SplitItem1Msg ]
@@ -221,17 +229,46 @@ mainContent model =
         ]
 
 
-navbar : Html Msg
-navbar =
+navbar : Model -> Html Msg
+navbar model =
     Navbar.navbar
         [ Navbar.scheme Navbar.Dark Navbar.Primary
           --, Navbar.fix Navbar.FixTop
         ]
         []
         (Navbar.nav
-            [ Navbar.navItemLink
-                [href ""]
-                [ text "Hello" ]
+            [ Navbar.navBrand
+                [ href "#" ]
+                [ text "Logo" ]
+            , Navbar.navItemLink
+                [ href "#" ]
+                [ text "Page" ]
+            , Navbar.navItemLink
+                [ href "#" ]
+                [ text "Another" ]
+            , Navbar.navCustomItem <|
+                Dropdown.navDropdown
+                    (Dropdown.navDropdownConfig
+                        { toggleMsg = NavDropMsg
+                        , toggleButton =
+                            Dropdown.navDropdownToggle
+                                []
+                                [text "NavDrop"]
+                        , items =
+                            [ Dropdown.dropdownItem
+                                [ href "#"]
+                                [ text "Menuitem 1"]
+                            , Dropdown.dropdownItem
+                                [ href "#"]
+                                [ text "Menuitem 2"]
+                            ]
+                        }
+                    )
+                    model.navDropState
+            , Navbar.navCustomItem <|
+                span
+                    [ class "navbar-text float-xs-right text-success" ]
+                    [ text "Some text" ]
             ]
         )
 
@@ -260,6 +297,7 @@ modal modalState =
         ]
 
 
+modalBody : Html msg
 modalBody =
     Grid.containerFluid
         [ Grid.row
