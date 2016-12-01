@@ -7,10 +7,11 @@ import Bootstrap.Grid as Grid
 import Bootstrap.Modal as Modal
 import Bootstrap.Navbar as Navbar
 import Bootstrap.Tab as Tab
+import Bootstrap.Accordion as Accordion
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Json.Decode as Json
+import Dict
 
 
 main : Program Never Model Msg
@@ -30,6 +31,13 @@ type alias Model =
     , navDropState : Dropdown.State
     , modalState : Modal.State
     , tabState : Tab.State
+    , accordionState : Dict.Dict String Accordion.CardState
+    }
+
+
+type alias AccordionState =
+    { card1 : Accordion.CardState
+    , card2 : Accordion.CardState
     }
 
 
@@ -41,6 +49,11 @@ init =
       , navDropState = Dropdown.initialState "navDrop"
       , modalState = Modal.hiddenState
       , tabState = Tab.state 0
+      , accordionState =
+            Dict.fromList
+                [ ( "card1", Accordion.cardHidden )
+                , ( "card2", Accordion.cardHidden )
+                ]
       }
     , Cmd.none
     )
@@ -58,10 +71,11 @@ type Msg
     | SplitItem2Msg
     | ModalMsg Modal.State
     | TabMsg Tab.State
+    | AccordionMsg String Accordion.CardState
 
 
 update : Msg -> Model -> ( Model, Cmd msg )
-update msg model =
+update msg ({ accordionState } as model) =
     case (Debug.log "MSG" msg) of
         NoOp ->
             ( { model | dummy = "NoOp" }, Cmd.none )
@@ -102,7 +116,12 @@ update msg model =
             )
 
         TabMsg state ->
-            ( {model | tabState = state}
+            ( { model | tabState = state }
+            , Cmd.none
+            )
+
+        AccordionMsg cardId state ->
+            ( { model | accordionState = Dict.insert cardId state accordionState }
             , Cmd.none
             )
 
@@ -132,6 +151,7 @@ view model =
             [ navbar model
             , mainContent model
             , tabs model
+            , accordion model
             ]
         ]
 
@@ -264,14 +284,14 @@ navbar model =
                         , toggleButton =
                             Dropdown.navDropdownToggle
                                 []
-                                [text "NavDrop"]
+                                [ text "NavDrop" ]
                         , items =
                             [ Dropdown.dropdownItem
-                                [ href "#"]
-                                [ text "Menuitem 1"]
+                                [ href "#" ]
+                                [ text "Menuitem 1" ]
                             , Dropdown.dropdownItem
-                                [ href "#"]
-                                [ text "Menuitem 2"]
+                                [ href "#" ]
+                                [ text "Menuitem 2" ]
                             ]
                         }
                     )
@@ -331,17 +351,56 @@ tabs model =
             { toMsg = TabMsg
             , items =
                 [ Tab.tabItem
-                    { link = Tab.tabLink [] [text "Tab1"]
-                    , pane = Tab.tabPane [] [text "Tab Pane 1 Content"]
+                    { link = Tab.tabLink [] [ text "Tab1" ]
+                    , pane = Tab.tabPane [] [ text "Tab Pane 1 Content" ]
                     }
                 , Tab.tabItem
-                    { link = Tab.tabLink [] [text "Tab2"]
-                    , pane = Tab.tabPane [] [text "Tab Pane 2 Content"]
+                    { link = Tab.tabLink [] [ text "Tab2" ]
+                    , pane = Tab.tabPane [] [ text "Tab Pane 2 Content" ]
                     }
                 ]
             }
         )
         model.tabState
+
+
+accordion : Model -> Html Msg
+accordion { accordionState } =
+    Accordion.accordion
+        ([ Dict.get "card1" accordionState
+            |> Maybe.map renderCardOne
+         , Dict.get "card2" accordionState
+            |> Maybe.map renderCardTwo
+         ]
+            |> List.filterMap identity
+        )
+
+
+renderCardOne : Accordion.CardState -> Accordion.Card Msg
+renderCardOne state =
+    Accordion.card
+        { toMsg = AccordionMsg "card1"
+        , state = state
+        , toggle = Accordion.cardToggle [] [ text " Card 1" ]
+        , toggleContainer =
+            Just <|
+                Accordion.toggleContainer h3
+                    []
+                    [ span [ class "fa fa-car" ] [] ]
+                    []
+        , block = Accordion.cardBlock [ text "Contants of Card 1" ]
+        }
+
+
+renderCardTwo : Accordion.CardState -> Accordion.Card Msg
+renderCardTwo state =
+    Accordion.card
+        { toMsg = AccordionMsg "card2"
+        , state = state
+        , toggle = Accordion.cardToggle [] [ text "Card 2" ]
+        , toggleContainer = Nothing
+        , block = Accordion.cardBlock [ text "Contants of Card 2" ]
+        }
 
 
 flexRowStyle : Attribute Msg
