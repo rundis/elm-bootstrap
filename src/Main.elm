@@ -35,7 +35,6 @@ type alias Model =
     }
 
 
-
 init : ( Model, Cmd Msg )
 init =
     ( { dummy = "init"
@@ -123,18 +122,24 @@ update msg ({ accordionState } as model) =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    --    Sub.none
-    Sub.batch
-        [ Dropdown.subscriptions
-            model.dropdownState
-            DropdownMsg
-        , Dropdown.subscriptions
-            model.splitDropState
-            SplitMsg
-        , Dropdown.subscriptions
-            model.navDropState
-            NavDropMsg
-        ]
+    let
+        accordionSubs =
+            Dict.toList model.accordionState
+                |> List.map (\( key, val ) -> Accordion.subscriptions (AccordionMsg key) val)
+    in
+        Sub.batch
+            ([ Dropdown.subscriptions
+                model.dropdownState
+                DropdownMsg
+             , Dropdown.subscriptions
+                model.splitDropState
+                SplitMsg
+             , Dropdown.subscriptions
+                model.navDropState
+                NavDropMsg
+             ]
+                ++ accordionSubs
+            )
 
 
 view : Model -> Html Msg
@@ -376,14 +381,19 @@ renderCardOne state =
     Accordion.card
         { toMsg = AccordionMsg "card1"
         , state = state
-        , toggle = Accordion.cardToggle [] [ text " Card 1" ]
+        , withAnimation = True
+        , toggle = Accordion.cardToggle [] [ text " Card With container" ]
         , toggleContainer =
             Just <|
                 Accordion.toggleContainer h3
                     []
                     [ span [ class "fa fa-car" ] [] ]
                     []
-        , block = Accordion.cardBlock [ text "Contants of Card 1" ]
+        , block =
+            Accordion.cardBlock
+                [ text "Contents of Card 1"
+                , div [] [ text "Some more content" ]
+                ]
         }
 
 
@@ -392,9 +402,15 @@ renderCardTwo state =
     Accordion.card
         { toMsg = AccordionMsg "card2"
         , state = state
+        , withAnimation = False
         , toggle = Accordion.cardToggle [] [ text "Card 2" ]
         , toggleContainer = Nothing
-        , block = Accordion.cardBlock [ text "Contants of Card 2" ]
+        , block =
+            Accordion.cardBlock
+                [ text "Contants of Card 2"
+                , div [] [ text "Some more for 2" ]
+                , div [] [ text "Yet even more" ]
+                ]
         }
 
 

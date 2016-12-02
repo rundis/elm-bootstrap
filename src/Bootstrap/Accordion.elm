@@ -7,6 +7,7 @@ module Bootstrap.Accordion
         , toggleContainer
         , cardHidden
         , cardVisible
+        , subscriptions
         , CardState
         , Card
         , CardBlock
@@ -15,12 +16,11 @@ module Bootstrap.Accordion
         )
 
 import Html
-import Html.Attributes exposing (class, href)
+import Html.Attributes exposing (class, href, style)
 import Html.Events exposing (onClick, on)
 import Json.Decode as Json
 import DOM
-
-
+import AnimationFrame
 
 
 type CardState
@@ -29,9 +29,13 @@ type CardState
         , height : Maybe Float
         }
 
+
 type Visibility
     = Hidden
-    | Animating
+    | StartDown
+    | AnimatingDown
+    | StartUp
+    | AnimatingUp
     | Shown
 
 
@@ -42,6 +46,7 @@ type Card msg
         , block : CardBlock msg
         , state : CardState
         , toMsg : CardState -> msg
+        , withAnimation : Bool
         }
 
 
@@ -63,6 +68,21 @@ type ToggleContainer msg
 
 type CardBlock msg
     = CardBlock { children : List (Html.Html msg) }
+
+
+subscriptions : (CardState -> msg) -> CardState -> Sub msg
+subscriptions toMsg (CardState state) =
+    case state.visibility of
+        StartDown ->
+            AnimationFrame.times
+                (\_ -> toMsg <| CardState { state | visibility = AnimatingDown })
+
+        StartUp ->
+            AnimationFrame.times
+                (\_ -> toMsg <| CardState { state | visibility = AnimatingUp })
+
+        _ ->
+            Sub.none
 
 
 cardVisible : CardState
@@ -94,15 +114,17 @@ card :
     , toMsg : CardState -> msg
     , toggle : CardToggle msg
     , toggleContainer : Maybe (ToggleContainer msg)
+    , withAnimation : Bool
     }
     -> Card msg
-card { toggle, toggleContainer, block, state, toMsg } =
+card { toggle, toggleContainer, block, state, toMsg, withAnimation } =
     Card
         { toggle = toggle
         , toggleContainer = toggleContainer
         , block = block
         , state = state
         , toMsg = toMsg
+        , withAnimation = withAnimation
         }
 
 
@@ -140,130 +162,198 @@ cardBlock children =
 
 
 renderCard : Card msg -> Html.Html msg
-renderCard (Card { toggle, toggleContainer, block, toMsg, state }) =
+renderCard card =
     Html.div
         [ class "card" ]
-        [ renderCardHeader toggle toggleContainer toMsg state
-        , renderCardBlock block state
+        [ renderCardHeader card
+        , renderCardBlock card
         ]
 
 
 renderCardHeader :
-    CardToggle msg
-    -> Maybe (ToggleContainer msg)
-    -> (CardState -> msg)
-    -> CardState
+    Card msg
     -> Html.Html msg
-renderCardHeader toggle toggleContainer toMsg state =
-    let
-        toggleElem =
-            renderCardToggle toggle toMsg state
-    in
-        Html.div
-            [ class "card-header" ]
-            (case toggleContainer of
-                Nothing ->
-                    [ toggleElem ]
+renderCardHeader ((Card { toggleContainer }) as card) =
+    Html.div
+        [ class "card-header" ]
+        (case toggleContainer of
+            Nothing ->
+                [ renderCardToggle False card ]
 
-                Just (ToggleContainer { elemFn, attributes, childrenPreToggle, childrenPostToggle }) ->
-                    [ elemFn attributes <|
-                        List.concat
-                            [ childrenPreToggle
-                            , [ toggleElem ]
-                            , childrenPostToggle
-                            ]
-                    ]
-            )
+            Just (ToggleContainer { elemFn, attributes, childrenPreToggle, childrenPostToggle }) ->
+                [ elemFn attributes <|
+                    List.concat
+                        [ childrenPreToggle
+                        , [ renderCardToggle True card ]
+                        , childrenPostToggle
+                        ]
+                ]
+        )
 
 
 renderCardToggle :
-    CardToggle msg
-    -> (CardState -> msg)
-    -> CardState
+    Bool
+    -> Card msg
     -> Html.Html msg
-renderCardToggle (CardToggle { attributes, children }) toMsg ((CardState state) as cardState) =
-    Html.a
-        ([ href "#"
-         , onClick <| handleClick toMsg cardState
-         , on "click" <| clickHandler toMsg cardState
-         ]
-            ++ attributes
-        )
-        children
-
-
-clickHandler : (CardState -> msg) -> CardState -> Json.Decoder msg
-clickHandler toMsg (CardState state) =
-    geometryDecoder
-        |> Json.andThen
-            (\v ->
-                let
-                    _ = Debug.log "Height: " v
-                in
-                    Json.succeed
-                        <| toMsg
-                            <| CardState
-                                {state | height = Just v
-                                       , visibility = visibilityTransition state.visibility
-                                }
+renderCardToggle isContained ((Card { toggle }) as card) =
+    --  (CardToggle { attributes, children }) toMsg cardState =
+    let
+        (CardToggle { attributes, children }) =
+            toggle
+    in
+        Html.a
+            ([ href "#"
+             , on "click" <| clickHandler (heightDecoder isContained) card
+             ]
+                ++ attributes
             )
+            children
 
-visibilityTransition : Visibility -> Visibility
-visibilityTransition visibility =
-    case visibility of
-        Hidden ->
+
+clickHandler :
+    Json.Decoder Float
+    -> Card msg
+    -> Json.Decoder msg
+clickHandler decoder (Card { toMsg, state, withAnimation }) =
+    let
+        (CardState stateRec) =
+            state
+    in
+        decoder
+            |> Json.andThen
+                (\v ->
+                    Json.succeed <|
+                        toMsg <|
+                            CardState
+                                { stateRec
+                                    | height = Just v
+                                    , visibility = visibilityTransition withAnimation stateRec.visibility
+                                }
+                )
+
+
+visibilityTransition : Bool -> Visibility -> Visibility
+visibilityTransition withAnimation visibility =
+    case ( withAnimation, visibility ) of
+        ( True, Hidden ) ->
+            StartDown
+
+        ( True, StartDown ) ->
+            AnimatingDown
+
+        ( True, AnimatingDown ) ->
             Shown
 
-        Animating ->
-            visibility
+        ( True, Shown ) ->
+            StartUp
 
-        Shown ->
+        ( True, StartUp ) ->
+            AnimatingUp
+
+        ( True, AnimatingUp ) ->
             Hidden
 
+        ( False, Hidden ) ->
+            Shown
+
+        ( False, Shown ) ->
+            Hidden
+
+        _ ->
+            Shown
 
 
-geometryDecoder : Json.Decoder Float
-geometryDecoder =
-    DOM.target
-        <| DOM.parentElement
-        <| DOM.parentElement
-        <| DOM.nextSibling
-        <| DOM.offsetHeight
+heightDecoder : Bool -> Json.Decoder Float
+heightDecoder isContained =
+    DOM.target <|
+        DOM.parentElement <|
+            (if isContained then
+                DOM.parentElement
+             else
+                identity
+            )
+            <|
+                DOM.nextSibling <|
+                    DOM.childNode 0 <|
+                        DOM.offsetHeight
 
 
-handleClick : (CardState -> msg) -> CardState -> msg
-handleClick toMsg (CardState state) =
-    toMsg <|
-        CardState <|
-            case state.visibility of
-                Hidden ->
-                    { state | visibility = Shown }
+renderCardBlock :
+    Card msg
+    -> Html.Html msg
+renderCardBlock (Card { toMsg, state, withAnimation, block }) =
+    --toMsg (CardBlock { children }) state =
+    let
+        (CardBlock { children }) =
+            block
+    in
+        Html.div
+            (animationAttributes toMsg state withAnimation)
+            --class <| visibilityClass state.visibility ]
+            [ Html.div
+                [ class "card-block" ]
+                children
+            ]
 
-                Animating ->
-                    state
 
-                Shown ->
-                    { state | visibility = Hidden }
+animationAttributes :
+    (CardState -> msg)
+    -> CardState
+    -> Bool
+    -> List (Html.Attribute msg)
+animationAttributes toMsg ((CardState { visibility, height }) as cardState) withAnimation =
+    let
+        pixelHeight =
+            Maybe.map (\v -> (toString v) ++ "px") height
+                |> Maybe.withDefault "0"
+    in
+        case visibility of
+            Hidden ->
+                [ style [ ( "overflow", "hidden" ), ( "height", "0" ) ] ]
+
+            StartDown ->
+                [ style [ ( "overflow", "hidden" ), ( "height", "0" ) ] ]
+
+            AnimatingDown ->
+                [ transitionStyle pixelHeight
+                , on "transitionend" <|
+                    transitionHandler toMsg cardState withAnimation
+                ]
+
+            AnimatingUp ->
+                [ transitionStyle "0px"
+                , on "transitionend" <|
+                    transitionHandler toMsg cardState withAnimation
+                ]
+
+            StartUp ->
+                [ style [ ( "height", pixelHeight ) ] ]
+
+            Shown ->
+                [ style [ ( "height", pixelHeight ) ] ]
 
 
-renderCardBlock : CardBlock msg -> CardState -> Html.Html msg
-renderCardBlock (CardBlock { children }) (CardState state) =
-    Html.div
-        [ class <| visibilityClass state.visibility ]
-        [ Html.div
-            [ class "card-block" ]
-            children
+transitionHandler : (CardState -> msg) -> CardState -> Bool -> Json.Decoder msg
+transitionHandler toMsg (CardState state) withAnimation =
+    Json.succeed <|
+        toMsg <|
+            CardState
+                { state | visibility = visibilityTransition withAnimation state.visibility }
+
+
+transitionStyle : String -> Html.Attribute msg
+transitionStyle height =
+    style
+        [ ( "position", "relative" )
+        , ( "height", height )
+        , ( "overflow", "hidden" )
+        , ( "-webkit-transition-timing-function", "ease" )
+        , ( "-o-transition-timing-function", "ease" )
+        , ( "transition-timing-function", "ease" )
+        , ( "-webkit-transition-duration", "0.35s" )
+        , ( "-o-transition-duration", "0.35s" )
+        , ( "transition-duration", "0.35s" )
+        , ( "-webkit-transition-property", "height" )
+        , ( "-o-transition-property", "height" )
+        , ( "transition-property", "height" )
         ]
-
-
-visibilityClass : Visibility -> String
-visibilityClass visibility =
-    case visibility of
-        Hidden ->
-            "collapse"
-
-        Animating ->
-            "collapsing"
-
-        Shown ->
-            "collapse in"
