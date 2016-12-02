@@ -35,11 +35,6 @@ type alias Model =
     }
 
 
-type alias AccordionState =
-    { card1 : Accordion.CardState
-    , card2 : Accordion.CardState
-    }
-
 
 init : ( Model, Cmd Msg )
 init =

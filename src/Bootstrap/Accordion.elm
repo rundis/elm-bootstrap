@@ -16,12 +16,18 @@ module Bootstrap.Accordion
 
 import Html
 import Html.Attributes exposing (class, href)
-import Html.Events exposing (onClick)
+import Html.Events exposing (onClick, on)
+import Json.Decode as Json
+import DOM
+
+
 
 
 type CardState
-    = CardState { visibility : Visibility }
-
+    = CardState
+        { visibility : Visibility
+        , height : Maybe Float
+        }
 
 type Visibility
     = Hidden
@@ -62,13 +68,17 @@ type CardBlock msg
 cardVisible : CardState
 cardVisible =
     CardState
-        { visibility = Shown }
+        { visibility = Shown
+        , height = Nothing
+        }
 
 
 cardHidden : CardState
 cardHidden =
     CardState
-        { visibility = Hidden }
+        { visibility = Hidden
+        , height = Nothing
+        }
 
 
 accordion : List (Card msg) -> Html.Html msg
@@ -175,10 +185,50 @@ renderCardToggle (CardToggle { attributes, children }) toMsg ((CardState state) 
     Html.a
         ([ href "#"
          , onClick <| handleClick toMsg cardState
+         , on "click" <| clickHandler toMsg cardState
          ]
             ++ attributes
         )
         children
+
+
+clickHandler : (CardState -> msg) -> CardState -> Json.Decoder msg
+clickHandler toMsg (CardState state) =
+    geometryDecoder
+        |> Json.andThen
+            (\v ->
+                let
+                    _ = Debug.log "Height: " v
+                in
+                    Json.succeed
+                        <| toMsg
+                            <| CardState
+                                {state | height = Just v
+                                       , visibility = visibilityTransition state.visibility
+                                }
+            )
+
+visibilityTransition : Visibility -> Visibility
+visibilityTransition visibility =
+    case visibility of
+        Hidden ->
+            Shown
+
+        Animating ->
+            visibility
+
+        Shown ->
+            Hidden
+
+
+
+geometryDecoder : Json.Decoder Float
+geometryDecoder =
+    DOM.target
+        <| DOM.parentElement
+        <| DOM.parentElement
+        <| DOM.nextSibling
+        <| DOM.offsetHeight
 
 
 handleClick : (CardState -> msg) -> CardState -> msg
