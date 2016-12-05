@@ -289,7 +289,6 @@ renderCardBlock (Card { toMsg, state, withAnimation, block }) =
     in
         Html.div
             (animationAttributes toMsg state withAnimation)
-            --class <| visibilityClass state.visibility ]
             [ Html.div
                 [ class "card-block" ]
                 children
