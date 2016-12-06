@@ -6,9 +6,13 @@ module Bootstrap.Tag
         , pillRoled
         , tagCustom
         , pillCustom
-        , Role (..)
-        , Float (..)
-        , Size (..)
+        , floatDefault
+        , float
+        , roleDefault
+        , role
+        , Role(..)
+        , Float(..)
+        , Size(..)
         , TagClass
         )
 
@@ -29,6 +33,7 @@ type Float
     = Left
     | Right
 
+
 type Size
     = ExtraSmall
     | Small
@@ -36,12 +41,10 @@ type Size
     | Large
 
 
-
 type TagClass
     = Roled Role
     | Floated Float Size
     | Pill
-
 
 
 tag : List (Html.Html msg) -> Html.Html msg
@@ -51,13 +54,13 @@ tag children =
 
 tagRoled : Role -> List (Html.Html msg) -> Html.Html msg
 tagRoled role children =
-    tagCustom [Roled role] children
+    tagCustom [ Roled role ] children
 
 
 tagCustom : List TagClass -> List (Html.Html msg) -> Html.Html msg
 tagCustom classes children =
     Html.span
-        [ class <| tagClasses classes]
+        [ class <| tagClasses classes ]
         children
 
 
@@ -68,7 +71,7 @@ pill children =
 
 pillRoled : Role -> List (Html.Html msg) -> Html.Html msg
 pillRoled role children =
-    pillCustom [Roled role] children
+    pillCustom [ Roled role ] children
 
 
 pillCustom : List TagClass -> List (Html.Html msg) -> Html.Html msg
@@ -76,21 +79,31 @@ pillCustom classes children =
     tagCustom (Pill :: classes) children
 
 
-roled : Role -> TagClass
-roled rl =
+roleDefault : TagClass
+roleDefault =
+    Roled Default
+
+
+role : Role -> TagClass
+role rl =
     Roled rl
 
 
-floated : Float -> Size -> TagClass
-floated float size =
+float : Float -> Size -> TagClass
+float float size =
     Floated float size
+
+
+floatDefault : TagClass
+floatDefault =
+    Floated Right ExtraSmall
 
 
 tagClasses : List TagClass -> String
 tagClasses classes =
     List.foldl
         (\class classString ->
-            String.join " " [classString, tagClass class]
+            String.join " " [ classString, tagClass class ]
         )
         "tag"
         classes
@@ -107,7 +120,6 @@ tagClass class =
 
         Floated float size ->
             "float-" ++ sizeClass size ++ "-" ++ floatClass float
-
 
 
 roleClass : Role -> String

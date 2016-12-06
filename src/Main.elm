@@ -8,6 +8,8 @@ import Bootstrap.Modal as Modal
 import Bootstrap.Navbar as Navbar
 import Bootstrap.Tab as Tab
 import Bootstrap.Accordion as Accordion
+import Bootstrap.ListGroup as ListGroup
+import Bootstrap.Tag as Tag
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -352,16 +354,63 @@ tabs model =
             , items =
                 [ Tab.tabItem
                     { link = Tab.tabLink [] [ text "Tab1" ]
-                    , pane = Tab.tabPane [] [ text "Tab Pane 1 Content" ]
+                    , pane = Tab.tabPane [] [ listGroup ]
                     }
                 , Tab.tabItem
                     { link = Tab.tabLink [] [ text "Tab2" ]
-                    , pane = Tab.tabPane [] [ text "Tab Pane 2 Content" ]
+                    , pane = Tab.tabPane [] [ listGroup2 ]
                     }
                 ]
             }
         )
         model.tabState
+
+
+listGroup : Html Msg
+listGroup =
+    ListGroup.customList
+        [ ListGroup.anchorItem
+            { attributes = [ href "#" ]
+            , classes = [ ListGroup.role ListGroup.Success ]
+            , children =
+                [ text "Hello"
+                , Tag.pillCustom [ Tag.floatDefault, Tag.roleDefault ] [ text "1" ]
+                ]
+            }
+        , ListGroup.anchorItem
+            { attributes = [ href "#" ]
+            , classes = [ ListGroup.role ListGroup.Info ]
+            , children =
+                [ text "Aloha"
+                , Tag.pillCustom
+                    [ Tag.floatDefault, Tag.role Tag.Info ]
+                    [ text "2" ]
+                ]
+            }
+        ]
+
+listGroup2 : Html Msg
+listGroup2 =
+    ListGroup.customList
+        [ ListGroup.anchorItem
+            { attributes = [ href "#"]
+            , classes = []
+            , children =
+                [ ListGroup.h5 [] [text "Item 1"]
+                , ListGroup.text
+                    {elemFn = p, attributes = [], children = [text "Some text paragraph"]}
+                ]
+            }
+        , ListGroup.anchorItem
+            { attributes = [ href "#"]
+            , classes = []
+            , children =
+                [ ListGroup.h5 [] [text "Item 2"]
+                , ListGroup.text
+                    {elemFn = p, attributes = [], children = [text "Some other text paragraph"]}
+                ]
+            }
+        ]
 
 
 accordion : Model -> Html Msg
