@@ -10,6 +10,7 @@ import Bootstrap.Tab as Tab
 import Bootstrap.Accordion as Accordion
 import Bootstrap.ListGroup as ListGroup
 import Bootstrap.Tag as Tag
+import Bootstrap.Form as Form
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -161,7 +162,9 @@ view model =
 mainContent : Model -> Html Msg
 mainContent model =
     Grid.container
-        [ Grid.flexRow
+        [ simpleForm
+        , gridForm
+        , Grid.flexRow
             [ Grid.flexVAlign Grid.ExtraSmall Grid.Bottom ]
             [ flexRowStyle ]
             [ Grid.flexCol
@@ -305,6 +308,131 @@ navbar model =
             ]
         )
 
+
+simpleForm : Html Msg
+simpleForm =
+    Html.form
+        []
+        [ Form.formGroup
+            { validationResult = Just <| Form.validationResult Form.Success "This went well"
+            , label = Form.textLabel "SimpleInput"
+            , control =
+                Form.inputText
+                    { id = Just "simpleInput"
+                    , classes = []
+                    , customAttributes = [class "form-control-success"]
+                    }
+            }
+        , Form.formGroup
+            { validationResult = Nothing
+            , label = Form.textLabel "Sample select"
+            , control =
+                Form.select
+                    { id = Just "simpleSelect"
+                    , classes = []
+                    , customAttributes = []
+                    , options =
+                        [ Form.option [] [ text "Option 1" ]
+                        , Form.option [] [ text "Option 2" ]
+                        ]
+                    }
+            }
+        , Form.checkbox <|
+            Form.checkboxConfig
+                { label = Form.textLabel "Check me!"
+                , customAttributes = []
+                }
+        , Form.radioGroup
+            { label = Form.textLabel "My radios"
+            , name = "MyRadios"
+            , radios =
+                [ Form.radio
+                    { label = Form.textLabel "Radio 1"
+                    , classes = []
+                    , customAttributes = []
+                    }
+                , Form.radio
+                    { label = Form.textLabel "Radio 2"
+                    , classes = []
+                    , customAttributes = []
+                    }
+                ]
+            }
+        , Form.formGroup
+            { validationResult = Nothing
+            , label = Form.label
+                        { text = "Small input"
+                        , classes = [Form.labelSize Form.Small]
+                        , customAttributes = []
+                        }
+            , control = Form.inputText
+                            { id = Just "smallinput"
+                            , classes = [Form.inputSize Form.Small]
+                            , customAttributes = []
+                            }
+
+            }
+
+        ]
+
+gridForm : Html Msg
+gridForm =
+    Html.form
+        []
+        [ h2 [] [text "Form grid"]
+        , Form.formGroupRow
+            { validationResult = Nothing
+            , label = Form.textLabel "TextInput"
+            , labelWidth = Form.columnWidth Form.ExtraSmall Form.Two
+            , control = Form.inputText
+                            { id = Just "rowtextinput"
+                            , classes = []
+                            , customAttributes = []
+                            }
+            , controlWidth = Form.columnWidth Form.ExtraSmall Form.Eight
+            }
+        , Form.formGroupRow
+            { validationResult = Nothing
+            , label = Form.textLabel "Select"
+            , labelWidth = Form.columnWidth Form.ExtraSmall Form.Two
+            , control = Form.select
+                            { id = Just "rowSimpleSelect"
+                            , classes = []
+                            , customAttributes = []
+                            , options =
+                                [ Form.option [] [ text "Option 1" ]
+                                , Form.option [] [ text "Option 2" ]
+                                ]
+                            }
+            , controlWidth = Form.columnWidth Form.ExtraSmall Form.Eight
+            }
+        , Form.formGroupRow
+            { validationResult = Just <| Form.validationResult Form.Danger "Forgot to fill in?"
+            , label = Form.textLabel "TextWithValidation"
+            , labelWidth = Form.columnWidth Form.ExtraSmall Form.Two
+            , control = Form.inputText
+                            { id = Just "rowtextinputvalidation"
+                            , classes = []
+                            , customAttributes = []
+                            }
+            , controlWidth = Form.columnWidth Form.ExtraSmall Form.Eight
+            }
+        , Form.formGroupRow
+            { validationResult = Nothing
+            , label = Form.label
+                        { text = "Small input"
+                        , classes = [Form.labelSize Form.Small]
+                        , customAttributes = []
+                        }
+            , labelWidth = Form.columnWidth Form.ExtraSmall Form.Two
+            , control = Form.inputText
+                            { id = Just "rowtextinputxs"
+                            , classes = [Form.inputSize Form.Small]
+                            , customAttributes = []
+                            }
+            , controlWidth = Form.columnWidth Form.ExtraSmall Form.Eight
+            }
+        ]
 
 modal : Modal.State -> Html Msg
 modal modalState =
