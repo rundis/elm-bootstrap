@@ -2,7 +2,9 @@ module Bootstrap.Form
     exposing
         ( form
         , formGroup
+        , formGroupSimple
         , formGroupRow
+        , formGroupRowSimple
         , columnWidth
         , validationResult
         , textLabel
@@ -13,12 +15,13 @@ module Bootstrap.Form
         , select
         , option
         , checkbox
-        , checkboxConfig
+        , checkboxRow
         , radioGroup
+        , radioGroupRow
         , radio
         , Validation(..)
-        , Size (..)
-        , ColumnCount (..)
+        , Size(..)
+        , ColumnCount(..)
         )
 
 import Html
@@ -54,8 +57,8 @@ type Validation
     | Danger
 
 
-type ColumnWidth =
-    ColumnWidth
+type ColumnWidth
+    = ColumnWidth
         { size : Size
         , columns : ColumnCount
         }
@@ -74,7 +77,6 @@ type ColumnCount
     | Ten
     | Eleven
     | Twelve
-
 
 
 type ValidationResult
@@ -135,13 +137,6 @@ type Option msg
     = Option (Html.Html msg)
 
 
-type CheckboxConfig msg
-    = CheckboxConfig
-        { label : Label msg
-        , customAttributes : List (Html.Attribute msg)
-        }
-
-
 type Radio msg
     = Radio
         { label : Label msg
@@ -154,13 +149,27 @@ form =
     ""
 
 
+formGroupSimple :
+    { label : Label msg
+    , control : FormControl msg
+    }
+    -> Html.Html msg
+formGroupSimple {label, control} =
+    formGroup
+        { label = label
+        , control = control
+        , validationResult = Nothing
+        , disabled = False
+        }
+
 formGroup :
     { label : Label msg
     , control : FormControl msg
     , validationResult : Maybe ValidationResult
+    , disabled : Bool
     }
     -> Html.Html msg
-formGroup { label, control, validationResult } =
+formGroup { label, control, validationResult, disabled } =
     let
         groupClasses =
             "form-group "
@@ -176,23 +185,51 @@ formGroup { label, control, validationResult } =
             maybeAddLabelFor (getFormControlId control) label
                 |> addLabelClasses [ FormLabel ]
     in
-        Html.div
-            [ class groupClasses ]
-            ([ renderLabel updLabel
-             , renderControl control
-             ]
-                ++ (case validationResult of
-                        Nothing ->
-                            []
+        disableWhen disabled <|
+            Html.div
+                [ class groupClasses ]
+                ([ renderLabel updLabel
+                 , renderControl control
+                 ]
+                    ++ (case validationResult of
+                            Nothing ->
+                                []
 
-                        Just (ValidationResult res) ->
-                            [ Html.div
-                                [ class "form-control-feedback" ]
-                                [ Html.text res.feedback ]
-                            ]
-                   )
-            )
+                            Just (ValidationResult res) ->
+                                [ Html.div
+                                    [ class "form-control-feedback" ]
+                                    [ Html.text res.feedback ]
+                                ]
+                       )
+                )
 
+disableWhen : Bool -> Html.Html msg -> Html.Html msg
+disableWhen isDisabled element =
+    if isDisabled then
+        Html.fieldset
+            [Html.Attributes.disabled isDisabled]
+            [element]
+    else
+        element
+
+
+
+formGroupRowSimple :
+    { label : Label msg
+    , labelWidth : ColumnWidth
+    , control : FormControl msg
+    , controlWidth : ColumnWidth
+    }
+    -> Html.Html msg
+formGroupRowSimple { label, labelWidth, control, controlWidth} =
+    formGroupRow
+        {label = label
+        , labelWidth = labelWidth
+        , control = control
+        , controlWidth = controlWidth
+        , validationResult = Nothing
+        , disabled = False
+        }
 
 formGroupRow :
     { label : Label msg
@@ -200,9 +237,10 @@ formGroupRow :
     , control : FormControl msg
     , controlWidth : ColumnWidth
     , validationResult : Maybe ValidationResult
+    , disabled : Bool
     }
     -> Html.Html msg
-formGroupRow {label, labelWidth, control, controlWidth, validationResult} =
+formGroupRow { label, labelWidth, control, controlWidth, validationResult, disabled } =
     let
         groupClasses =
             "form-group row "
@@ -216,25 +254,28 @@ formGroupRow {label, labelWidth, control, controlWidth, validationResult} =
 
         updLabel =
             maybeAddLabelFor (getFormControlId control) label
-                |> addLabelClasses [ FormLabel, ColumnLabel, LabelWidth labelWidth]
+                |> addLabelClasses [ FormLabel, ColumnLabel, LabelWidth labelWidth ]
     in
-        Html.div
-            [ class groupClasses ]
-            [ renderLabel updLabel
-            , Html.div
-                [class <| columnWidthClass controlWidth]
-                ([renderControl control]
-                ++ (case validationResult of
-                        Nothing ->
-                            []
+        disableWhen disabled <|
+            Html.div
+                [ class groupClasses ]
+                [ renderLabel updLabel
+                , Html.div
+                    [ class <| columnWidthClass controlWidth ]
+                    ([ renderControl control ]
+                        ++ (case validationResult of
+                                Nothing ->
+                                    []
 
-                        Just (ValidationResult res) ->
-                            [ Html.div
-                                [ class "form-control-feedback" ]
-                                [ Html.text res.feedback ]
-                            ]
-                   ))
-            ]
+                                Just (ValidationResult res) ->
+                                    [ Html.div
+                                        [ class "form-control-feedback" ]
+                                        [ Html.text res.feedback ]
+                                    ]
+                           )
+                    )
+                ]
+
 
 columnWidth : Size -> ColumnCount -> ColumnWidth
 columnWidth size columns =
@@ -298,11 +339,11 @@ label :
     , customAttributes : List (Html.Attribute msg)
     }
     -> Label msg
-label {text, classes, customAttributes} =
+label { text, classes, customAttributes } =
     Label
         { classes = classes
         , customAttributes = customAttributes
-        , children = [Html.text text]
+        , children = [ Html.text text ]
         }
 
 
@@ -324,6 +365,7 @@ inputText { id, classes, customAttributes } =
         , classes = classes
         , customAttributes = customAttributes
         }
+
 
 inputSize : Size -> InputClass
 inputSize size =
@@ -369,8 +411,12 @@ option attributes children =
     Option <| Html.option attributes children
 
 
-checkbox : CheckboxConfig msg -> Html.Html msg
-checkbox (CheckboxConfig { label, customAttributes }) =
+checkbox :
+    { label : Label msg
+    , customAttributes : List (Html.Attribute msg)
+    }
+    -> Html.Html msg
+checkbox { label, customAttributes } =
     Html.div
         [ class "form-check" ]
         [ Html.label
@@ -387,16 +433,34 @@ checkbox (CheckboxConfig { label, customAttributes }) =
         ]
 
 
-checkboxConfig :
+checkboxRow :
     { label : Label msg
+    , offset : ColumnWidth
+    , controlWidth : ColumnWidth
     , customAttributes : List (Html.Attribute msg)
     }
-    -> CheckboxConfig msg
-checkboxConfig { label, customAttributes } =
-    CheckboxConfig
-        { label = label
-        , customAttributes = customAttributes
-        }
+    -> Html.Html msg
+checkboxRow { label, customAttributes, offset, controlWidth } =
+    Html.div
+        [ class "form-group row" ]
+        [ Html.div
+            [ class <| offsetClass offset ++ " " ++ columnWidthClass controlWidth ]
+            [ Html.div
+                [ class "form-check" ]
+                [ Html.label
+                    [ class "form-check-label" ]
+                    [ Html.input
+                        ([ class "form-check-input"
+                         , type_ "checkbox"
+                         ]
+                            ++ customAttributes
+                        )
+                        []
+                    , renderLabel label
+                    ]
+                ]
+            ]
+        ]
 
 
 radioGroup :
@@ -419,6 +483,32 @@ radioGroup { label, name, radios } =
                 )
                 radios
         )
+
+
+radioGroupRow :
+    { label : Label msg
+    , labelWidth : ColumnWidth
+    , name : String
+    , radios : List (Radio msg)
+    , controlWidth : ColumnWidth
+    }
+    -> Html.Html msg
+radioGroupRow { label, name, radios, labelWidth, controlWidth } =
+    Html.fieldset
+        [ class "form-group row" ]
+        [ Html.legend
+            [ class <| "col-form-legend " ++ columnWidthClass labelWidth ]
+            [ renderLabel label ]
+        , Html.div
+            [ class <| columnWidthClass controlWidth ]
+            (List.map
+                (\r ->
+                    addRadioAttribute (Html.Attributes.name name) r
+                        |> renderRadio
+                )
+                radios
+            )
+        ]
 
 
 radio :
@@ -482,7 +572,7 @@ renderInput : Input msg -> Html.Html msg
 renderInput (Input { tipe, id, classes, customAttributes }) =
     Html.input
         ([ type_ <| inputTypeToString tipe
-         , class <| inputClasses classes
+         , class <| inputClasses "form-control" classes
          ]
             ++ (case id of
                     Just x ->
@@ -499,7 +589,7 @@ renderInput (Input { tipe, id, classes, customAttributes }) =
 renderSelect : Select msg -> Html.Html msg
 renderSelect (Select { id, options, classes, customAttributes }) =
     Html.select
-        ([ class <| inputClasses classes ]
+        ([ class <| inputClasses "form-control" classes ]
             ++ (case id of
                     Just x ->
                         [ Html.Attributes.id x ]
@@ -532,13 +622,13 @@ formGroupClass class =
             "row"
 
 
-inputClasses : List InputClass -> String
-inputClasses classes =
+inputClasses : String -> List InputClass -> String
+inputClasses prefix classes =
     List.foldl
         (\class classString ->
             String.join " " [ classString, inputClass class ]
         )
-        "form-control"
+        prefix
         classes
 
 
@@ -574,56 +664,6 @@ labelClass class =
         ColumnLabel ->
             "col-form-label"
 
-
-
-{- select :
-       Maybe Size
-       -> List (Html.Attribute msg)
-       -> List (Option msg)
-       -> FormControl msg
-   select size attributes options =
-       Select <| selectStandalone size attributes options
-
-
-   selectStandalone :
-       Maybe Size
-       -> List (Html.Attribute msg)
-       -> List (Option msg)
-       -> Html.Html msg
-   selectStandalone size attributes options =
-       Html.select
-           ([ class <| inputClass size ] ++ attributes)
-           (List.map (\(Option opt) -> opt) options)
-
-
-   option : List (Html.Attribute msg) -> List (Html.Html msg) -> Option msg
-   option attributes children =
-       Option <| Html.option attributes children
-
-
-   input : Maybe Size -> InputType -> List (Html.Attribute msg) -> FormControl msg
-   input size inputType attributes =
-       Input <| inputStandalone size inputType attributes
-
-
-   inputStandalone : Maybe Size -> InputType -> List (Html.Attribute msg) -> Html.Html msg
-   inputStandalone size inputType attributes =
-       Html.input
-           ([ type_ <| inputTypeToString inputType
-            , class <| inputClass size
-            ]
-               ++ attributes
-           )
-           []
-
-
-   inputClass : Maybe Size -> String
-   inputClass size =
-       "form-control "
-           ++ (Maybe.map (\v -> sizeClass v) size
-                   |> Maybe.withDefault ""
-              )
--}
 
 
 inputTypeToString : InputType -> String
@@ -680,8 +720,12 @@ labelSizeClass size =
 
 
 columnWidthClass : ColumnWidth -> String
-columnWidthClass (ColumnWidth {size, columns}) =
+columnWidthClass (ColumnWidth { size, columns }) =
     "col-" ++ sizeClass size ++ "-" ++ columnCountClass columns
+
+offsetClass : ColumnWidth -> String
+offsetClass (ColumnWidth { size, columns }) =
+    "offset-" ++ sizeClass size ++ "-" ++ columnCountClass columns
 
 
 sizeClass : Size -> String
@@ -713,20 +757,41 @@ validationClass validation =
             "has-danger"
 
 
-
-
 columnCountClass : ColumnCount -> String
 columnCountClass count =
     case count of
-        One -> "1"
-        Two -> "2"
-        Three -> "3"
-        Four -> "4"
-        Five -> "5"
-        Six -> "6"
-        Seven -> "7"
-        Eight -> "8"
-        Nine -> "9"
-        Ten -> "10"
-        Eleven -> "11"
-        Twelve -> "12"
+        One ->
+            "1"
+
+        Two ->
+            "2"
+
+        Three ->
+            "3"
+
+        Four ->
+            "4"
+
+        Five ->
+            "5"
+
+        Six ->
+            "6"
+
+        Seven ->
+            "7"
+
+        Eight ->
+            "8"
+
+        Nine ->
+            "9"
+
+        Ten ->
+            "10"
+
+        Eleven ->
+            "11"
+
+        Twelve ->
+            "12"

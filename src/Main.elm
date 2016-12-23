@@ -314,18 +314,18 @@ simpleForm =
     Html.form
         []
         [ Form.formGroup
-            { validationResult = Just <| Form.validationResult Form.Success "This went well"
+            { disabled =  False
+            , validationResult = Just <| Form.validationResult Form.Success "This went well"
             , label = Form.textLabel "SimpleInput"
             , control =
                 Form.inputText
                     { id = Just "simpleInput"
                     , classes = []
-                    , customAttributes = [class "form-control-success"]
+                    , customAttributes = [ class "form-control-success" ]
                     }
             }
-        , Form.formGroup
-            { validationResult = Nothing
-            , label = Form.textLabel "Sample select"
+        , Form.formGroupSimple
+            { label = Form.textLabel "Sample select"
             , control =
                 Form.select
                     { id = Just "simpleSelect"
@@ -337,11 +337,10 @@ simpleForm =
                         ]
                     }
             }
-        , Form.checkbox <|
-            Form.checkboxConfig
-                { label = Form.textLabel "Check me!"
-                , customAttributes = []
-                }
+        , Form.checkbox
+            { label = Form.textLabel "Check me!"
+            , customAttributes = []
+            }
         , Form.radioGroup
             { label = Form.textLabel "My radios"
             , name = "MyRadios"
@@ -359,80 +358,112 @@ simpleForm =
                 ]
             }
         , Form.formGroup
-            { validationResult = Nothing
-            , label = Form.label
-                        { text = "Small input"
-                        , classes = [Form.labelSize Form.Small]
-                        , customAttributes = []
-                        }
-            , control = Form.inputText
-                            { id = Just "smallinput"
-                            , classes = [Form.inputSize Form.Small]
-                            , customAttributes = []
-                            }
-
+            { disabled = True
+            , validationResult = Nothing
+            , label =
+                Form.label
+                    { text = "Small input"
+                    , classes = [] --[ Form.labelSize Form.Small ]
+                    , customAttributes = []
+                    }
+            , control =
+                Form.inputText
+                    { id = Just "smallinput"
+                    , classes = [ Form.inputSize Form.Small ]
+                    , customAttributes = []
+                    }
             }
-
         ]
+
 
 gridForm : Html Msg
 gridForm =
     Html.form
-        []
-        [ h2 [] [text "Form grid"]
-        , Form.formGroupRow
-            { validationResult = Nothing
-            , label = Form.textLabel "TextInput"
-            , labelWidth = Form.columnWidth Form.ExtraSmall Form.Two
-            , control = Form.inputText
-                            { id = Just "rowtextinput"
-                            , classes = []
-                            , customAttributes = []
-                            }
+        [ class "container" ]
+        [ h2 [] [ text "Form grid" ]
+        , Form.formGroupRowSimple
+            { label = Form.textLabel "TextInput"
+            , labelWidth = Form.columnWidth Form.ExtraSmall Form.Four
+            , control =
+                Form.inputText
+                    { id = Just "rowtextinput"
+                    , classes = []
+                    , customAttributes = []
+                    }
             , controlWidth = Form.columnWidth Form.ExtraSmall Form.Eight
             }
-        , Form.formGroupRow
-            { validationResult = Nothing
-            , label = Form.textLabel "Select"
-            , labelWidth = Form.columnWidth Form.ExtraSmall Form.Two
-            , control = Form.select
-                            { id = Just "rowSimpleSelect"
-                            , classes = []
-                            , customAttributes = []
-                            , options =
-                                [ Form.option [] [ text "Option 1" ]
-                                , Form.option [] [ text "Option 2" ]
-                                ]
-                            }
+        , Form.formGroupRowSimple
+            { label = Form.textLabel "Select"
+            , labelWidth = Form.columnWidth Form.ExtraSmall Form.Four
+            , control =
+                Form.select
+                    { id = Just "rowSimpleSelect"
+                    , classes = []
+                    , customAttributes = []
+                    , options =
+                        [ Form.option [] [ text "Option 1" ]
+                        , Form.option [] [ text "Option 2" ]
+                        ]
+                    }
             , controlWidth = Form.columnWidth Form.ExtraSmall Form.Eight
             }
         , Form.formGroupRow
             { validationResult = Just <| Form.validationResult Form.Danger "Forgot to fill in?"
+            , disabled = False
             , label = Form.textLabel "TextWithValidation"
-            , labelWidth = Form.columnWidth Form.ExtraSmall Form.Two
-            , control = Form.inputText
-                            { id = Just "rowtextinputvalidation"
-                            , classes = []
-                            , customAttributes = []
-                            }
+            , labelWidth = Form.columnWidth Form.ExtraSmall Form.Four
+            , control =
+                Form.inputText
+                    { id = Just "rowtextinputvalidation"
+                    , classes = []
+                    , customAttributes = []
+                    }
             , controlWidth = Form.columnWidth Form.ExtraSmall Form.Eight
             }
         , Form.formGroupRow
             { validationResult = Nothing
-            , label = Form.label
-                        { text = "Small input"
-                        , classes = [Form.labelSize Form.Small]
-                        , customAttributes = []
-                        }
-            , labelWidth = Form.columnWidth Form.ExtraSmall Form.Two
-            , control = Form.inputText
-                            { id = Just "rowtextinputxs"
-                            , classes = [Form.inputSize Form.Small]
-                            , customAttributes = []
-                            }
+            , disabled = True
+            , label =
+                Form.label
+                    { text = "Small input"
+                    , classes = [ Form.labelSize Form.Small ]
+                    , customAttributes = []
+                    }
+            , labelWidth = Form.columnWidth Form.ExtraSmall Form.Four
+            , control =
+                Form.inputText
+                    { id = Just "rowtextinputxs"
+                    , classes = [ Form.inputSize Form.Small ]
+                    , customAttributes = []
+                    }
+            , controlWidth = Form.columnWidth Form.ExtraSmall Form.Eight
+            }
+        , Form.radioGroupRow
+            { label = Form.textLabel "My radios"
+            , name = "MyRowRadios"
+            , labelWidth = Form.columnWidth Form.ExtraSmall Form.Four
+            , controlWidth = Form.columnWidth Form.ExtraSmall Form.Eight
+            , radios =
+                [ Form.radio
+                    { label = Form.textLabel "Radio 1"
+                    , classes = []
+                    , customAttributes = []
+                    }
+                , Form.radio
+                    { label = Form.textLabel "Radio 2"
+                    , classes = []
+                    , customAttributes = []
+                    }
+                ]
+            }
+        , Form.checkboxRow
+            { label = Form.textLabel "Check me!"
+            , customAttributes = []
+            , offset = Form.columnWidth Form.ExtraSmall Form.Four
             , controlWidth = Form.columnWidth Form.ExtraSmall Form.Eight
             }
         ]
+
 
 modal : Modal.State -> Html Msg
 modal modalState =
@@ -517,25 +548,26 @@ listGroup =
             }
         ]
 
+
 listGroup2 : Html Msg
 listGroup2 =
     ListGroup.customList
         [ ListGroup.anchorItem
-            { attributes = [ href "#"]
+            { attributes = [ href "#" ]
             , classes = []
             , children =
-                [ ListGroup.h5 [] [text "Item 1"]
+                [ ListGroup.h5 [] [ text "Item 1" ]
                 , ListGroup.text
-                    {elemFn = p, attributes = [], children = [text "Some text paragraph"]}
+                    { elemFn = p, attributes = [], children = [ text "Some text paragraph" ] }
                 ]
             }
         , ListGroup.anchorItem
-            { attributes = [ href "#"]
+            { attributes = [ href "#" ]
             , classes = []
             , children =
-                [ ListGroup.h5 [] [text "Item 2"]
+                [ ListGroup.h5 [] [ text "Item 2" ]
                 , ListGroup.text
-                    {elemFn = p, attributes = [], children = [text "Some other text paragraph"]}
+                    { elemFn = p, attributes = [], children = [ text "Some other text paragraph" ] }
                 ]
             }
         ]
