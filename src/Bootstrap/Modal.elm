@@ -1,10 +1,8 @@
 module Bootstrap.Modal
     exposing
         ( modal
-        , config
         , hiddenState
         , visibleState
-        , Config
         , State
         , Size (..)
         )
@@ -17,15 +15,6 @@ import Html.Events as Events
 type State
     = State Bool
 
-
-type Config msg
-    = Config
-        { closeMsg : State -> msg
-        , header : Maybe (Html.Html msg)
-        , body : Maybe (Html.Html msg)
-        , footer : Maybe (Html.Html msg)
-        , size : Maybe Size
-        }
 
 type Size
     = ExtraSmall
@@ -44,29 +33,17 @@ visibleState =
     State True
 
 
-config :
+
+modal :
     { closeMsg : State -> msg
     , header : Maybe (Html.Html msg)
     , body : Maybe (Html.Html msg)
     , footer : Maybe (Html.Html msg)
     , size : Maybe Size
     }
-    -> Config msg
-config { closeMsg, header, body, footer, size } =
-    Config
-        { closeMsg = closeMsg
-        , header = header
-        , body = body
-        , footer = footer
-        , size = size
-        }
-
-
-modal :
-    Config msg
     -> State
     -> Html.Html msg
-modal (Config { closeMsg, header, body, footer, size }) state =
+modal { closeMsg, header, body, footer, size } state =
     Html.div
         []
         [ Html.div

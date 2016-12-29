@@ -4,22 +4,21 @@ module Bootstrap.Dropdown
         , splitDropdown
         , navDropdown
         , initialState
-        , dropdownConfig
-        , splitDropdownConfig
-        , navDropdownConfig
-        , dropdownToggle
-        , splitDropdownToggle
-        , navDropdownToggle
-        , dropdownItem
+        , toggle
+        , splitToggle
+        , navToggle
+        , anchorItem
+        , buttonItem
+        , divider
+        , header
         , subscriptions
         , State
-        , DropdownConfig
-        , SplitDropdownConfig
-        , NavDropdownConfig
         , DropdownItem
         , DropdownToggle
         , SplitDropdownToggle
         , NavDropdownToggle
+        , DropdownToggleConfig
+        , DropdownOption(..)
         )
 
 import Bootstrap.Button as Button
@@ -29,34 +28,23 @@ import Html.Events exposing (onClick, on)
 import Mouse
 
 
-type alias State =
-    { open : Bool
-    , ignoreSub : Bool
-    , id : String
+type State
+    = State
+        { open : Bool
+        , ignoreSub : Bool
+        }
+
+
+type alias DropdownToggleConfig msg =
+    { options : List Button.ButtonOption
+    , attributes : List (Html.Attribute msg)
+    , children : List (Html.Html msg)
     }
 
 
-type DropdownConfig msg
-    = DropdownConfig
-        { toggleMsg : State -> msg
-        , toggleButton : DropdownToggle msg
-        , items : List (DropdownItem msg)
-        }
-
-
-type SplitDropdownConfig msg
-    = SplitDropdownConfig
-        { toggleMsg : State -> msg
-        , toggleButton : SplitDropdownToggle msg
-        , items : List (DropdownItem msg)
-        }
-
-type NavDropdownConfig msg
-    = NavDropdownConfig
-        { toggleMsg : State -> msg
-        , toggleButton : NavDropdownToggle msg
-        , items : List (DropdownItem msg)
-        }
+type DropdownOption
+    = Dropup
+    | AlignMenuRight
 
 
 
@@ -76,97 +64,59 @@ type NavDropdownToggle msg
     = NavDropdownToggle ((State -> msg) -> State -> Html.Html msg)
 
 
-
-initialState : String -> State
-initialState id =
-    State False False id
-
-
-dropdownConfig :
-    { toggleMsg : State -> msg
-    , toggleButton : DropdownToggle msg
-    , items : List (DropdownItem msg)
-    }
-    -> DropdownConfig msg
-dropdownConfig { toggleMsg, toggleButton, items } =
-    DropdownConfig
-        { toggleMsg = toggleMsg
-        , toggleButton = toggleButton
-        , items = items
+initialState : State
+initialState =
+    State
+        { open = False
+        , ignoreSub = False
         }
-
-
-splitDropdownConfig :
-    { toggleMsg : State -> msg
-    , toggleButton : SplitDropdownToggle msg
-    , items : List (DropdownItem msg)
-    }
-    -> SplitDropdownConfig msg
-splitDropdownConfig { toggleMsg, toggleButton, items } =
-    SplitDropdownConfig
-        { toggleMsg = toggleMsg
-        , toggleButton = toggleButton
-        , items = items
-        }
-
-
-navDropdownConfig :
-    { toggleMsg : State -> msg
-    , toggleButton : NavDropdownToggle msg
-    , items : List (DropdownItem msg)
-    }
-    -> NavDropdownConfig msg
-navDropdownConfig { toggleMsg, toggleButton, items } =
-    NavDropdownConfig
-        { toggleMsg = toggleMsg
-        , toggleButton = toggleButton
-        , items = items
-        }
-
-
 
 
 dropdown :
-    DropdownConfig msg
+    { toggleMsg : State -> msg
+    , toggleButton : DropdownToggle msg
+    , options : List DropdownOption
+    , items : List (DropdownItem msg)
+    }
     -> State
     -> Html.Html msg
-dropdown (DropdownConfig { toggleMsg, toggleButton, items }) state =
+dropdown { toggleMsg, toggleButton, items, options } ((State { open }) as state) =
     let
         (DropdownToggle buttonFn) =
             toggleButton
     in
         Html.div
             [ classList
-                [ ( "dropdown", True )
-                , ( "open", state.open )
+                [ ( "btn-group", True )
+                , ( "open", open )
+                , ( "dropup", isDropUp options)
                 ]
             ]
             [ buttonFn toggleMsg state
             , Html.div
-                [ class "dropdown-menu" ]
+                [ classList
+                    [ ("dropdown-menu", True)
+                    , ("dropdown-menu-right", hasMenuRight options)
+                    ]
+                ]
                 (List.map (\(DropdownItem x) -> x) items)
             ]
 
-dropdownToggle :
-    List Button.ButtonStyles
-    -> List (Html.Attribute msg)
-    -> List (Html.Html msg)
-    -> DropdownToggle msg
-dropdownToggle styles attributes children =
+
+toggle : DropdownToggleConfig msg -> DropdownToggle msg
+toggle config =
     DropdownToggle <|
-        dropdownTogglePrivate styles attributes children
+        togglePrivate config
 
 
-dropdownTogglePrivate :
-    List Button.ButtonStyles
-    -> List (Html.Attribute msg)
-    -> List (Html.Html msg)
+togglePrivate :
+    DropdownToggleConfig msg
     -> (State -> msg)
     -> State
     -> Html.Html msg
-dropdownTogglePrivate styles attributes children toggleMsg state =
+togglePrivate { options, attributes, children } toggleMsg state =
     Html.button
-        ([ class <| Button.buttonStylesClass styles ++ " dropdown-toggle"
+        ([ class <| Button.buttonOptionsString options ++ " dropdown-toggle"
          , type_ "button"
          , onClick <| toggleOpen toggleMsg state
          ]
@@ -176,53 +126,54 @@ dropdownTogglePrivate styles attributes children toggleMsg state =
 
 
 splitDropdown :
-    SplitDropdownConfig msg
+    { toggleMsg : State -> msg
+    , toggleButton : SplitDropdownToggle msg
+    , options : List DropdownOption
+    , items : List (DropdownItem msg)
+    }
     -> State
     -> Html.Html msg
-splitDropdown (SplitDropdownConfig { toggleMsg, toggleButton, items }) state =
+splitDropdown { toggleMsg, toggleButton, items, options } ((State { open }) as state) =
     let
         (SplitDropdownToggle buttonsFn) =
             toggleButton
     in
         Html.div
-            [ class <|
-                "dropdown"
-                    ++ (if state.open then
-                            " open"
-                        else
-                            ""
-                       )
+            [ classList
+                [ ("btn-group", True)
+                , ("open", open)
+                , ("dropup", isDropUp options)
+                ]
             ]
             (buttonsFn toggleMsg state
                 ++ [ Html.div
-                        [ class "dropdown-menu" ]
+                        [ classList
+                            [ ("dropdown-menu", True)
+                            , ("dropdown-menu-right", hasMenuRight options)
+                            ]
+                        ]
                         (List.map (\(DropdownItem x) -> x) items)
                    ]
             )
 
-splitDropdownToggle :
-    List Button.ButtonStyles
-    -> List (Html.Attribute msg)
-    -> List (Html.Html msg)
-    -> SplitDropdownToggle msg
-splitDropdownToggle styles attributes children =
+
+splitToggle : DropdownToggleConfig msg -> SplitDropdownToggle msg
+splitToggle config =
     SplitDropdownToggle <|
-        splitDropdownToggleButtonPrivate styles attributes children
+        splitToggleButtonPrivate config
 
 
-splitDropdownToggleButtonPrivate :
-    List Button.ButtonStyles
-    -> List (Html.Attribute msg)
-    -> List (Html.Html msg)
+splitToggleButtonPrivate :
+    DropdownToggleConfig msg
     -> (State -> msg)
     -> State
     -> List (Html.Html msg)
-splitDropdownToggleButtonPrivate styles attributes children toggleMsg state =
+splitToggleButtonPrivate { options, attributes, children } toggleMsg state =
     [ Html.button
-        ([ class <| Button.buttonStylesClass styles ] ++ attributes)
+        ([ class <| Button.buttonOptionsString options ] ++ attributes)
         children
     , Html.button
-        [ class <| Button.buttonStylesClass styles ++ " dropdown-toggle dropdown-toggle-split"
+        [ class <| Button.buttonOptionsString options ++ " dropdown-toggle dropdown-toggle-split"
         , type_ "button"
         , onClick <| toggleOpen toggleMsg state
         ]
@@ -230,12 +181,24 @@ splitDropdownToggleButtonPrivate styles attributes children toggleMsg state =
     ]
 
 
+hasMenuRight : List DropdownOption -> Bool
+hasMenuRight options =
+    List.any (\opt -> opt == AlignMenuRight) options
+
+
+isDropUp : List DropdownOption -> Bool
+isDropUp options =
+    List.any (\opt -> opt == Dropup) options
+
 
 navDropdown :
-    NavDropdownConfig msg
+    { toggleMsg : State -> msg
+    , toggleButton : NavDropdownToggle msg
+    , items : List (DropdownItem msg)
+    }
     -> State
     -> Html.Html msg
-navDropdown (NavDropdownConfig { toggleMsg, toggleButton, items }) state =
+navDropdown { toggleMsg, toggleButton, items } ((State { open }) as state) =
     let
         (NavDropdownToggle buttonFn) =
             toggleButton
@@ -244,7 +207,7 @@ navDropdown (NavDropdownConfig { toggleMsg, toggleButton, items }) state =
             [ classList
                 [ ( "nav-item", True )
                 , ( "dropdown", True )
-                , ( "open", state.open )
+                , ( "open", open )
                 ]
             ]
             [ buttonFn toggleMsg state
@@ -254,22 +217,22 @@ navDropdown (NavDropdownConfig { toggleMsg, toggleButton, items }) state =
             ]
 
 
-navDropdownToggle :
+navToggle :
     List (Html.Attribute msg)
     -> List (Html.Html msg)
     -> NavDropdownToggle msg
-navDropdownToggle attributes children =
+navToggle attributes children =
     NavDropdownToggle <|
-        navDropdownTogglePrivate attributes children
+        navTogglePrivate attributes children
 
 
-navDropdownTogglePrivate :
+navTogglePrivate :
     List (Html.Attribute msg)
     -> List (Html.Html msg)
     -> (State -> msg)
     -> State
     -> Html.Html msg
-navDropdownTogglePrivate attributes children toggleMsg state =
+navTogglePrivate attributes children toggleMsg state =
     Html.a
         ([ class "nav-link dropdown-toggle"
          , href "#"
@@ -280,29 +243,48 @@ navDropdownTogglePrivate attributes children toggleMsg state =
         children
 
 
-
-
-dropdownItem : List (Html.Attribute msg) -> List (Html.Html msg) -> DropdownItem msg
-dropdownItem attributes children =
+anchorItem : List (Html.Attribute msg) -> List (Html.Html msg) -> DropdownItem msg
+anchorItem attributes children =
     Html.a ([ class "dropdown-item" ] ++ attributes) children
         |> DropdownItem
 
 
+buttonItem : List (Html.Attribute msg) -> List (Html.Html msg) -> DropdownItem msg
+buttonItem attributes children =
+    Html.button ([ type_ "button", class "dropdown-item" ] ++ attributes) children
+        |> DropdownItem
+
+
+divider : DropdownItem msg
+divider =
+    Html.div [ class "dropdown-divider" ] []
+        |> DropdownItem
+
+
+header : List (Html.Html msg) -> DropdownItem msg
+header children =
+    Html.h6
+        [ class "dropdown-header" ]
+        children
+        |> DropdownItem
+
+
 subscriptions : State -> (State -> msg) -> Sub msg
-subscriptions state msg =
+subscriptions (State state) msg =
     if state.open || not state.ignoreSub then
         Mouse.clicks
             (\_ ->
-                msg
-                    { state
-                        | open = state.ignoreSub
-                        , ignoreSub = False
-                    }
+                msg <|
+                    State
+                        { state
+                            | open = state.ignoreSub
+                            , ignoreSub = False
+                        }
             )
     else
         Sub.none
 
 
 toggleOpen : (State -> msg) -> State -> msg
-toggleOpen toMsg state =
-    toMsg { state | open = not state.open, ignoreSub = True }
+toggleOpen toMsg (State state) =
+    toMsg <| State { state | open = not state.open, ignoreSub = True }

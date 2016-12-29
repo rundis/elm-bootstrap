@@ -17,7 +17,7 @@ module Bootstrap.Accordion
 
 import Html
 import Html.Attributes exposing (class, href, style)
-import Html.Events exposing (onClick, on)
+import Html.Events exposing (onClick, on, onWithOptions, Options)
 import Json.Decode as Json
 import DOM
 import AnimationFrame
@@ -41,7 +41,8 @@ type Visibility
 
 type Card msg
     = Card
-        { toggle : CardToggle msg
+        { id : String
+        , toggle : CardToggle msg
         , toggleContainer : Maybe (ToggleContainer msg)
         , block : CardBlock msg
         , state : CardState
@@ -109,7 +110,8 @@ accordion cards =
 
 
 card :
-    { block : CardBlock msg
+    { id : String
+    , block : CardBlock msg
     , state : CardState
     , toMsg : CardState -> msg
     , toggle : CardToggle msg
@@ -117,9 +119,10 @@ card :
     , withAnimation : Bool
     }
     -> Card msg
-card { toggle, toggleContainer, block, state, toMsg, withAnimation } =
+card { id, toggle, toggleContainer, block, state, toMsg, withAnimation } =
     Card
-        { toggle = toggle
+        { id = id
+        , toggle = toggle
         , toggleContainer = toggleContainer
         , block = block
         , state = state
@@ -137,12 +140,13 @@ cardToggle attributes children =
 
 
 toggleContainer :
-    (List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg)
-    -> List (Html.Attribute msg)
-    -> List (Html.Html msg)
-    -> List (Html.Html msg)
+    { elemFn : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
+    , attributes : List (Html.Attribute msg)
+    , childrenPreToggle : List (Html.Html msg)
+    , childrenPostToggle : List (Html.Html msg)
+    }
     -> ToggleContainer msg
-toggleContainer elemFn attributes childrenPreToggle childrenPostToggle =
+toggleContainer {elemFn, attributes, childrenPreToggle, childrenPostToggle} =
     ToggleContainer
         { elemFn = elemFn
         , attributes = attributes
@@ -195,15 +199,19 @@ renderCardToggle :
     Bool
     -> Card msg
     -> Html.Html msg
-renderCardToggle isContained ((Card { toggle }) as card) =
-    --  (CardToggle { attributes, children }) toMsg cardState =
+renderCardToggle isContained ((Card { id, toggle }) as card) =
     let
         (CardToggle { attributes, children }) =
             toggle
     in
         Html.a
-            ([ href "#"
-             , on "click" <| clickHandler (heightDecoder isContained) card
+            ([ href <| "#" ++ id
+             , onWithOptions
+                 "click"
+                 { stopPropagation = False
+                 , preventDefault = True
+                 }
+                 <| clickHandler (heightDecoder isContained) card
              ]
                 ++ attributes
             )
@@ -281,14 +289,13 @@ heightDecoder isContained =
 renderCardBlock :
     Card msg
     -> Html.Html msg
-renderCardBlock (Card { toMsg, state, withAnimation, block }) =
-    --toMsg (CardBlock { children }) state =
+renderCardBlock (Card {id, toMsg, state, withAnimation, block }) =
     let
         (CardBlock { children }) =
             block
     in
         Html.div
-            (animationAttributes toMsg state withAnimation)
+            ( [Html.Attributes.id id] ++ animationAttributes toMsg state withAnimation)
             [ Html.div
                 [ class "card-block" ]
                 children

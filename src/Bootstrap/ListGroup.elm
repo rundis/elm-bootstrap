@@ -16,7 +16,7 @@ module Bootstrap.ListGroup
         , active
         , disabled
         , Role(..)
-        , ItemClass
+        , ItemOption
         , Item
         , CustomItem
         )
@@ -25,7 +25,7 @@ import Html
 import Html.Attributes exposing (class, type_)
 
 
-type ItemClass
+type ItemOption
     = Roled Role
     | Active
     | Disabled
@@ -43,7 +43,7 @@ type Item msg
     = Item
         { attributes : List (Html.Attribute msg)
         , children : List (Html.Html msg)
-        , classes : List ItemClass
+        , options : List ItemOption
         , itemFn : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
         }
 
@@ -52,7 +52,7 @@ type CustomItem msg
     = CustomItem
         { attributes : List (Html.Attribute msg)
         , children : List (Html.Html msg)
-        , classes : List ItemClass
+        , options : List ItemOption
         , itemFn : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
         }
 
@@ -76,7 +76,7 @@ item children =
     Item
         { itemFn = Html.li
         , children = children
-        , classes = []
+        , options = []
         , attributes = []
         }
 
@@ -84,30 +84,30 @@ item children =
 anchorItem :
     { attributes : List (Html.Attribute msg)
     , children : List (Html.Html msg)
-    , classes : List ItemClass
+    , options : List ItemOption
     }
     -> CustomItem msg
-anchorItem { attributes, children, classes } =
+anchorItem { attributes, children, options } =
     CustomItem
         { itemFn = Html.a
         , attributes = attributes
         , children = children
-        , classes = Action :: classes
+        , options = Action :: options
         }
 
 
 buttonItem :
     { attributes : List (Html.Attribute msg)
     , children : List (Html.Html msg)
-    , classes : List ItemClass
+    , options : List ItemOption
     }
     -> CustomItem msg
-buttonItem { attributes, children, classes } =
+buttonItem { attributes, children, options } =
     CustomItem
         { itemFn = Html.button
         , attributes = attributes ++ [ type_ "button" ]
         , children = children
-        , classes = Action :: classes
+        , options = Action :: options
         }
 
 
@@ -166,49 +166,49 @@ text { elemFn, attributes, children } =
 
 
 renderItem : Item msg -> Html.Html msg
-renderItem (Item { itemFn, attributes, classes, children }) =
+renderItem (Item { itemFn, attributes, options, children }) =
     itemFn
-        ([ class <| itemClasses classes ] ++ attributes)
+        ([ class <| itemOptions options ] ++ attributes)
         children
 
 
 renderCustomItem : CustomItem msg -> Html.Html msg
-renderCustomItem (CustomItem { itemFn, attributes, classes, children }) =
+renderCustomItem (CustomItem { itemFn, attributes, options, children }) =
     itemFn
-        ([ class <| itemClasses classes ] ++ attributes)
+        ([ class <| itemOptions options ] ++ attributes)
         children
 
 
-role : Role -> ItemClass
+role : Role -> ItemOption
 role r =
     Roled r
 
 
-active : ItemClass
+active : ItemOption
 active =
     Active
 
 
-disabled : ItemClass
+disabled : ItemOption
 disabled =
     Disabled
 
 
-itemClasses : List ItemClass -> String
-itemClasses classes =
+itemOptions : List ItemOption -> String
+itemOptions options =
     List.foldl
-        (\class classString ->
-            String.join " " [ classString, itemClass class ]
+        (\option optionString ->
+            String.join " " [ optionString, itemOption option ]
         )
         "list-group-item"
-        classes
+        options
 
 
-itemClass : ItemClass -> String
-itemClass class =
-    case class of
+itemOption : ItemOption -> String
+itemOption option =
+    case option of
         Roled role ->
-            roleClass role
+            roleOption role
 
         Active ->
             "active"
@@ -220,8 +220,8 @@ itemClass class =
             "list-group-item-action"
 
 
-roleClass : Role -> String
-roleClass role =
+roleOption : Role -> String
+roleOption role =
     case role of
         Success ->
             "list-group-item-success"

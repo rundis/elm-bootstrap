@@ -5,13 +5,24 @@ module Bootstrap.Grid
         , row
         , flexRow
         , flexCol
-        , flexColSize
-        , flexVAlign
-        , flexHAlign
+        , flexColWidth
+        , flexColOffset
+        , flexRowHAlign
+        , flexRowVAlign
+        , flexColVAlign
+        , colWidthClassString -- TODO: Find away to make this less exposed ?
+        , offsetClassString   -- TODO: Find away to make this less exposed ?
+        , screenSizeString    -- TODO: Find away to make this less exposed ?
+        , columnCountString   -- TODO: Find away to make this less exposed ?
         , ScreenSize(..)
-        , ColumnSize(..)
+        , ColumnCount(..)
+        , ColumnWidth
         , VAlign(..)
         , HAlign(..)
+        , colXsOne, colXsTwo, colXsThree, colXsFour, colXsFive, colXsSix, colXsSeven, colXsEight, colXsNine, colXsTen, colXsEleven, colXsTwelve, colXsNone
+        , colSmOne, colSmTwo, colSmThree, colSmFour, colSmFive, colSmSix, colSmSeven, colSmEight, colSmNine, colSmTen, colSmEleven, colSmTwelve, colSmNone
+        , colMdOne, colMdTwo, colMdThree, colMdFour, colMdFive, colMdSix, colMdSeven, colMdEight, colMdNine, colMdTen, colMdEleven, colMdTwelve, colMdNone
+        , colLgOne, colLgTwo, colLgThree, colLgFour, colLgFive, colLgSix, colLgSeven, colLgEight, colLgNine, colLgTen, colLgEleven, colLgTwelve, colLgNone
         )
 
 import Html exposing (Html, div, Attribute)
@@ -39,10 +50,17 @@ type HAlign
 -- TODO: flex-around, flex-between
 
 
-type FlexStyle
-    = FlexStyleHAlign FlexHAlign
-    | FlexStyleVAlign FlexVAlign
-    | FlexStyleColumn Column
+type FlexRowOption
+    = FlexRowHAlign FlexHAlign
+    | FlexRowVAlign FlexVAlign
+
+
+type FlexColOption
+    = FlexColVAlign FlexVAlign
+    | FlexColWidth ColumnWidth
+    | FlexColOffset ColumnWidth
+
+
 
 type alias FlexVAlign =
     { size : ScreenSize
@@ -55,12 +73,13 @@ type alias FlexHAlign =
     , align : HAlign
     }
 
-type alias Column =
-    { screenSize : ScreenSize
-    , columnSize : ColumnSize
-    }
+type ColumnWidth =
+    ColumnWidth
+        { size : ScreenSize
+        , columns : ColumnCount
+        }
 
-type ColumnSize
+type ColumnCount
     = One
     | Two
     | Three
@@ -76,6 +95,14 @@ type ColumnSize
     | None
 
 
+type FlexColumn msg
+    = FlexColumn
+        { options : List FlexColOption
+        , attributes : List (Html.Attribute msg)
+        , children : List (Html msg)
+        }
+
+
 container : List (Html msg) -> Html msg
 container children =
     div [ class "container" ] children
@@ -86,89 +113,397 @@ containerFluid children =
     div [ class "container-fluid" ] children
 
 
-row : List (Html msg) -> Html msg
-row children =
-    div [ class "row" ] children
+row : List (FlexColumn msg) -> Html msg
+row cols =
+    flexRow
+        { cols = cols
+        , options = []
+        , attributes = []
+        }
 
 
 flexRow :
-    List FlexStyle
-    -> List (Attribute msg)
-    -> List (Html msg)
+    { cols : List (FlexColumn msg)
+    , options : List FlexRowOption
+    , attributes : List (Html.Attribute msg)
+    }
     -> Html msg
-flexRow flexStyles attributes children =
+flexRow {cols, options, attributes} =
     div
-        ([ class <| flexStylesClass "row" "flex-items" flexStyles ] ++ attributes)
-        children
+        (attributes ++ [class <| flexRowOptions options])
+        (List.map renderFlexCol cols)
+
 
 flexCol :
-    List FlexStyle
-    -> List (Attribute msg)
-    -> List (Html msg)
-    -> Html msg
-flexCol flexStyles attributes children =
+    { options : List FlexColOption
+    , attributes : List (Html.Attribute msg)
+    , children : List (Html msg)
+    }
+    -> FlexColumn msg
+flexCol {options, attributes, children} =
+    FlexColumn
+        { options = options
+        , attributes = attributes
+        , children = children
+        }
+
+
+flexRowVAlign : ScreenSize -> VAlign ->  FlexRowOption
+flexRowVAlign size align =
+    FlexRowVAlign <| FlexVAlign size align
+
+
+flexRowHAlign : ScreenSize -> HAlign ->  FlexRowOption
+flexRowHAlign size align =
+    FlexRowHAlign <| FlexHAlign size align
+
+
+
+
+flexColVAlign : ScreenSize -> VAlign -> FlexColOption
+flexColVAlign size align  =
+    FlexColVAlign <| FlexVAlign size align
+
+
+flexColWidth : ColumnWidth -> FlexColOption
+flexColWidth columnWidth =
+    FlexColWidth columnWidth
+
+flexColOffset : ScreenSize -> ColumnCount -> FlexColOption
+flexColOffset size columns =
+    FlexColOffset <|
+        ColumnWidth
+            { size = size
+            , columns = columns
+            }
+
+
+colXsOne : ColumnWidth
+colXsOne =
+    colXs One
+
+colXsTwo : ColumnWidth
+colXsTwo =
+    colXs Two
+
+colXsThree : ColumnWidth
+colXsThree =
+    colXs Three
+
+colXsFour : ColumnWidth
+colXsFour =
+    colXs Four
+
+colXsFive : ColumnWidth
+colXsFive =
+    colXs Five
+
+colXsSix : ColumnWidth
+colXsSix =
+    colXs Six
+
+colXsSeven : ColumnWidth
+colXsSeven =
+    colXs Seven
+
+colXsEight : ColumnWidth
+colXsEight =
+    colXs Eight
+
+colXsNine : ColumnWidth
+colXsNine =
+    colXs Nine
+
+colXsTen : ColumnWidth
+colXsTen =
+    colXs Ten
+
+colXsEleven : ColumnWidth
+colXsEleven =
+    colXs Eleven
+
+colXsTwelve : ColumnWidth
+colXsTwelve =
+    colXs Twelve
+
+colXsNone : ColumnWidth
+colXsNone =
+    colXs None
+
+
+colXs : ColumnCount -> ColumnWidth
+colXs columns =
+    ColumnWidth
+        { size = ExtraSmall
+        , columns = columns
+        }
+
+
+
+colSmOne : ColumnWidth
+colSmOne =
+    colSm One
+
+colSmTwo : ColumnWidth
+colSmTwo =
+    colSm Two
+
+colSmThree : ColumnWidth
+colSmThree =
+    colSm Three
+
+colSmFour : ColumnWidth
+colSmFour =
+    colSm Four
+
+colSmFive : ColumnWidth
+colSmFive =
+    colSm Five
+
+colSmSix : ColumnWidth
+colSmSix =
+    colSm Six
+
+colSmSeven : ColumnWidth
+colSmSeven =
+    colSm Seven
+
+colSmEight : ColumnWidth
+colSmEight =
+    colSm Eight
+
+colSmNine : ColumnWidth
+colSmNine =
+    colSm Nine
+
+colSmTen : ColumnWidth
+colSmTen =
+    colSm Ten
+
+colSmEleven : ColumnWidth
+colSmEleven =
+    colSm Eleven
+
+colSmTwelve : ColumnWidth
+colSmTwelve =
+    colSm Twelve
+
+colSmNone : ColumnWidth
+colSmNone =
+    colSm None
+
+colSm : ColumnCount -> ColumnWidth
+colSm columns =
+    ColumnWidth
+        { size = Small
+        , columns = columns
+        }
+
+
+
+
+colMdOne : ColumnWidth
+colMdOne =
+    colMd One
+
+colMdTwo : ColumnWidth
+colMdTwo =
+    colMd Two
+
+colMdThree : ColumnWidth
+colMdThree =
+    colMd Three
+
+colMdFour : ColumnWidth
+colMdFour =
+    colMd Four
+
+colMdFive : ColumnWidth
+colMdFive =
+    colMd Five
+
+colMdSix : ColumnWidth
+colMdSix =
+    colMd Six
+
+colMdSeven : ColumnWidth
+colMdSeven =
+    colMd Seven
+
+colMdEight : ColumnWidth
+colMdEight =
+    colMd Eight
+
+colMdNine : ColumnWidth
+colMdNine =
+    colMd Nine
+
+colMdTen : ColumnWidth
+colMdTen =
+    colMd Ten
+
+colMdEleven : ColumnWidth
+colMdEleven =
+    colMd Eleven
+
+colMdTwelve : ColumnWidth
+colMdTwelve =
+    colMd Twelve
+
+colMdNone : ColumnWidth
+colMdNone =
+    colMd None
+
+colMd : ColumnCount -> ColumnWidth
+colMd columns =
+    ColumnWidth
+        { size = Medium
+        , columns = columns
+        }
+
+
+
+colLgOne : ColumnWidth
+colLgOne =
+    colLg One
+
+colLgTwo : ColumnWidth
+colLgTwo =
+    colLg Two
+
+colLgThree : ColumnWidth
+colLgThree =
+    colLg Three
+
+colLgFour : ColumnWidth
+colLgFour =
+    colLg Four
+
+colLgFive : ColumnWidth
+colLgFive =
+    colLg Five
+
+colLgSix : ColumnWidth
+colLgSix =
+    colLg Six
+
+colLgSeven : ColumnWidth
+colLgSeven =
+    colLg Seven
+
+colLgEight : ColumnWidth
+colLgEight =
+    colLg Eight
+
+colLgNine : ColumnWidth
+colLgNine =
+    colLg Nine
+
+colLgTen : ColumnWidth
+colLgTen =
+    colLg Ten
+
+colLgEleven : ColumnWidth
+colLgEleven =
+    colLg Eleven
+
+colLgTwelve : ColumnWidth
+colLgTwelve =
+    colLg Twelve
+
+colLgNone : ColumnWidth
+colLgNone =
+    colLg None
+
+colLg : ColumnCount -> ColumnWidth
+colLg columns =
+    ColumnWidth
+        { size = Large
+        , columns = columns
+        }
+
+
+
+
+
+flexRowOptions : List FlexRowOption -> String
+flexRowOptions options =
+    List.foldl
+        (\class classString ->
+            String.join " " [classString, flexRowOption class])
+        "row"
+        options
+
+
+flexRowOption : FlexRowOption -> String
+flexRowOption class =
+    case class of
+        FlexRowHAlign hAlign ->
+            flexHAlignOption "flex-items" hAlign
+
+        FlexRowVAlign vAlign ->
+            flexVAlignOption "flex-items" vAlign
+
+
+
+
+renderFlexCol : FlexColumn msg -> Html msg
+renderFlexCol (FlexColumn {options, attributes, children}) =
     div
-        ([ class <| flexStylesClass "" "flex" flexStyles ] ++ attributes)
+        (attributes ++ [class <| flexColOptions options])
         children
 
 
-flexVAlign : ScreenSize -> VAlign ->  FlexStyle
-flexVAlign size align =
-    FlexStyleVAlign <| FlexVAlign size align
-
-
-flexHAlign : ScreenSize -> HAlign -> FlexStyle
-flexHAlign size align  =
-    FlexStyleHAlign <| FlexHAlign size align
-
-
-flexColSize : ScreenSize -> ColumnSize -> FlexStyle
-flexColSize screenSize columnSize =
-    FlexStyleColumn <| Column screenSize columnSize
-
-
-
-flexStylesClass :  String -> String -> List FlexStyle -> String
-flexStylesClass defaultClass prefix styles =
+flexColOptions : List FlexColOption -> String
+flexColOptions options =
     List.foldl
-        (\style classString ->
-            String.join " " [ classString, flexStyleClass prefix style ])
-        defaultClass
-        styles
+        (\class classString ->
+            String.join " " [classString, flexColOption class])
+        ""
+        options
 
 
-flexStyleClass : String -> FlexStyle -> String
-flexStyleClass prefix style =
-    case style of
-        FlexStyleHAlign v ->
-            flexHAlignClass prefix v
+flexColOption : FlexColOption -> String
+flexColOption class =
+    case class of
+        FlexColVAlign vAlign ->
+            flexVAlignOption "flex" vAlign
 
-        FlexStyleVAlign v ->
-            flexVAlignClass prefix v
+        FlexColWidth width ->
+            colWidthClassString width
 
-        FlexStyleColumn v ->
-            flexColumnClass v
-
-
-flexVAlignClass : String -> FlexVAlign -> String
-flexVAlignClass prefix { size, align } =
-    prefix ++ "-" ++ screenSizeClass size ++ "-" ++ vAlignClass align
+        FlexColOffset offset ->
+            offsetClassString offset
 
 
-flexHAlignClass : String -> FlexHAlign -> String
-flexHAlignClass prefix { size, align } =
-    prefix ++ "-" ++ screenSizeClass size ++ "-" ++ hAlignClass align
+
+flexVAlignOption : String -> FlexVAlign -> String
+flexVAlignOption prefix { size, align } =
+    prefix ++ "-" ++ screenSizeString size ++ "-" ++ vAlignOption align
 
 
-flexColumnClass : Column -> String
-flexColumnClass ({screenSize, columnSize}) =
-    ["col", screenSizeClass screenSize, columnSizeClass columnSize]
+flexHAlignOption : String -> FlexHAlign -> String
+flexHAlignOption prefix { size, align } =
+    prefix ++ "-" ++ screenSizeString size ++ "-" ++ hAlignOption align
+
+
+colWidthClassString : ColumnWidth -> String
+colWidthClassString (ColumnWidth {size, columns}) =
+    ["col", screenSizeString size, columnCountString columns]
         |> List.filter (\s -> String.isEmpty s == False )
         |> String.join "-"
 
+offsetClassString : ColumnWidth -> String
+offsetClassString (ColumnWidth {size, columns}) =
+    case columns of
+        None ->
+            ""
+        _ ->
+          "offset-" ++ screenSizeString size ++ "-" ++ columnCountString columns
 
-columnSizeClass : ColumnSize -> String
-columnSizeClass size =
+
+columnCountString : ColumnCount -> String
+columnCountString size =
     case size of
         One -> "1"
         Two -> "2"
@@ -185,8 +520,8 @@ columnSizeClass size =
         None -> ""
 
 
-screenSizeClass : ScreenSize -> String
-screenSizeClass size =
+screenSizeString : ScreenSize -> String
+screenSizeString size =
     case size of
         ExtraSmall ->
             "xs"
@@ -201,8 +536,8 @@ screenSizeClass size =
             "lg"
 
 
-vAlignClass : VAlign -> String
-vAlignClass align =
+vAlignOption : VAlign -> String
+vAlignOption align =
     case align of
         Top ->
             "top"
@@ -214,8 +549,8 @@ vAlignClass align =
             "bottom"
 
 
-hAlignClass : HAlign -> String
-hAlignClass align =
+hAlignOption : HAlign -> String
+hAlignOption align =
     case align of
         Left ->
             "left"

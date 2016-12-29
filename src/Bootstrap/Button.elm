@@ -1,25 +1,27 @@
-module Bootstrap.Button exposing
-    ( button
-    , linkButton
-    , size
-    , role
-    , block
-    , outline
-    , buttonStylesClass
-    , ButtonStyles
-    , Size (..)
-    , Role (..)
-    )
+module Bootstrap.Button
+    exposing
+        ( button
+        , linkButton
+        , size
+        , role
+        , block
+        , outline
+        , buttonOptionsString
+        , ButtonOption
+        , Role(..)
+        , ButtonConfig
+        )
 
 import Html
 import Html.Attributes as Attributes exposing (class)
+import Bootstrap.Grid as Grid
 
 
-type Size
-    = ExtraSmall
-    | Small
-    | Medium
-    | Large
+type alias ButtonConfig msg =
+    { options : List ButtonOption
+    , attributes : List (Html.Attribute msg)
+    , children : List (Html.Html msg)
+    }
 
 
 type Role
@@ -32,70 +34,63 @@ type Role
     | Link
 
 
-type ButtonStyles
-    = SizeButton Size
+type ButtonOption
+    = SizeButton Grid.ScreenSize
     | RoleButton Role
     | OutlineButton Role
     | BlockButton
 
 
-button :
-    List ButtonStyles
-    -> List (Html.Attribute msg)
-    -> List (Html.Html msg)
-    -> Html.Html msg
-button styles attributes children =
+button : ButtonConfig msg -> Html.Html msg
+button { options, attributes, children } =
     Html.button
-        ([ class <| buttonStylesClass styles ] ++ attributes)
+        ([ class <| buttonOptionsString options ] ++ attributes)
         children
 
 
-linkButton :
-    List ButtonStyles
-    -> List (Html.Attribute msg)
-    -> List (Html.Html msg)
-    -> Html.Html msg
-linkButton styles attributes children =
+linkButton : ButtonConfig msg -> Html.Html msg
+linkButton { options, attributes, children } =
     Html.a
-        ([ class <| buttonStylesClass styles
+        ([ class <| buttonOptionsString options
          , Attributes.attribute "role" "button"
-         ] ++ attributes)
+         ]
+            ++ attributes
+        )
         children
 
 
-size : Size -> ButtonStyles
+size : Grid.ScreenSize -> ButtonOption
 size s =
     SizeButton s
 
 
-role : Role -> ButtonStyles
+role : Role -> ButtonOption
 role r =
     RoleButton r
 
 
-outline : Role -> ButtonStyles
+outline : Role -> ButtonOption
 outline role =
     OutlineButton role
 
 
-block : ButtonStyles
+block : ButtonOption
 block =
     BlockButton
 
 
-
-buttonStylesClass : List ButtonStyles -> String
-buttonStylesClass styles =
+buttonOptionsString : List ButtonOption -> String
+buttonOptionsString options =
     List.foldl
-        (\style classString ->
-            String.join " " [ classString, buttonStyleClass style ]
+        (\option classString ->
+            String.join " " [ classString, buttonOption option ]
         )
         "btn"
-        styles
+        options
 
 
-buttonStyleClass : ButtonStyles -> String
-buttonStyleClass style =
+buttonOption : ButtonOption -> String
+buttonOption style =
     case style of
         RoleButton role ->
             "btn-" ++ roleClass role
@@ -135,17 +130,17 @@ roleClass role =
             "link"
 
 
-sizeClass : Size -> String
+sizeClass : Grid.ScreenSize -> String
 sizeClass size =
     case size of
-        ExtraSmall ->
+        Grid.ExtraSmall ->
             "btn-xs"
 
-        Small ->
+        Grid.Small ->
             "btn-sm"
 
-        Medium ->
+        Grid.Medium ->
             "btn-md"
 
-        Large ->
+        Grid.Large ->
             "btn-lg"

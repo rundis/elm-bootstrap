@@ -5,7 +5,6 @@ module Bootstrap.Tab exposing
     , tabLink
     , tabPane
     , state
-    , config
     , Config
     , State
     , TabItem
@@ -22,11 +21,10 @@ type alias State =
     { activeTab : Int }
 
 
-type Config msg
-    = Config
-        { toMsg : State -> msg
-        , items : List (TabItem msg)
-        }
+type alias Config msg =
+    { toMsg : State -> msg
+    , items : List (TabItem msg)
+    }
 
 
 type TabItem msg =
@@ -53,16 +51,6 @@ state activeTab =
     State activeTab
 
 
-config :
-    { toMsg : State -> msg
-    , items : List (TabItem msg)
-    }
-    -> Config msg
-config { toMsg, items} =
-    Config
-        { toMsg = toMsg
-        , items = items
-        }
 
 tab : Config msg -> State -> Html.Html msg
 tab config state =
@@ -74,7 +62,7 @@ pills config state =
 
 
 renderTab : String -> Config msg -> State -> Html.Html msg
-renderTab tabClass (Config {toMsg, items}) state =
+renderTab tabClass {toMsg, items} state =
     Html.div []
         [ Html.ul
             [class <| "nav " ++ tabClass ]
@@ -93,7 +81,6 @@ renderTab tabClass (Config {toMsg, items}) state =
                 items
             )
         ]
-
 
 renderTabLink
     : Int

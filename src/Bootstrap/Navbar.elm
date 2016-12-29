@@ -3,23 +3,23 @@ module Bootstrap.Navbar
         ( navbar
         , fix
         , scheme
-        , nav
-        , navBrand
-        , navItemLink
-        , navCustomItem
-        , NavbarStyles
+        , brand
+        , itemLink
+        , customItem
+        , NavbarOption
         , Fix(..)
         , LinkModifier(..)
         , BackgroundColor(..)
+        , NavItem
         )
 
 import Html
 import Html.Attributes exposing (class)
 
 
-type NavbarStyles
-    = StyleFix Fix
-    | StyleScheme Scheme
+type NavbarOption
+    = NavbarFix Fix
+    | NavbarScheme Scheme
 
 
 type Fix
@@ -50,40 +50,38 @@ type BackgroundColor
 
 
 
-type Nav msg
-    = Nav (Html.Html msg)
 
 type NavItem msg
     = NavItem (Html.Html msg)
 
 navbar :
-    List NavbarStyles
-    -> List (Html.Attribute msg)
-    -> Nav msg
+    { options : List NavbarOption
+    , attributes : List (Html.Attribute msg)
+    , items : List (NavItem msg)
+    }
     -> Html.Html msg
-navbar styles attributes (Nav children) =
+navbar {options, attributes, items} =
     Html.nav
-        ([ class <| navbarStylesClass styles ] ++ attributes)
-        [children]
+        ([ class <| navbarOptions options ] ++ attributes)
+        [renderNav items]
 
 
-nav : List (NavItem msg) -> Nav msg
-nav navItems =
-    Nav <|
-        Html.ul
-            [class "nav navbar-nav"]
-            (List.map (\(NavItem item) -> item) navItems)
+renderNav : List (NavItem msg) -> Html.Html msg
+renderNav navItems =
+    Html.ul
+        [class "nav navbar-nav"]
+        (List.map (\(NavItem item) -> item) navItems)
 
 
-navBrand : List (Html.Attribute msg) -> List (Html.Html msg) -> NavItem msg
-navBrand attributes children =
+brand : List (Html.Attribute msg) -> List (Html.Html msg) -> NavItem msg
+brand attributes children =
     NavItem <|
         Html.a
             ([class "navbar-brand"] ++ attributes)
             children
 
-navItemLink : List (Html.Attribute msg) -> List (Html.Html msg) -> NavItem msg
-navItemLink attributes children =
+itemLink : List (Html.Attribute msg) -> List (Html.Html msg) -> NavItem msg
+itemLink attributes children =
     NavItem <|
         Html.li
             [class "nav-item"]
@@ -94,49 +92,48 @@ navItemLink attributes children =
 
 
 
-navCustomItem : Html.Html msg -> NavItem msg
-navCustomItem elem =
+customItem : Html.Html msg -> NavItem msg
+customItem elem =
     NavItem elem
 
 
 
-fix : Fix -> NavbarStyles
+fix : Fix -> NavbarOption
 fix f =
-    StyleFix f
+    NavbarFix f
 
 
-scheme : LinkModifier -> BackgroundColor -> NavbarStyles
+scheme : LinkModifier -> BackgroundColor -> NavbarOption
 scheme modifier bgColor =
-    StyleScheme <|
+    NavbarScheme <|
         Scheme
             { modifier = modifier
             , bgColor = bgColor
             }
 
 
-
-navbarStylesClass : List NavbarStyles -> String
-navbarStylesClass styles =
+navbarOptions : List NavbarOption -> String
+navbarOptions options =
     List.foldl
-        (\style classString ->
-            String.join " " [ classString, navbarStyleClass style ]
+        (\option classString ->
+            String.join " " [ classString, navbarOption option ]
         )
         "navbar"
-        styles
+        options
 
 
-navbarStyleClass : NavbarStyles -> String
-navbarStyleClass style =
-    case style of
-        StyleFix fix ->
-            fixClass fix
+navbarOption : NavbarOption -> String
+navbarOption option =
+    case option of
+        NavbarFix fix ->
+            fixOption fix
 
-        StyleScheme scheme ->
-            schemeClass scheme
+        NavbarScheme scheme ->
+            schemeOption scheme
 
 
-fixClass : Fix -> String
-fixClass fix =
+fixOption : Fix -> String
+fixOption fix =
     case fix of
         FixTop ->
             "navbar-fixed-top"
@@ -145,16 +142,16 @@ fixClass fix =
             "navbar-fixed-bottom"
 
 
-schemeClass : Scheme -> String
-schemeClass (Scheme { modifier, bgColor }) =
-    linkModifierClass
+schemeOption : Scheme -> String
+schemeOption (Scheme { modifier, bgColor }) =
+    linkModifierOption
         modifier
         ++ " "
-        ++ backgroundColorClass bgColor
+        ++ backgroundColorOption bgColor
 
 
-linkModifierClass : LinkModifier -> String
-linkModifierClass modifier =
+linkModifierOption : LinkModifier -> String
+linkModifierOption modifier =
     case modifier of
         Dark ->
             "navbar-dark"
@@ -163,8 +160,8 @@ linkModifierClass modifier =
             "navbar-light"
 
 
-backgroundColorClass : BackgroundColor -> String
-backgroundColorClass bgClass =
+backgroundColorOption : BackgroundColor -> String
+backgroundColorOption bgClass =
     case bgClass of
         Faded ->
             "bg-faded"

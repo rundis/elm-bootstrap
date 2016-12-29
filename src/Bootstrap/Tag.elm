@@ -12,12 +12,12 @@ module Bootstrap.Tag
         , role
         , Role(..)
         , Float(..)
-        , Size(..)
-        , TagClass
+        , TagOption
         )
 
 import Html
 import Html.Attributes exposing (class)
+import Bootstrap.Grid as Grid
 
 
 type Role
@@ -34,16 +34,10 @@ type Float
     | Right
 
 
-type Size
-    = ExtraSmall
-    | Small
-    | Medium
-    | Large
 
-
-type TagClass
+type TagOption
     = Roled Role
-    | Floated Float Size
+    | Floated Float Grid.ScreenSize
     | Pill
 
 
@@ -57,10 +51,10 @@ tagRoled role children =
     tagCustom [ Roled role ] children
 
 
-tagCustom : List TagClass -> List (Html.Html msg) -> Html.Html msg
+tagCustom : List TagOption -> List (Html.Html msg) -> Html.Html msg
 tagCustom classes children =
     Html.span
-        [ class <| tagClasses classes ]
+        [ class <| tagOptions classes ]
         children
 
 
@@ -74,56 +68,56 @@ pillRoled role children =
     pillCustom [ Roled role ] children
 
 
-pillCustom : List TagClass -> List (Html.Html msg) -> Html.Html msg
+pillCustom : List TagOption -> List (Html.Html msg) -> Html.Html msg
 pillCustom classes children =
     tagCustom (Pill :: classes) children
 
 
-roleDefault : TagClass
+roleDefault : TagOption
 roleDefault =
     Roled Default
 
 
-role : Role -> TagClass
+role : Role -> TagOption
 role rl =
     Roled rl
 
 
-float : Float -> Size -> TagClass
+float : Float -> Grid.ScreenSize -> TagOption
 float float size =
     Floated float size
 
 
-floatDefault : TagClass
+floatDefault : TagOption
 floatDefault =
-    Floated Right ExtraSmall
+    Floated Right Grid.ExtraSmall
 
 
-tagClasses : List TagClass -> String
-tagClasses classes =
+tagOptions : List TagOption -> String
+tagOptions options =
     List.foldl
-        (\class classString ->
-            String.join " " [ classString, tagClass class ]
+        (\option optionString ->
+            String.join " " [ optionString, tagOption option ]
         )
         "tag"
-        classes
+        options
 
 
-tagClass : TagClass -> String
-tagClass class =
-    case class of
+tagOption : TagOption -> String
+tagOption option =
+    case option of
         Pill ->
             "tag-pill"
 
         Roled role ->
-            roleClass role
+            roleOption role
 
         Floated float size ->
-            "float-" ++ sizeClass size ++ "-" ++ floatClass float
+            "float-" ++ Grid.screenSizeString size ++ "-" ++ floatOption float
 
 
-roleClass : Role -> String
-roleClass role =
+roleOption : Role -> String
+roleOption role =
     case role of
         Default ->
             "tag-default"
@@ -144,8 +138,8 @@ roleClass role =
             "tag-danger"
 
 
-floatClass : Float -> String
-floatClass float =
+floatOption : Float -> String
+floatOption float =
     case float of
         Left ->
             "left"
@@ -153,18 +147,3 @@ floatClass float =
         Right ->
             "right"
 
-
-sizeClass : Size -> String
-sizeClass size =
-    case size of
-        ExtraSmall ->
-            "xs"
-
-        Small ->
-            "sm"
-
-        Medium ->
-            "md"
-
-        Large ->
-            "lg"
