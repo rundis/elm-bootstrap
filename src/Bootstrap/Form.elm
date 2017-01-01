@@ -9,9 +9,13 @@ module Bootstrap.Form
         , validationResult
         , textLabelControl
         , labelControl
-        , labelSize
+        , labelSmall
+        , labelMedium
+        , labelLarge
         , textControl
-        , inputSize
+        , inputSmall
+        , inputMedium
+        , inputLarge
         , selectControl
         , selectItem
         , checkbox
@@ -31,7 +35,7 @@ module Bootstrap.Form
 import Html
 import Html.Attributes exposing (class, classList, type_)
 import Bootstrap.Grid as Grid
-
+import Bootstrap.Internal.Grid as GridInternal
 
 
 type InputType
@@ -50,12 +54,10 @@ type InputType
     | Color
 
 
-
 type Validation
     = Success
     | Warning
     | Danger
-
 
 
 type ValidationResult
@@ -76,7 +78,7 @@ type Label msg
 type LabelOption
     = FormLabel
     | ColumnLabel
-    | LabelSize Grid.ScreenSize
+    | LabelSize GridInternal.ScreenSize
     | LabelWidth Grid.ColumnWidth
 
 
@@ -95,7 +97,7 @@ type Input msg
 
 
 type InputOption
-    = InputSize Grid.ScreenSize
+    = InputSize GridInternal.ScreenSize
 
 
 type Select msg
@@ -117,6 +119,7 @@ type Radio msg
         , options : List FormCheckOption
         , attributes : List (Html.Attribute msg)
         }
+
 
 type FormCheckOption
     = Disabled
@@ -213,7 +216,7 @@ groupRow { label, labelWidth, control, controlWidth, validationResult } =
             [ groupOptions validationResult True ]
             [ renderLabel updLabel
             , Html.div
-                [ class <| Grid.colWidthClassString controlWidth ]
+                [ class <| GridInternal.colWidthOption controlWidth ]
                 ([ renderControl control ]
                     ++ maybeValidation validationResult
                 )
@@ -226,13 +229,13 @@ groupOptions validationResult isRow =
         [ ( "form-group", True )
         , ( "row", isRow )
         ]
-        ++ (case validationResult of
-                Nothing ->
-                    []
+            ++ (case validationResult of
+                    Nothing ->
+                        []
 
-                Just (ValidationResult res) ->
-                    [ (validationOption res.validation, True) ]
-           )
+                    Just (ValidationResult res) ->
+                        [ ( validationOption res.validation, True ) ]
+               )
 
 
 maybeValidation : Maybe ValidationResult -> List (Html.Html msg)
@@ -310,9 +313,19 @@ labelControl { text, options, attributes } =
         }
 
 
-labelSize : Grid.ScreenSize -> LabelOption
-labelSize size =
-    LabelSize size
+labelSmall : LabelOption
+labelSmall =
+    LabelSize GridInternal.Small
+
+
+labelMedium : LabelOption
+labelMedium =
+    LabelSize GridInternal.Medium
+
+
+labelLarge : LabelOption
+labelLarge =
+    LabelSize GridInternal.Large
 
 
 textControl :
@@ -330,9 +343,19 @@ textControl { id, options, attributes } =
         }
 
 
-inputSize : Grid.ScreenSize -> InputOption
-inputSize size =
-    InputSize size
+inputSmall : InputOption
+inputSmall =
+    InputSize GridInternal.Small
+
+
+inputMedium : InputOption
+inputMedium =
+    InputSize GridInternal.Medium
+
+
+inputLarge : InputOption
+inputLarge =
+    InputSize GridInternal.Large
 
 
 inputControl :
@@ -414,7 +437,7 @@ checkboxRow { label, options, attributes, offset, controlWidth } =
     Html.div
         [ class "form-group row" ]
         [ Html.div
-            [ class <| Grid.offsetClassString offset ++ " " ++ Grid.colWidthClassString controlWidth ]
+            [ class <| GridInternal.offsetOption offset ++ " " ++ GridInternal.colWidthOption controlWidth ]
             [ checkbox
                 { label = label
                 , attributes = attributes
@@ -460,10 +483,10 @@ radioGroupRow { label, name, radios, labelWidth, controlWidth } =
             addLabelOptions [ FormLabel, ColumnLabel, LabelWidth labelWidth ] label
     in
         Html.div
-            [ class "form-group row"]
+            [ class "form-group row" ]
             [ renderLabel updLabel
             , Html.div
-                [ class <| Grid.colWidthClassString controlWidth ]
+                [ class <| GridInternal.colWidthOption controlWidth ]
                 (List.map
                     (\r ->
                         addRadioAttribute (Html.Attributes.name name) r
@@ -471,7 +494,6 @@ radioGroupRow { label, name, radios, labelWidth, controlWidth } =
                     )
                     radios
                 )
-
             ]
 
 
@@ -522,11 +544,10 @@ renderRadio (Radio { label, options, attributes }) =
             ]
         ]
 
+
 isDisabled : List FormCheckOption -> Bool
 isDisabled options =
     List.any (\opt -> opt == Disabled) options
-
-
 
 
 renderLabel : Label msg -> Html.Html msg
@@ -582,8 +603,6 @@ renderSelect (Select { id, items, options, attributes }) =
         (List.map (\(SelectItem item) -> item) items)
 
 
-
-
 inputOptions : String -> List InputOption -> String
 inputOptions prefix options =
     List.foldl
@@ -621,7 +640,7 @@ labelOption class =
             labelSizeOption size
 
         LabelWidth columnWidth ->
-            Grid.colWidthClassString columnWidth
+            GridInternal.colWidthOption columnWidth
 
         ColumnLabel ->
             "col-form-label"
@@ -670,15 +689,14 @@ inputTypeToString inputType =
             "color"
 
 
-inputSizeOption : Grid.ScreenSize -> String
+inputSizeOption : GridInternal.ScreenSize -> String
 inputSizeOption size =
-    "form-control-" ++ Grid.screenSizeString size
+    "form-control-" ++ GridInternal.screenSizeOption size
 
 
-labelSizeOption : Grid.ScreenSize -> String
+labelSizeOption : GridInternal.ScreenSize -> String
 labelSizeOption size =
-    "col-form-label-" ++ Grid.screenSizeString size
-
+    "col-form-label-" ++ GridInternal.screenSizeOption size
 
 
 validationOption : Validation -> String

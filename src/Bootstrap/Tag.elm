@@ -1,23 +1,30 @@
 module Bootstrap.Tag
     exposing
-        ( tag
+        ( simpleTag
+        , simplePill
+        , tag
         , pill
-        , tagRoled
-        , pillRoled
-        , tagCustom
-        , pillCustom
-        , floatDefault
-        , float
+        , floatXsLeft
+        , floatXsRight
+        , floatSmLeft
+        , floatSmRight
+        , floatMdLeft
+        , floatMdRight
+        , floatLgLeft
+        , floatLgRight
         , roleDefault
-        , role
-        , Role(..)
+        , rolePrimary
+        , roleSuccess
+        , roleInfo
+        , roleWarning
+        , roleDanger
         , Float(..)
         , TagOption
         )
 
 import Html
 import Html.Attributes exposing (class)
-import Bootstrap.Grid as Grid
+import Bootstrap.Internal.Grid as GridInternal
 
 
 type Role
@@ -34,43 +41,46 @@ type Float
     | Right
 
 
-
 type TagOption
     = Roled Role
-    | Floated Float Grid.ScreenSize
+    | Floated Float GridInternal.ScreenSize
     | Pill
 
 
-tag : List (Html.Html msg) -> Html.Html msg
-tag children =
+simpleTag : List (Html.Html msg) -> Html.Html msg
+simpleTag children =
     tagRoled Default children
 
 
 tagRoled : Role -> List (Html.Html msg) -> Html.Html msg
 tagRoled role children =
-    tagCustom [ Roled role ] children
+    tag [ Roled role ] children
 
 
-tagCustom : List TagOption -> List (Html.Html msg) -> Html.Html msg
-tagCustom classes children =
+tag : List TagOption -> List (Html.Html msg) -> Html.Html msg
+tag classes children =
     Html.span
         [ class <| tagOptions classes ]
         children
 
 
-pill : List (Html.Html msg) -> Html.Html msg
-pill children =
+simplePill : List (Html.Html msg) -> Html.Html msg
+simplePill children =
     pillRoled Default children
 
 
 pillRoled : Role -> List (Html.Html msg) -> Html.Html msg
 pillRoled role children =
-    pillCustom [ Roled role ] children
+    pill [ Roled role ] children
 
 
-pillCustom : List TagOption -> List (Html.Html msg) -> Html.Html msg
-pillCustom classes children =
-    tagCustom (Pill :: classes) children
+pill : List TagOption -> List (Html.Html msg) -> Html.Html msg
+pill classes children =
+    tag (Pill :: classes) children
+
+
+
+
 
 
 roleDefault : TagOption
@@ -78,19 +88,67 @@ roleDefault =
     Roled Default
 
 
-role : Role -> TagOption
-role rl =
-    Roled rl
+rolePrimary : TagOption
+rolePrimary =
+    Roled Primary
+
+roleSuccess : TagOption
+roleSuccess =
+    Roled Success
+
+roleInfo : TagOption
+roleInfo =
+    Roled Info
+
+roleWarning : TagOption
+roleWarning =
+    Roled Warning
+
+roleDanger : TagOption
+roleDanger =
+    Roled Danger
 
 
-float : Float -> Grid.ScreenSize -> TagOption
-float float size =
-    Floated float size
 
 
-floatDefault : TagOption
-floatDefault =
-    Floated Right Grid.ExtraSmall
+floatXsLeft : TagOption
+floatXsLeft =
+    Floated Left GridInternal.ExtraSmall
+
+
+floatXsRight : TagOption
+floatXsRight =
+    Floated Right GridInternal.ExtraSmall
+
+
+floatSmLeft : TagOption
+floatSmLeft =
+    Floated Left GridInternal.Small
+
+
+floatSmRight : TagOption
+floatSmRight =
+    Floated Right GridInternal.Small
+
+
+floatMdLeft : TagOption
+floatMdLeft =
+    Floated Left GridInternal.Medium
+
+
+floatMdRight : TagOption
+floatMdRight =
+    Floated Right GridInternal.Medium
+
+
+floatLgLeft : TagOption
+floatLgLeft =
+    Floated Left GridInternal.Large
+
+
+floatLgRight : TagOption
+floatLgRight =
+    Floated Right GridInternal.Large
 
 
 tagOptions : List TagOption -> String
@@ -113,7 +171,7 @@ tagOption option =
             roleOption role
 
         Floated float size ->
-            "float-" ++ Grid.screenSizeString size ++ "-" ++ floatOption float
+            "float-" ++ GridInternal.screenSizeOption size ++ "-" ++ floatOption float
 
 
 roleOption : Role -> String
@@ -146,4 +204,3 @@ floatOption float =
 
         Right ->
             "right"
-

@@ -1,5 +1,6 @@
 module Main exposing (..)
 
+import Bootstrap.Text as Text
 import Bootstrap.Button as Button
 import Bootstrap.CDN as CDN
 import Bootstrap.Dropdown as Dropdown
@@ -11,6 +12,7 @@ import Bootstrap.Accordion as Accordion
 import Bootstrap.ListGroup as ListGroup
 import Bootstrap.Tag as Tag
 import Bootstrap.Form as Form
+import Bootstrap.Card as Card
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -151,66 +153,68 @@ view model =
         [ CDN.stylesheetFlex
         , CDN.fontAwesome
         , Grid.container
+            []
             [ navbar model
             , mainContent model
             , accordion model
             , tabs model
+            , cards
             ]
         ]
 
 
 mainContent : Model -> Html Msg
 mainContent model =
-    Grid.container
+    Grid.container [style [("margin-top", "60px")] ]
         [ simpleForm
         , gridForm
-        , Grid.flexRow
-            { options = [ Grid.flexRowVAlign Grid.ExtraSmall Grid.Bottom ]
-            , attributes = [ flexRowStyle ]
+        , Grid.row
+            { options = [ Grid.rowXsBottom ]
+            , attributes = [ rowStyle ]
             , cols =
-                [ Grid.flexCol
-                    { options = [ Grid.flexColWidth Grid.colXsTwo ]
-                    , attributes = [ flexColStyle ]
+                [ Grid.col
+                    { options = [ Grid.colWidth Grid.colXsTwo ]
+                    , attributes = [ colStyle ]
                     , children =
                         [ span [ class "fa fa-car" ] []
                         , text " Col 1 Row 1"
                         ]
                     }
-                , Grid.flexCol
+                , Grid.col
                     { options =
-                        [ Grid.flexColWidth Grid.colXsNone
-                        , Grid.flexColVAlign Grid.ExtraSmall Grid.Top
+                        [ Grid.colWidth Grid.colXsNone
+                        , Grid.colXsTop
                         ]
-                    , attributes = [ flexColStyle ]
+                    , attributes = [ colStyle ]
                     , children = [ text "Col 2 Row 1" ]
                     }
-                , Grid.flexCol
+                , Grid.col
                     { options =
-                        [ Grid.flexColWidth Grid.colXsFive
-                        , Grid.flexColVAlign Grid.ExtraSmall Grid.Middle
+                        [ Grid.colWidth Grid.colXsFive
+                        , Grid.colXsMiddle
                         ]
-                    , attributes = [ flexColStyle ]
+                    , attributes = [ colStyle ]
                     , children = [ text "Col 3 Row 1" ]
                     }
-                , Grid.flexCol
-                    { options = [ Grid.flexColWidth Grid.colXsNone ]
-                    , attributes = [ flexColStyle ]
+                , Grid.col
+                    { options = [ Grid.colWidth Grid.colXsNone ]
+                    , attributes = [ colStyle ]
                     , children = [ text "Col 4 Row 1" ]
                     }
                 ]
             }
-        , Grid.flexRow
-            { options = [ Grid.flexRowVAlign Grid.ExtraSmall Grid.Middle ]
-            , attributes = [ flexRowStyle ]
+        , Grid.row
+            { options = [ Grid.rowXsMiddle ]
+            , attributes = [ rowStyle ]
             , cols =
-                [ Grid.flexCol
-                    { options = [ Grid.flexColWidth Grid.colXsFive ]
-                    , attributes = [ flexColStyle ]
+                [ Grid.col
+                    { options = [ Grid.colWidth Grid.colXsFive ]
+                    , attributes = [ colStyle ]
                     , children =
                         [ Button.linkButton
                             { options =
-                                [ Button.size Grid.Small
-                                , Button.outline Button.Success
+                                [ Button.extraSmall
+                                , Button.outlineSuccess
                                 , Button.block
                                 ]
                             , attributes = [ onClick <| ModalMsg Modal.visibleState ]
@@ -220,20 +224,20 @@ mainContent model =
                     }
                 ]
             }
-        , Grid.flexRow
-            { options = [ Grid.flexRowVAlign Grid.ExtraSmall Grid.Top ]
-            , attributes = [ flexRowStyle ]
+        , Grid.row
+            { options = [ Grid.rowXsTop ]
+            , attributes = [ rowStyle ]
             , cols =
-                [ Grid.flexCol
-                    { options = [ Grid.flexColWidth Grid.colXsFive ]
-                    , attributes = [ flexColStyle ]
+                [ Grid.col
+                    { options = [ Grid.colWidth Grid.colXsFive ]
+                    , attributes = [ colStyle ]
                     , children =
                         [ Dropdown.dropdown
-                            { options = [Dropdown.AlignMenuRight]
+                            { options = [ Dropdown.AlignMenuRight ]
                             , toggleMsg = DropdownMsg
                             , toggleButton =
                                 Dropdown.toggle
-                                    { options = [ Button.role Button.Warning ]
+                                    { options = [ Button.roleWarning ]
                                     , attributes = []
                                     , children =
                                         [ text "MyDropdown "
@@ -248,24 +252,24 @@ mainContent model =
                                     [ href "#", onClick Item2Msg ]
                                     [ text "Item 2" ]
                                 , Dropdown.divider
-                                , Dropdown.header [text "Silly items"]
-                                , Dropdown.anchorItem [href "#"] [ text "DoNothing1"]
-                                , Dropdown.anchorItem [href "#"] [ text "DoNothing2"]
+                                , Dropdown.header [ text "Silly items" ]
+                                , Dropdown.anchorItem [ href "#" ] [ text "DoNothing1" ]
+                                , Dropdown.anchorItem [ href "#" ] [ text "DoNothing2" ]
                                 ]
                             }
                             model.dropdownState
                         ]
                     }
-                , Grid.flexCol
-                    { options = [ Grid.flexColWidth Grid.colXsFive ]
-                    , attributes = [ flexColStyle ]
+                , Grid.col
+                    { options = [ Grid.colWidth Grid.colXsFive ]
+                    , attributes = [ colStyle ]
                     , children =
                         [ Dropdown.splitDropdown
-                            { options = [Dropdown.Dropup]
+                            { options = [ Dropdown.Dropup ]
                             , toggleMsg = SplitMsg
                             , toggleButton =
                                 Dropdown.splitToggle
-                                    { options = [ Button.role Button.Warning ]
+                                    { options = [ Button.roleWarning ]
                                     , attributes = [ onClick SplitMainMsg ]
                                     , children = [ text "My split drop" ]
                                     }
@@ -281,9 +285,9 @@ mainContent model =
                             model.splitDropState
                         ]
                     }
-                , Grid.flexCol
-                    { options = [ Grid.flexColWidth Grid.colXsNone ]
-                    , attributes = [ flexColStyle ]
+                , Grid.col
+                    { options = [ Grid.colWidth Grid.colXsNone ]
+                    , attributes = [ colStyle ]
                     , children = [ text model.dummy ]
                     }
                 ]
@@ -295,7 +299,7 @@ mainContent model =
 navbar : Model -> Html Msg
 navbar model =
     Navbar.navbar
-        { options = [ Navbar.scheme Navbar.Dark Navbar.Primary ]
+        { options = [ Navbar.primary, Navbar.fixTop ]
         , attributes = []
         , items =
             [ Navbar.brand [ href "#" ] [ text "Logo" ]
@@ -323,7 +327,8 @@ simpleForm : Html Msg
 simpleForm =
     Html.form
         []
-        [ Form.group
+        [ h1 [] [text "Form"]
+        , Form.group
             { validationResult = Just <| Form.validationResult Form.Success "This went well"
             , label = Form.textLabelControl "SimpleInput"
             , control =
@@ -353,7 +358,7 @@ simpleForm =
             }
         , Form.checkbox
             { label = Form.textLabelControl "Can't check me!"
-            , options = [Form.checkDisabled]
+            , options = [ Form.checkDisabled ]
             , attributes = []
             }
         , Form.radioGroup
@@ -372,7 +377,7 @@ simpleForm =
                     }
                 , Form.radioControl
                     { label = Form.textLabelControl "Radio 3"
-                    , options = [Form.checkDisabled]
+                    , options = [ Form.checkDisabled ]
                     , attributes = []
                     }
                 ]
@@ -390,7 +395,7 @@ simpleForm =
             , control =
                 Form.textControl
                     { id = Just "smallinput"
-                    , options = [ Form.inputSize Grid.Small ]
+                    , options = [ Form.inputSmall ]
                     , attributes = [ disabled True ]
                     }
             }
@@ -445,14 +450,14 @@ gridForm =
             , label =
                 Form.labelControl
                     { text = "Small input"
-                    , options = [ Form.labelSize Grid.Small ]
+                    , options = [ Form.labelSmall ]
                     , attributes = []
                     }
             , labelWidth = Grid.colXsFour
             , control =
                 Form.textControl
                     { id = Just "rowtextinputxs"
-                    , options = [ Form.inputSize Grid.Small ]
+                    , options = [ Form.inputSmall ]
                     , attributes = [ disabled True ]
                     }
             , controlWidth = Grid.colXsEight
@@ -475,7 +480,7 @@ gridForm =
                     }
                 , Form.radioControl
                     { label = Form.textLabelControl "Radio 3"
-                    , options = [Form.checkDisabled]
+                    , options = [ Form.checkDisabled ]
                     , attributes = []
                     }
                 ]
@@ -489,7 +494,7 @@ gridForm =
             }
         , Form.checkboxRow
             { label = Form.textLabelControl "Can't check me!"
-            , options = [Form.checkDisabled]
+            , options = [ Form.checkDisabled ]
             , attributes = []
             , offset = Grid.colXsFour
             , controlWidth = Grid.colXsEight
@@ -506,26 +511,26 @@ modal modalState =
         , footer =
             Just <|
                 Button.button
-                    { options = [ Button.outline Button.Primary ]
+                    { options = [ Button.outlinePrimary ]
                     , attributes = [ onClick <| ModalMsg Modal.hiddenState ]
                     , children = [ text "Close" ]
                     }
-        , size = Just <| Modal.Small
+        , options = [ Modal.small ]
         }
         modalState
 
 
 modalBody : Html Msg
 modalBody =
-    Grid.containerFluid
-        [ Grid.row
-            [ Grid.flexCol
-                { options = [ Grid.flexColWidth Grid.colXsSix ]
+    Grid.containerFluid []
+        [ Grid.simpleRow
+            [ Grid.col
+                { options = [ Grid.colWidth Grid.colXsSix ]
                 , attributes = []
                 , children = [ text "Col 1" ]
                 }
-            , Grid.flexCol
-                { options = [ Grid.flexColWidth Grid.colXsSix ]
+            , Grid.col
+                { options = [ Grid.colWidth Grid.colXsSix ]
                 , attributes = []
                 , children = [ text "Col 2" ]
                 }
@@ -556,19 +561,19 @@ listGroup =
     ListGroup.customList
         [ ListGroup.anchorItem
             { attributes = [ href "#" ]
-            , options = [ ListGroup.role ListGroup.Success ]
+            , options = [ ListGroup.roleSuccess ]
             , children =
                 [ text "Hello"
-                , Tag.pillCustom [ Tag.floatDefault, Tag.roleDefault ] [ text "1" ]
+                , Tag.pill [ Tag.floatXsRight, Tag.roleDefault ] [ text "1" ]
                 ]
             }
         , ListGroup.anchorItem
             { attributes = [ href "#" ]
-            , options = [ ListGroup.role ListGroup.Info ]
+            , options = [ ListGroup.roleInfo ]
             , children =
                 [ text "Aloha"
-                , Tag.pillCustom
-                    [ Tag.floatDefault, Tag.role Tag.Info ]
+                , Tag.pill
+                    [ Tag.floatXsRight, Tag.roleInfo ]
                     [ text "2" ]
                 ]
             }
@@ -583,8 +588,7 @@ listGroup2 =
             , options = []
             , children =
                 [ ListGroup.h5 [] [ text "Item 1" ]
-                , ListGroup.text
-                    { elemFn = p, attributes = [], children = [ text "Some text paragraph" ] }
+                , ListGroup.text [] [ text "Some text paragraph"]
                 ]
             }
         , ListGroup.anchorItem
@@ -592,8 +596,7 @@ listGroup2 =
             , options = []
             , children =
                 [ ListGroup.h5 [] [ text "Item 2" ]
-                , ListGroup.text
-                    { elemFn = p, attributes = [], children = [ text "Some other text paragraph" ] }
+                , ListGroup.text [] [ text "Some other text paragraph"]
                 ]
             }
         ]
@@ -601,14 +604,17 @@ listGroup2 =
 
 accordion : Model -> Html Msg
 accordion { accordionState } =
-    Accordion.accordion
-        ([ Dict.get "card1" accordionState
-            |> Maybe.map renderCardOne
-         , Dict.get "card2" accordionState
-            |> Maybe.map renderCardTwo
-         ]
-            |> List.filterMap identity
-        )
+    div []
+        [ h1 [] [ text "Accordion" ]
+        , Accordion.accordion
+            ([ Dict.get "card1" accordionState
+                |> Maybe.map renderCardOne
+             , Dict.get "card2" accordionState
+                |> Maybe.map renderCardTwo
+             ]
+                |> List.filterMap identity
+            )
+        ]
 
 
 renderCardOne : Accordion.CardState -> Accordion.Card Msg
@@ -653,8 +659,81 @@ renderCardTwo state =
         }
 
 
-flexRowStyle : Attribute Msg
-flexRowStyle =
+cards : Html Msg
+cards =
+    div []
+        [ h1 [] [ text "Cards" ]
+        , Card.deck
+            [ Card.card
+                { options = [ Card.outlinePrimary ]
+                , header = Just <| Card.headerH1 [] [ text "Primary" ]
+                , footer = Just <| Card.footer [] [ text "Primary footer" ]
+                , imgTop = Nothing
+                , imgBottom = Nothing
+                , blocks =
+                    [ Card.block
+                        { options = []
+                        , items =
+                            [ Card.titleH4 [] [ text "Primary outlined" ]
+                            , Card.text [] [ text "Outlined primary card. Cool." ]
+                            ]
+                        }
+                    ]
+                }
+            , Card.card
+                { options = [ Card.outlineSuccess ]
+                , header = Just <| Card.headerH1 [] [ text "Success" ]
+                , footer = Just <| Card.footer [] [ text "Success footer" ]
+                , imgTop = Nothing
+                , imgBottom = Nothing
+                , blocks =
+                    [ Card.block
+                        { options = [ Card.blockAlign Text.alignXsLeft ]
+                        , items =
+                            [ Card.titleH4 [] [ text "Success outlined" ]
+                            , Card.text [] [ text "The success of outlining cards is staggering" ]
+                            , Card.link [ href "#" ] [ text "Link 1" ]
+                            , Card.link [ href "#" ] [ text "Link 2" ]
+                            ]
+                        }
+                    ]
+                }
+            ]
+        , Card.group
+            [ Card.simpleCard
+                { options = [ Card.roleDanger, Card.align Text.alignXsCenter ]
+                , items =
+                    [ Card.titleH4 [] [ text "Danger inverse " ]
+                    , Card.text [] [ text " A Simple card with a dangerous role" ]
+                    , Card.link [ href "#" ] [ text "A Link !" ]
+                    ]
+                }
+            , Card.simpleCard
+                { options = [ Card.roleWarning, Card.align Text.alignXsLeft ]
+                , items =
+                    [ Card.titleH4 [] [ text "Warning inverse " ]
+                    , Card.text [] [ text " A Simple card with a warning role" ]
+                    ]
+                }
+            , Card.simpleCard
+                { options = [ Card.roleInfo, Card.align Text.alignXsRight ]
+                , items =
+                    [ Card.titleH4 [] [ text "Info inverse " ]
+                    , Card.text [] [ text " A Simple card with a info role" ]
+                    ]
+                }
+            ]
+        , Card.simpleCard
+            { options = [ Card.outlineSuccess ]
+            , items =
+                [ Card.text [] [ text "Just some text you know" ] ]
+            }
+            |> Card.render
+        ]
+
+
+rowStyle : Attribute Msg
+rowStyle =
     style
         [ ( "min-height", "8rem" )
         , ( "background-color", "rgba(255, 0, 0, 0.1)" )
@@ -662,8 +741,8 @@ flexRowStyle =
         ]
 
 
-flexColStyle : Attribute Msg
-flexColStyle =
+colStyle : Attribute Msg
+colStyle =
     style
         [ ( "padding-top", ".75rem" )
         , ( "padding-bottom", ".75rem" )

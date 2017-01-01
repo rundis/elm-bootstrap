@@ -3,24 +3,44 @@ module Bootstrap.Modal
         ( modal
         , hiddenState
         , visibleState
+        , extraSmall
+        , small
+        , medium
+        , large
         , State
-        , Size (..)
+        , ModalOption
         )
 
 import Html
 import Html.Attributes as Attr
 import Html.Events as Events
+import Bootstrap.Internal.Grid as GridInternal exposing (ScreenSize (..))
 
 
 type State
     = State Bool
 
 
-type Size
-    = ExtraSmall
-    | Small
-    | Medium
-    | Large
+type ModalOption
+    = ModalSize GridInternal.ScreenSize
+
+
+
+extraSmall : ModalOption
+extraSmall =
+    ModalSize ExtraSmall
+
+small : ModalOption
+small =
+    ModalSize Small
+
+medium : ModalOption
+medium =
+    ModalSize Medium
+
+large : ModalOption
+large =
+    ModalSize Large
 
 
 hiddenState : State
@@ -39,17 +59,17 @@ modal :
     , header : Maybe (Html.Html msg)
     , body : Maybe (Html.Html msg)
     , footer : Maybe (Html.Html msg)
-    , size : Maybe Size
+    , options : List ModalOption
     }
     -> State
     -> Html.Html msg
-modal { closeMsg, header, body, footer, size } state =
+modal { closeMsg, header, body, footer, options } state =
     Html.div
         []
         [ Html.div
             ([ Attr.tabindex -1 ] ++ display state)
             [ Html.div
-                [ modalClass size
+                [ Attr.class <| modalOptions options
                 , Attr.attribute "role" "document"
                 ]
                 [ Html.div
@@ -73,12 +93,21 @@ display (State open) =
     ]
 
 
-modalClass : Maybe Size -> Html.Attribute msg
-modalClass maybeSize =
-    Attr.class <|
-        "modal-dialog " ++
-        (Maybe.map sizeClass maybeSize
-            |> Maybe.withDefault "")
+
+modalOptions : List ModalOption -> String
+modalOptions options =
+    List.foldl
+        (\option optionString ->
+            String.join " " [ optionString, modalOption option ]
+        )
+        "modal-dialog"
+        options
+
+modalOption : ModalOption -> String
+modalOption option =
+    case option of
+        ModalSize size ->
+            "modal-" ++ GridInternal.screenSizeOption size
 
 
 
@@ -126,19 +155,3 @@ ifElse pred true false =
         true
     else
         false
-
-
-sizeClass : Size -> String
-sizeClass size =
-    case size of
-        ExtraSmall ->
-            "modal-xs"
-
-        Small ->
-            "modal-sm"
-
-        Medium ->
-            "modal-md"
-
-        Large ->
-            "modal-lg"

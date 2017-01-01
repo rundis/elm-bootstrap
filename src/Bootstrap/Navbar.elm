@@ -1,15 +1,19 @@
 module Bootstrap.Navbar
     exposing
         ( navbar
-        , fix
-        , scheme
+        , fixTop
+        , fixBottom
+        , faded
+        , primary
+        , success
+        , info
+        , warning
+        , danger
+        , inverse
         , brand
         , itemLink
         , customItem
         , NavbarOption
-        , Fix(..)
-        , LinkModifier(..)
-        , BackgroundColor(..)
         , NavItem
         )
 
@@ -23,12 +27,11 @@ type NavbarOption
 
 
 type Fix
-    = FixTop
-    | FixBottom
+    = Top
+    | Bottom
 
 
-type Scheme
-    = Scheme
+type alias Scheme =
         { modifier : LinkModifier
         , bgColor : BackgroundColor
         }
@@ -97,19 +100,55 @@ customItem elem =
     NavItem elem
 
 
+fixTop : NavbarOption
+fixTop =
+    NavbarFix Top
 
-fix : Fix -> NavbarOption
-fix f =
-    NavbarFix f
+
+fixBottom : NavbarOption
+fixBottom =
+    NavbarFix Bottom
+
+
+
+
+inverse : NavbarOption
+inverse =
+    scheme Dark Inverse
+
+
+faded : NavbarOption
+faded =
+    scheme Light Faded
+
+primary : NavbarOption
+primary =
+    scheme Dark Primary
+
+success : NavbarOption
+success =
+    scheme Dark Success
+
+info : NavbarOption
+info =
+     scheme Dark Info
+
+warning : NavbarOption
+warning =
+    scheme Dark Warning
+
+
+danger : NavbarOption
+danger =
+    scheme Dark Danger
 
 
 scheme : LinkModifier -> BackgroundColor -> NavbarOption
 scheme modifier bgColor =
-    NavbarScheme <|
-        Scheme
-            { modifier = modifier
-            , bgColor = bgColor
-            }
+        { modifier = modifier
+        , bgColor = bgColor
+        }
+            |> NavbarScheme
 
 
 navbarOptions : List NavbarOption -> String
@@ -135,15 +174,15 @@ navbarOption option =
 fixOption : Fix -> String
 fixOption fix =
     case fix of
-        FixTop ->
+        Top ->
             "navbar-fixed-top"
 
-        FixBottom ->
+        Bottom ->
             "navbar-fixed-bottom"
 
 
 schemeOption : Scheme -> String
-schemeOption (Scheme { modifier, bgColor }) =
+schemeOption { modifier, bgColor } =
     linkModifierOption
         modifier
         ++ " "

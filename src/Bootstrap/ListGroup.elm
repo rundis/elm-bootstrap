@@ -12,10 +12,12 @@ module Bootstrap.ListGroup
         , h5
         , h6
         , text
-        , role
+        , roleSuccess
+        , roleInfo
+        , roleWarning
+        , roleDanger
         , active
         , disabled
-        , Role(..)
         , ItemOption
         , Item
         , CustomItem
@@ -152,17 +154,11 @@ heading elemFn attributes children =
         children
 
 
-text :
-    { attributes : List (Html.Attribute msg)
-    , children : List (Html.Html msg)
-    , elemFn : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
-    }
-    -> Html.Html msg
-text { elemFn, attributes, children } =
-    elemFn
+text : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
+text attributes children =
+    Html.p
         ([ class "list-group-item-text" ] ++ attributes)
         children
-
 
 
 renderItem : Item msg -> Html.Html msg
@@ -179,9 +175,24 @@ renderCustomItem (CustomItem { itemFn, attributes, options, children }) =
         children
 
 
-role : Role -> ItemOption
-role r =
-    Roled r
+roleSuccess : ItemOption
+roleSuccess =
+    Roled Success
+
+
+roleInfo : ItemOption
+roleInfo =
+    Roled Info
+
+
+roleWarning : ItemOption
+roleWarning =
+    Roled Warning
+
+
+roleDanger : ItemOption
+roleDanger =
+    Roled Danger
 
 
 active : ItemOption

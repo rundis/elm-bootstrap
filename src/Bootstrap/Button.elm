@@ -2,19 +2,32 @@ module Bootstrap.Button
     exposing
         ( button
         , linkButton
-        , size
-        , role
+        , extraSmall
+        , small
+        , medium
+        , large
+        , rolePrimary
+        , roleSecondary
+        , roleSuccess
+        , roleInfo
+        , roleWarning
+        , roleDanger
+        , roleLink
         , block
-        , outline
+        , outlinePrimary
+        , outlineSecondary
+        , outlineSuccess
+        , outlineInfo
+        , outlineWarning
+        , outlineDanger
         , buttonOptionsString
         , ButtonOption
-        , Role(..)
         , ButtonConfig
         )
 
 import Html
 import Html.Attributes as Attributes exposing (class)
-import Bootstrap.Grid as Grid
+import Bootstrap.Internal.Grid as GridInternal
 
 
 type alias ButtonConfig msg =
@@ -35,7 +48,7 @@ type Role
 
 
 type ButtonOption
-    = SizeButton Grid.ScreenSize
+    = SizeButton GridInternal.ScreenSize
     | RoleButton Role
     | OutlineButton Role
     | BlockButton
@@ -59,19 +72,89 @@ linkButton { options, attributes, children } =
         children
 
 
-size : Grid.ScreenSize -> ButtonOption
-size s =
-    SizeButton s
+extraSmall : ButtonOption
+extraSmall =
+    SizeButton GridInternal.ExtraSmall
 
 
-role : Role -> ButtonOption
-role r =
-    RoleButton r
+small : ButtonOption
+small =
+    SizeButton GridInternal.Small
 
 
-outline : Role -> ButtonOption
-outline role =
-    OutlineButton role
+medium : ButtonOption
+medium =
+    SizeButton GridInternal.Medium
+
+
+large : ButtonOption
+large =
+    SizeButton GridInternal.Large
+
+
+rolePrimary : ButtonOption
+rolePrimary =
+    RoleButton Primary
+
+
+roleSecondary : ButtonOption
+roleSecondary =
+    RoleButton Secondary
+
+
+roleSuccess : ButtonOption
+roleSuccess =
+    RoleButton Success
+
+
+roleInfo : ButtonOption
+roleInfo =
+    RoleButton Info
+
+
+roleWarning : ButtonOption
+roleWarning =
+    RoleButton Warning
+
+
+roleDanger : ButtonOption
+roleDanger =
+    RoleButton Danger
+
+
+roleLink : ButtonOption
+roleLink =
+    RoleButton Link
+
+
+outlinePrimary : ButtonOption
+outlinePrimary =
+    OutlineButton Primary
+
+
+outlineSecondary : ButtonOption
+outlineSecondary =
+    OutlineButton Secondary
+
+
+outlineSuccess : ButtonOption
+outlineSuccess =
+    OutlineButton Success
+
+
+outlineInfo : ButtonOption
+outlineInfo =
+    OutlineButton Info
+
+
+outlineWarning : ButtonOption
+outlineWarning =
+    OutlineButton Warning
+
+
+outlineDanger : ButtonOption
+outlineDanger =
+    OutlineButton Danger
 
 
 block : ButtonOption
@@ -96,7 +179,7 @@ buttonOption style =
             "btn-" ++ roleClass role
 
         SizeButton size ->
-            sizeClass size
+            "btn-" ++ GridInternal.screenSizeOption size
 
         OutlineButton role ->
             "btn-outline-" ++ roleClass role
@@ -128,19 +211,3 @@ roleClass role =
 
         Link ->
             "link"
-
-
-sizeClass : Grid.ScreenSize -> String
-sizeClass size =
-    case size of
-        Grid.ExtraSmall ->
-            "btn-xs"
-
-        Grid.Small ->
-            "btn-sm"
-
-        Grid.Medium ->
-            "btn-md"
-
-        Grid.Large ->
-            "btn-lg"

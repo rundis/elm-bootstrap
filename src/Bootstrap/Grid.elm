@@ -2,50 +2,106 @@ module Bootstrap.Grid
     exposing
         ( container
         , containerFluid
+        , simpleRow
         , row
-        , flexRow
-        , flexCol
-        , flexColWidth
-        , flexColOffset
-        , flexRowHAlign
-        , flexRowVAlign
-        , flexColVAlign
-        , colWidthClassString -- TODO: Find away to make this less exposed ?
-        , offsetClassString   -- TODO: Find away to make this less exposed ?
-        , screenSizeString    -- TODO: Find away to make this less exposed ?
-        , columnCountString   -- TODO: Find away to make this less exposed ?
-        , ScreenSize(..)
-        , ColumnCount(..)
+        , col
+        , colWidth
+        , colOffset
+        , rowXsBottom
+        , rowXsCenter
+        , rowXsTop
+        , rowXsLeft
+        , rowXsMiddle
+        , rowXsRight
+        , rowSmBottom
+        , rowSmCenter
+        , rowSmTop
+        , rowSmLeft
+        , rowSmMiddle
+        , rowSmRight
+        , rowMdBottom
+        , rowMdCenter
+        , rowMdTop
+        , rowMdLeft
+        , rowMdMiddle
+        , rowMdRight
+        , rowLgBottom
+        , rowLgCenter
+        , rowLgTop
+        , rowLgLeft
+        , rowLgMiddle
+        , rowLgRight
+        , colXsBottom
+        , colXsMiddle
+        , colXsTop
+        , colSmBottom
+        , colSmMiddle
+        , colSmTop
+        , colMdBottom
+        , colMdMiddle
+        , colMdTop
+        , colLgBottom
+        , colLgMiddle
+        , colLgTop
         , ColumnWidth
-        , VAlign(..)
-        , HAlign(..)
-        , colXsOne, colXsTwo, colXsThree, colXsFour, colXsFive, colXsSix, colXsSeven, colXsEight, colXsNine, colXsTen, colXsEleven, colXsTwelve, colXsNone
-        , colSmOne, colSmTwo, colSmThree, colSmFour, colSmFive, colSmSix, colSmSeven, colSmEight, colSmNine, colSmTen, colSmEleven, colSmTwelve, colSmNone
-        , colMdOne, colMdTwo, colMdThree, colMdFour, colMdFive, colMdSix, colMdSeven, colMdEight, colMdNine, colMdTen, colMdEleven, colMdTwelve, colMdNone
-        , colLgOne, colLgTwo, colLgThree, colLgFour, colLgFive, colLgSix, colLgSeven, colLgEight, colLgNine, colLgTen, colLgEleven, colLgTwelve, colLgNone
+        , colXsOne
+        , colXsTwo
+        , colXsThree
+        , colXsFour
+        , colXsFive
+        , colXsSix
+        , colXsSeven
+        , colXsEight
+        , colXsNine
+        , colXsTen
+        , colXsEleven
+        , colXsTwelve
+        , colXsNone
+        , colSmOne
+        , colSmTwo
+        , colSmThree
+        , colSmFour
+        , colSmFive
+        , colSmSix
+        , colSmSeven
+        , colSmEight
+        , colSmNine
+        , colSmTen
+        , colSmEleven
+        , colSmTwelve
+        , colSmNone
+        , colMdOne
+        , colMdTwo
+        , colMdThree
+        , colMdFour
+        , colMdFive
+        , colMdSix
+        , colMdSeven
+        , colMdEight
+        , colMdNine
+        , colMdTen
+        , colMdEleven
+        , colMdTwelve
+        , colMdNone
+        , colLgOne
+        , colLgTwo
+        , colLgThree
+        , colLgFour
+        , colLgFive
+        , colLgSix
+        , colLgSeven
+        , colLgEight
+        , colLgNine
+        , colLgTen
+        , colLgEleven
+        , colLgTwelve
+        , colLgNone
         )
 
 import Html exposing (Html, div, Attribute)
 import Html.Attributes exposing (class, classList)
+import Bootstrap.Internal.Grid as GridInternal exposing (ScreenSize(..), VAlign(..), HAlign(..), ColumnCount(..))
 
-
-type ScreenSize
-    = ExtraSmall
-    | Small
-    | Medium
-    | Large
-
-
-type VAlign
-    = Top
-    | Middle
-    | Bottom
-
-
-type HAlign
-    = Left
-    | Center
-    | Right
 
 -- TODO: flex-around, flex-between
 
@@ -61,7 +117,6 @@ type FlexColOption
     | FlexColOffset ColumnWidth
 
 
-
 type alias FlexVAlign =
     { size : ScreenSize
     , align : VAlign
@@ -73,26 +128,9 @@ type alias FlexHAlign =
     , align : HAlign
     }
 
-type ColumnWidth =
-    ColumnWidth
-        { size : ScreenSize
-        , columns : ColumnCount
-        }
 
-type ColumnCount
-    = One
-    | Two
-    | Three
-    | Four
-    | Five
-    | Six
-    | Seven
-    | Eight
-    | Nine
-    | Ten
-    | Eleven
-    | Twelve
-    | None
+type alias ColumnWidth =
+    GridInternal.ColumnWidth
 
 
 type FlexColumn msg
@@ -103,44 +141,44 @@ type FlexColumn msg
         }
 
 
-container : List (Html msg) -> Html msg
-container children =
-    div [ class "container" ] children
+container : List (Attribute msg) -> List (Html msg) -> Html msg
+container attributes children =
+    div ([ class "container" ] ++ attributes) children
 
 
-containerFluid : List (Html msg) -> Html msg
-containerFluid children =
-    div [ class "container-fluid" ] children
+containerFluid : List (Attribute msg) -> List (Html msg) -> Html msg
+containerFluid attributes children =
+    div ([ class "container-fluid" ] ++ attributes ) children
 
 
-row : List (FlexColumn msg) -> Html msg
-row cols =
-    flexRow
+simpleRow : List (FlexColumn msg) -> Html msg
+simpleRow cols =
+    row
         { cols = cols
         , options = []
         , attributes = []
         }
 
 
-flexRow :
+row :
     { cols : List (FlexColumn msg)
     , options : List FlexRowOption
     , attributes : List (Html.Attribute msg)
     }
     -> Html msg
-flexRow {cols, options, attributes} =
+row { cols, options, attributes } =
     div
-        (attributes ++ [class <| flexRowOptions options])
+        (attributes ++ [ class <| flexRowOptions options ])
         (List.map renderFlexCol cols)
 
 
-flexCol :
+col :
     { options : List FlexColOption
     , attributes : List (Html.Attribute msg)
     , children : List (Html msg)
     }
     -> FlexColumn msg
-flexCol {options, attributes, children} =
+col { options, attributes, children } =
     FlexColumn
         { options = options
         , attributes = attributes
@@ -148,83 +186,294 @@ flexCol {options, attributes, children} =
         }
 
 
-flexRowVAlign : ScreenSize -> VAlign ->  FlexRowOption
-flexRowVAlign size align =
-    FlexRowVAlign <| FlexVAlign size align
+rowXsTop : FlexRowOption
+rowXsTop =
+    FlexVAlign ExtraSmall Top
+        |> FlexRowVAlign
 
 
-flexRowHAlign : ScreenSize -> HAlign ->  FlexRowOption
-flexRowHAlign size align =
-    FlexRowHAlign <| FlexHAlign size align
+rowXsMiddle : FlexRowOption
+rowXsMiddle =
+    FlexVAlign ExtraSmall Middle
+        |> FlexRowVAlign
 
 
+rowXsBottom : FlexRowOption
+rowXsBottom =
+    FlexVAlign ExtraSmall Bottom
+        |> FlexRowVAlign
 
 
-flexColVAlign : ScreenSize -> VAlign -> FlexColOption
-flexColVAlign size align  =
-    FlexColVAlign <| FlexVAlign size align
+rowSmTop : FlexRowOption
+rowSmTop =
+    FlexVAlign Small Top
+        |> FlexRowVAlign
 
 
-flexColWidth : ColumnWidth -> FlexColOption
-flexColWidth columnWidth =
+rowSmMiddle : FlexRowOption
+rowSmMiddle =
+    FlexVAlign Small Middle
+        |> FlexRowVAlign
+
+
+rowSmBottom : FlexRowOption
+rowSmBottom =
+    FlexVAlign Small Bottom
+        |> FlexRowVAlign
+
+
+rowMdTop : FlexRowOption
+rowMdTop =
+    FlexVAlign Medium Top
+        |> FlexRowVAlign
+
+
+rowMdMiddle : FlexRowOption
+rowMdMiddle =
+    FlexVAlign Medium Middle
+        |> FlexRowVAlign
+
+
+rowMdBottom : FlexRowOption
+rowMdBottom =
+    FlexVAlign Medium Bottom
+        |> FlexRowVAlign
+
+
+rowLgTop : FlexRowOption
+rowLgTop =
+    FlexVAlign Large Top
+        |> FlexRowVAlign
+
+
+rowLgMiddle : FlexRowOption
+rowLgMiddle =
+    FlexVAlign Large Middle
+        |> FlexRowVAlign
+
+
+rowLgBottom : FlexRowOption
+rowLgBottom =
+    FlexVAlign Large Bottom
+        |> FlexRowVAlign
+
+
+rowXsLeft : FlexRowOption
+rowXsLeft =
+    FlexHAlign ExtraSmall Left
+        |> FlexRowHAlign
+
+
+rowXsCenter : FlexRowOption
+rowXsCenter =
+    FlexHAlign ExtraSmall Center
+        |> FlexRowHAlign
+
+
+rowXsRight : FlexRowOption
+rowXsRight =
+    FlexHAlign ExtraSmall Right
+        |> FlexRowHAlign
+
+
+rowSmLeft : FlexRowOption
+rowSmLeft =
+    FlexHAlign Small Left
+        |> FlexRowHAlign
+
+
+rowSmCenter : FlexRowOption
+rowSmCenter =
+    FlexHAlign Small Center
+        |> FlexRowHAlign
+
+
+rowSmRight : FlexRowOption
+rowSmRight =
+    FlexHAlign Small Right
+        |> FlexRowHAlign
+
+
+rowMdLeft : FlexRowOption
+rowMdLeft =
+    FlexHAlign Medium Left
+        |> FlexRowHAlign
+
+
+rowMdCenter : FlexRowOption
+rowMdCenter =
+    FlexHAlign Medium Center
+        |> FlexRowHAlign
+
+
+rowMdRight : FlexRowOption
+rowMdRight =
+    FlexHAlign Medium Right
+        |> FlexRowHAlign
+
+
+rowLgLeft : FlexRowOption
+rowLgLeft =
+    FlexHAlign Large Left
+        |> FlexRowHAlign
+
+
+rowLgCenter : FlexRowOption
+rowLgCenter =
+    FlexHAlign Large Center
+        |> FlexRowHAlign
+
+
+rowLgRight : FlexRowOption
+rowLgRight =
+    FlexHAlign Large Right
+        |> FlexRowHAlign
+
+
+colXsTop : FlexColOption
+colXsTop =
+    FlexVAlign ExtraSmall Top
+        |> FlexColVAlign
+
+
+colXsMiddle : FlexColOption
+colXsMiddle =
+    FlexVAlign ExtraSmall Middle
+        |> FlexColVAlign
+
+
+colXsBottom : FlexColOption
+colXsBottom =
+    FlexVAlign ExtraSmall Bottom
+        |> FlexColVAlign
+
+
+colSmTop : FlexColOption
+colSmTop =
+    FlexVAlign Small Top
+        |> FlexColVAlign
+
+
+colSmMiddle : FlexColOption
+colSmMiddle =
+    FlexVAlign Small Middle
+        |> FlexColVAlign
+
+
+colSmBottom : FlexColOption
+colSmBottom =
+    FlexVAlign Small Bottom
+        |> FlexColVAlign
+
+
+colMdTop : FlexColOption
+colMdTop =
+    FlexVAlign Medium Top
+        |> FlexColVAlign
+
+
+colMdMiddle : FlexColOption
+colMdMiddle =
+    FlexVAlign Medium Middle
+        |> FlexColVAlign
+
+
+colMdBottom : FlexColOption
+colMdBottom =
+    FlexVAlign Medium Bottom
+        |> FlexColVAlign
+
+
+colLgTop : FlexColOption
+colLgTop =
+    FlexVAlign Large Top
+        |> FlexColVAlign
+
+
+colLgMiddle : FlexColOption
+colLgMiddle =
+    FlexVAlign Large Middle
+        |> FlexColVAlign
+
+
+colLgBottom : FlexColOption
+colLgBottom =
+    FlexVAlign Large Bottom
+        |> FlexColVAlign
+
+
+colWidth : ColumnWidth -> FlexColOption
+colWidth columnWidth =
     FlexColWidth columnWidth
 
-flexColOffset : ScreenSize -> ColumnCount -> FlexColOption
-flexColOffset size columns =
-    FlexColOffset <|
-        ColumnWidth
-            { size = size
-            , columns = columns
-            }
+
+colOffset : ScreenSize -> ColumnCount -> FlexColOption
+colOffset size columns =
+    FlexColOffset
+        { size = size
+        , columns = columns
+        }
 
 
 colXsOne : ColumnWidth
 colXsOne =
     colXs One
 
+
 colXsTwo : ColumnWidth
 colXsTwo =
     colXs Two
+
 
 colXsThree : ColumnWidth
 colXsThree =
     colXs Three
 
+
 colXsFour : ColumnWidth
 colXsFour =
     colXs Four
+
 
 colXsFive : ColumnWidth
 colXsFive =
     colXs Five
 
+
 colXsSix : ColumnWidth
 colXsSix =
     colXs Six
+
 
 colXsSeven : ColumnWidth
 colXsSeven =
     colXs Seven
 
+
 colXsEight : ColumnWidth
 colXsEight =
     colXs Eight
+
 
 colXsNine : ColumnWidth
 colXsNine =
     colXs Nine
 
+
 colXsTen : ColumnWidth
 colXsTen =
     colXs Ten
+
 
 colXsEleven : ColumnWidth
 colXsEleven =
     colXs Eleven
 
+
 colXsTwelve : ColumnWidth
 colXsTwelve =
     colXs Twelve
+
 
 colXsNone : ColumnWidth
 colXsNone =
@@ -233,204 +482,233 @@ colXsNone =
 
 colXs : ColumnCount -> ColumnWidth
 colXs columns =
-    ColumnWidth
-        { size = ExtraSmall
-        , columns = columns
-        }
-
+    { size = ExtraSmall
+    , columns = columns
+    }
 
 
 colSmOne : ColumnWidth
 colSmOne =
     colSm One
 
+
 colSmTwo : ColumnWidth
 colSmTwo =
     colSm Two
+
 
 colSmThree : ColumnWidth
 colSmThree =
     colSm Three
 
+
 colSmFour : ColumnWidth
 colSmFour =
     colSm Four
+
 
 colSmFive : ColumnWidth
 colSmFive =
     colSm Five
 
+
 colSmSix : ColumnWidth
 colSmSix =
     colSm Six
+
 
 colSmSeven : ColumnWidth
 colSmSeven =
     colSm Seven
 
+
 colSmEight : ColumnWidth
 colSmEight =
     colSm Eight
+
 
 colSmNine : ColumnWidth
 colSmNine =
     colSm Nine
 
+
 colSmTen : ColumnWidth
 colSmTen =
     colSm Ten
+
 
 colSmEleven : ColumnWidth
 colSmEleven =
     colSm Eleven
 
+
 colSmTwelve : ColumnWidth
 colSmTwelve =
     colSm Twelve
+
 
 colSmNone : ColumnWidth
 colSmNone =
     colSm None
 
+
 colSm : ColumnCount -> ColumnWidth
 colSm columns =
-    ColumnWidth
-        { size = Small
-        , columns = columns
-        }
-
-
+    { size = Small
+    , columns = columns
+    }
 
 
 colMdOne : ColumnWidth
 colMdOne =
     colMd One
 
+
 colMdTwo : ColumnWidth
 colMdTwo =
     colMd Two
+
 
 colMdThree : ColumnWidth
 colMdThree =
     colMd Three
 
+
 colMdFour : ColumnWidth
 colMdFour =
     colMd Four
+
 
 colMdFive : ColumnWidth
 colMdFive =
     colMd Five
 
+
 colMdSix : ColumnWidth
 colMdSix =
     colMd Six
+
 
 colMdSeven : ColumnWidth
 colMdSeven =
     colMd Seven
 
+
 colMdEight : ColumnWidth
 colMdEight =
     colMd Eight
+
 
 colMdNine : ColumnWidth
 colMdNine =
     colMd Nine
 
+
 colMdTen : ColumnWidth
 colMdTen =
     colMd Ten
+
 
 colMdEleven : ColumnWidth
 colMdEleven =
     colMd Eleven
 
+
 colMdTwelve : ColumnWidth
 colMdTwelve =
     colMd Twelve
+
 
 colMdNone : ColumnWidth
 colMdNone =
     colMd None
 
+
 colMd : ColumnCount -> ColumnWidth
 colMd columns =
-    ColumnWidth
-        { size = Medium
-        , columns = columns
-        }
-
+    { size = Medium
+    , columns = columns
+    }
 
 
 colLgOne : ColumnWidth
 colLgOne =
     colLg One
 
+
 colLgTwo : ColumnWidth
 colLgTwo =
     colLg Two
+
 
 colLgThree : ColumnWidth
 colLgThree =
     colLg Three
 
+
 colLgFour : ColumnWidth
 colLgFour =
     colLg Four
+
 
 colLgFive : ColumnWidth
 colLgFive =
     colLg Five
 
+
 colLgSix : ColumnWidth
 colLgSix =
     colLg Six
+
 
 colLgSeven : ColumnWidth
 colLgSeven =
     colLg Seven
 
+
 colLgEight : ColumnWidth
 colLgEight =
     colLg Eight
+
 
 colLgNine : ColumnWidth
 colLgNine =
     colLg Nine
 
+
 colLgTen : ColumnWidth
 colLgTen =
     colLg Ten
+
 
 colLgEleven : ColumnWidth
 colLgEleven =
     colLg Eleven
 
+
 colLgTwelve : ColumnWidth
 colLgTwelve =
     colLg Twelve
+
 
 colLgNone : ColumnWidth
 colLgNone =
     colLg None
 
+
 colLg : ColumnCount -> ColumnWidth
 colLg columns =
-    ColumnWidth
-        { size = Large
-        , columns = columns
-        }
-
-
-
+    { size = Large
+    , columns = columns
+    }
 
 
 flexRowOptions : List FlexRowOption -> String
 flexRowOptions options =
     List.foldl
         (\class classString ->
-            String.join " " [classString, flexRowOption class])
+            String.join " " [ classString, flexRowOption class ]
+        )
         "row"
         options
 
@@ -445,12 +723,10 @@ flexRowOption class =
             flexVAlignOption "flex-items" vAlign
 
 
-
-
 renderFlexCol : FlexColumn msg -> Html msg
-renderFlexCol (FlexColumn {options, attributes, children}) =
+renderFlexCol (FlexColumn { options, attributes, children }) =
     div
-        (attributes ++ [class <| flexColOptions options])
+        (attributes ++ [ class <| flexColOptions options ])
         children
 
 
@@ -458,7 +734,8 @@ flexColOptions : List FlexColOption -> String
 flexColOptions options =
     List.foldl
         (\class classString ->
-            String.join " " [classString, flexColOption class])
+            String.join " " [ classString, flexColOption class ]
+        )
         ""
         options
 
@@ -470,93 +747,17 @@ flexColOption class =
             flexVAlignOption "flex" vAlign
 
         FlexColWidth width ->
-            colWidthClassString width
+            GridInternal.colWidthOption width
 
         FlexColOffset offset ->
-            offsetClassString offset
-
+            GridInternal.offsetOption offset
 
 
 flexVAlignOption : String -> FlexVAlign -> String
 flexVAlignOption prefix { size, align } =
-    prefix ++ "-" ++ screenSizeString size ++ "-" ++ vAlignOption align
+    prefix ++ "-" ++ GridInternal.screenSizeOption size ++ "-" ++ GridInternal.vAlignOption align
 
 
 flexHAlignOption : String -> FlexHAlign -> String
 flexHAlignOption prefix { size, align } =
-    prefix ++ "-" ++ screenSizeString size ++ "-" ++ hAlignOption align
-
-
-colWidthClassString : ColumnWidth -> String
-colWidthClassString (ColumnWidth {size, columns}) =
-    ["col", screenSizeString size, columnCountString columns]
-        |> List.filter (\s -> String.isEmpty s == False )
-        |> String.join "-"
-
-offsetClassString : ColumnWidth -> String
-offsetClassString (ColumnWidth {size, columns}) =
-    case columns of
-        None ->
-            ""
-        _ ->
-          "offset-" ++ screenSizeString size ++ "-" ++ columnCountString columns
-
-
-columnCountString : ColumnCount -> String
-columnCountString size =
-    case size of
-        One -> "1"
-        Two -> "2"
-        Three -> "3"
-        Four -> "4"
-        Five -> "5"
-        Six -> "6"
-        Seven -> "7"
-        Eight -> "8"
-        Nine -> "9"
-        Ten -> "10"
-        Eleven -> "11"
-        Twelve -> "12"
-        None -> ""
-
-
-screenSizeString : ScreenSize -> String
-screenSizeString size =
-    case size of
-        ExtraSmall ->
-            "xs"
-
-        Small ->
-            "sm"
-
-        Medium ->
-            "md"
-
-        Large ->
-            "lg"
-
-
-vAlignOption : VAlign -> String
-vAlignOption align =
-    case align of
-        Top ->
-            "top"
-
-        Middle ->
-            "middle"
-
-        Bottom ->
-            "bottom"
-
-
-hAlignOption : HAlign -> String
-hAlignOption align =
-    case align of
-        Left ->
-            "left"
-
-        Center ->
-            "center"
-
-        Right ->
-            "right"
+    prefix ++ "-" ++ GridInternal.screenSizeOption size ++ "-" ++ GridInternal.hAlignOption align
