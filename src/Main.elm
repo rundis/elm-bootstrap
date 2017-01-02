@@ -13,6 +13,7 @@ import Bootstrap.ListGroup as ListGroup
 import Bootstrap.Tag as Tag
 import Bootstrap.Form as Form
 import Bootstrap.Card as Card
+import Bootstrap.Table as Table
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -159,6 +160,7 @@ view model =
             , accordion model
             , tabs model
             , cards
+            , tables
             ]
         ]
 
@@ -730,6 +732,141 @@ cards =
             }
             |> Card.render
         ]
+
+
+tables : Html msg
+tables =
+    div []
+        [ h1 [] [text "Simple Table"]
+        , Table.simpleTable
+            ( Table.simpleThead
+                [ Table.simpleTh [ text "Col 1"]
+                , Table.simpleTh [ text "Col 2"]
+                , Table.simpleTh [ text "Col 3"]
+                ]
+            , Table.simpleTbody
+                [ Table.simpleTr
+                    [ Table.simpleTd [text "Hello"]
+                    , Table.simpleTd [text "Hello"]
+                    , Table.simpleTd [text "Hello"]
+                    ]
+                , Table.simpleTr
+                    [ Table.simpleTd [text "There"]
+                    , Table.simpleTd [text "There"]
+                    , Table.simpleTd [text "There"]
+                    ]
+                , Table.simpleTr
+                    [ Table.simpleTd [text "Dude"]
+                    , Table.simpleTd [text "Dude"]
+                    , Table.simpleTd [text "Dude"]
+                    ]
+                ]
+            )
+
+        , h1 [] [text "Whacky Table"]
+        , Table.table
+            { options = [Table.hover, Table.bordered, Table.small]
+            , attributes = []
+            , thead =
+                Table.thead
+                    { options = [Table.inversedHead]
+                    , attributes = []
+                    , rows =
+                        [ Table.tr
+                            { options = []
+                            , attributes = []
+                            , cells =
+                                [ Table.th
+                                    { options = [Table.cellWarning]
+                                    , attributes = []
+                                    , children = [ text "Col 1"]
+                                    }
+                                , Table.th
+                                    { options = []
+                                    , attributes = []
+                                    , children = [ text "Col 2"]
+                                    }
+                                , Table.th
+                                    { options = []
+                                    , attributes = []
+                                    , children = [ text "Col 3"]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+            , tbody =
+                Table.tbody
+                    { attributes = []
+                    , rows =
+                        [ Table.tr
+                            { options = [Table.rowSuccess]
+                            , attributes = []
+                            , cells =
+                                [ Table.th
+                                    { options = []
+                                    , attributes = []
+                                    , children = [text "Hello"]
+                                    }
+                                , Table.td
+                                    { options = []
+                                    , attributes = []
+                                    , children = [text "Hello"]
+                                    }
+                                , Table.td
+                                    { options = []
+                                    , attributes = []
+                                    , children = [text "Hello"]
+                                    }
+                                ]
+                            }
+                        , Table.tr
+                            { options = []
+                            , attributes = []
+                            , cells =
+                                [ Table.th
+                                    { options = [Table.cellInfo]
+                                    , attributes = []
+                                    , children = [text "There"]
+                                    }
+                                , Table.td
+                                    { options = []
+                                    , attributes = []
+                                    , children = [text "There"]
+                                    }
+                                , Table.td
+                                    { options = []
+                                    , attributes = []
+                                    , children = [text "There"]
+                                    }
+                                ]
+                            }
+                        , Table.tr
+                            { options = []
+                            , attributes = []
+                            , cells =
+                                [ Table.th
+                                    { options = []
+                                    , attributes = []
+                                    , children = [text "Dude"]
+                                    }
+                                , Table.td
+                                    { options = []
+                                    , attributes = []
+                                    , children = [text "Dude"]
+                                    }
+                                , Table.td
+                                    { options = []
+                                    , attributes = []
+                                    , children = [text "Dude"]
+                                    }
+                                ]
+                            }
+                        ]
+                    }
+            }
+        ]
+
 
 
 rowStyle : Attribute Msg
