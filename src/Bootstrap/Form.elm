@@ -13,6 +13,18 @@ module Bootstrap.Form
         , labelMedium
         , labelLarge
         , textControl
+        , passwordControl
+        , datetimeLocalControl
+        , dateControl
+        , monthControl
+        , timeControl
+        , weekControl
+        , numberControl
+        , emailControl
+        , urlControl
+        , searchControl
+        , telControl
+        , colorControl
         , inputSmall
         , inputMedium
         , inputLarge
@@ -341,6 +353,188 @@ textControl { id, options, attributes } =
         , options = options
         , attributes = attributes
         }
+
+
+passwordControl
+    : { a
+          | attributes : List (Html.Attribute msg)
+          , id : Maybe String
+          , options : List InputOption
+    }
+    -> FormControl msg
+passwordControl { id, options, attributes } =
+    inputControl
+        { id = id
+        , tipe = Password
+        , options = options
+        , attributes = attributes
+        }
+
+datetimeLocalControl
+    : { a
+          | attributes : List (Html.Attribute msg)
+          , id : Maybe String
+          , options : List InputOption
+    }
+    -> FormControl msg
+datetimeLocalControl { id, options, attributes } =
+    inputControl
+        { id = id
+        , tipe = DatetimeLocal
+        , options = options
+        , attributes = attributes
+        }
+
+dateControl
+    : { a
+          | attributes : List (Html.Attribute msg)
+          , id : Maybe String
+          , options : List InputOption
+    }
+    -> FormControl msg
+dateControl { id, options, attributes } =
+    inputControl
+        { id = id
+        , tipe = Date
+        , options = options
+        , attributes = attributes
+        }
+
+monthControl
+    : { a
+          | attributes : List (Html.Attribute msg)
+          , id : Maybe String
+          , options : List InputOption
+    }
+    -> FormControl msg
+monthControl { id, options, attributes } =
+    inputControl
+        { id = id
+        , tipe = Month
+        , options = options
+        , attributes = attributes
+        }
+
+timeControl
+    : { a
+          | attributes : List (Html.Attribute msg)
+          , id : Maybe String
+          , options : List InputOption
+    }
+    -> FormControl msg
+timeControl { id, options, attributes } =
+    inputControl
+        { id = id
+        , tipe = Time
+        , options = options
+        , attributes = attributes
+        }
+
+weekControl
+    : { a
+          | attributes : List (Html.Attribute msg)
+          , id : Maybe String
+          , options : List InputOption
+    }
+    -> FormControl msg
+weekControl { id, options, attributes } =
+    inputControl
+        { id = id
+        , tipe = Week
+        , options = options
+        , attributes = attributes
+        }
+
+numberControl
+    : { a
+          | attributes : List (Html.Attribute msg)
+          , id : Maybe String
+          , options : List InputOption
+    }
+    -> FormControl msg
+numberControl { id, options, attributes } =
+    inputControl
+        { id = id
+        , tipe = Number
+        , options = options
+        , attributes = attributes
+        }
+
+emailControl
+    : { a
+          | attributes : List (Html.Attribute msg)
+          , id : Maybe String
+          , options : List InputOption
+    }
+    -> FormControl msg
+emailControl { id, options, attributes } =
+    inputControl
+        { id = id
+        , tipe = Email
+        , options = options
+        , attributes = attributes
+        }
+
+urlControl
+    : { a
+          | attributes : List (Html.Attribute msg)
+          , id : Maybe String
+          , options : List InputOption
+    }
+    -> FormControl msg
+urlControl { id, options, attributes } =
+    inputControl
+        { id = id
+        , tipe = Url
+        , options = options
+        , attributes = attributes
+        }
+
+searchControl
+    : { a
+          | attributes : List (Html.Attribute msg)
+          , id : Maybe String
+          , options : List InputOption
+    }
+    -> FormControl msg
+searchControl { id, options, attributes } =
+    inputControl
+        { id = id
+        , tipe = Search
+        , options = options
+        , attributes = attributes
+        }
+
+telControl
+    : { a
+          | attributes : List (Html.Attribute msg)
+          , id : Maybe String
+          , options : List InputOption
+    }
+    -> FormControl msg
+telControl { id, options, attributes } =
+    inputControl
+        { id = id
+        , tipe = Tel
+        , options = options
+        , attributes = attributes
+        }
+
+colorControl
+    : { a
+          | attributes : List (Html.Attribute msg)
+          , id : Maybe String
+          , options : List InputOption
+    }
+    -> FormControl msg
+colorControl { id, options, attributes } =
+    inputControl
+        { id = id
+        , tipe = Color
+        , options = options
+        , attributes = attributes
+        }
+
 
 
 inputSmall : InputOption
