@@ -177,7 +177,7 @@ table { options, attributes, thead, tbody } =
             List.any (\opt -> opt == Inversed) options
     in
         Html.table
-            ([ class <| tableOptions classOptions ] ++ attributes)
+            (tableAttributes classOptions ++ attributes)
             [ maybeMapInversedTHead isInversed thead |> renderTHead
             , maybeMapInversedTBody isInversed tbody |> renderTBody
             ]
@@ -299,7 +299,7 @@ thead { options, attributes, rows } =
 renderTHead : THead msg -> Html.Html msg
 renderTHead (THead { options, attributes, rows }) =
     Html.thead
-        ([ class <| theadOptions options ] ++ attributes)
+        (theadAttributes options  ++ attributes)
         (List.map renderRow rows)
 
 
@@ -477,7 +477,7 @@ th { options, attributes, children } =
 renderRow : Row msg -> Html.Html msg
 renderRow (Row { options, attributes, cells }) =
     Html.tr
-        ([ class <| rowOptions options ] ++ attributes)
+        (rowAttributes options ++ attributes)
         (List.map renderCell cells)
 
 
@@ -486,28 +486,24 @@ renderCell cell =
     case cell of
         Td { options, attributes, children } ->
             Html.td
-                ([ class <| cellOptions options ] ++ attributes)
+                (cellAttributes options  ++ attributes)
                 children
 
         Th { options, attributes, children } ->
             Html.th
-                ([ class <| cellOptions options ] ++ attributes)
+                (cellAttributes options ++ attributes)
                 children
 
 
-tableOptions : List TableOption -> String
-tableOptions options =
-    List.foldl
-        (\option classString ->
-            String.join " " [ classString, tableOption option ]
-        )
-        "table"
-        options
+tableAttributes : List TableOption -> List (Html.Attribute msg)
+tableAttributes options =
+    (class "table")
+        :: List.map tableClass options
 
 
-tableOption : TableOption -> String
-tableOption option =
-    case option of
+tableClass : TableOption -> Html.Attribute msg
+tableClass option =
+    (case option of
         Inversed ->
             "table-inverse"
 
@@ -527,67 +523,57 @@ tableOption option =
             ""
 
         Reflow ->
-            "table-reflow"
+            "table-reflow")
+            |> class
 
 
-theadOptions : List TableHeadOption -> String
-theadOptions options =
-    List.foldl
-        (\option classString ->
-            String.join " " [ classString, theadOption option ]
-        )
-        ""
-        options
+theadAttributes : List TableHeadOption -> List (Html.Attribute msg)
+theadAttributes options =
+    List.map theadClass options
 
 
-theadOption : TableHeadOption -> String
-theadOption option =
-    case option of
-        InversedHead ->
-            "thead-inverse"
+theadClass : TableHeadOption -> Html.Attribute msg
+theadClass option =
+    class <|
+        case option of
+            InversedHead ->
+                "thead-inverse"
 
-        DefaultHead ->
-            "thead-default"
-
-
-rowOptions : List RowOption -> String
-rowOptions options =
-    List.foldl
-        (\option classString ->
-            String.join " " [ classString, rowOption option ]
-        )
-        ""
-        options
+            DefaultHead ->
+                "thead-default"
 
 
-rowOption : RowOption -> String
-rowOption option =
-    case option of
-        RoledRow role ->
-            "table-" ++ roleOption role
-
-        InversedRow role ->
-            "bg-" ++ roleOption role
+rowAttributes : List RowOption -> List (Html.Attribute msg)
+rowAttributes options =
+    List.map rowClass options
 
 
-cellOptions : List CellOption -> String
-cellOptions options =
-    List.foldl
-        (\option classString ->
-            String.join " " [ classString, cellOption option ]
-        )
-        ""
-        options
+rowClass : RowOption -> Html.Attribute msg
+rowClass option =
+    class <|
+        case option of
+            RoledRow role ->
+                "table-" ++ roleOption role
+
+            InversedRow role ->
+                "bg-" ++ roleOption role
 
 
-cellOption : CellOption -> String
-cellOption option =
-    case option of
-        RoledCell role ->
-            "table-" ++ roleOption role
+cellAttributes : List CellOption -> List (Html.Attribute msg)
+cellAttributes options =
+    List.map cellClass options
 
-        InversedCell role ->
-            "bg-" ++ roleOption role
+
+
+cellClass : CellOption -> Html.Attribute msg
+cellClass option =
+    class <|
+        case option of
+            RoledCell role ->
+                "table-" ++ roleOption role
+
+            InversedCell role ->
+                "bg-" ++ roleOption role
 
 
 roleOption : Role -> String

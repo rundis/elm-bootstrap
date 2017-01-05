@@ -60,7 +60,7 @@ tagRoled role children =
 tag : List TagOption -> List (Html.Html msg) -> Html.Html msg
 tag classes children =
     Html.span
-        [ class <| tagOptions classes ]
+        (tagAttributes classes)
         children
 
 
@@ -151,27 +151,23 @@ floatLgRight =
     Floated Right GridInternal.Large
 
 
-tagOptions : List TagOption -> String
-tagOptions options =
-    List.foldl
-        (\option optionString ->
-            String.join " " [ optionString, tagOption option ]
-        )
-        "tag"
-        options
+tagAttributes : List TagOption -> List (Html.Attribute msg)
+tagAttributes options =
+    class "tag" :: List.map tagClass options
 
 
-tagOption : TagOption -> String
-tagOption option =
-    case option of
-        Pill ->
-            "tag-pill"
+tagClass : TagOption -> Html.Attribute msg
+tagClass option =
+    class <|
+        case option of
+            Pill ->
+                "tag-pill"
 
-        Roled role ->
-            roleOption role
+            Roled role ->
+                roleOption role
 
-        Floated float size ->
-            "float-" ++ GridInternal.screenSizeOption size ++ "-" ++ floatOption float
+            Floated float size ->
+                "float-" ++ GridInternal.screenSizeOption size ++ "-" ++ floatOption float
 
 
 roleOption : Role -> String

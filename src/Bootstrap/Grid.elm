@@ -168,7 +168,7 @@ row :
     -> Html msg
 row { cols, options, attributes } =
     div
-        (attributes ++ [ class <| flexRowOptions options ])
+        (attributes ++ flexRowAttributes options )
         (List.map renderFlexCol cols)
 
 
@@ -703,54 +703,46 @@ colLg columns =
     }
 
 
-flexRowOptions : List FlexRowOption -> String
-flexRowOptions options =
-    List.foldl
-        (\class classString ->
-            String.join " " [ classString, flexRowOption class ]
-        )
-        "row"
-        options
+flexRowAttributes : List FlexRowOption -> List (Html.Attribute msg)
+flexRowAttributes options =
+    class "row" :: List.map flexRowClass options
 
 
-flexRowOption : FlexRowOption -> String
-flexRowOption class =
-    case class of
-        FlexRowHAlign hAlign ->
-            flexHAlignOption "flex-items" hAlign
+flexRowClass : FlexRowOption -> Html.Attribute msg
+flexRowClass option =
+    class <|
+        case option of
+            FlexRowHAlign hAlign ->
+                flexHAlignOption "flex-items" hAlign
 
-        FlexRowVAlign vAlign ->
-            flexVAlignOption "flex-items" vAlign
+            FlexRowVAlign vAlign ->
+                flexVAlignOption "flex-items" vAlign
 
 
 renderFlexCol : FlexColumn msg -> Html msg
 renderFlexCol (FlexColumn { options, attributes, children }) =
     div
-        (attributes ++ [ class <| flexColOptions options ])
+        (attributes ++ flexColAttributes options )
         children
 
 
-flexColOptions : List FlexColOption -> String
-flexColOptions options =
-    List.foldl
-        (\class classString ->
-            String.join " " [ classString, flexColOption class ]
-        )
-        ""
-        options
+flexColAttributes : List FlexColOption -> List (Html.Attribute msg)
+flexColAttributes options =
+    List.map flexColClass options
 
 
-flexColOption : FlexColOption -> String
-flexColOption class =
-    case class of
-        FlexColVAlign vAlign ->
-            flexVAlignOption "flex" vAlign
+flexColClass : FlexColOption -> Html.Attribute msg
+flexColClass option =
+    class <|
+        case option of
+            FlexColVAlign vAlign ->
+                flexVAlignOption "flex" vAlign
 
-        FlexColWidth width ->
-            GridInternal.colWidthOption width
+            FlexColWidth width ->
+                GridInternal.colWidthOption width
 
-        FlexColOffset offset ->
-            GridInternal.offsetOption offset
+            FlexColOffset offset ->
+                GridInternal.offsetOption offset
 
 
 flexVAlignOption : String -> FlexVAlign -> String

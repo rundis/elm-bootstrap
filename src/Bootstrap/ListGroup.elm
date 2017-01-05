@@ -164,14 +164,14 @@ text attributes children =
 renderItem : Item msg -> Html.Html msg
 renderItem (Item { itemFn, attributes, options, children }) =
     itemFn
-        ([ class <| itemOptions options ] ++ attributes)
+        (itemAttributes options ++ attributes)
         children
 
 
 renderCustomItem : CustomItem msg -> Html.Html msg
 renderCustomItem (CustomItem { itemFn, attributes, options, children }) =
     itemFn
-        ([ class <| itemOptions options ] ++ attributes)
+        (itemAttributes options ++ attributes)
         children
 
 
@@ -205,30 +205,26 @@ disabled =
     Disabled
 
 
-itemOptions : List ItemOption -> String
-itemOptions options =
-    List.foldl
-        (\option optionString ->
-            String.join " " [ optionString, itemOption option ]
-        )
-        "list-group-item"
-        options
+itemAttributes : List ItemOption -> List (Html.Attribute msg)
+itemAttributes options =
+    class "list-group-item" :: List.map itemClass options
 
 
-itemOption : ItemOption -> String
-itemOption option =
-    case option of
-        Roled role ->
-            roleOption role
+itemClass : ItemOption -> Html.Attribute msg
+itemClass option =
+    class <|
+        case option of
+            Roled role ->
+                roleOption role
 
-        Active ->
-            "active"
+            Active ->
+                "active"
 
-        Disabled ->
-            "disabled"
+            Disabled ->
+                "disabled"
 
-        Action ->
-            "list-group-item-action"
+            Action ->
+                "list-group-item-action"
 
 
 roleOption : Role -> String

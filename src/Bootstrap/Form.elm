@@ -553,9 +553,7 @@ isDisabled options =
 renderLabel : Label msg -> Html.Html msg
 renderLabel (Label { options, attributes, children }) =
     Html.label
-        ([ class <| labelOptions options ]
-            ++ attributes
-        )
+        (labelAttributes options ++ attributes)
         children
 
 
@@ -572,16 +570,9 @@ renderControl control =
 renderInput : Input msg -> Html.Html msg
 renderInput (Input { tipe, id, options, attributes }) =
     Html.input
-        ([ type_ <| inputTypeToString tipe
-         , class <| inputOptions "form-control" options
-         ]
-            ++ (case id of
-                    Just x ->
-                        [ Html.Attributes.id x ]
-
-                    Nothing ->
-                        []
-               )
+        (inputAttributes options
+            ++ [ type_ <| inputTypeToString tipe ]
+            ++ maybeId id
             ++ attributes
         )
         []
@@ -590,60 +581,56 @@ renderInput (Input { tipe, id, options, attributes }) =
 renderSelect : Select msg -> Html.Html msg
 renderSelect (Select { id, items, options, attributes }) =
     Html.select
-        ([ class <| inputOptions "form-control" options ]
-            ++ (case id of
-                    Just x ->
-                        [ Html.Attributes.id x ]
-
-                    Nothing ->
-                        []
-               )
+        (inputAttributes options
+            ++ maybeId id
             ++ attributes
         )
         (List.map (\(SelectItem item) -> item) items)
 
 
-inputOptions : String -> List InputOption -> String
-inputOptions prefix options =
-    List.foldl
-        (\class classString ->
-            String.join " " [ classString, inputOption class ]
-        )
-        prefix
-        options
+maybeId : Maybe String -> List (Html.Attribute msg)
+maybeId id =
+    case id of
+        Just x ->
+            [ Html.Attributes.id x ]
+
+        Nothing ->
+            []
 
 
-inputOption : InputOption -> String
-inputOption class =
-    case class of
-        InputSize size ->
-            inputSizeOption size
+inputAttributes : List InputOption -> List (Html.Attribute msg)
+inputAttributes options =
+    class "form-control" :: List.map inputClass options
 
 
-labelOptions : List LabelOption -> String
-labelOptions options =
-    List.foldl
-        (\class classString ->
-            String.join " " [ classString, labelOption class ]
-        )
-        ""
-        options
+inputClass : InputOption -> Html.Attribute msg
+inputClass option =
+    class <|
+        case option of
+            InputSize size ->
+                inputSizeOption size
 
 
-labelOption : LabelOption -> String
-labelOption class =
-    case class of
-        FormLabel ->
-            "form-control-label"
+labelAttributes : List LabelOption -> List (Html.Attribute msg)
+labelAttributes options =
+    List.map labelClass options
 
-        LabelSize size ->
-            labelSizeOption size
 
-        LabelWidth columnWidth ->
-            GridInternal.colWidthOption columnWidth
+labelClass : LabelOption -> Html.Attribute msg
+labelClass option =
+    class <|
+        case option of
+            FormLabel ->
+                "form-control-label"
 
-        ColumnLabel ->
-            "col-form-label"
+            LabelSize size ->
+                labelSizeOption size
+
+            LabelWidth columnWidth ->
+                GridInternal.colWidthOption columnWidth
+
+            ColumnLabel ->
+                "col-form-label"
 
 
 inputTypeToString : InputType -> String

@@ -47,7 +47,6 @@ type DropdownOption
     | AlignMenuRight
 
 
-
 type DropdownItem msg
     = DropdownItem (Html.Html msg)
 
@@ -89,14 +88,14 @@ dropdown { toggleMsg, toggleButton, items, options } ((State { open }) as state)
             [ classList
                 [ ( "btn-group", True )
                 , ( "open", open )
-                , ( "dropup", isDropUp options)
+                , ( "dropup", isDropUp options )
                 ]
             ]
             [ buttonFn toggleMsg state
             , Html.div
                 [ classList
-                    [ ("dropdown-menu", True)
-                    , ("dropdown-menu-right", hasMenuRight options)
+                    [ ( "dropdown-menu", True )
+                    , ( "dropdown-menu-right", hasMenuRight options )
                     ]
                 ]
                 (List.map (\(DropdownItem x) -> x) items)
@@ -116,10 +115,11 @@ togglePrivate :
     -> Html.Html msg
 togglePrivate { options, attributes, children } toggleMsg state =
     Html.button
-        ([ class <| Button.buttonOptionsString options ++ " dropdown-toggle"
-         , type_ "button"
-         , onClick <| toggleOpen toggleMsg state
-         ]
+        (Button.buttonAttributes options
+            ++ [ class "dropdown-toggle"
+               , type_ "button"
+               , onClick <| toggleOpen toggleMsg state
+               ]
             ++ attributes
         )
         children
@@ -140,16 +140,16 @@ splitDropdown { toggleMsg, toggleButton, items, options } ((State { open }) as s
     in
         Html.div
             [ classList
-                [ ("btn-group", True)
-                , ("open", open)
-                , ("dropup", isDropUp options)
+                [ ( "btn-group", True )
+                , ( "open", open )
+                , ( "dropup", isDropUp options )
                 ]
             ]
             (buttonsFn toggleMsg state
                 ++ [ Html.div
                         [ classList
-                            [ ("dropdown-menu", True)
-                            , ("dropdown-menu-right", hasMenuRight options)
+                            [ ( "dropdown-menu", True )
+                            , ( "dropdown-menu-right", hasMenuRight options )
                             ]
                         ]
                         (List.map (\(DropdownItem x) -> x) items)
@@ -170,13 +170,16 @@ splitToggleButtonPrivate :
     -> List (Html.Html msg)
 splitToggleButtonPrivate { options, attributes, children } toggleMsg state =
     [ Html.button
-        ([ class <| Button.buttonOptionsString options ] ++ attributes)
+        (Button.buttonAttributes options ++ attributes)
         children
     , Html.button
-        [ class <| Button.buttonOptionsString options ++ " dropdown-toggle dropdown-toggle-split"
-        , type_ "button"
-        , onClick <| toggleOpen toggleMsg state
-        ]
+        (Button.buttonAttributes options
+            ++ [ class "dropdown-toggle"
+               , class "dropdown-toggle-split"
+               , type_ "button"
+               , onClick <| toggleOpen toggleMsg state
+               ]
+        )
         []
     ]
 

@@ -1,10 +1,12 @@
 module Bootstrap.Internal.Text
     exposing
-        ( textAlignOption
+        ( textAlignClass
         , TextAlignDir(..)
         , HAlign
         )
 
+import Html
+import Html.Attributes
 import Bootstrap.Internal.Grid as GridInternal
 
 
@@ -20,9 +22,9 @@ type TextAlignDir
     | Right
 
 
-textAlignOption : HAlign -> String
-textAlignOption { dir, size } =
-    "text-" ++ GridInternal.screenSizeOption size ++ "-" ++ textAlignDirOption dir
+textAlignClass : HAlign -> Html.Attribute msg
+textAlignClass { dir, size } =
+    Html.Attributes.class <| "text-" ++ GridInternal.screenSizeOption size ++ "-" ++ textAlignDirOption dir
 
 
 textAlignDirOption : TextAlignDir -> String

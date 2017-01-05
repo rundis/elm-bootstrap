@@ -20,7 +20,7 @@ module Bootstrap.Button
         , outlineInfo
         , outlineWarning
         , outlineDanger
-        , buttonOptionsString
+        , buttonAttributes
         , ButtonOption
         , ButtonConfig
         )
@@ -57,17 +57,16 @@ type ButtonOption
 button : ButtonConfig msg -> Html.Html msg
 button { options, attributes, children } =
     Html.button
-        ([ class <| buttonOptionsString options ] ++ attributes)
+        (buttonAttributes options ++ attributes)
         children
 
 
 linkButton : ButtonConfig msg -> Html.Html msg
 linkButton { options, attributes, children } =
     Html.a
-        ([ class <| buttonOptionsString options
-         , Attributes.attribute "role" "button"
-         ]
-            ++ attributes
+        (Attributes.attribute "role" "button"
+            :: buttonAttributes options
+            |> (++) attributes
         )
         children
 
@@ -162,30 +161,36 @@ block =
     BlockButton
 
 
-buttonOptionsString : List ButtonOption -> String
-buttonOptionsString options =
-    List.foldl
-        (\option classString ->
-            String.join " " [ classString, buttonOption option ]
-        )
-        "btn"
-        options
+buttonAttributes : List ButtonOption -> List (Html.Attribute msg)
+buttonAttributes options =
+    class "btn" :: List.map buttonClass options
 
 
-buttonOption : ButtonOption -> String
-buttonOption style =
-    case style of
-        RoleButton role ->
-            "btn-" ++ roleClass role
 
-        SizeButton size ->
-            "btn-" ++ GridInternal.screenSizeOption size
+{- List.foldl
+   (\option classString ->
+       String.join " " [ classString, buttonOption option ]
+   )
+   "btn"
+   options
+-}
 
-        OutlineButton role ->
-            "btn-outline-" ++ roleClass role
 
-        BlockButton ->
-            "btn-block"
+buttonClass : ButtonOption -> Html.Attribute msg
+buttonClass style =
+    class <|
+        case style of
+            RoleButton role ->
+                "btn-" ++ roleClass role
+
+            SizeButton size ->
+                "btn-" ++ GridInternal.screenSizeOption size
+
+            OutlineButton role ->
+                "btn-outline-" ++ roleClass role
+
+            BlockButton ->
+                "btn-block"
 
 
 roleClass : Role -> String

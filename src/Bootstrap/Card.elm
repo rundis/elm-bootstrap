@@ -171,7 +171,7 @@ card :
     -> Card msg
 card { options, header, footer, imgTop, imgBottom, blocks } =
     Html.div
-        [ class <| cardOptions options ]
+        (cardAttributes options)
         (List.filterMap
             identity
             [ Maybe.map (\(CardHeader e) -> e) header
@@ -194,7 +194,7 @@ simpleCard :
     -> Card msg
 simpleCard { options, items } =
     Html.div
-        [ class <| cardOptions options ++ " card-block" ]
+        (class "card-block" :: cardAttributes options)
         (List.map (\(BlockItem e) -> e) items)
         |> Card
 
@@ -289,7 +289,7 @@ block :
     -> CardBlock msg
 block { options, items } =
     Html.div
-        [ class <| blockOptions options ]
+        (blockAttributes options)
         (List.map (\(BlockItem e) -> e) items)
         |> CardBlock
 
@@ -387,44 +387,35 @@ columns cards =
 -- PRIVATE Helpers etc
 
 
-cardOptions : List CardOption -> String
-cardOptions options =
-    List.foldl
-        (\option optionString ->
-            String.join " " [ optionString, cardOption option ]
-        )
-        "card"
-        options
+cardAttributes : List CardOption -> List (Html.Attribute msg)
+cardAttributes options =
+    class "card" :: List.map cardAttribute options
 
 
-cardOption : CardOption -> String
-cardOption option =
+cardAttribute : CardOption -> Html.Attribute msg
+cardAttribute option =
     case option of
         Aligned align ->
-            TextInternal.textAlignOption align
+            TextInternal.textAlignClass align
 
         Roled role ->
-            "card-inverse card-" ++ roleOption role
+            class <| "card-inverse card-" ++ roleOption role
 
         Outlined role ->
-            "card-outline-" ++ roleOption role
+            class <| "card-outline-" ++ roleOption role
 
 
-blockOptions : List BlockOption -> String
-blockOptions options =
-    List.foldl
-        (\option optionString ->
-            String.join " " [ optionString, blockOption option ]
-        )
-        "card-block"
-        options
+blockAttributes : List BlockOption -> List (Html.Attribute msg)
+blockAttributes options =
+    class "card-block" :: List.map blockClass options
 
 
-blockOption : BlockOption -> String
-blockOption option =
+
+blockClass : BlockOption -> Html.Attribute msg
+blockClass option =
     case option of
         AlignedBlock align ->
-            TextInternal.textAlignOption align
+            TextInternal.textAlignClass align
 
 
 roleOption : Role -> String

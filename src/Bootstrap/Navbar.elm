@@ -65,7 +65,7 @@ navbar :
     -> Html.Html msg
 navbar {options, attributes, items} =
     Html.nav
-        ([ class <| navbarOptions options ] ++ attributes)
+        (navbarAttributes options ++ attributes)
         [renderNav items]
 
 
@@ -151,24 +151,20 @@ scheme modifier bgColor =
             |> NavbarScheme
 
 
-navbarOptions : List NavbarOption -> String
-navbarOptions options =
-    List.foldl
-        (\option classString ->
-            String.join " " [ classString, navbarOption option ]
-        )
-        "navbar"
-        options
+navbarAttributes : List NavbarOption -> List (Html.Attribute msg)
+navbarAttributes options =
+    class "navbar" :: List.map navbarClass options
 
 
-navbarOption : NavbarOption -> String
-navbarOption option =
-    case option of
-        NavbarFix fix ->
-            fixOption fix
+navbarClass : NavbarOption -> Html.Attribute msg
+navbarClass option =
+    class <|
+        case option of
+            NavbarFix fix ->
+                fixOption fix
 
-        NavbarScheme scheme ->
-            schemeOption scheme
+            NavbarScheme scheme ->
+                schemeOption scheme
 
 
 fixOption : Fix -> String

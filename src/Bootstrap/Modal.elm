@@ -69,9 +69,7 @@ modal { closeMsg, header, body, footer, options } state =
         [ Html.div
             ([ Attr.tabindex -1 ] ++ display state)
             [ Html.div
-                [ Attr.class <| modalOptions options
-                , Attr.attribute "role" "document"
-                ]
+                (Attr.attribute "role" "document" :: modalAttributes options)
                 [ Html.div
                     [ Attr.class "modal-content" ]
                     (modalHeader closeMsg header
@@ -94,20 +92,17 @@ display (State open) =
 
 
 
-modalOptions : List ModalOption -> String
-modalOptions options =
-    List.foldl
-        (\option optionString ->
-            String.join " " [ optionString, modalOption option ]
-        )
-        "modal-dialog"
-        options
+modalAttributes : List ModalOption -> List (Html.Attribute msg)
+modalAttributes options =
+    Attr.class "modal-dialog" :: List.map modalClass options
 
-modalOption : ModalOption -> String
-modalOption option =
-    case option of
-        ModalSize size ->
-            "modal-" ++ GridInternal.screenSizeOption size
+
+modalClass : ModalOption -> Html.Attribute msg
+modalClass option =
+    Attr.class <|
+        case option of
+            ModalSize size ->
+                "modal-" ++ GridInternal.screenSizeOption size
 
 
 
