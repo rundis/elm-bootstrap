@@ -215,7 +215,7 @@ mainContent model =
                     , children =
                         [ Button.linkButton
                             { options =
-                                [ Button.extraSmall
+                                [ Button.small
                                 , Button.outlineSuccess
                                 , Button.block
                                 ]
@@ -512,11 +512,11 @@ modal modalState =
         , body = Just <| modalBody
         , footer =
             Just <|
-                Button.button
-                    { options = [ Button.outlinePrimary ]
-                    , attributes = [ onClick <| ModalMsg Modal.hiddenState ]
-                    , children = [ text "Close" ]
-                    }
+                Button.button <|
+                    Button.ButtonConfig
+                        [ Button.outlinePrimary ]
+                        [ onClick <| ModalMsg Modal.hiddenState ]
+                        [ text "Close" ]
         , options = [ Modal.small ]
         }
         modalState
@@ -666,7 +666,7 @@ cards =
     div []
         [ h1 [] [ text "Cards" ]
         , Card.deck
-            [ Card.card
+            [ Card.cardItem
                 { options = [ Card.outlinePrimary ]
                 , header = Just <| Card.headerH1 [] [ text "Primary" ]
                 , footer = Just <| Card.footer [] [ text "Primary footer" ]
@@ -682,7 +682,7 @@ cards =
                         }
                     ]
                 }
-            , Card.card
+            , Card.cardItem
                 { options = [ Card.outlineSuccess ]
                 , header = Just <| Card.headerH1 [] [ text "Success" ]
                 , footer = Just <| Card.footer [] [ text "Success footer" ]
@@ -702,7 +702,7 @@ cards =
                 }
             ]
         , Card.group
-            [ Card.simpleCard
+            [ Card.simpleCardItem
                 { options = [ Card.roleDanger, Card.align Text.alignXsCenter ]
                 , items =
                     [ Card.titleH4 [] [ text "Danger inverse " ]
@@ -710,14 +710,14 @@ cards =
                     , Card.link [ href "#" ] [ text "A Link !" ]
                     ]
                 }
-            , Card.simpleCard
+            , Card.simpleCardItem
                 { options = [ Card.roleWarning, Card.align Text.alignXsLeft ]
                 , items =
                     [ Card.titleH4 [] [ text "Warning inverse " ]
                     , Card.text [] [ text " A Simple card with a warning role" ]
                     ]
                 }
-            , Card.simpleCard
+            , Card.simpleCardItem
                 { options = [ Card.roleInfo, Card.align Text.alignXsRight ]
                 , items =
                     [ Card.titleH4 [] [ text "Info inverse " ]
@@ -730,7 +730,6 @@ cards =
             , items =
                 [ Card.text [] [ text "Just some text you know" ] ]
             }
-            |> Card.render
         ]
 
 

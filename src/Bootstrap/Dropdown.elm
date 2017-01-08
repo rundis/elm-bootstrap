@@ -22,6 +22,7 @@ module Bootstrap.Dropdown
         )
 
 import Bootstrap.Button as Button
+import Bootstrap.Internal.Button as ButtonInternal
 import Html
 import Html.Attributes exposing (class, classList, type_, id, href)
 import Html.Events exposing (onClick, on)
@@ -115,7 +116,7 @@ togglePrivate :
     -> Html.Html msg
 togglePrivate { options, attributes, children } toggleMsg state =
     Html.button
-        (Button.buttonAttributes options
+        (ButtonInternal.buttonAttributes options
             ++ [ class "dropdown-toggle"
                , type_ "button"
                , onClick <| toggleOpen toggleMsg state
@@ -170,10 +171,10 @@ splitToggleButtonPrivate :
     -> List (Html.Html msg)
 splitToggleButtonPrivate { options, attributes, children } toggleMsg state =
     [ Html.button
-        (Button.buttonAttributes options ++ attributes)
+        (ButtonInternal.buttonAttributes options ++ attributes)
         children
     , Html.button
-        (Button.buttonAttributes options
+        (ButtonInternal.buttonAttributes options
             ++ [ class "dropdown-toggle"
                , class "dropdown-toggle-split"
                , type_ "button"
