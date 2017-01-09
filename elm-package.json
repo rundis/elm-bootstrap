@@ -10,7 +10,8 @@
       "Bootstrap.Alert",
       "Bootstrap.Button",
       "Bootstrap.Card",
-      "Bootstrap.Tag"
+      "Bootstrap.Tag",
+      "Bootstrap.Table"
     ],
     "dependencies": {
         "MichaelCombs28/elm-dom": "1.0.0 <= v < 2.0.0",

@@ -29,11 +29,7 @@ all =
 vanillaButton : Test
 vanillaButton =
     let
-        html = Button.button
-                 { options = []
-                 , attributes = []
-                 , children = [Html.text "Click"]
-                 }
+        html = Button.button [] [Html.text "Click"]
     in
         describe "Plain button"
             [ test "expect button and text" <|
@@ -54,11 +50,7 @@ vanillaButton =
 linkButton : Test
 linkButton =
     let
-        html = Button.linkButton
-                 { options = [Button.roleDanger]
-                 , attributes = []
-                 , children = [Html.text "Click"]
-                 }
+        html = Button.linkButton [Button.roleDanger] [ Html.text "Click"]
     in
         describe "Plain link button"
             [ test "expect a and text" <|
@@ -87,79 +79,58 @@ roledButtons =
     let
         html =
             Html.div []
-                [ Button.button
-                    <| Button.ButtonConfig
-                        [Button.rolePrimary] [] [Html.text "primary"]
-                , Button.button
-                    <| Button.ButtonConfig
-                        [Button.roleSecondary] [] [Html.text "secondary"]
-                , Button.button
-                    <| Button.ButtonConfig
-                        [Button.roleSuccess] [] [Html.text "success"]
-                , Button.button
-                    <| Button.ButtonConfig
-                        [Button.roleInfo] [] [Html.text "info"]
-                , Button.button
-                    <| Button.ButtonConfig
-                        [Button.roleWarning] [] [Html.text "warning"]
-                , Button.button
-                    <| Button.ButtonConfig
-                        [Button.roleDanger] [] [Html.text "danger"]
-                , Button.button
-                    <| Button.ButtonConfig
-                        [Button.roleLink] [] [Html.text "link"]
+                [ Button.button [ Button.rolePrimary ] [ Html.text "primary" ]
+                , Button.button [ Button.roleSecondary ] [ Html.text "secondary" ]
+                , Button.button [ Button.roleSuccess ] [ Html.text "success" ]
+                , Button.button [ Button.roleInfo ] [ Html.text "info" ]
+                , Button.button [ Button.roleWarning ] [ Html.text "warning" ]
+                , Button.button [ Button.roleDanger ] [ Html.text "danger" ]
+                , Button.button [ Button.roleLink ] [ Html.text "link" ]
                 ]
-
     in
         describe "Roled buttons"
             [ test "expect primary" <|
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.find [ class "btn-primary"]
-                        |> Query.has  [ text "primary"]
-
+                        |> Query.find [ class "btn-primary" ]
+                        |> Query.has [ text "primary" ]
             , test "expect secondary" <|
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.find [ class "btn-secondary"]
-                        |> Query.has  [ text "secondary"]
-
+                        |> Query.find [ class "btn-secondary" ]
+                        |> Query.has [ text "secondary" ]
             , test "expect success" <|
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.find [ class "btn-success"]
-                        |> Query.has  [ text "success"]
-
+                        |> Query.find [ class "btn-success" ]
+                        |> Query.has [ text "success" ]
             , test "expect info" <|
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.find [ class "btn-info"]
-                        |> Query.has  [ text "info"]
-
+                        |> Query.find [ class "btn-info" ]
+                        |> Query.has [ text "info" ]
             , test "expect warning" <|
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.find [ class "btn-warning"]
-                        |> Query.has  [ text "warning"]
-
+                        |> Query.find [ class "btn-warning" ]
+                        |> Query.has [ text "warning" ]
             , test "expect danger" <|
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.find [ class "btn-danger"]
-                        |> Query.has  [ text "danger"]
-
+                        |> Query.find [ class "btn-danger" ]
+                        |> Query.has [ text "danger" ]
             , test "expect link" <|
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.find [ class "btn-link"]
-                        |> Query.has  [ text "link"]
+                        |> Query.find [ class "btn-link" ]
+                        |> Query.has [ text "link" ]
             ]
 
 
@@ -169,24 +140,12 @@ outlinedButtons =
     let
         html =
             Html.div []
-                [ Button.button
-                    <| Button.ButtonConfig
-                        [Button.outlinePrimary] [] [Html.text "primary"]
-                , Button.button
-                    <| Button.ButtonConfig
-                        [Button.outlineSecondary] [] [Html.text "secondary"]
-                , Button.button
-                    <| Button.ButtonConfig
-                        [Button.outlineSuccess] [] [Html.text "success"]
-                , Button.button
-                    <| Button.ButtonConfig
-                        [Button.outlineInfo] [] [Html.text "info"]
-                , Button.button
-                    <| Button.ButtonConfig
-                        [Button.outlineWarning] [] [Html.text "warning"]
-                , Button.button
-                    <| Button.ButtonConfig
-                        [Button.outlineDanger] [] [Html.text "danger"]
+                [ Button.button [Button.outlinePrimary]  [Html.text "primary"]
+                , Button.button [Button.outlineSecondary]  [Html.text "secondary"]
+                , Button.button [Button.outlineSuccess]  [Html.text "success"]
+                , Button.button [Button.outlineInfo]  [Html.text "info"]
+                , Button.button [Button.outlineWarning]  [Html.text "warning"]
+                , Button.button [Button.outlineDanger]  [Html.text "danger"]
                 ]
 
     in
@@ -240,10 +199,13 @@ fancyBlockButton : Test
 fancyBlockButton =
     let
         html = Button.linkButton
-                 { options = [Button.block, Button.large, Button.roleDanger]
-                 , attributes = [Attr.class "rounded"]
-                 , children = [Html.text "Click"]
-                 }
+                 [Button.block
+                 , Button.large
+                 , Button.roleDanger
+                 , Button.attr <| Attr.class "rounded"
+                 ]
+                 [Html.text "Click"]
+
     in
         describe "Fancy Block Button"
             [ test "expect a and text" <|
@@ -271,40 +233,27 @@ buttonGroup : Test
 buttonGroup =
     let
         html =
-            Button.buttonGroup
-                { options = []
-                , attributes = []
-                , items =
-                    [ Button.buttonItem
-                        { options = []
-                        , attributes = []
-                        , children = [ Html.text "Button1"]
-                        }
-                    , Button.buttonItem
-                        { options = [Button.roleDanger]
-                        , attributes = []
-                        , children = [ Html.text "Button1"]
-                        }
-                    ]
-                }
+            Button.buttonGroup []
+                [ Button.buttonItem [] [ Html.text "Button1" ]
+                , Button.buttonItem [ Button.roleDanger ] [ Html.text "Button1" ]
+                ]
     in
         describe "Button Group "
             [ test "expect div and btn-group class" <|
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.has  [ tag "div", class "btn-group"]
+                        |> Query.has [ tag "div", class "btn-group" ]
             , test "expect role" <|
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.has  [ attribute "role" "group"]
-
+                        |> Query.has [ attribute "role" "group" ]
             , test "expect 2 button children" <|
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.findAll [class "btn"]
+                        |> Query.findAll [ class "btn" ]
                         |> Query.count (Expect.equal 2)
             ]
 
@@ -314,16 +263,8 @@ buttonGroupWithOptions =
     let
         html =
             Html.div []
-                [ Button.buttonGroup
-                    { options = [ Button.largeGroup]
-                    , attributes = []
-                    , items = []
-                    }
-                , Button.buttonGroup
-                    { options = [ Button.verticalGroup]
-                    , attributes = []
-                    , items = []
-                    }
+                [ Button.buttonGroup [ Button.largeGroup] []
+                , Button.buttonGroup [ Button.verticalGroup] []
                 ]
 
     in
@@ -349,16 +290,8 @@ buttonToolbar =
     let
         html =
             Button.buttonToolbar []
-                [ Button.buttonGroupItem
-                    { options = []
-                    , attributes = []
-                    , items = []
-                    }
-                , Button.buttonGroupItem
-                    { options = []
-                    , attributes = []
-                    , items = []
-                    }
+                [ Button.buttonGroupItem [] []
+                , Button.buttonGroupItem [] []
                 ]
 
     in

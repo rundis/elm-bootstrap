@@ -7,6 +7,8 @@ module Bootstrap.Button
         , buttonGroup
         , buttonGroupItem
         , buttonToolbar
+        , attr
+        , groupAttr
         , small
         , smallGroup
         , large
@@ -27,8 +29,6 @@ module Bootstrap.Button
         , outlineWarning
         , outlineDanger
         , ButtonOption
-        , ButtonConfig
-        , ButtonGroupConfig
         , ButtonGroupOption
         , ButtonItem
         , ButtonGroupItem
@@ -39,11 +39,11 @@ You can also group a series of buttons together on a single line with the button
 
 
 # Buttons
-@docs button, linkButton, ButtonConfig
+@docs button, linkButton
 
 # Button options
 
-@docs ButtonOption
+@docs attr, ButtonOption
 
 ## Roled
 @docs rolePrimary, roleSecondary, roleSuccess, roleInfo, roleWarning, roleDanger, roleLink
@@ -60,11 +60,10 @@ You can also group a series of buttons together on a single line with the button
 
 # Button group
 
-@docs buttonGroup, buttonItem, linkButtonItem, ButtonItem, ButtonGroupConfig
+@docs buttonGroup, buttonItem, linkButtonItem, ButtonItem
 
 ## Group options
-@docs smallGroup, largeGroup, verticalGroup, ButtonGroupOption
-
+@docs smallGroup, largeGroup, verticalGroup, groupAttr, ButtonGroupOption
 
 
 # Button toolbar
@@ -80,29 +79,13 @@ import Bootstrap.Internal.Grid as GridInternal
 
 
 
-{-| Type alias for params required for button functions.
--}
-type alias ButtonConfig msg =
-    { options : List ButtonOption
-    , attributes : List (Html.Attribute msg)
-    , children : List (Html.Html msg)
-    }
-
-
-{-| Type alias for params required for buttonGroup
--}
-type alias ButtonGroupConfig msg =
-    { options : List ButtonGroupOption
-    , attributes : List (Html.Attribute msg)
-    , items : List (ButtonItem msg)
-    }
-
 
 {-| Type reresenting available options for styling a button group
 -}
-type ButtonGroupOption
+type ButtonGroupOption msg
     = SizeGroup GridInternal.ScreenSize
     | Vertical
+    | GroupAttr (Html.Attribute msg)
 
 
 {-| Opaque type representing a button group. Used when composing a button toolbar
@@ -119,22 +102,19 @@ type ButtonItem msg
 
 {-| Opaque type reresenting available options for styling a button
 -}
-type alias ButtonOption = ButtonInternal.ButtonOption
+type alias ButtonOption msg = ButtonInternal.ButtonOption msg
 
 
 {-| Create a toolbar of buttons by composing button groups. Separate groups by margins on the button groups.
 
     Button.buttonToolbar []
-        [ Button.buttonGroupItem
-            { options = []
-            , attributes = []
-            , items = [] -- should contain a list of button items
-            }
+        [ Button.buttonGroupItem []
+            [] -- should contain a list of button items
+
         , Button.buttonGroupItem
-            { options = []
-            , attributes = [ class "ml-2"]
-            , items = [] -- should contain a list of button items
-            }
+            [ Button.groupAttr <| class "ml-2" ]
+            [] -- should contain a list of button items
+
         ]
 
 
@@ -154,54 +134,49 @@ buttonToolbar attributes items =
 
 {-| Option to make all buttons in the given group small
 -}
-smallGroup : ButtonGroupOption
+smallGroup : ButtonGroupOption msg
 smallGroup =
     SizeGroup GridInternal.Small
 
 
 {-| Option to make all buttons in the given group large
 -}
-largeGroup : ButtonGroupOption
+largeGroup : ButtonGroupOption msg
 largeGroup =
     SizeGroup GridInternal.Large
 
 
 {-| Option to make all buttons stack vertically for a button group
 -}
-verticalGroup : ButtonGroupOption
+verticalGroup : ButtonGroupOption msg
 verticalGroup =
     Vertical
 
 
+{-| When you need to customize the group element with standard Html.Attribute use this function to create it as a group option
+-}
+groupAttr : Html.Attribute msg -> ButtonGroupOption msg
+groupAttr attr =
+    GroupAttr attr
+
 {-| Create a group of related buttons
 
     Button.buttonGroup
-        { options = [ Button.smallGroup ]
-        , attributes = []
-        , items =
-            [ Button.button
-                { options = [ Button.rolePrimary ]
-                , attributes = []
-                , children = [ text "Primary" ]
-                }
-            , Button.button
-                { options = [ Button.roleSecondary ]
-                , attributes = []
-                , children = [ text "Secondary" ]
-                }
-            ]
-        }
+        [ Button.smallGroup ]
+        [ Button.button [ Button.rolePrimary ] [ text "Primary" ]
+        , Button.button [ Button.roleSecondary ] [ text "Secondary" ]
+        ]
 
-
-* `buttonGroupConfig` config/params for a button group
   * `options` List of styling options
-  * `attributes` List of attributes
   * `items` List of button items (ref [`buttonItem`](#buttonItem) and [`linkButtonItem`](#linkButtonItem))
 
 -}
-buttonGroup : ButtonGroupConfig msg -> Html.Html msg
-buttonGroup buttonGroupConfig =
-    buttonGroupItem buttonGroupConfig
+buttonGroup :
+    List (ButtonGroupOption msg)
+    -> List (ButtonItem msg)
+    -> Html.Html msg
+buttonGroup  options items =
+    buttonGroupItem options items
         |> renderButtonGroup
 
 
@@ -209,10 +184,13 @@ buttonGroup buttonGroupConfig =
 
 The parameters are identical as for [`buttonGroup`](#buttonGroup)
 -}
-buttonGroupItem : ButtonGroupConfig msg -> ButtonGroupItem msg
-buttonGroupItem { options, attributes, items } =
+buttonGroupItem :
+    List (ButtonGroupOption msg)
+    -> List (ButtonItem msg)
+    -> ButtonGroupItem msg
+buttonGroupItem options items  =
     Html.div
-        (buttonGroupAttributes options ++ attributes)
+        (buttonGroupAttributes options)
         (List.map (\(ButtonItem elem) -> elem) items)
         |> ButtonGroupItem
 
@@ -224,29 +202,19 @@ renderButtonGroup (ButtonGroupItem elem) =
 
 {-| Create a button
 
-    Button.button
-        { options = [ Button.rolePrimary ]
-        , attributes = []
-        , children = [ text "Primary" ]
-        }
+    Button.button [ Button.rolePrimary ] [ text "Primary" ]
 
 
-    -- Alternatively
-    Button.button
-        <| Button.ButtonConfig
-            [Button.rolePrimary] [] [text "primary"]
-
-
-* `buttonConfig` config/params for a button
-  * `options` List of styling options
-  * `attributes` List of attributes
-  * `children` List of child elements
-
+* `options` List of styling options
+* `children` List of child elements
 
 -}
-button : ButtonConfig msg -> Html.Html msg
-button buttonConfig =
-    buttonItem buttonConfig
+button :
+    List (ButtonOption msg)
+    -> List (Html.Html msg)
+    -> Html.Html msg
+button options children =
+    buttonItem options children
         |> renderButton
 
 
@@ -254,39 +222,33 @@ button buttonConfig =
 
 The parameters are identical as for [`button`](#button)
 -}
-buttonItem : ButtonConfig msg -> ButtonItem msg
-buttonItem { options, attributes, children } =
+buttonItem :
+    List (ButtonOption msg)
+    -> List (Html.Html msg)
+    -> ButtonItem msg
+buttonItem options children  =
     Html.button
-        (ButtonInternal.buttonAttributes options ++ attributes)
+        (ButtonInternal.buttonAttributes options)
         children
         |> ButtonItem
 
 
 {-| Create a link that appears as a button
 
-    Button.linkButton
-        { options = [ Button.rolePrimary ]
-        , attributes = [ href "#"]
-        , children = [ text "Primary" ]
-        }
+    Button.linkButton [ Button.rolePrimary ] [ text "Primary" ]
 
 
-    -- Alternatively
-    Button.linkButton
-        <| Button.ButtonConfig
-            [Button.rolePrimary] [ href "#" ] [text "primary"]
 
-
-* `buttonConfig` config/params for a link button
-  * `options` List of styling options
-  * `attributes` List of attributes
-  * `children` List of child elements
-
+* `options` List of styling options
+* `children` List of child elements
 
 -}
-linkButton : ButtonConfig msg -> Html.Html msg
-linkButton buttonConfig =
-    linkButtonItem buttonConfig
+linkButton :
+    List (ButtonOption msg)
+    -> List (Html.Html msg)
+    -> Html.Html msg
+linkButton options children =
+    linkButtonItem options children
         |> renderButton
 
 
@@ -294,12 +256,14 @@ linkButton buttonConfig =
 
 The parameters are identical as for [`linkButton`](#linkButton)
 -}
-linkButtonItem : ButtonConfig msg -> ButtonItem msg
-linkButtonItem { options, attributes, children } =
+linkButtonItem :
+    List (ButtonOption msg)
+    -> List (Html.Html msg)
+    -> ButtonItem msg
+linkButtonItem options children =
     Html.a
         (Attributes.attribute "role" "button"
             :: ButtonInternal.buttonAttributes options
-            |> (++) attributes
         )
         children
         |> ButtonItem
@@ -309,122 +273,128 @@ renderButton : ButtonItem msg -> Html.Html msg
 renderButton (ButtonItem elem) =
     elem
 
+{-| When you need to customize a button element with standard Html.Attribute use this function to create it as a button option
+-}
+attr : Html.Attribute msg -> ButtonOption msg
+attr attr =
+    ButtonInternal.ButtonAttr attr
+
 
 {-| Option to make a button small
 -}
-small : ButtonOption
+small : ButtonOption msg
 small =
     ButtonInternal.SizeButton GridInternal.Small
 
 
 {-| Option to make a button large
 -}
-large : ButtonOption
+large : ButtonOption msg
 large =
     ButtonInternal.SizeButton GridInternal.Large
 
 
 {-| Option to color a button to signal a primary action
 -}
-rolePrimary : ButtonOption
+rolePrimary : ButtonOption msg
 rolePrimary =
     ButtonInternal.RoleButton ButtonInternal.Primary
 
 
 {-| Option to color a button to signal a secondary action
 -}
-roleSecondary : ButtonOption
+roleSecondary : ButtonOption msg
 roleSecondary =
     ButtonInternal.RoleButton ButtonInternal.Secondary
 
 
 {-| Option to indicate a successful or positive action
 -}
-roleSuccess : ButtonOption
+roleSuccess : ButtonOption msg
 roleSuccess =
     ButtonInternal.RoleButton ButtonInternal.Success
 
 
 {-| Option to indicate a info action. Typically used for alerts.
 -}
-roleInfo : ButtonOption
+roleInfo : ButtonOption msg
 roleInfo =
     ButtonInternal.RoleButton ButtonInternal.Info
 
 
 {-| Option to indicate an action that should be taken with caution
 -}
-roleWarning : ButtonOption
+roleWarning : ButtonOption msg
 roleWarning =
     ButtonInternal.RoleButton ButtonInternal.Warning
 
 
 {-| Option to indicate an action that is potentially negative or dangerous
 -}
-roleDanger : ButtonOption
+roleDanger : ButtonOption msg
 roleDanger =
     ButtonInternal.RoleButton ButtonInternal.Danger
 
 
 {-| Option to make a button look like a link element
 -}
-roleLink : ButtonOption
+roleLink : ButtonOption msg
 roleLink =
     ButtonInternal.RoleButton ButtonInternal.Link
 
 
 {-| Option to outline a button to signal a primary action
 -}
-outlinePrimary : ButtonOption
+outlinePrimary : ButtonOption msg
 outlinePrimary =
     ButtonInternal.OutlineButton ButtonInternal.Primary
 
 
 {-| Option to outline a button to signal a secondary action
 -}
-outlineSecondary : ButtonOption
+outlineSecondary : ButtonOption msg
 outlineSecondary =
     ButtonInternal.OutlineButton ButtonInternal.Secondary
 
 
 {-| Option to outline an indicatation of a successful or positive action
 -}
-outlineSuccess : ButtonOption
+outlineSuccess : ButtonOption msg
 outlineSuccess =
     ButtonInternal.OutlineButton ButtonInternal.Success
 
 
 {-| Option to outline an info action. Typically used for alerts.
 -}
-outlineInfo : ButtonOption
+outlineInfo : ButtonOption msg
 outlineInfo =
     ButtonInternal.OutlineButton ButtonInternal.Info
 
 
 {-| Option to outline an action that should be taken with caution
 -}
-outlineWarning : ButtonOption
+outlineWarning : ButtonOption msg
 outlineWarning =
     ButtonInternal.OutlineButton ButtonInternal.Warning
 
 
 {-| Option to outline an action that is potentially negative or dangerous
 -}
-outlineDanger : ButtonOption
+outlineDanger : ButtonOption msg
 outlineDanger =
     ButtonInternal.OutlineButton ButtonInternal.Danger
 
 
 {-| Option to create block level buttons—those that span the full width of a parent
 -}
-block : ButtonOption
+block : ButtonOption msg
 block =
     ButtonInternal.BlockButton
 
 
 
 
-buttonGroupAttributes : List ButtonGroupOption -> List (Html.Attribute msg)
+buttonGroupAttributes : List (ButtonGroupOption msg) -> List (Html.Attribute msg)
 buttonGroupAttributes options =
     let
         prefixClass =
@@ -442,7 +412,7 @@ buttonGroupAttributes options =
                )
 
 
-buttonGroupClass : ButtonGroupOption -> Maybe (Html.Attribute msg)
+buttonGroupClass : ButtonGroupOption msg -> Maybe (Html.Attribute msg)
 buttonGroupClass option =
     case option of
         Vertical ->
@@ -450,6 +420,9 @@ buttonGroupClass option =
 
         SizeGroup size ->
             Just <| class <| "btn-group-" ++ GridInternal.screenSizeOption size
+
+        GroupAttr attr ->
+            Just attr
 
 
 

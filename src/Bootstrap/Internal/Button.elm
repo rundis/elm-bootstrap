@@ -11,11 +11,12 @@ import Html.Attributes as Attributes exposing (class)
 
 
 
-type ButtonOption
+type ButtonOption msg
     = SizeButton GridInternal.ScreenSize
     | RoleButton Role
     | OutlineButton Role
     | BlockButton
+    | ButtonAttr (Html.Attribute msg)
 
 
 type Role
@@ -28,27 +29,30 @@ type Role
     | Link
 
 
-buttonAttributes : List ButtonOption -> List (Html.Attribute msg)
+buttonAttributes : List (ButtonOption msg)  -> List (Html.Attribute msg)
 buttonAttributes options =
-    class "btn" :: List.map buttonClass options
+    class "btn" :: List.map buttonAttribute options
 
 
 
-buttonClass : ButtonOption -> Html.Attribute msg
-buttonClass style =
-    class <|
+buttonAttribute : ButtonOption msg -> Html.Attribute msg
+buttonAttribute style =
+
         case style of
             RoleButton role ->
-                "btn-" ++ roleClass role
+                class <| "btn-" ++ roleClass role
 
             SizeButton size ->
-                "btn-" ++ GridInternal.screenSizeOption size
+                class <| "btn-" ++ GridInternal.screenSizeOption size
 
             OutlineButton role ->
-                "btn-outline-" ++ roleClass role
+                class <| "btn-outline-" ++ roleClass role
 
             BlockButton ->
-                "btn-block"
+                class <| "btn-block"
+
+            ButtonAttr attr ->
+                attr
 
 
 

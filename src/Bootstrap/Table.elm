@@ -8,10 +8,10 @@ module Bootstrap.Table
         , th
         , simpleTable
         , simpleThead
-        , simpleTbody
-        , simpleTr
-        , simpleTh
-        , simpleTd
+        , attr
+        , headAttr
+        , rowAttr
+        , cellAttr
         , inversed
         , striped
         , bordered
@@ -41,11 +41,48 @@ module Bootstrap.Table
         , CellOption
         )
 
+{-| Create simple nice and customizable tables in a fairly type safe manner !
+
+# Table
+@docs simpleTable, table
+
+## Table options
+@docs inversed, striped, bordered, hover, small, responsive, reflow, attr, TableOption
+
+
+# Table headers
+@docs simpleThead, thead, headAttr, THead
+
+
+## Header options
+@docs defaultHead, inversedHead, TableHeadOption
+
+
+# Table body
+@docs tbody, TBody
+
+
+# Rows
+@docs tr, Row
+
+## Row options
+@docs rowActive, rowInfo, rowSuccess, rowWarning, rowDanger, rowAttr, RowOption
+
+
+# Cells
+@docs td, th, Cell
+
+## Cell options
+@docs cellActive, cellInfo, cellSuccess, cellWarning, cellDanger, cellAttr, CellOption
+
+-}
 import Html
 import Html.Attributes exposing (class)
 
 
-type TableOption
+{-| Opaque type representing possible styling options for a table
+-}
+type TableOption msg
     = Inversed
     | Striped
     | Bordered
@@ -53,21 +90,31 @@ type TableOption
     | Small
     | Responsive
     | Reflow
+    | TableAttr (Html.Attribute msg)
 
 
-type TableHeadOption
+{-| Opaque type representing possible styling options for a thead element
+-}
+type TableHeadOption msg
     = InversedHead
     | DefaultHead
+    | HeadAttr (Html.Attribute msg)
 
 
-type RowOption
+{-| Opaque type representing possible styling options for a tr element (both in thead and tbody)
+-}
+type RowOption msg
     = RoledRow Role
     | InversedRow Role
+    | RowAttr (Html.Attribute msg)
 
 
-type CellOption
+{-| Opaque type representing possible styling options for a cell, ie td and th
+-}
+type CellOption msg
     = RoledCell Role
     | InversedCell Role
+    | CellAttr (Html.Attribute msg)
 
 
 type Role
@@ -77,35 +124,40 @@ type Role
     | Danger
     | Info
 
-
+{-| Opaque type representing a tr
+-}
 type Row msg
-    = Row
-        { options : List RowOption
-        , attributes : List (Html.Attribute msg)
-        , cells : List (Cell msg)
-        }
+    = Row (RowConfig msg)
 
 
+type alias RowConfig msg =
+    { options : List (RowOption msg)
+    , cells : List (Cell msg)
+    }
+
+{-| Opaque type representing a cell (tr or td)
+-}
 type Cell msg
     = Td (CellConfig msg)
     | Th (CellConfig msg)
 
 
 type alias CellConfig msg =
-    { options : List CellOption
-    , attributes : List (Html.Attribute msg)
+    { options : List (CellOption msg)
     , children : List (Html.Html msg)
     }
 
-
+{-| Opaque type representing a thead element
+-}
 type THead msg
     = THead
-        { options : List TableHeadOption
-        , attributes : List (Html.Attribute msg)
+        { options : List (TableHeadOption msg)
         , rows : List (Row msg)
         }
 
 
+{-| Opaque type representing a tbody element
+-}
 type TBody msg
     = TBody
         { attributes : List (Html.Attribute msg)
@@ -113,59 +165,90 @@ type TBody msg
         }
 
 
-inversed : TableOption
+{-| Option to give a table an inversed color scheme (dark backround, light text)
+-}
+inversed : TableOption msg
 inversed =
     Inversed
 
 
-striped : TableOption
+{-| Option to give a table a striped look (zebra style)
+-}
+striped : TableOption msg
 striped =
     Striped
 
 
-bordered : TableOption
+{-| Option to put borders around a table
+-}
+bordered : TableOption msg
 bordered =
     Bordered
 
 
-hover : TableOption
+{-| Change row coloring to highlight row when hovered over
+-}
+hover : TableOption msg
 hover =
     Hover
 
 
-small : TableOption
+{-| Option to give a more condensed table with less padding/margins
+-}
+small : TableOption msg
 small =
     Small
 
 
-responsive : TableOption
+{-| Make table scroll horizontally on small devices (under 768px). When viewing on anything larger than 768px wide, you will not see any difference in the table.
+-}
+responsive : TableOption msg
 responsive =
     Responsive
 
-
-reflow : TableOption
+{-| Turn traditional tables on their side. When using reflow, the table header becomes the first column of the table, the first row within the table body becomes the second column, the second row becomes the third column, etc. Only works out nicely for simple tables (e.g. no colspans, rowspans or multiple header rows etc.)
+-}
+reflow : TableOption msg
 reflow =
     Reflow
 
 
+{-| Allows you to create a simple default table
 
+
+* (´thead`, `tbody`) - A tuple of a thead item and a tbody item
+
+-}
 simpleTable : (THead msg,  TBody msg) -> Html.Html msg
 simpleTable (thead, tbody) =
     table
         { options = []
-        , attributes = []
         , thead = thead
         , tbody = tbody
         }
 
+{-| When you need to customize the table element with std Html.Attribute, use this function to create it as a [`TableOption`](#TableOption)
+-}
+attr : Html.Attribute msg -> TableOption msg
+attr attr =
+    TableAttr attr
+
+{-| Create a customizable table
+
+    Table.table
+        { options = [ Table.striped ] -- list of table options
+        , thead = Table.thead ... etc
+        , tbody = Table.tbody ... etc
+        }
+
+-}
 table :
-    { options : List TableOption
-    , attributes : List (Html.Attribute msg)
+    { options : List (TableOption msg)
     , thead : THead msg
     , tbody : TBody msg
     }
     -> Html.Html msg
-table { options, attributes, thead, tbody } =
+table { options, thead, tbody } =
     let
         classOptions =
             List.filter (\opt -> opt /= Responsive) options
@@ -177,7 +260,7 @@ table { options, attributes, thead, tbody } =
             List.any (\opt -> opt == Inversed) options
     in
         Html.table
-            (tableAttributes classOptions ++ attributes)
+            (tableAttributes classOptions)
             [ maybeMapInversedTHead isInversed thead |> renderTHead
             , maybeMapInversedTBody isInversed tbody |> renderTBody
             ]
@@ -209,7 +292,7 @@ maybeMapInversedTBody isTableInversed (TBody tbody) =
 
 
 mapInversedRow : Row msg -> Row msg
-mapInversedRow ((Row { options, attributes, cells }) as row) =
+mapInversedRow ((Row { options, cells }) as row) =
     let
         inversedOptions =
             List.map
@@ -225,7 +308,6 @@ mapInversedRow ((Row { options, attributes, cells }) as row) =
     in
         Row
             { options = inversedOptions
-            , attributes = attributes
             , cells = List.map mapInversedCell cells
             }
 
@@ -262,61 +344,75 @@ wrapResponsiveWhen isResponsive table =
     else
         table
 
-
-inversedHead : TableHeadOption
+{-| Option to inverse thead element. Dark background and light text color
+-}
+inversedHead : TableHeadOption msg
 inversedHead =
     InversedHead
 
-
-defaultHead : TableHeadOption
+{-| Option to color header with default color scheme.
+-}
+defaultHead : TableHeadOption msg
 defaultHead =
     DefaultHead
 
 
+{-| When you need to customize the thead element with std Html.Attribute, use this function to create a [`TableHeadOption`](#TableHeadOption)
+-}
+headAttr : Html.Attribute msg -> TableHeadOption msg
+headAttr attr =
+    HeadAttr attr
+
+
+{-| Create a default thead with one row of cells (typically th elements)
+
+    simpleThead
+        [ Table.th [] [ text "Col1" ]
+        , Table.th [] [ text "Col2" ]
+        ]
+
+-}
 simpleThead : List (Cell msg) -> THead msg
 simpleThead cells =
-    thead
-        { options = []
-        , attributes = []
-        , rows = [simpleTr cells]
-        }
+    thead [] [ tr [] cells ]
 
 
+
+{-| Create a customizable thead element
+
+* `options` List of options to style the thead element
+* `rows` List of rows (aka tr)
+-}
 thead :
-    { options : List TableHeadOption
-    , attributes : List (Html.Attribute msg)
-    , rows : List (Row msg)
-    }
+    List (TableHeadOption msg)
+    -> List (Row msg)
     -> THead msg
-thead { options, attributes, rows } =
+thead options rows =
     THead
         { options = options
-        , attributes = attributes
         , rows = rows
         }
 
 
 renderTHead : THead msg -> Html.Html msg
-renderTHead (THead { options, attributes, rows }) =
+renderTHead (THead { options, rows }) =
     Html.thead
-        (theadAttributes options  ++ attributes)
+        (theadAttributes options)
         (List.map renderRow rows)
 
 
 
-simpleTbody : List (Row msg) -> TBody msg
-simpleTbody rows =
-    tbody
-        { attributes = []
-        , rows = rows
-        }
+{-| Create a tbody element
 
+* `attributes` List of standard Elm html attributes
+* `rows` List of table row elements (tr)
+
+-}
 tbody :
-    { attributes : List (Html.Attribute msg)
-    , rows : List (Row msg)
-    }
+    List (Html.Attribute msg)
+    -> List (Row msg)
     -> TBody msg
-tbody { attributes, rows } =
+tbody attributes rows =
     TBody
         { attributes = attributes
         , rows = rows
@@ -331,7 +427,7 @@ renderTBody (TBody { attributes, rows }) =
 
 
 maybeAddScopeToFirstCell : Row msg -> Row msg
-maybeAddScopeToFirstCell ((Row { options, attributes, cells }) as row) =
+maybeAddScopeToFirstCell ((Row { options, cells }) as row) =
     case cells of
         [] ->
             row
@@ -339,7 +435,6 @@ maybeAddScopeToFirstCell ((Row { options, attributes, cells }) as row) =
         first :: rest ->
             Row
                 { options = options
-                , attributes = attributes
                 , cells = (addScopeIfTh first) :: rest
                 }
 
@@ -347,233 +442,272 @@ maybeAddScopeToFirstCell ((Row { options, attributes, cells }) as row) =
 addScopeIfTh : Cell msg -> Cell msg
 addScopeIfTh cell =
     case cell of
-        Th { options, attributes, children } ->
+        Th cellConfig ->
             Th
-                { options = options
-                , attributes = (Html.Attributes.scope "row") :: attributes
-                , children = children
+                { cellConfig
+                    | options = (cellAttr <| Html.Attributes.scope "row") :: cellConfig.options
                 }
 
         Td _ ->
             cell
 
-
-rowActive : RowOption
+{-| Style table row with active color.
+-}
+rowActive : RowOption msg
 rowActive =
     RoledRow Active
 
 
-rowSuccess : RowOption
+{-| Style table row with success color.
+-}
+rowSuccess : RowOption msg
 rowSuccess =
     RoledRow Success
 
 
-rowWarning : RowOption
+{-| Style table row with warning color.
+-}
+rowWarning : RowOption msg
 rowWarning =
     RoledRow Warning
 
 
-rowDanger : RowOption
+{-| Style table row with danger color.
+-}
+rowDanger : RowOption msg
 rowDanger =
     RoledRow Danger
 
 
-rowInfo : RowOption
+{-| Style table row with info color.
+-}
+rowInfo : RowOption msg
 rowInfo =
     RoledRow Info
 
 
+{-| When you need to customize a tr element with std Html.Attribute attributes, use this function
+-}
+rowAttr : Html.Attribute msg -> RowOption msg
+rowAttr attr =
+    RowAttr attr
 
-simpleTr : List (Cell msg) -> Row msg
-simpleTr cells =
-    tr
-        { options = []
-        , attributes = []
-        , cells = cells
-        }
 
+
+{-| Create a table row
+
+    -- For use (typically) in a tbody
+    Table.tr
+        [ Table.rowInfo ]
+        [ Table.td [] [ text "Some cell" ]
+        , Table.td [] [ text "Another cell" ]
+        ]
+
+    -- alternatively when creating a thead
+    Table.tr
+        [ Table.rowInfo ]
+        [ Table.th [] [ text "Col1" ]
+        , Table.th [] [ text "Col2" ]
+        ]
+
+-}
 tr :
-    { options : List RowOption
-    , attributes : List (Html.Attribute msg)
-    , cells : List (Cell msg)
-    }
+    List (RowOption msg)
+    -> List (Cell msg)
     -> Row msg
-tr { options, attributes, cells } =
+tr options cells  =
     Row
         { options = options
-        , attributes = attributes
         , cells = cells
         }
 
+{-| When you need to customize a td or th with std Html.Attribute attributes, use this function
+-}
+cellAttr : Html.Attribute msg -> CellOption msg
+cellAttr attr =
+    CellAttr attr
 
-cellActive : CellOption
+{-| Option to style an individual cell with active color
+-}
+cellActive : CellOption msg
 cellActive =
     RoledCell Active
 
 
-cellSuccess : CellOption
+{-| Option to style an individual cell with success color
+-}
+cellSuccess : CellOption msg
 cellSuccess =
     RoledCell Success
 
 
-cellWarning : CellOption
+{-| Option to style an individual cell with warning color
+-}
+cellWarning : CellOption msg
 cellWarning =
     RoledCell Warning
 
 
-cellDanger : CellOption
+{-| Option to style an individual cell with danger color
+-}
+cellDanger : CellOption msg
 cellDanger =
     RoledCell Danger
 
 
-cellInfo : CellOption
+{-| Option to style an individual cell with info color
+-}
+cellInfo : CellOption msg
 cellInfo =
     RoledCell Info
 
 
-simpleTd : List (Html.Html msg) -> Cell msg
-simpleTd children =
-    td
-        { options = []
-        , attributes = []
-        , children = children
-        }
+{-| Create a td element
 
+    Table.td [ Table.cellInfo ] [ text "Some info cell"]
+
+* `options` List of options for customizing
+* `children` List of child elements
+
+-}
 td :
-    { options : List CellOption
-    , attributes : List (Html.Attribute msg)
-    , children : List (Html.Html msg)
-    }
+    List (CellOption msg)
+    -> List (Html.Html msg)
     -> Cell msg
-td { options, attributes, children } =
+td options children =
     Td
         { options = options
-        , attributes = attributes
         , children = children
         }
 
-simpleTh : List (Html.Html msg) -> Cell msg
-simpleTh children =
-    th
-        { options = []
-        , attributes = []
-        , children = children
-        }
+{-| Create a th element
 
+    Table.th [ Table.cellInfo ] [ text "Some info header cell"]
+
+* `options` List of options for customizing
+* `children` List of child elements
+
+-}
 th :
-    { options : List CellOption
-    , attributes : List (Html.Attribute msg)
-    , children : List (Html.Html msg)
-    }
+    List (CellOption msg)
+    -> List (Html.Html msg)
     -> Cell msg
-th { options, attributes, children } =
+th options children =
     Th
         { options = options
-        , attributes = attributes
         , children = children
         }
 
 
 renderRow : Row msg -> Html.Html msg
-renderRow (Row { options, attributes, cells }) =
+renderRow (Row { options, cells }) =
     Html.tr
-        (rowAttributes options ++ attributes)
+        (rowAttributes options )
         (List.map renderCell cells)
 
 
 renderCell : Cell msg -> Html.Html msg
 renderCell cell =
     case cell of
-        Td { options, attributes, children } ->
+        Td { options, children } ->
             Html.td
-                (cellAttributes options  ++ attributes)
+                (cellAttributes options)
                 children
 
-        Th { options, attributes, children } ->
+        Th { options, children } ->
             Html.th
-                (cellAttributes options ++ attributes)
+                (cellAttributes options)
                 children
 
 
-tableAttributes : List TableOption -> List (Html.Attribute msg)
+tableAttributes : List (TableOption msg) -> List (Html.Attribute msg)
 tableAttributes options =
     (class "table")
-        :: List.map tableClass options
+        :: (List.map tableClass options
+            |> List.filterMap identity)
 
 
-tableClass : TableOption -> Html.Attribute msg
+tableClass : (TableOption msg) -> Maybe (Html.Attribute msg)
 tableClass option =
-    (case option of
+    case option of
         Inversed ->
-            "table-inverse"
+            Just <| class "table-inverse"
 
         Striped ->
-            "table-striped"
+            Just <| class "table-striped"
 
         Bordered ->
-            "table-bordered"
+            Just <| class "table-bordered"
 
         Hover ->
-            "table-hover"
+            Just <| class "table-hover"
 
         Small ->
-            "table-sm"
+            Just <| class "table-sm"
 
         Responsive ->
-            ""
+            Nothing
 
         Reflow ->
-            "table-reflow")
-            |> class
+            Just <| class "table-reflow"
+
+        TableAttr attr ->
+            Just attr
 
 
-theadAttributes : List TableHeadOption -> List (Html.Attribute msg)
+theadAttributes : List (TableHeadOption msg) -> List (Html.Attribute msg)
 theadAttributes options =
-    List.map theadClass options
+    List.map theadAttribute options
 
 
-theadClass : TableHeadOption -> Html.Attribute msg
-theadClass option =
-    class <|
+theadAttribute : TableHeadOption msg -> Html.Attribute msg
+theadAttribute option =
         case option of
             InversedHead ->
-                "thead-inverse"
+                class <| "thead-inverse"
 
             DefaultHead ->
-                "thead-default"
+                class <| "thead-default"
+
+            HeadAttr attr ->
+                attr
 
 
-rowAttributes : List RowOption -> List (Html.Attribute msg)
+rowAttributes : List (RowOption msg) -> List (Html.Attribute msg)
 rowAttributes options =
     List.map rowClass options
 
 
-rowClass : RowOption -> Html.Attribute msg
+rowClass : RowOption msg -> Html.Attribute msg
 rowClass option =
-    class <|
-        case option of
-            RoledRow role ->
-                "table-" ++ roleOption role
+    case option of
+        RoledRow role ->
+            class <| "table-" ++ roleOption role
 
-            InversedRow role ->
-                "bg-" ++ roleOption role
+        InversedRow role ->
+            class <| "bg-" ++ roleOption role
+
+        RowAttr attr ->
+            attr
 
 
-cellAttributes : List CellOption -> List (Html.Attribute msg)
+cellAttributes : List (CellOption msg) -> List (Html.Attribute msg)
 cellAttributes options =
-    List.map cellClass options
+    List.map cellAttribute options
 
 
 
-cellClass : CellOption -> Html.Attribute msg
-cellClass option =
-    class <|
+cellAttribute : CellOption msg -> Html.Attribute msg
+cellAttribute option =
         case option of
             RoledCell role ->
-                "table-" ++ roleOption role
+                class <| "table-" ++ roleOption role
 
             InversedCell role ->
-                "bg-" ++ roleOption role
+                class <| "bg-" ++ roleOption role
+
+            CellAttr attr ->
+                attr
 
 
 roleOption : Role -> String

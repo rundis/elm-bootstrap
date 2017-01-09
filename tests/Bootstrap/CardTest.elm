@@ -25,15 +25,10 @@ all =
         ]
 
 
-
 emptySimpleCard : Test
 emptySimpleCard =
     let
-        html = Card.simpleCard
-                { options = []
-                , items =
-                    []
-                }
+        html = Card.simpleCard [] []
     in
         describe "Simple card no options"
             [ test "expect card and block classes" <|
@@ -48,47 +43,41 @@ emptySimpleCard =
 notSoSimpleCard : Test
 notSoSimpleCard =
     let
-        html = Card.simpleCard
-                { options =
-                    [ Card.align Text.alignXsCenter
-                    , Card.outlineInfo
-                    ]
-                , items =
-                    [ Card.titleH1 [] [ Html.text "titleh1"]
-                    , Card.text [] [ Html.text "cardtext" ]
-                    , Card.link [] [ Html.text "link" ]
-                    , Card.blockQuote [] [ Html.text "blockquote" ]
-                    ]
-                }
+        html =
+            Card.simpleCard
+                [ Card.align Text.alignXsCenter
+                , Card.outlineInfo
+                ]
+                [ Card.titleH1 [] [ Html.text "titleh1" ]
+                , Card.text [] [ Html.text "cardtext" ]
+                , Card.link [] [ Html.text "link" ]
+                , Card.blockQuote [] [ Html.text "blockquote" ]
+                ]
     in
         describe "Simple card with options and items"
             [ test "expect classes" <|
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.has  [ classes ["card", "card-block", "card-outline-info", "text-xs-center"] ]
-
+                        |> Query.has [ classes [ "card", "card-block", "card-outline-info", "text-xs-center" ] ]
             , test "expect title" <|
                 \() ->
                     html
                         |> Query.fromHtml
                         |> Query.find [ tag "h1" ]
                         |> Query.has [ class "card-title", text "titleh1" ]
-
             , test "expect text paragraph" <|
                 \() ->
                     html
                         |> Query.fromHtml
                         |> Query.find [ tag "p" ]
                         |> Query.has [ class "card-text", text "cardtext" ]
-
             , test "expect link" <|
                 \() ->
                     html
                         |> Query.fromHtml
                         |> Query.find [ tag "a" ]
                         |> Query.has [ class "card-link", text "link" ]
-
             , test "expect blockquote" <|
                 \() ->
                     html
@@ -108,12 +97,7 @@ cardFullMonty =
                  , footer = Just <| Card.footer [] [ Html.text "Footer" ]
                  , imgTop = Just <| Card.imgTop [ Attr.src "/imgtop.jpg"] []
                  , imgBottom = Just <| Card.imgBottom [ Attr.src "/imgbottom.jpg"] []
-                 , blocks =
-                    [ Card.block
-                        { options = []
-                        , items = [ Card.text [] [ Html.text "cardblock" ] ]
-                        }
-                    ]
+                 , blocks = [ Card.block [] [ Card.text [] [ Html.text "cardblock" ] ] ]
                 }
     in
         describe "Card with everything in it"
@@ -234,7 +218,4 @@ columns =
 cardList : Int -> List (Card.Card msg)
 cardList count =
     List.repeat count <|
-        Card.simpleCardItem
-            { options = []
-            , items = []
-            }
+        Card.simpleCardItem [] []

@@ -4,6 +4,8 @@ module Bootstrap.Card
         , cardItem
         , simpleCard
         , simpleCardItem
+        , attr
+        , blockAttr
         , align
         , roleDanger
         , roleInfo
@@ -72,7 +74,7 @@ module Bootstrap.Card
 ## Card options
 You can customize the look and feel of your cards using the following options
 
-@docs CardOption, align, rolePrimary, roleSuccess, roleInfo, roleWarning, roleDanger, outlinePrimary, outlineSuccess, outlineInfo, outlineWarning, outlineDanger
+@docs CardOption, align, rolePrimary, roleSuccess, roleInfo, roleWarning, roleDanger, outlinePrimary, outlineSuccess, outlineInfo, outlineWarning, outlineDanger, attr
 
 
 # Blocks
@@ -85,7 +87,7 @@ You can customize the look and feel of your cards using the following options
 
 
 ## Misc
-@docs link, text, blockQuote
+@docs link, text, blockQuote, blockAttr
 
 ## Block options
 @docs BlockOption, blockAlign
@@ -114,16 +116,18 @@ import Bootstrap.Internal.Text as TextInternal
 
 {-| Opaque type representing options for customizing the styling of a card
 -}
-type CardOption
+type CardOption msg
     = Aligned Text.HAlign
     | Roled Role
     | Outlined Role
+    | CardAttr (Html.Attribute msg)
 
 
 {-| Opaque type representing options for styling a card block
 -}
-type BlockOption
+type BlockOption msg
     = AlignedBlock Text.HAlign
+    | BlockAttr (Html.Attribute msg)
 
 
 type Role
@@ -186,69 +190,74 @@ type BlockItem msg
 
 {-| Option to specify horizonal alignment of card contents
 -}
-align : Text.HAlign -> CardOption
+align : Text.HAlign -> CardOption msg
 align align =
     Aligned align
 
 {-| Give cards a primary background color and appropriate foreground color -}
-rolePrimary : CardOption
+rolePrimary : CardOption msg
 rolePrimary =
     Roled Primary
 
 
 {-| Give cards a success background color and appropriate foreground color -}
-roleSuccess : CardOption
+roleSuccess : CardOption msg
 roleSuccess =
     Roled Success
 
 
 {-| Give cards a info background color and appropriate foreground color -}
-roleInfo : CardOption
+roleInfo : CardOption msg
 roleInfo =
     Roled Info
 
 
 {-| Give cards a warning background color and appropriate foreground color -}
-roleWarning : CardOption
+roleWarning : CardOption msg
 roleWarning =
     Roled Warning
 
 
 {-| Give cards a danger background color and appropriate foreground color -}
-roleDanger : CardOption
+roleDanger : CardOption msg
 roleDanger =
     Roled Danger
 
 
 {-| Give cards a primary colored outline -}
-outlinePrimary : CardOption
+outlinePrimary : CardOption msg
 outlinePrimary =
     Outlined Primary
 
 
 {-| Give cards a success colored outline -}
-outlineSuccess : CardOption
+outlineSuccess : CardOption msg
 outlineSuccess =
     Outlined Success
 
 
 {-| Give cards a info colored outline -}
-outlineInfo : CardOption
+outlineInfo : CardOption msg
 outlineInfo =
     Outlined Info
 
 
 {-| Give cards a warning colored outline -}
-outlineWarning : CardOption
+outlineWarning : CardOption msg
 outlineWarning =
     Outlined Warning
 
 
 {-| Give cards a danger colored outline -}
-outlineDanger : CardOption
+outlineDanger : CardOption msg
 outlineDanger =
     Outlined Danger
 
+{-| When you need to customize a card item with std Html.Attribute attributes use this function
+-}
+attr : Html.Attribute msg -> CardOption msg
+attr attr =
+    CardAttr attr
 
 {-| Create a card
 
@@ -271,7 +280,7 @@ outlineDanger =
         }
 -}
 card :
-    { options : List CardOption
+    { options : List (CardOption msg)
     , header : Maybe (CardHeader msg)
     , footer : Maybe (CardFooter msg)
     , imgTop : Maybe (CardImageTop msg)
@@ -286,19 +295,17 @@ card config =
 {-| When you just need a simple card use this function that creates a card with a single card block
 
     Card.simpleCard
-        { options = [ Card.roleInfo ]
-        , items = [ Card.text [] [ text "An info colored card" ] ]
-        }
+        [ Card.roleInfo ]
+        [ Card.text [] [ text "An info colored card" ] ]
 
 
 -}
 simpleCard :
-    { options : List CardOption
-    , items : List (BlockItem msg)
-    }
+    List (CardOption msg)
+    -> List (BlockItem msg)
     -> Html.Html msg
-simpleCard config =
-    simpleCardItem config
+simpleCard options items =
+    simpleCardItem options items
         |> render
 
 
@@ -310,11 +317,10 @@ simpleCard config =
 
 -}
 simpleCardItem :
-    { options : List CardOption
-    , items : List (BlockItem msg)
-    }
+    List (CardOption msg)
+    -> List (BlockItem msg)
     -> Card msg
-simpleCardItem { options, items } =
+simpleCardItem options items =
     Html.div
         (class "card-block" :: cardAttributes options)
         (List.map (\(BlockItem e) -> e) items)
@@ -330,7 +336,7 @@ simpleCardItem { options, items } =
 
 -}
 cardItem :
-    { options : List CardOption
+    { options : List (CardOption msg)
     , header : Maybe (CardHeader msg)
     , footer : Maybe (CardFooter msg)
     , imgTop : Maybe (CardImageTop msg)
@@ -487,9 +493,16 @@ headerPrivate elemFn attributes children =
     Card.blockAlign TextXsCenter
 
 -}
-blockAlign : Text.HAlign -> BlockOption
+blockAlign : Text.HAlign -> BlockOption msg
 blockAlign align =
     AlignedBlock align
+
+
+{-| When you need to customize a block item with std Html.Attribute attributes use this function
+-}
+blockAttr : Html.Attribute msg -> BlockOption msg
+blockAttr attr =
+    BlockAttr attr
 
 
 {-| The building block of a card is the card block. Use it whenever you need a padded section within a card.
@@ -500,11 +513,10 @@ blockAlign align =
         }
 -}
 block :
-    { options : List BlockOption
-    , items : List (BlockItem msg)
-    }
+    List (BlockOption msg)
+    -> List (BlockItem msg)
     -> CardBlock msg
-block { options, items } =
+block options items =
     Html.div
         (blockAttributes options)
         (List.map (\(BlockItem e) -> e) items)
@@ -661,12 +673,12 @@ columns cards =
 -- PRIVATE Helpers etc
 
 
-cardAttributes : List CardOption -> List (Html.Attribute msg)
+cardAttributes : List (CardOption msg) -> List (Html.Attribute msg)
 cardAttributes options =
     class "card" :: List.map cardAttribute options
 
 
-cardAttribute : CardOption -> Html.Attribute msg
+cardAttribute : CardOption msg -> Html.Attribute msg
 cardAttribute option =
     case option of
         Aligned align ->
@@ -679,17 +691,24 @@ cardAttribute option =
             class <| "card-outline-" ++ roleOption role
 
 
-blockAttributes : List BlockOption -> List (Html.Attribute msg)
+        CardAttr attr ->
+            attr
+
+
+blockAttributes : List (BlockOption msg) -> List (Html.Attribute msg)
 blockAttributes options =
-    class "card-block" :: List.map blockClass options
+    class "card-block" :: List.map blockAttribute options
 
 
 
-blockClass : BlockOption -> Html.Attribute msg
-blockClass option =
+blockAttribute : BlockOption msg -> Html.Attribute msg
+blockAttribute option =
     case option of
         AlignedBlock align ->
             TextInternal.textAlignClass align
+
+        BlockAttr attr ->
+            attr
 
 
 roleOption : Role -> String

@@ -167,7 +167,7 @@ view model =
 
 mainContent : Model -> Html Msg
 mainContent model =
-    Grid.container [style [("margin-top", "60px")] ]
+    Grid.container [ style [ ( "margin-top", "60px" ) ] ]
         [ simpleForm
         , gridForm
         , Grid.row
@@ -214,14 +214,12 @@ mainContent model =
                     , attributes = [ colStyle ]
                     , children =
                         [ Button.linkButton
-                            { options =
-                                [ Button.small
-                                , Button.outlineSuccess
-                                , Button.block
-                                ]
-                            , attributes = [ onClick <| ModalMsg Modal.visibleState ]
-                            , children = [ text "Show modal" ]
-                            }
+                            [ Button.small
+                            , Button.outlineSuccess
+                            , Button.block
+                            , Button.attr <| onClick <| ModalMsg Modal.visibleState
+                            ]
+                            [ text "Show modal" ]
                         ]
                     }
                 ]
@@ -329,7 +327,7 @@ simpleForm : Html Msg
 simpleForm =
     Html.form
         []
-        [ h1 [] [text "Form"]
+        [ h1 [] [ text "Form" ]
         , Form.group
             { validationResult = Just <| Form.validationResult Form.Success "This went well"
             , label = Form.textLabelControl "SimpleInput"
@@ -512,11 +510,11 @@ modal modalState =
         , body = Just <| modalBody
         , footer =
             Just <|
-                Button.button <|
-                    Button.ButtonConfig
-                        [ Button.outlinePrimary ]
-                        [ onClick <| ModalMsg Modal.hiddenState ]
-                        [ text "Close" ]
+                Button.button
+                    [ Button.outlinePrimary
+                    , Button.attr <| onClick <| ModalMsg Modal.hiddenState
+                    ]
+                    [ text "Close" ]
         , options = [ Modal.small ]
         }
         modalState
@@ -590,7 +588,7 @@ listGroup2 =
             , options = []
             , children =
                 [ ListGroup.h5 [] [ text "Item 1" ]
-                , ListGroup.text [] [ text "Some text paragraph"]
+                , ListGroup.text [] [ text "Some text paragraph" ]
                 ]
             }
         , ListGroup.anchorItem
@@ -598,7 +596,7 @@ listGroup2 =
             , options = []
             , children =
                 [ ListGroup.h5 [] [ text "Item 2" ]
-                , ListGroup.text [] [ text "Some other text paragraph"]
+                , ListGroup.text [] [ text "Some other text paragraph" ]
                 ]
             }
         ]
@@ -673,13 +671,10 @@ cards =
                 , imgTop = Nothing
                 , imgBottom = Nothing
                 , blocks =
-                    [ Card.block
-                        { options = []
-                        , items =
-                            [ Card.titleH4 [] [ text "Primary outlined" ]
-                            , Card.text [] [ text "Outlined primary card. Cool." ]
-                            ]
-                        }
+                    [ Card.block []
+                        [ Card.titleH4 [] [ text "Primary outlined" ]
+                        , Card.text [] [ text "Outlined primary card. Cool." ]
+                        ]
                     ]
                 }
             , Card.cardItem
@@ -690,182 +685,105 @@ cards =
                 , imgBottom = Nothing
                 , blocks =
                     [ Card.block
-                        { options = [ Card.blockAlign Text.alignXsLeft ]
-                        , items =
-                            [ Card.titleH4 [] [ text "Success outlined" ]
-                            , Card.text [] [ text "The success of outlining cards is staggering" ]
-                            , Card.link [ href "#" ] [ text "Link 1" ]
-                            , Card.link [ href "#" ] [ text "Link 2" ]
-                            ]
-                        }
+                        [ Card.blockAlign Text.alignXsLeft ]
+                        [ Card.titleH4 [] [ text "Success outlined" ]
+                        , Card.text [] [ text "The success of outlining cards is staggering" ]
+                        , Card.link [ href "#" ] [ text "Link 1" ]
+                        , Card.link [ href "#" ] [ text "Link 2" ]
+                        ]
                     ]
                 }
             ]
         , Card.group
             [ Card.simpleCardItem
-                { options = [ Card.roleDanger, Card.align Text.alignXsCenter ]
-                , items =
-                    [ Card.titleH4 [] [ text "Danger inverse " ]
-                    , Card.text [] [ text " A Simple card with a dangerous role" ]
-                    , Card.link [ href "#" ] [ text "A Link !" ]
-                    ]
-                }
+                [ Card.roleDanger, Card.align Text.alignXsCenter ]
+                [ Card.titleH4 [] [ text "Danger inverse " ]
+                , Card.text [] [ text " A Simple card with a dangerous role" ]
+                , Card.link [ href "#" ] [ text "A Link !" ]
+                ]
             , Card.simpleCardItem
-                { options = [ Card.roleWarning, Card.align Text.alignXsLeft ]
-                , items =
-                    [ Card.titleH4 [] [ text "Warning inverse " ]
-                    , Card.text [] [ text " A Simple card with a warning role" ]
-                    ]
-                }
+                [ Card.roleWarning, Card.align Text.alignXsLeft ]
+                [ Card.titleH4 [] [ text "Warning inverse " ]
+                , Card.text [] [ text " A Simple card with a warning role" ]
+                ]
             , Card.simpleCardItem
-                { options = [ Card.roleInfo, Card.align Text.alignXsRight ]
-                , items =
-                    [ Card.titleH4 [] [ text "Info inverse " ]
-                    , Card.text [] [ text " A Simple card with a info role" ]
-                    ]
-                }
+                [ Card.roleInfo, Card.align Text.alignXsRight ]
+                [ Card.titleH4 [] [ text "Info inverse " ]
+                , Card.text [] [ text " A Simple card with a info role" ]
+                ]
             ]
         , Card.simpleCard
-            { options = [ Card.outlineSuccess ]
-            , items =
-                [ Card.text [] [ text "Just some text you know" ] ]
-            }
+            [ Card.outlineSuccess ]
+            [ Card.text [] [ text "Just some text you know" ] ]
         ]
 
 
-tables : Html msg
+tables : Html Msg
 tables =
     div []
-        [ h1 [] [text "Simple Table"]
+        [ h1 [] [ text "Simple Table" ]
         , Table.simpleTable
             ( Table.simpleThead
-                [ Table.simpleTh [ text "Col 1"]
-                , Table.simpleTh [ text "Col 2"]
-                , Table.simpleTh [ text "Col 3"]
+                [ Table.th [] [ text "Col 1" ]
+                , Table.th [] [ text "Col 2" ]
+                , Table.th [] [ text "Col 3" ]
                 ]
-            , Table.simpleTbody
-                [ Table.simpleTr
-                    [ Table.simpleTd [text "Hello"]
-                    , Table.simpleTd [text "Hello"]
-                    , Table.simpleTd [text "Hello"]
+            , Table.tbody []
+                [ Table.tr []
+                    [ Table.td [] [ text "Hello" ]
+                    , Table.td [] [ text "Hello" ]
+                    , Table.td [] [ text "Hello" ]
                     ]
-                , Table.simpleTr
-                    [ Table.simpleTd [text "There"]
-                    , Table.simpleTd [text "There"]
-                    , Table.simpleTd [text "There"]
+                , Table.tr []
+                    [ Table.td [] [ text "There" ]
+                    , Table.td [] [ text "There" ]
+                    , Table.td [] [ text "There" ]
                     ]
-                , Table.simpleTr
-                    [ Table.simpleTd [text "Dude"]
-                    , Table.simpleTd [text "Dude"]
-                    , Table.simpleTd [text "Dude"]
+                , Table.tr []
+                    [ Table.td [] [ text "Dude" ]
+                    , Table.td [] [ text "Dude" ]
+                    , Table.td [] [ text "Dude" ]
                     ]
                 ]
             )
-
-        , h1 [] [text "Whacky Table"]
+        , h1 [] [ text "Whacky Table" ]
         , Table.table
-            { options = [Table.hover, Table.bordered, Table.small]
-            , attributes = []
+            { options =
+                [ Table.hover
+                , Table.bordered
+                , Table.small
+                , Table.attr <| onClick NoOp
+                ]
             , thead =
                 Table.thead
-                    { options = [Table.inversedHead]
-                    , attributes = []
-                    , rows =
-                        [ Table.tr
-                            { options = []
-                            , attributes = []
-                            , cells =
-                                [ Table.th
-                                    { options = [Table.cellWarning]
-                                    , attributes = []
-                                    , children = [ text "Col 1"]
-                                    }
-                                , Table.th
-                                    { options = []
-                                    , attributes = []
-                                    , children = [ text "Col 2"]
-                                    }
-                                , Table.th
-                                    { options = []
-                                    , attributes = []
-                                    , children = [ text "Col 3"]
-                                    }
-                                ]
-                            }
+                    [ Table.inversedHead ]
+                    [ Table.tr []
+                        [ Table.th [ Table.cellWarning ] [ text "Col 1" ]
+                        , Table.th [] [ text "Col 2" ]
+                        , Table.th [] [ text "Col 3" ]
                         ]
-                    }
+                    ]
             , tbody =
-                Table.tbody
-                    { attributes = []
-                    , rows =
-                        [ Table.tr
-                            { options = [Table.rowSuccess]
-                            , attributes = []
-                            , cells =
-                                [ Table.th
-                                    { options = []
-                                    , attributes = []
-                                    , children = [text "Hello"]
-                                    }
-                                , Table.td
-                                    { options = []
-                                    , attributes = []
-                                    , children = [text "Hello"]
-                                    }
-                                , Table.td
-                                    { options = []
-                                    , attributes = []
-                                    , children = [text "Hello"]
-                                    }
-                                ]
-                            }
-                        , Table.tr
-                            { options = []
-                            , attributes = []
-                            , cells =
-                                [ Table.th
-                                    { options = [Table.cellInfo]
-                                    , attributes = []
-                                    , children = [text "There"]
-                                    }
-                                , Table.td
-                                    { options = []
-                                    , attributes = []
-                                    , children = [text "There"]
-                                    }
-                                , Table.td
-                                    { options = []
-                                    , attributes = []
-                                    , children = [text "There"]
-                                    }
-                                ]
-                            }
-                        , Table.tr
-                            { options = []
-                            , attributes = []
-                            , cells =
-                                [ Table.th
-                                    { options = []
-                                    , attributes = []
-                                    , children = [text "Dude"]
-                                    }
-                                , Table.td
-                                    { options = []
-                                    , attributes = []
-                                    , children = [text "Dude"]
-                                    }
-                                , Table.td
-                                    { options = []
-                                    , attributes = []
-                                    , children = [text "Dude"]
-                                    }
-                                ]
-                            }
+                Table.tbody []
+                    [ Table.tr
+                        [ Table.rowSuccess ]
+                        [ Table.th [] [ text "Hello" ]
+                        , Table.td [] [ text "Hello" ]
+                        , Table.td [] [ text "Hello" ]
                         ]
-                    }
+                    , Table.tr []
+                        [ Table.th [ Table.cellInfo ] [ text "There" ]
+                        , Table.td [] [ text "There" ]
+                        , Table.td [] [ text "There" ]
+                        ]
+                    , Table.tr []
+                        [ Table.th [] [ text "Dude" ]
+                        , Table.td [] [ text "Dude" ]
+                        , Table.td [] [ text "Dude" ]
+                        ]
+                    ]
             }
         ]
-
 
 
 rowStyle : Attribute Msg

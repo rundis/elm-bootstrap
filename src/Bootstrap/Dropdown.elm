@@ -37,7 +37,7 @@ type State
 
 
 type alias DropdownToggleConfig msg =
-    { options : List Button.ButtonOption
+    { options : List (Button.ButtonOption msg)
     , attributes : List (Html.Attribute msg)
     , children : List (Html.Html msg)
     }
