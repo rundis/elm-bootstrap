@@ -1,17 +1,19 @@
 module Tests exposing (..)
 
 import Test exposing (..)
-import Bootstrap.TagTest as TagTest
 import Bootstrap.AlertTest as AlertTest
 import Bootstrap.ButtonTest as ButtonTest
 import Bootstrap.CardTest as CardTest
+import Bootstrap.TableTest as TableTest
+import Bootstrap.TagTest as TagTest
 
 {-| @ltignore -}
 all : Test
 all =
     Test.concat
-        [ TagTest.all
-        , AlertTest.all
+        [ AlertTest.all
         , ButtonTest.all
         , CardTest.all
+        , TagTest.all
+        , TableTest.all
         ]

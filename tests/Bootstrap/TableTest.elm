@@ -10,8 +10,18 @@ import Test.Html.Query as Query
 import Test.Html.Selector exposing (text, tag, class, classes, attribute)
 
 
-
-all = ""
+{-| @ltignore
+-}
+all : Test
+all =
+    Test.concat
+        [ superSimple
+        , styledTable
+        , reflowedTable
+        , styledThead
+        , styledTdOrRowInBody
+        , styledThOrRowInHead
+        ]
 
 
 
@@ -152,6 +162,125 @@ styledThead =
                         |> Query.fromHtml
                         |> Query.find [ tag "thead"]
                         |> Query.has [ class "thead-default"]
+            ]
+
+
+styledTdOrRowInBody : Test
+styledTdOrRowInBody =
+    let
+        html tableOptions =
+            Table.table
+                { options = tableOptions
+                , thead = Table.simpleThead [ Table.th [] [] ]
+                , tbody =
+                    Table.tbody []
+                        [ Table.tr
+                            [ Table.rowAttr <| Attr.align "left"
+                            , Table.rowSuccess
+                            ]
+                            [ Table.td
+                                [ Table.cellActive
+                                , Table.cellAttr <| Attr.align "left"
+                                ]
+                                [ Html.text "cell" ]
+                            ]
+                        ]
+                }
+    in
+        describe "Styled cell "
+            [ test "expect td active class and custom attribute" <|
+                \() ->
+                    html []
+                        |> Query.fromHtml
+                        |> Query.find [ tag "td" ]
+                        |> Query.has [ class "table-active", attribute "align" "left" ]
+
+             , test "expect td active bg class when table inversed" <|
+                \() ->
+                    html [ Table.inversed ]
+                        |> Query.fromHtml
+                        |> Query.find [ tag "td" ]
+                        |> Query.has [ class "bg-active"]
+
+            , test "expect tr success class and custom attribute" <|
+                \() ->
+                    html []
+                        |> Query.fromHtml
+                        |> Query.find [ tag "tbody"]
+                        |> Query.children []
+                        |> Query.first
+                        |> Query.has [ class "table-success", attribute "align" "left" ]
+
+            , test "expect tr success bg class when table inversed" <|
+                \() ->
+                    html [ Table.inversed ]
+                        |> Query.fromHtml
+                        |> Query.find [ tag "tbody"]
+                        |> Query.children []
+                        |> Query.first
+                        |> Query.has [ class "bg-success" ]
+            ]
+
+
+styledThOrRowInHead : Test
+styledThOrRowInHead =
+    let
+        html tableOptions headOptions =
+            Table.table
+                { options = tableOptions
+                , thead = Table.thead
+                            headOptions
+                            [ Table.tr
+                                [ Table.rowInfo ]
+                                [ Table.th
+                                    [ Table.cellActive ]
+                                    [ Html.text "col" ]
+                                ]
+                            ]
+                , tbody =
+                    Table.tbody []
+                        [ Table.tr [] [ Table.td [] [] ] ]
+                }
+    in
+        describe "Styled cell "
+            [ test "expect th active class" <|
+                \() ->
+                    html [] []
+                        |> Query.fromHtml
+                        |> Query.find [ tag "th" ]
+                        |> Query.has [ class "table-active" ]
+
+             , test "expect th active bg class when table inversed" <|
+                \() ->
+                    html [ Table.inversed ] []
+                        |> Query.fromHtml
+                        |> Query.find [ tag "th" ]
+                        |> Query.has [ class "bg-active"]
+
+            , test "expect th active bg class when thead inversed" <|
+                \() ->
+                    html [ ] [ Table.inversedHead ]
+                        |> Query.fromHtml
+                        |> Query.find [ tag "th" ]
+                        |> Query.has [ class "bg-active"]
+
+            , test "expect tr info class" <|
+                \() ->
+                    html [] []
+                        |> Query.fromHtml
+                        |> Query.find [ tag "thead"]
+                        |> Query.children []
+                        |> Query.first
+                        |> Query.has [ class "table-info" ]
+
+            , test "expect tr info bg class when table inversed" <|
+                \() ->
+                    html [ ] [ Table.inversedHead ]
+                        |> Query.fromHtml
+                        |> Query.find [ tag "thead"]
+                        |> Query.children []
+                        |> Query.first
+                        |> Query.has [ class "bg-info" ]
             ]
 
 
