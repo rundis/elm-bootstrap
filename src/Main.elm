@@ -325,73 +325,39 @@ simpleForm =
         , Form.group
             { validationResult = Just <| Form.validationResult Form.Success "This went well"
             , label = Form.textLabelControl "SimpleInput"
-            , control =
-                Form.textControl
-                    { id = Just "simpleInput"
-                    , options = []
-                    , attributes = [ class "form-control-success" ]
-                    }
+            , control = Form.textControl [ Form.inputId "simpleInput"]
             }
         , Form.groupSimple
             { label = Form.textLabelControl "Sample select"
             , control =
                 Form.selectControl
-                    { id = Just "simpleSelect"
-                    , options = []
-                    , attributes = []
-                    , items =
-                        [ Form.selectItem [] [ text "Option 1" ]
-                        , Form.selectItem [] [ text "Option 2" ]
-                        ]
-                    }
+                    [Form.inputId "simpleSelect"]
+                    [ Form.selectItem [] [ text "Option 1" ]
+                    , Form.selectItem [] [ text "Option 2" ]
+                    ]
             }
+        , Form.checkbox [] <| Form.textLabelControl "Check me!"
         , Form.checkbox
-            { label = Form.textLabelControl "Check me!"
-            , options = []
-            , attributes = []
-            }
-        , Form.checkbox
-            { label = Form.textLabelControl "Can't check me!"
-            , options = [ Form.checkDisabled ]
-            , attributes = []
-            }
+            [ Form.checkDisabled] <| Form.textLabelControl "Can't check me!"
+
         , Form.radioGroup
             { label = Form.textLabelControl "My radios"
             , name = "MyRadios"
             , radios =
-                [ Form.radioControl
-                    { label = Form.textLabelControl "Radio 1"
-                    , options = []
-                    , attributes = []
-                    }
-                , Form.radioControl
-                    { label = Form.textLabelControl "Radio 2"
-                    , options = []
-                    , attributes = []
-                    }
-                , Form.radioControl
-                    { label = Form.textLabelControl "Radio 3"
-                    , options = [ Form.checkDisabled ]
-                    , attributes = []
-                    }
+                [ Form.radioControl [] <| Form.textLabelControl "Radio 1"
+                , Form.radioControl [] <| Form.textLabelControl "Radio 2"
+                , Form.radioControl [] <| Form.textLabelControl "Radio 3"
                 ]
             }
         , Form.group
             { validationResult = Nothing
-            , label =
-                Form.labelControl
-                    { text = "Small input"
-                    , options =
-                        []
-                        --[ Form.labelSize Form.Small ]
-                    , attributes = []
-                    }
+            , label = Form.labelControl [] [ text "Small input"]
             , control =
                 Form.textControl
-                    { id = Just "smallinput"
-                    , options = [ Form.inputSmall ]
-                    , attributes = [ disabled True ]
-                    }
+                    [ Form.inputId "smallinput"
+                    , Form.inputSmall
+                    , Form.inputAttr <| disabled True
+                    ]
             }
         ]
 
@@ -404,12 +370,7 @@ gridForm =
         , Form.groupRowSimple
             { label = Form.textLabelControl "TextInput"
             , labelWidth = Grid.colXsFour
-            , control =
-                Form.textControl
-                    { id = Just "rowtextinput"
-                    , options = []
-                    , attributes = []
-                    }
+            , control = Form.textControl [ Form.inputId "rowtextinput" ]
             , controlWidth = Grid.colXsEight
             }
         , Form.groupRowSimple
@@ -417,43 +378,31 @@ gridForm =
             , labelWidth = Grid.colXsFour
             , control =
                 Form.selectControl
-                    { id = Just "rowSimpleSelect"
-                    , options = []
-                    , attributes = []
-                    , items =
+                    [ Form.inputId "rowSimpleSelect" ]
                         [ Form.selectItem [] [ text "Option 1" ]
                         , Form.selectItem [] [ text "Option 2" ]
                         ]
-                    }
+
             , controlWidth = Grid.colXsEight
             }
         , Form.groupRow
             { validationResult = Just <| Form.validationResult Form.Danger "Forgot to fill in?"
             , label = Form.textLabelControl "TextWithValidation"
             , labelWidth = Grid.colXsFour
-            , control =
-                Form.textControl
-                    { id = Just "rowtextinputvalidation"
-                    , options = []
-                    , attributes = []
-                    }
+            , control = Form.textControl [ Form.inputId "rowtextinputvalidation"]
             , controlWidth = Grid.colXsEight
             }
         , Form.groupRow
             { validationResult = Nothing
             , label =
-                Form.labelControl
-                    { text = "Small input"
-                    , options = [ Form.labelSmall ]
-                    , attributes = []
-                    }
+                Form.labelControl [ Form.labelSmall ] [ text "Small input" ]
             , labelWidth = Grid.colXsFour
             , control =
                 Form.textControl
-                    { id = Just "rowtextinputxs"
-                    , options = [ Form.inputSmall ]
-                    , attributes = [ disabled True ]
-                    }
+                    [ Form.inputId "rowtextinputxs"
+                    , Form.inputAttr <| disabled True
+                    , Form.inputSmall
+                    ]
             , controlWidth = Grid.colXsEight
             }
         , Form.radioGroupRow
@@ -462,34 +411,21 @@ gridForm =
             , labelWidth = Grid.colXsFour
             , controlWidth = Grid.colXsEight
             , radios =
-                [ Form.radioControl
-                    { label = Form.textLabelControl "Radio 1"
-                    , options = []
-                    , attributes = []
-                    }
+                [ Form.radioControl [] <| Form.textLabelControl "Radio 1"
+                , Form.radioControl [] <| Form.textLabelControl "Radio 2"
                 , Form.radioControl
-                    { label = Form.textLabelControl "Radio 2"
-                    , options = []
-                    , attributes = []
-                    }
-                , Form.radioControl
-                    { label = Form.textLabelControl "Radio 3"
-                    , options = [ Form.checkDisabled ]
-                    , attributes = []
-                    }
+                    [ Form.checkDisabled ] <| Form.textLabelControl "Radio 3"
                 ]
             }
         , Form.checkboxRow
             { label = Form.textLabelControl "Check me!"
             , options = []
-            , attributes = []
             , offset = Grid.colXsFour
             , controlWidth = Grid.colXsEight
             }
         , Form.checkboxRow
             { label = Form.textLabelControl "Can't check me!"
             , options = [ Form.checkDisabled ]
-            , attributes = []
             , offset = Grid.colXsFour
             , controlWidth = Grid.colXsEight
             }

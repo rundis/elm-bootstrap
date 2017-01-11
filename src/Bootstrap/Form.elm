@@ -28,6 +28,8 @@ module Bootstrap.Form
         , inputSmall
         , inputMedium
         , inputLarge
+        , inputId
+        , inputAttr
         , selectControl
         , selectItem
         , checkbox
@@ -36,6 +38,7 @@ module Bootstrap.Form
         , radioGroupRow
         , radioControl
         , checkDisabled
+        , checkAttr
         , Validation(..)
         , FormCheckOption
         , Label
@@ -81,17 +84,17 @@ type ValidationResult
 
 type Label msg
     = Label
-        { options : List LabelOption
-        , attributes : List (Html.Attribute msg)
+        { options : List (LabelOption msg)
         , children : List (Html.Html msg)
         }
 
 
-type LabelOption
+type LabelOption msg
     = FormLabel
     | ColumnLabel
     | LabelSize GridInternal.ScreenSize
     | LabelWidth Grid.ColumnWidth
+    | LabelAttr (Html.Attribute msg)
 
 
 type FormControl msg
@@ -100,24 +103,19 @@ type FormControl msg
 
 
 type Input msg
-    = Input
-        { id : Maybe String
-        , tipe : InputType
-        , options : List InputOption
-        , attributes : List (Html.Attribute msg)
-        }
+    = Input { options : List (InputOption msg) }
 
 
-type InputOption
+type InputOption msg
     = InputSize GridInternal.ScreenSize
+    | InputId String
+    | InputAttr (Html.Attribute msg)
 
 
 type Select msg
     = Select
-        { id : Maybe String
-        , items : List (SelectItem msg)
-        , options : List InputOption
-        , attributes : List (Html.Attribute msg)
+        { items : List (SelectItem msg)
+        , options : List (InputOption msg)
         }
 
 
@@ -128,13 +126,13 @@ type SelectItem msg
 type Radio msg
     = Radio
         { label : Label msg
-        , options : List FormCheckOption
-        , attributes : List (Html.Attribute msg)
+        , options : List (FormCheckOption msg)
         }
 
 
-type FormCheckOption
+type FormCheckOption msg
     = Disabled
+    | CheckAttr (Html.Attribute msg)
 
 
 inlineForm : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
@@ -271,328 +269,195 @@ validationResult validation feedback =
         }
 
 
-maybeAddLabelFor : Maybe String -> Label msg -> Label msg
+maybeAddLabelFor : Maybe (InputOption msg) -> Label msg -> Label msg
 maybeAddLabelFor maybeId (Label label) =
-    (case maybeId of
-        Nothing ->
-            label
+    Label <|
+        case maybeId of
+            Nothing ->
+                label
 
-        Just id ->
-            { label
-                | attributes =
-                    label.attributes ++ [ Html.Attributes.for id ]
-            }
-    )
-        |> Label
+            Just (InputId id) ->
+                { label
+                    | options =
+                        label.options ++ [ labelAttr <| Html.Attributes.for id ]
+                }
+
+            _ ->
+                label
 
 
-addLabelOptions : List LabelOption -> Label msg -> Label msg
+addLabelOptions : List (LabelOption msg) -> Label msg -> Label msg
 addLabelOptions options (Label label) =
     { label | options = label.options ++ options }
         |> Label
 
 
-getFormControlId : FormControl msg -> Maybe String
+getFormControlId : FormControl msg -> Maybe (InputOption msg)
 getFormControlId control =
     case control of
         InputControl (Input input) ->
-            input.id
+            List.head input.options
 
+        {- List.filter (\opt -> case opt of
+                       Input _ ->
+                           True
+                       _ -> False) input.options
+           |> List.head
+        -}
         SelectControl (Select select) ->
-            select.id
+            List.head select.options
+
+
+
+{- List.filter (\opt -> opt == InputId) select.options
+   |> List.head
+-}
+
+
+labelAttr : Html.Attribute msg -> LabelOption msg
+labelAttr attr =
+    LabelAttr attr
 
 
 textLabelControl : String -> Label msg
 textLabelControl text =
     Label
         { options = []
-        , attributes = []
         , children = [ Html.text text ]
         }
 
 
 labelControl :
-    { text : String
-    , options : List LabelOption
-    , attributes : List (Html.Attribute msg)
-    }
+    List (LabelOption msg)
+    -> List (Html.Html msg)
     -> Label msg
-labelControl { text, options, attributes } =
+labelControl options children =
     Label
         { options = options
-        , attributes = attributes
-        , children = [ Html.text text ]
+        , children = children
         }
 
 
-labelSmall : LabelOption
+labelSmall : LabelOption msg
 labelSmall =
     LabelSize GridInternal.Small
 
 
-labelMedium : LabelOption
+labelMedium : LabelOption msg
 labelMedium =
     LabelSize GridInternal.Medium
 
 
-labelLarge : LabelOption
+labelLarge : LabelOption msg
 labelLarge =
     LabelSize GridInternal.Large
 
 
-textControl :
-    { id : Maybe String
-    , options : List InputOption
-    , attributes : List (Html.Attribute msg)
-    }
-    -> FormControl msg
-textControl { id, options, attributes } =
-    inputControl
-        { id = id
-        , tipe = Text
-        , options = options
-        , attributes = attributes
-        }
+textControl : List (InputOption msg) -> FormControl msg
+textControl =
+    inputControl Text
 
 
-passwordControl :
-    { a
-        | attributes : List (Html.Attribute msg)
-        , id : Maybe String
-        , options : List InputOption
-    }
-    -> FormControl msg
-passwordControl { id, options, attributes } =
-    inputControl
-        { id = id
-        , tipe = Password
-        , options = options
-        , attributes = attributes
-        }
+passwordControl : List (InputOption msg) -> FormControl msg
+passwordControl =
+    inputControl Password
 
 
-datetimeLocalControl :
-    { a
-        | attributes : List (Html.Attribute msg)
-        , id : Maybe String
-        , options : List InputOption
-    }
-    -> FormControl msg
-datetimeLocalControl { id, options, attributes } =
-    inputControl
-        { id = id
-        , tipe = DatetimeLocal
-        , options = options
-        , attributes = attributes
-        }
+datetimeLocalControl : List (InputOption msg) -> FormControl msg
+datetimeLocalControl =
+    inputControl DatetimeLocal
 
 
-dateControl :
-    { a
-        | attributes : List (Html.Attribute msg)
-        , id : Maybe String
-        , options : List InputOption
-    }
-    -> FormControl msg
-dateControl { id, options, attributes } =
-    inputControl
-        { id = id
-        , tipe = Date
-        , options = options
-        , attributes = attributes
-        }
+dateControl : List (InputOption msg) -> FormControl msg
+dateControl =
+    inputControl Date
 
 
-monthControl :
-    { a
-        | attributes : List (Html.Attribute msg)
-        , id : Maybe String
-        , options : List InputOption
-    }
-    -> FormControl msg
-monthControl { id, options, attributes } =
-    inputControl
-        { id = id
-        , tipe = Month
-        , options = options
-        , attributes = attributes
-        }
+monthControl : List (InputOption msg) -> FormControl msg
+monthControl =
+    inputControl Month
 
 
-timeControl :
-    { a
-        | attributes : List (Html.Attribute msg)
-        , id : Maybe String
-        , options : List InputOption
-    }
-    -> FormControl msg
-timeControl { id, options, attributes } =
-    inputControl
-        { id = id
-        , tipe = Time
-        , options = options
-        , attributes = attributes
-        }
+timeControl : List (InputOption msg) -> FormControl msg
+timeControl =
+    inputControl Time
 
 
-weekControl :
-    { a
-        | attributes : List (Html.Attribute msg)
-        , id : Maybe String
-        , options : List InputOption
-    }
-    -> FormControl msg
-weekControl { id, options, attributes } =
-    inputControl
-        { id = id
-        , tipe = Week
-        , options = options
-        , attributes = attributes
-        }
+weekControl : List (InputOption msg) -> FormControl msg
+weekControl =
+    inputControl Week
 
 
-numberControl :
-    { a
-        | attributes : List (Html.Attribute msg)
-        , id : Maybe String
-        , options : List InputOption
-    }
-    -> FormControl msg
-numberControl { id, options, attributes } =
-    inputControl
-        { id = id
-        , tipe = Number
-        , options = options
-        , attributes = attributes
-        }
+numberControl : List (InputOption msg) -> FormControl msg
+numberControl =
+    inputControl Number
 
 
-emailControl :
-    { a
-        | attributes : List (Html.Attribute msg)
-        , id : Maybe String
-        , options : List InputOption
-    }
-    -> FormControl msg
-emailControl { id, options, attributes } =
-    inputControl
-        { id = id
-        , tipe = Email
-        , options = options
-        , attributes = attributes
-        }
+emailControl : List (InputOption msg) -> FormControl msg
+emailControl =
+    inputControl Email
 
 
-urlControl :
-    { a
-        | attributes : List (Html.Attribute msg)
-        , id : Maybe String
-        , options : List InputOption
-    }
-    -> FormControl msg
-urlControl { id, options, attributes } =
-    inputControl
-        { id = id
-        , tipe = Url
-        , options = options
-        , attributes = attributes
-        }
+urlControl : List (InputOption msg) -> FormControl msg
+urlControl =
+    inputControl Url
 
 
-searchControl :
-    { a
-        | attributes : List (Html.Attribute msg)
-        , id : Maybe String
-        , options : List InputOption
-    }
-    -> FormControl msg
-searchControl { id, options, attributes } =
-    inputControl
-        { id = id
-        , tipe = Search
-        , options = options
-        , attributes = attributes
-        }
+searchControl : List (InputOption msg) -> FormControl msg
+searchControl =
+    inputControl Search
 
 
-telControl :
-    { a
-        | attributes : List (Html.Attribute msg)
-        , id : Maybe String
-        , options : List InputOption
-    }
-    -> FormControl msg
-telControl { id, options, attributes } =
-    inputControl
-        { id = id
-        , tipe = Tel
-        , options = options
-        , attributes = attributes
-        }
+telControl : List (InputOption msg) -> FormControl msg
+telControl =
+    inputControl Tel
 
 
-colorControl :
-    { a
-        | attributes : List (Html.Attribute msg)
-        , id : Maybe String
-        , options : List InputOption
-    }
-    -> FormControl msg
-colorControl { id, options, attributes } =
-    inputControl
-        { id = id
-        , tipe = Color
-        , options = options
-        , attributes = attributes
-        }
+colorControl : List (InputOption msg) -> FormControl msg
+colorControl =
+    inputControl Color
 
 
-inputSmall : InputOption
+inputSmall : InputOption msg
 inputSmall =
     InputSize GridInternal.Small
 
 
-inputMedium : InputOption
+inputMedium : InputOption msg
 inputMedium =
     InputSize GridInternal.Medium
 
 
-inputLarge : InputOption
+inputLarge : InputOption msg
 inputLarge =
     InputSize GridInternal.Large
 
 
-inputControl :
-    { id : Maybe String
-    , tipe : InputType
-    , options : List InputOption
-    , attributes : List (Html.Attribute msg)
-    }
-    -> FormControl msg
-inputControl { id, tipe, options, attributes } =
+inputId : String -> InputOption msg
+inputId id =
+    InputId id
+
+
+inputAttr : Html.Attribute msg -> InputOption msg
+inputAttr attr =
+    InputAttr attr
+
+
+inputControl : InputType -> List (InputOption msg) -> FormControl msg
+inputControl tipe options =
     InputControl <|
-        Input
-            { tipe = tipe
-            , id = id
-            , options = options
-            , attributes = attributes
-            }
+        Input { options = options }
 
 
 selectControl :
-    { id : Maybe String
-    , items : List (SelectItem msg)
-    , options : List InputOption
-    , attributes : List (Html.Attribute msg)
-    }
+    List (InputOption msg)
+    -> List (SelectItem msg)
     -> FormControl msg
-selectControl { id, items, options, attributes } =
+selectControl options items =
     SelectControl <|
         Select
-            { id = id
+            { options = options
             , items = items
-            , options = options
-            , attributes = attributes
             }
 
 
@@ -602,12 +467,10 @@ selectItem attributes children =
 
 
 checkbox :
-    { label : Label msg
-    , attributes : List (Html.Attribute msg)
-    , options : List FormCheckOption
-    }
+    List (FormCheckOption msg)
+    -> Label msg
     -> Html.Html msg
-checkbox { label, attributes, options } =
+checkbox options label =
     Html.div
         [ classList
             [ ( "form-check", True )
@@ -617,12 +480,11 @@ checkbox { label, attributes, options } =
         [ Html.label
             [ class "form-check-label" ]
             [ Html.input
-                ([ class "form-check-input"
-                 , type_ "checkbox"
-                 , Html.Attributes.disabled <| isDisabled options
-                 ]
-                    ++ attributes
-                )
+                -- TODO: What about any the rest of the options
+                [ class "form-check-input"
+                , type_ "checkbox"
+                , Html.Attributes.disabled <| isDisabled options
+                ]
                 []
             , renderLabel label
             ]
@@ -631,13 +493,12 @@ checkbox { label, attributes, options } =
 
 checkboxRow :
     { label : Label msg
-    , options : List FormCheckOption
+    , options : List (FormCheckOption msg)
     , offset : Grid.ColumnWidth
     , controlWidth : Grid.ColumnWidth
-    , attributes : List (Html.Attribute msg)
     }
     -> Html.Html msg
-checkboxRow { label, options, attributes, offset, controlWidth } =
+checkboxRow { label, options, offset, controlWidth } =
     Html.div
         [ class "form-group row" ]
         [ Html.div
@@ -646,12 +507,7 @@ checkboxRow { label, options, attributes, offset, controlWidth } =
                 , Just <| GridInternal.colWidthClass controlWidth
                 ]
             )
-            [ checkbox
-                { label = label
-                , attributes = attributes
-                , options = options
-                }
-            ]
+            [ checkbox options label ]
         ]
 
 
@@ -706,32 +562,34 @@ radioGroupRow { label, name, radios, labelWidth, controlWidth } =
 
 
 radioControl :
-    { label : Label msg
-    , options : List FormCheckOption
-    , attributes : List (Html.Attribute msg)
-    }
+    List (FormCheckOption msg)
+    -> Label msg
     -> Radio msg
-radioControl { label, options, attributes } =
+radioControl options label =
     Radio
         { label = label
         , options = options
-        , attributes = attributes
         }
 
 
-checkDisabled : FormCheckOption
+checkDisabled : FormCheckOption msg
 checkDisabled =
     Disabled
+
+
+checkAttr : Html.Attribute msg -> FormCheckOption msg
+checkAttr attr =
+    CheckAttr attr
 
 
 addRadioAttribute : Html.Attribute msg -> Radio msg -> Radio msg
 addRadioAttribute attribute (Radio rec) =
     Radio <|
-        { rec | attributes = rec.attributes ++ [ attribute ] }
+        { rec | options = rec.options ++ [ checkAttr attribute ] }
 
 
 renderRadio : Radio msg -> Html.Html msg
-renderRadio (Radio { label, options, attributes }) =
+renderRadio (Radio { label, options }) =
     Html.div
         [ classList
             [ ( "form-check", True )
@@ -741,27 +599,26 @@ renderRadio (Radio { label, options, attributes }) =
         [ Html.label
             [ class "form-check-label" ]
             [ Html.input
-                ([ type_ "radio"
-                 , class "form-check-input"
-                 , Html.Attributes.disabled <| isDisabled options
-                 ]
-                    ++ attributes
-                )
+                -- TODO: what about the rest of the options !?
+                [ type_ "radio"
+                , class "form-check-input"
+                , Html.Attributes.disabled <| isDisabled options
+                ]
                 []
             , renderLabel label
             ]
         ]
 
 
-isDisabled : List FormCheckOption -> Bool
+isDisabled : List (FormCheckOption msg) -> Bool
 isDisabled options =
     List.any (\opt -> opt == Disabled) options
 
 
 renderLabel : Label msg -> Html.Html msg
-renderLabel (Label { options, attributes, children }) =
+renderLabel (Label { options, children }) =
     Html.label
-        (labelAttributes options ++ attributes)
+        (labelAttributes options)
         children
 
 
@@ -776,59 +633,48 @@ renderControl control =
 
 
 renderInput : Input msg -> Html.Html msg
-renderInput (Input { tipe, id, options, attributes }) =
+renderInput (Input { options }) =
     Html.input
-        (inputAttributes options
-            ++ [ type_ <| inputTypeToString tipe ]
-            ++ maybeId id
-            ++ attributes
-        )
+        (inputAttributes options)
         []
 
 
 renderSelect : Select msg -> Html.Html msg
-renderSelect (Select { id, items, options, attributes }) =
+renderSelect (Select { items, options }) =
     Html.select
-        (inputAttributes options
-            ++ maybeId id
-            ++ attributes
-        )
+        (inputAttributes options)
         (List.map (\(SelectItem item) -> item) items)
 
 
-maybeId : Maybe String -> List (Html.Attribute msg)
-maybeId id =
-    case id of
-        Just x ->
-            [ Html.Attributes.id x ]
-
-        Nothing ->
-            []
-
-
-inputAttributes : List InputOption -> List (Html.Attribute msg)
+inputAttributes : List (InputOption msg) -> List (Html.Attribute msg)
 inputAttributes options =
     class "form-control"
-        :: (List.map inputClass options
+        :: (List.map inputAttribute options
                 |> List.filterMap identity
            )
 
 
-inputClass : InputOption -> Maybe (Html.Attribute msg)
-inputClass option =
+inputAttribute : InputOption msg -> Maybe (Html.Attribute msg)
+inputAttribute option =
     case option of
         InputSize size ->
             inputSizeOption size
 
+        InputId id ->
+            Just <| Html.Attributes.id id
 
-labelAttributes : List LabelOption -> List (Html.Attribute msg)
+        InputAttr attr ->
+            Just attr
+
+
+labelAttributes : List (LabelOption msg) -> List (Html.Attribute msg)
 labelAttributes options =
-    List.map labelClass options
+    List.map labelAttribute options
         |> List.filterMap identity
 
 
-labelClass : LabelOption -> Maybe (Html.Attribute msg)
-labelClass option =
+labelAttribute : LabelOption msg -> Maybe (Html.Attribute msg)
+labelAttribute option =
     case option of
         FormLabel ->
             Just <| class "form-control-label"
@@ -841,6 +687,9 @@ labelClass option =
 
         ColumnLabel ->
             Just <| class "col-form-label"
+
+        LabelAttr attr ->
+            Just attr
 
 
 inputTypeToString : InputType -> String
