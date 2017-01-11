@@ -228,7 +228,7 @@ groupRow { label, labelWidth, control, controlWidth, validationResult } =
             [ groupOptions validationResult True ]
             [ renderLabel updLabel
             , Html.div
-                [ class <| GridInternal.colWidthOption controlWidth ]
+                [ GridInternal.colWidthClass controlWidth ]
                 ([ renderControl control ]
                     ++ maybeValidation validationResult
                 )
@@ -355,11 +355,11 @@ textControl { id, options, attributes } =
         }
 
 
-passwordControl
-    : { a
-          | attributes : List (Html.Attribute msg)
-          , id : Maybe String
-          , options : List InputOption
+passwordControl :
+    { a
+        | attributes : List (Html.Attribute msg)
+        , id : Maybe String
+        , options : List InputOption
     }
     -> FormControl msg
 passwordControl { id, options, attributes } =
@@ -370,11 +370,12 @@ passwordControl { id, options, attributes } =
         , attributes = attributes
         }
 
-datetimeLocalControl
-    : { a
-          | attributes : List (Html.Attribute msg)
-          , id : Maybe String
-          , options : List InputOption
+
+datetimeLocalControl :
+    { a
+        | attributes : List (Html.Attribute msg)
+        , id : Maybe String
+        , options : List InputOption
     }
     -> FormControl msg
 datetimeLocalControl { id, options, attributes } =
@@ -385,11 +386,12 @@ datetimeLocalControl { id, options, attributes } =
         , attributes = attributes
         }
 
-dateControl
-    : { a
-          | attributes : List (Html.Attribute msg)
-          , id : Maybe String
-          , options : List InputOption
+
+dateControl :
+    { a
+        | attributes : List (Html.Attribute msg)
+        , id : Maybe String
+        , options : List InputOption
     }
     -> FormControl msg
 dateControl { id, options, attributes } =
@@ -400,11 +402,12 @@ dateControl { id, options, attributes } =
         , attributes = attributes
         }
 
-monthControl
-    : { a
-          | attributes : List (Html.Attribute msg)
-          , id : Maybe String
-          , options : List InputOption
+
+monthControl :
+    { a
+        | attributes : List (Html.Attribute msg)
+        , id : Maybe String
+        , options : List InputOption
     }
     -> FormControl msg
 monthControl { id, options, attributes } =
@@ -415,11 +418,12 @@ monthControl { id, options, attributes } =
         , attributes = attributes
         }
 
-timeControl
-    : { a
-          | attributes : List (Html.Attribute msg)
-          , id : Maybe String
-          , options : List InputOption
+
+timeControl :
+    { a
+        | attributes : List (Html.Attribute msg)
+        , id : Maybe String
+        , options : List InputOption
     }
     -> FormControl msg
 timeControl { id, options, attributes } =
@@ -430,11 +434,12 @@ timeControl { id, options, attributes } =
         , attributes = attributes
         }
 
-weekControl
-    : { a
-          | attributes : List (Html.Attribute msg)
-          , id : Maybe String
-          , options : List InputOption
+
+weekControl :
+    { a
+        | attributes : List (Html.Attribute msg)
+        , id : Maybe String
+        , options : List InputOption
     }
     -> FormControl msg
 weekControl { id, options, attributes } =
@@ -445,11 +450,12 @@ weekControl { id, options, attributes } =
         , attributes = attributes
         }
 
-numberControl
-    : { a
-          | attributes : List (Html.Attribute msg)
-          , id : Maybe String
-          , options : List InputOption
+
+numberControl :
+    { a
+        | attributes : List (Html.Attribute msg)
+        , id : Maybe String
+        , options : List InputOption
     }
     -> FormControl msg
 numberControl { id, options, attributes } =
@@ -460,11 +466,12 @@ numberControl { id, options, attributes } =
         , attributes = attributes
         }
 
-emailControl
-    : { a
-          | attributes : List (Html.Attribute msg)
-          , id : Maybe String
-          , options : List InputOption
+
+emailControl :
+    { a
+        | attributes : List (Html.Attribute msg)
+        , id : Maybe String
+        , options : List InputOption
     }
     -> FormControl msg
 emailControl { id, options, attributes } =
@@ -475,11 +482,12 @@ emailControl { id, options, attributes } =
         , attributes = attributes
         }
 
-urlControl
-    : { a
-          | attributes : List (Html.Attribute msg)
-          , id : Maybe String
-          , options : List InputOption
+
+urlControl :
+    { a
+        | attributes : List (Html.Attribute msg)
+        , id : Maybe String
+        , options : List InputOption
     }
     -> FormControl msg
 urlControl { id, options, attributes } =
@@ -490,11 +498,12 @@ urlControl { id, options, attributes } =
         , attributes = attributes
         }
 
-searchControl
-    : { a
-          | attributes : List (Html.Attribute msg)
-          , id : Maybe String
-          , options : List InputOption
+
+searchControl :
+    { a
+        | attributes : List (Html.Attribute msg)
+        , id : Maybe String
+        , options : List InputOption
     }
     -> FormControl msg
 searchControl { id, options, attributes } =
@@ -505,11 +514,12 @@ searchControl { id, options, attributes } =
         , attributes = attributes
         }
 
-telControl
-    : { a
-          | attributes : List (Html.Attribute msg)
-          , id : Maybe String
-          , options : List InputOption
+
+telControl :
+    { a
+        | attributes : List (Html.Attribute msg)
+        , id : Maybe String
+        , options : List InputOption
     }
     -> FormControl msg
 telControl { id, options, attributes } =
@@ -520,11 +530,12 @@ telControl { id, options, attributes } =
         , attributes = attributes
         }
 
-colorControl
-    : { a
-          | attributes : List (Html.Attribute msg)
-          , id : Maybe String
-          , options : List InputOption
+
+colorControl :
+    { a
+        | attributes : List (Html.Attribute msg)
+        , id : Maybe String
+        , options : List InputOption
     }
     -> FormControl msg
 colorControl { id, options, attributes } =
@@ -534,7 +545,6 @@ colorControl { id, options, attributes } =
         , options = options
         , attributes = attributes
         }
-
 
 
 inputSmall : InputOption
@@ -631,7 +641,11 @@ checkboxRow { label, options, attributes, offset, controlWidth } =
     Html.div
         [ class "form-group row" ]
         [ Html.div
-            [ class <| GridInternal.offsetOption offset ++ " " ++ GridInternal.colWidthOption controlWidth ]
+            (List.filterMap identity
+                [ GridInternal.offsetClass offset
+                , Just <| GridInternal.colWidthClass controlWidth
+                ]
+            )
             [ checkbox
                 { label = label
                 , attributes = attributes
@@ -680,7 +694,7 @@ radioGroupRow { label, name, radios, labelWidth, controlWidth } =
             [ class "form-group row" ]
             [ renderLabel updLabel
             , Html.div
-                [ class <| GridInternal.colWidthOption controlWidth ]
+                [ GridInternal.colWidthClass controlWidth ]
                 (List.map
                     (\r ->
                         addRadioAttribute (Html.Attributes.name name) r
@@ -794,37 +808,39 @@ maybeId id =
 
 inputAttributes : List InputOption -> List (Html.Attribute msg)
 inputAttributes options =
-    class "form-control" :: List.map inputClass options
+    class "form-control"
+        :: (List.map inputClass options
+                |> List.filterMap identity
+           )
 
 
-inputClass : InputOption -> Html.Attribute msg
+inputClass : InputOption -> Maybe (Html.Attribute msg)
 inputClass option =
-    class <|
-        case option of
-            InputSize size ->
-                inputSizeOption size
+    case option of
+        InputSize size ->
+            inputSizeOption size
 
 
 labelAttributes : List LabelOption -> List (Html.Attribute msg)
 labelAttributes options =
     List.map labelClass options
+        |> List.filterMap identity
 
 
-labelClass : LabelOption -> Html.Attribute msg
+labelClass : LabelOption -> Maybe (Html.Attribute msg)
 labelClass option =
-    class <|
-        case option of
-            FormLabel ->
-                "form-control-label"
+    case option of
+        FormLabel ->
+            Just <| class "form-control-label"
 
-            LabelSize size ->
-                labelSizeOption size
+        LabelSize size ->
+            labelSizeOption size
 
-            LabelWidth columnWidth ->
-                GridInternal.colWidthOption columnWidth
+        LabelWidth columnWidth ->
+            Just <| GridInternal.colWidthClass columnWidth
 
-            ColumnLabel ->
-                "col-form-label"
+        ColumnLabel ->
+            Just <| class "col-form-label"
 
 
 inputTypeToString : InputType -> String
@@ -870,14 +886,24 @@ inputTypeToString inputType =
             "color"
 
 
-inputSizeOption : GridInternal.ScreenSize -> String
+inputSizeOption : GridInternal.ScreenSize -> Maybe (Html.Attribute msg)
 inputSizeOption size =
-    "form-control-" ++ GridInternal.screenSizeOption size
+    case GridInternal.screenSizeOption size of
+        Just s ->
+            Just <| class <| "form-control-" ++ s
+
+        Nothing ->
+            Nothing
 
 
-labelSizeOption : GridInternal.ScreenSize -> String
+labelSizeOption : GridInternal.ScreenSize -> Maybe (Html.Attribute msg)
 labelSizeOption size =
-    "col-form-label-" ++ GridInternal.screenSizeOption size
+    case GridInternal.screenSizeOption size of
+        Just s ->
+            Just <| class <| "col-form-label-" ++ s
+
+        Nothing ->
+            Nothing
 
 
 validationOption : Validation -> String

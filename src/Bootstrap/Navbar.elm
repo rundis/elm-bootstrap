@@ -15,6 +15,7 @@ module Bootstrap.Navbar
         , customItem
         , NavbarOption
         , NavItem
+        , NavBrand
         )
 
 import Html
@@ -57,28 +58,41 @@ type BackgroundColor
 type NavItem msg
     = NavItem (Html.Html msg)
 
+type NavBrand msg
+    = NavBrand (Html.Html msg)
+
 navbar :
     { options : List NavbarOption
     , attributes : List (Html.Attribute msg)
+    , brand : Maybe (NavBrand msg)
     , items : List (NavItem msg)
     }
     -> Html.Html msg
-navbar {options, attributes, items} =
+navbar {options, attributes, brand, items} =
     Html.nav
-        (navbarAttributes options ++ attributes)
-        [renderNav items]
+        (navbarAttributes options ++ attributes ++ [class "navbar-toggleable-md"])
+        (maybeBrand brand ++ [renderNav items])
+
+
+maybeBrand : Maybe (NavBrand msg) -> List (Html.Html msg)
+maybeBrand brand =
+    case brand of
+        Just (NavBrand b) ->
+            [b]
+        Nothing ->
+            []
 
 
 renderNav : List (NavItem msg) -> Html.Html msg
 renderNav navItems =
     Html.ul
-        [class "nav navbar-nav"]
+        [ class "navbar-nav" ]
         (List.map (\(NavItem item) -> item) navItems)
 
 
-brand : List (Html.Attribute msg) -> List (Html.Html msg) -> NavItem msg
+brand : List (Html.Attribute msg) -> List (Html.Html msg) -> NavBrand msg
 brand attributes children =
-    NavItem <|
+    NavBrand <|
         Html.a
             ([class "navbar-brand"] ++ attributes)
             children
@@ -171,10 +185,10 @@ fixOption : Fix -> String
 fixOption fix =
     case fix of
         Top ->
-            "navbar-fixed-top"
+            "fixed-top"
 
         Bottom ->
-            "navbar-fixed-bottom"
+            "fixed-bottom"
 
 
 schemeOption : Scheme -> String
@@ -189,7 +203,7 @@ linkModifierOption : LinkModifier -> String
 linkModifierOption modifier =
     case modifier of
         Dark ->
-            "navbar-dark"
+            "navbar-inverse"
 
         Light ->
             "navbar-light"

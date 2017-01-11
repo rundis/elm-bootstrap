@@ -419,7 +419,8 @@ buttonGroupClass option =
             Nothing
 
         SizeGroup size ->
-            Just <| class <| "btn-group-" ++ GridInternal.screenSizeOption size
+            Maybe.map (\s -> class <| "btn-group-" ++ s) <|
+                GridInternal.screenSizeOption size
 
         GroupAttr attr ->
             Just attr

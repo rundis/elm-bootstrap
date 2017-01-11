@@ -3,9 +3,7 @@ module Bootstrap.Modal
         ( modal
         , hiddenState
         , visibleState
-        , extraSmall
         , small
-        , medium
         , large
         , State
         , ModalOption
@@ -14,7 +12,7 @@ module Bootstrap.Modal
 import Html
 import Html.Attributes as Attr
 import Html.Events as Events
-import Bootstrap.Internal.Grid as GridInternal exposing (ScreenSize (..))
+import Bootstrap.Internal.Grid as GridInternal exposing (ScreenSize(..))
 
 
 type State
@@ -26,17 +24,10 @@ type ModalOption
 
 
 
-extraSmall : ModalOption
-extraSmall =
-    ModalSize ExtraSmall
-
 small : ModalOption
 small =
     ModalSize Small
 
-medium : ModalOption
-medium =
-    ModalSize Medium
 
 large : ModalOption
 large =
@@ -53,7 +44,6 @@ visibleState =
     State True
 
 
-
 modal :
     { closeMsg : State -> msg
     , header : Maybe (Html.Html msg)
@@ -66,7 +56,7 @@ modal :
 modal { closeMsg, header, body, footer, options } state =
     Html.div
         []
-        [ Html.div
+        ([ Html.div
             ([ Attr.tabindex -1 ] ++ display state)
             [ Html.div
                 (Attr.attribute "role" "document" :: modalAttributes options)
@@ -79,31 +69,39 @@ modal { closeMsg, header, body, footer, options } state =
                     )
                 ]
             ]
-        , backdrop state
-        ]
+        ] ++  backdrop state)
 
 
 display : State -> List (Html.Attribute msg)
 display (State open) =
     [ Attr.style
         [ ( "display", ifElse open "block" "none" ) ]
-    , Attr.class <| "modal " ++ ifElse open "in" ""
+    , Attr.classList
+        [ ("modal", True)
+        , ("fade", True)
+        , ("show", open)
+        ]
     ]
-
 
 
 modalAttributes : List ModalOption -> List (Html.Attribute msg)
 modalAttributes options =
-    Attr.class "modal-dialog" :: List.map modalClass options
+    Attr.class "modal-dialog"
+        :: (List.map modalClass options
+                |> List.filterMap identity
+           )
 
 
-modalClass : ModalOption -> Html.Attribute msg
+modalClass : ModalOption -> Maybe (Html.Attribute msg)
 modalClass option =
-    Attr.class <|
-        case option of
-            ModalSize size ->
-                "modal-" ++ GridInternal.screenSizeOption size
+    case option of
+        ModalSize size ->
+            case GridInternal.screenSizeOption size of
+                Just s ->
+                    Just <| Attr.class <| "modal-" ++ s
 
+                Nothing ->
+                    Nothing
 
 
 modalHeader : (State -> msg) -> Maybe (Html.Html msg) -> Html.Html msg
@@ -137,11 +135,16 @@ closeButton closeMsg =
         [ Html.text "x" ]
 
 
-backdrop : State -> Html.Html msg
+backdrop : State -> List (Html.Html msg)
 backdrop ((State open) as state) =
-    Html.div
-        [ Attr.classList [ ( "modal-backdrop in", open ) ] ]
+    if open then
+        [ Html.div
+            [ Attr.class "modal-backdrop fade show" ]
+            []
+        ]
+    else
         []
+
 
 
 ifElse : Bool -> a -> a -> a

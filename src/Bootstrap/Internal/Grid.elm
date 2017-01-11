@@ -1,36 +1,32 @@
 module Bootstrap.Internal.Grid exposing
-    ( colWidthOption
-    , offsetOption
+    ( colWidthClass
+    , offsetClass
     , screenSizeOption
-    , columnCountOption
-    , vAlignOption
-    , hAlignOption
+    , alignOption
     , ColumnWidth
     , ScreenSize (..)
     , ColumnCount (..)
-    , HAlign(..)
-    , VAlign(..)
+    , Align(..)
     )
 
 
+
+import Html
+import Html.Attributes exposing (class)
 
 type ScreenSize
     = ExtraSmall
     | Small
     | Medium
     | Large
+    | ExtraLarge
 
 
-type VAlign
-    = Top
-    | Middle
-    | Bottom
-
-
-type HAlign
-    = Left
+type Align
+    = Start
     | Center
-    | Right
+    | End
+
 
 
 type alias ColumnWidth =
@@ -56,75 +52,83 @@ type ColumnCount
 
 
 
-colWidthOption : ColumnWidth -> String
-colWidthOption {size, columns} =
-    ["col", screenSizeOption size, columnCountOption columns]
-        |> List.filter (\s -> String.isEmpty s == False )
-        |> String.join "-"
+colWidthClass : ColumnWidth -> Html.Attribute msg
+colWidthClass { size, columns } =
+    "col"
+        ++ (Maybe.map (\v -> "-" ++ v) (screenSizeOption size)
+                |> Maybe.withDefault ""
+           )
+        ++ (Maybe.map (\v -> "-" ++ v) (columnCountOption columns)
+                |> Maybe.withDefault ""
+           )
+        |> class
 
-offsetOption : ColumnWidth -> String
-offsetOption {size, columns} =
+
+offsetClass : ColumnWidth -> Maybe (Html.Attribute msg)
+offsetClass {size, columns} =
     case columns of
         None ->
-            ""
+            Nothing
         _ ->
-          "offset-" ++ screenSizeOption size ++ "-" ++ columnCountOption columns
+          "offset"
+            ++ (Maybe.map (\v -> "-" ++ v ) (screenSizeOption size)
+                    |> Maybe.withDefault "")
+            ++ (Maybe.map (\v -> "-" ++ v ) (columnCountOption columns)
+                    |> Maybe.withDefault "")
+            |> class
+            |> Just
 
 
-columnCountOption : ColumnCount -> String
+columnCountOption : ColumnCount -> Maybe String
 columnCountOption size =
     case size of
-        One -> "1"
-        Two -> "2"
-        Three -> "3"
-        Four -> "4"
-        Five -> "5"
-        Six -> "6"
-        Seven -> "7"
-        Eight -> "8"
-        Nine -> "9"
-        Ten -> "10"
-        Eleven -> "11"
-        Twelve -> "12"
-        None -> ""
+        One -> Just "1"
+        Two -> Just "2"
+        Three -> Just "3"
+        Four -> Just "4"
+        Five -> Just "5"
+        Six -> Just "6"
+        Seven -> Just "7"
+        Eight -> Just "8"
+        Nine -> Just "9"
+        Ten -> Just "10"
+        Eleven -> Just "11"
+        Twelve -> Just "12"
+        None -> Nothing
 
-vAlignOption : VAlign -> String
-vAlignOption align =
+
+
+alignOption : Align -> String
+alignOption align =
     case align of
-        Top ->
-            "top"
-
-        Middle ->
-            "middle"
-
-        Bottom ->
-            "bottom"
-
-
-hAlignOption : HAlign -> String
-hAlignOption align =
-    case align of
-        Left ->
-            "left"
+        Start ->
+            "start"
 
         Center ->
             "center"
 
-        Right ->
-            "right"
+        End ->
+            "end"
 
 
-screenSizeOption : ScreenSize -> String
+
+
+
+screenSizeOption : ScreenSize -> Maybe String
 screenSizeOption size =
     case size of
         ExtraSmall ->
-            "xs"
+            Nothing
 
         Small ->
-            "sm"
+            Just "sm"
 
         Medium ->
-            "md"
+            Just "md"
 
         Large ->
-            "lg"
+            Just "lg"
+
+        ExtraLarge ->
+            Just "xl"
+

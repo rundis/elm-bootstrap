@@ -7,42 +7,15 @@ module Bootstrap.Grid
         , col
         , colWidth
         , colOffset
-        , rowXsBottom
-        , rowXsCenter
-        , rowXsTop
-        , rowXsLeft
-        , rowXsMiddle
-        , rowXsRight
-        , rowSmBottom
-        , rowSmCenter
-        , rowSmTop
-        , rowSmLeft
-        , rowSmMiddle
-        , rowSmRight
-        , rowMdBottom
-        , rowMdCenter
-        , rowMdTop
-        , rowMdLeft
-        , rowMdMiddle
-        , rowMdRight
-        , rowLgBottom
-        , rowLgCenter
-        , rowLgTop
-        , rowLgLeft
-        , rowLgMiddle
-        , rowLgRight
-        , colXsBottom
-        , colXsMiddle
-        , colXsTop
-        , colSmBottom
-        , colSmMiddle
-        , colSmTop
-        , colMdBottom
-        , colMdMiddle
-        , colMdTop
-        , colLgBottom
-        , colLgMiddle
-        , colLgTop
+        , colTop
+        , colMiddle
+        , colBottom
+        , rowTop
+        , rowMiddle
+        , rowBottom
+        , rowLeft
+        , rowCenter
+        , rowRight
         , ColumnWidth
         , colXsOne
         , colXsTwo
@@ -96,37 +69,39 @@ module Bootstrap.Grid
         , colLgEleven
         , colLgTwelve
         , colLgNone
+        , colXlOne
+        , colXlTwo
+        , colXlThree
+        , colXlFour
+        , colXlFive
+        , colXlSix
+        , colXlSeven
+        , colXlEight
+        , colXlNine
+        , colXlTen
+        , colXlEleven
+        , colXlTwelve
+        , colXlNone
         )
 
 import Html exposing (Html, div, Attribute)
 import Html.Attributes exposing (class, classList)
-import Bootstrap.Internal.Grid as GridInternal exposing (ScreenSize(..), VAlign(..), HAlign(..), ColumnCount(..))
+import Bootstrap.Internal.Grid as GridInternal exposing (ScreenSize(..), Align(..), ColumnCount(..))
 
 
 -- TODO: flex-around, flex-between
 
 
 type FlexRowOption
-    = FlexRowHAlign FlexHAlign
-    | FlexRowVAlign FlexVAlign
+    = FlexRowHAlign Align
+    | FlexRowVAlign Align
 
 
 type FlexColOption
-    = FlexColVAlign FlexVAlign
+    = FlexColVAlign Align
     | FlexColWidth ColumnWidth
     | FlexColOffset ColumnWidth
 
-
-type alias FlexVAlign =
-    { size : ScreenSize
-    , align : VAlign
-    }
-
-
-type alias FlexHAlign =
-    { size : ScreenSize
-    , align : HAlign
-    }
 
 
 type alias ColumnWidth =
@@ -186,220 +161,46 @@ col { options, attributes, children } =
         }
 
 
-rowXsTop : FlexRowOption
-rowXsTop =
-    FlexVAlign ExtraSmall Top
-        |> FlexRowVAlign
+rowTop : FlexRowOption
+rowTop =
+    FlexRowVAlign Start
 
+rowMiddle : FlexRowOption
+rowMiddle =
+    FlexRowVAlign Center
 
-rowXsMiddle : FlexRowOption
-rowXsMiddle =
-    FlexVAlign ExtraSmall Middle
-        |> FlexRowVAlign
 
+rowBottom : FlexRowOption
+rowBottom =
+    FlexRowVAlign End
 
-rowXsBottom : FlexRowOption
-rowXsBottom =
-    FlexVAlign ExtraSmall Bottom
-        |> FlexRowVAlign
 
+rowLeft : FlexRowOption
+rowLeft =
+    FlexRowHAlign Start
 
-rowSmTop : FlexRowOption
-rowSmTop =
-    FlexVAlign Small Top
-        |> FlexRowVAlign
+rowCenter : FlexRowOption
+rowCenter =
+    FlexRowHAlign Center
 
+rowRight : FlexRowOption
+rowRight =
+    FlexRowHAlign End
 
-rowSmMiddle : FlexRowOption
-rowSmMiddle =
-    FlexVAlign Small Middle
-        |> FlexRowVAlign
 
+colTop : FlexColOption
+colTop =
+    FlexColVAlign Start
 
-rowSmBottom : FlexRowOption
-rowSmBottom =
-    FlexVAlign Small Bottom
-        |> FlexRowVAlign
 
+colMiddle : FlexColOption
+colMiddle =
+    FlexColVAlign Center
 
-rowMdTop : FlexRowOption
-rowMdTop =
-    FlexVAlign Medium Top
-        |> FlexRowVAlign
 
-
-rowMdMiddle : FlexRowOption
-rowMdMiddle =
-    FlexVAlign Medium Middle
-        |> FlexRowVAlign
-
-
-rowMdBottom : FlexRowOption
-rowMdBottom =
-    FlexVAlign Medium Bottom
-        |> FlexRowVAlign
-
-
-rowLgTop : FlexRowOption
-rowLgTop =
-    FlexVAlign Large Top
-        |> FlexRowVAlign
-
-
-rowLgMiddle : FlexRowOption
-rowLgMiddle =
-    FlexVAlign Large Middle
-        |> FlexRowVAlign
-
-
-rowLgBottom : FlexRowOption
-rowLgBottom =
-    FlexVAlign Large Bottom
-        |> FlexRowVAlign
-
-
-rowXsLeft : FlexRowOption
-rowXsLeft =
-    FlexHAlign ExtraSmall Left
-        |> FlexRowHAlign
-
-
-rowXsCenter : FlexRowOption
-rowXsCenter =
-    FlexHAlign ExtraSmall Center
-        |> FlexRowHAlign
-
-
-rowXsRight : FlexRowOption
-rowXsRight =
-    FlexHAlign ExtraSmall Right
-        |> FlexRowHAlign
-
-
-rowSmLeft : FlexRowOption
-rowSmLeft =
-    FlexHAlign Small Left
-        |> FlexRowHAlign
-
-
-rowSmCenter : FlexRowOption
-rowSmCenter =
-    FlexHAlign Small Center
-        |> FlexRowHAlign
-
-
-rowSmRight : FlexRowOption
-rowSmRight =
-    FlexHAlign Small Right
-        |> FlexRowHAlign
-
-
-rowMdLeft : FlexRowOption
-rowMdLeft =
-    FlexHAlign Medium Left
-        |> FlexRowHAlign
-
-
-rowMdCenter : FlexRowOption
-rowMdCenter =
-    FlexHAlign Medium Center
-        |> FlexRowHAlign
-
-
-rowMdRight : FlexRowOption
-rowMdRight =
-    FlexHAlign Medium Right
-        |> FlexRowHAlign
-
-
-rowLgLeft : FlexRowOption
-rowLgLeft =
-    FlexHAlign Large Left
-        |> FlexRowHAlign
-
-
-rowLgCenter : FlexRowOption
-rowLgCenter =
-    FlexHAlign Large Center
-        |> FlexRowHAlign
-
-
-rowLgRight : FlexRowOption
-rowLgRight =
-    FlexHAlign Large Right
-        |> FlexRowHAlign
-
-
-colXsTop : FlexColOption
-colXsTop =
-    FlexVAlign ExtraSmall Top
-        |> FlexColVAlign
-
-
-colXsMiddle : FlexColOption
-colXsMiddle =
-    FlexVAlign ExtraSmall Middle
-        |> FlexColVAlign
-
-
-colXsBottom : FlexColOption
-colXsBottom =
-    FlexVAlign ExtraSmall Bottom
-        |> FlexColVAlign
-
-
-colSmTop : FlexColOption
-colSmTop =
-    FlexVAlign Small Top
-        |> FlexColVAlign
-
-
-colSmMiddle : FlexColOption
-colSmMiddle =
-    FlexVAlign Small Middle
-        |> FlexColVAlign
-
-
-colSmBottom : FlexColOption
-colSmBottom =
-    FlexVAlign Small Bottom
-        |> FlexColVAlign
-
-
-colMdTop : FlexColOption
-colMdTop =
-    FlexVAlign Medium Top
-        |> FlexColVAlign
-
-
-colMdMiddle : FlexColOption
-colMdMiddle =
-    FlexVAlign Medium Middle
-        |> FlexColVAlign
-
-
-colMdBottom : FlexColOption
-colMdBottom =
-    FlexVAlign Medium Bottom
-        |> FlexColVAlign
-
-
-colLgTop : FlexColOption
-colLgTop =
-    FlexVAlign Large Top
-        |> FlexColVAlign
-
-
-colLgMiddle : FlexColOption
-colLgMiddle =
-    FlexVAlign Large Middle
-        |> FlexColVAlign
-
-
-colLgBottom : FlexColOption
-colLgBottom =
-    FlexVAlign Large Bottom
-        |> FlexColVAlign
+colBottom : FlexColOption
+colBottom =
+    FlexColVAlign End
 
 
 colWidth : ColumnWidth -> FlexColOption
@@ -695,10 +496,81 @@ colLgNone : ColumnWidth
 colLgNone =
     colLg None
 
-
 colLg : ColumnCount -> ColumnWidth
 colLg columns =
     { size = Large
+    , columns = columns
+    }
+
+
+colXlOne : ColumnWidth
+colXlOne =
+    colXl One
+
+
+colXlTwo : ColumnWidth
+colXlTwo =
+    colXl Two
+
+
+colXlThree : ColumnWidth
+colXlThree =
+    colXl Three
+
+
+colXlFour : ColumnWidth
+colXlFour =
+    colXl Four
+
+
+colXlFive : ColumnWidth
+colXlFive =
+    colXl Five
+
+
+colXlSix : ColumnWidth
+colXlSix =
+    colXl Six
+
+
+colXlSeven : ColumnWidth
+colXlSeven =
+    colXl Seven
+
+
+colXlEight : ColumnWidth
+colXlEight =
+    colXl Eight
+
+
+colXlNine : ColumnWidth
+colXlNine =
+    colXl Nine
+
+
+colXlTen : ColumnWidth
+colXlTen =
+    colXl Ten
+
+
+colXlEleven : ColumnWidth
+colXlEleven =
+    colXl Eleven
+
+
+colXlTwelve : ColumnWidth
+colXlTwelve =
+    colXl Twelve
+
+
+colXlNone : ColumnWidth
+colXlNone =
+    colXl None
+
+
+colXl : ColumnCount -> ColumnWidth
+colXl columns =
+    { size = ExtraLarge
     , columns = columns
     }
 
@@ -713,10 +585,10 @@ flexRowClass option =
     class <|
         case option of
             FlexRowHAlign hAlign ->
-                flexHAlignOption "flex-items" hAlign
+                flexHAlignOption "justify-content" hAlign
 
             FlexRowVAlign vAlign ->
-                flexVAlignOption "flex-items" vAlign
+                flexVAlignOption "align-items" vAlign
 
 
 renderFlexCol : FlexColumn msg -> Html msg
@@ -729,27 +601,28 @@ renderFlexCol (FlexColumn { options, attributes, children }) =
 flexColAttributes : List FlexColOption -> List (Html.Attribute msg)
 flexColAttributes options =
     List.map flexColClass options
+        |> List.filterMap identity
 
 
-flexColClass : FlexColOption -> Html.Attribute msg
+flexColClass : FlexColOption -> Maybe (Html.Attribute msg)
 flexColClass option =
-    class <|
+
         case option of
             FlexColVAlign vAlign ->
-                flexVAlignOption "flex" vAlign
+                Just <| class <| flexVAlignOption "align-self" vAlign
 
             FlexColWidth width ->
-                GridInternal.colWidthOption width
+                Just <| GridInternal.colWidthClass width
 
             FlexColOffset offset ->
-                GridInternal.offsetOption offset
+                GridInternal.offsetClass offset
 
 
-flexVAlignOption : String -> FlexVAlign -> String
-flexVAlignOption prefix { size, align } =
-    prefix ++ "-" ++ GridInternal.screenSizeOption size ++ "-" ++ GridInternal.vAlignOption align
+flexVAlignOption : String -> Align -> String
+flexVAlignOption prefix align =
+    prefix ++ "-" ++ GridInternal.alignOption align
 
 
-flexHAlignOption : String -> FlexHAlign -> String
-flexHAlignOption prefix { size, align } =
-    prefix ++ "-" ++ GridInternal.screenSizeOption size ++ "-" ++ GridInternal.hAlignOption align
+flexHAlignOption : String -> Align -> String
+flexHAlignOption prefix align =
+    prefix ++ "-" ++ GridInternal.alignOption align

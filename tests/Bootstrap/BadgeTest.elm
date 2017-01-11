@@ -1,7 +1,7 @@
-module Bootstrap.TagTest exposing (..)
+module Bootstrap.BadgeTest exposing (..)
 
 
-import Bootstrap.Tag as Tag
+import Bootstrap.Badge as Badge
 
 import Html
 import Test exposing (Test, test, describe)
@@ -12,15 +12,15 @@ import Test.Html.Selector exposing (text, tag, classes)
 {-| @ltignore -}
 all : Test
 all =
-    Test.concat [simpleTag, simplePill, tagWithOptions, pillWithOptions]
+    Test.concat [simpleBadge, simplePill, badgeWithOptions, pillWithOptions]
 
 
-simpleTag : Test
-simpleTag =
+simpleBadge : Test
+simpleBadge =
     let
-        html = Tag.simpleTag [Html.text "1"]
+        html = Badge.simpleBadge [Html.text "1"]
     in
-        describe "Simple tag"
+        describe "Simple badge"
             [ test "expect span and text" <|
                 \() ->
                     html
@@ -31,7 +31,7 @@ simpleTag =
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.has  [ classes ["tag", "tag-default"] ]
+                        |> Query.has  [ classes ["badge", "badge-default"] ]
 
             ]
 
@@ -39,7 +39,7 @@ simpleTag =
 simplePill : Test
 simplePill =
     let
-        html = Tag.simplePill [Html.text "1"]
+        html = Badge.simplePill [Html.text "1"]
     in
         describe "Simple pill"
             [ test "expect span and text" <|
@@ -52,16 +52,16 @@ simplePill =
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.has  [ classes ["tag", "tag-default", "tag-pill"] ]
+                        |> Query.has  [ classes ["badge", "badge-default", "badge-pill"] ]
 
             ]
 
-tagWithOptions : Test
-tagWithOptions =
+badgeWithOptions : Test
+badgeWithOptions =
     let
-        html = Tag.tag [Tag.floatXsLeft, Tag.roleDanger] [ Html.text "X"]
+        html = Badge.badge [Badge.roleDanger] [ Html.text "X"]
     in
-        describe "Tag with options"
+        describe "Badge with options"
             [ test "expect span and text" <|
                 \() ->
                     html
@@ -72,7 +72,7 @@ tagWithOptions =
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.has  [ classes ["tag", "float-xs-left", "tag-danger"] ]
+                        |> Query.has  [ classes ["badge", "badge-danger"] ]
 
             ]
 
@@ -80,7 +80,7 @@ tagWithOptions =
 pillWithOptions : Test
 pillWithOptions =
     let
-        html = Tag.pill [Tag.floatXsLeft, Tag.roleDanger] [ Html.text "X"]
+        html = Badge.pill [ Badge.roleDanger] [ Html.text "X"]
     in
         describe "Pill with options"
             [ test "expect span and text" <|
@@ -93,6 +93,6 @@ pillWithOptions =
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.has  [ classes ["tag", "float-xs-left", "tag-danger", "tag-pill"] ]
+                        |> Query.has  [ classes ["badge", "badge-danger", "badge-pill"] ]
 
             ]

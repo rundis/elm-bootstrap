@@ -10,7 +10,7 @@ import Bootstrap.Navbar as Navbar
 import Bootstrap.Tab as Tab
 import Bootstrap.Accordion as Accordion
 import Bootstrap.ListGroup as ListGroup
-import Bootstrap.Tag as Tag
+import Bootstrap.Badge as Badge
 import Bootstrap.Form as Form
 import Bootstrap.Card as Card
 import Bootstrap.Table as Table
@@ -134,15 +134,9 @@ subscriptions model =
                 |> List.map (\( key, val ) -> Accordion.subscriptions (AccordionMsg key) val)
     in
         Sub.batch
-            ([ Dropdown.subscriptions
-                model.dropdownState
-                DropdownMsg
-             , Dropdown.subscriptions
-                model.splitDropState
-                SplitMsg
-             , Dropdown.subscriptions
-                model.navDropState
-                NavDropMsg
+            ([ Dropdown.subscriptions model.dropdownState DropdownMsg
+             , Dropdown.subscriptions model.splitDropState SplitMsg
+             , Dropdown.subscriptions model.navDropState NavDropMsg
              ]
                 ++ accordionSubs
             )
@@ -151,27 +145,20 @@ subscriptions model =
 view : Model -> Html Msg
 view model =
     div []
-        [ CDN.stylesheetFlex
+        [ CDN.stylesheet
         , CDN.fontAwesome
-        , Grid.container
-            []
-            [ navbar model
-            , mainContent model
-            , accordion model
-            , tabs model
-            , cards
-            , tables
-            ]
+        , navbar model
+        , mainContent model
         ]
 
 
 mainContent : Model -> Html Msg
 mainContent model =
-    Grid.container [ style [ ( "margin-top", "60px" ) ] ]
+    Grid.container [style [ ( "margin-top", "60px" ) ] ]
         [ simpleForm
         , gridForm
         , Grid.row
-            { options = [ Grid.rowXsBottom ]
+            { options = [ Grid.rowBottom ]
             , attributes = [ rowStyle ]
             , cols =
                 [ Grid.col
@@ -185,7 +172,7 @@ mainContent model =
                 , Grid.col
                     { options =
                         [ Grid.colWidth Grid.colXsNone
-                        , Grid.colXsTop
+                        , Grid.colTop
                         ]
                     , attributes = [ colStyle ]
                     , children = [ text "Col 2 Row 1" ]
@@ -193,7 +180,7 @@ mainContent model =
                 , Grid.col
                     { options =
                         [ Grid.colWidth Grid.colXsFive
-                        , Grid.colXsMiddle
+                        , Grid.colMiddle
                         ]
                     , attributes = [ colStyle ]
                     , children = [ text "Col 3 Row 1" ]
@@ -206,7 +193,7 @@ mainContent model =
                 ]
             }
         , Grid.row
-            { options = [ Grid.rowXsMiddle ]
+            { options = [ Grid.rowMiddle ]
             , attributes = [ rowStyle ]
             , cols =
                 [ Grid.col
@@ -225,7 +212,7 @@ mainContent model =
                 ]
             }
         , Grid.row
-            { options = [ Grid.rowXsTop ]
+            { options = [ Grid.rowTop ]
             , attributes = [ rowStyle ]
             , cols =
                 [ Grid.col
@@ -233,17 +220,15 @@ mainContent model =
                     , attributes = [ colStyle ]
                     , children =
                         [ Dropdown.dropdown
+                            model.dropdownState
                             { options = [ Dropdown.AlignMenuRight ]
                             , toggleMsg = DropdownMsg
                             , toggleButton =
                                 Dropdown.toggle
-                                    { options = [ Button.roleWarning ]
-                                    , attributes = []
-                                    , children =
-                                        [ text "MyDropdown "
-                                        , span [ class "tag tag-pill tag-info" ] [ text "(2)" ]
-                                        ]
-                                    }
+                                    [ Button.roleWarning ]
+                                    [ text "MyDropdown "
+                                    , span [ class "tag tag-pill tag-info" ] [ text "(2)" ]
+                                    ]
                             , items =
                                 [ Dropdown.anchorItem
                                     [ href "#", onClick Item1Msg ]
@@ -253,11 +238,10 @@ mainContent model =
                                     [ text "Item 2" ]
                                 , Dropdown.divider
                                 , Dropdown.header [ text "Silly items" ]
-                                , Dropdown.anchorItem [ href "#" ] [ text "DoNothing1" ]
+                                , Dropdown.anchorItem [ href "#meh", class "disabled" ] [ text "DoNothing1" ]
                                 , Dropdown.anchorItem [ href "#" ] [ text "DoNothing2" ]
                                 ]
                             }
-                            model.dropdownState
                         ]
                     }
                 , Grid.col
@@ -265,12 +249,16 @@ mainContent model =
                     , attributes = [ colStyle ]
                     , children =
                         [ Dropdown.splitDropdown
+                            model.splitDropState
                             { options = [ Dropdown.Dropup ]
                             , toggleMsg = SplitMsg
                             , toggleButton =
                                 Dropdown.splitToggle
-                                    { options = [ Button.roleWarning ]
-                                    , attributes = [ onClick SplitMainMsg ]
+                                    { options =
+                                        [ Button.roleWarning
+                                        , Button.attr <| onClick SplitMainMsg
+                                        ]
+                                    , togglerOptions = [ Button.roleWarning ]
                                     , children = [ text "My split drop" ]
                                     }
                             , items =
@@ -280,9 +268,11 @@ mainContent model =
                                 , Dropdown.buttonItem
                                     [ onClick SplitItem2Msg ]
                                     [ text "SplitItem 2" ]
+                                , Dropdown.buttonItem
+                                    [ onClick SplitItem2Msg, class "disabled", disabled True ]
+                                    [ text "SplitItem 2" ]
                                 ]
                             }
-                            model.splitDropState
                         ]
                     }
                 , Grid.col
@@ -292,6 +282,10 @@ mainContent model =
                     }
                 ]
             }
+        , accordion model
+        , tabs model
+        , cards
+        , tables
         , modal model.modalState
         ]
 
@@ -299,14 +293,15 @@ mainContent model =
 navbar : Model -> Html Msg
 navbar model =
     Navbar.navbar
-        { options = [ Navbar.primary, Navbar.fixTop ]
-        , attributes = []
+        { options = [Navbar.fixTop, Navbar.primary ]
+        , attributes = [ class "container" ]
+        , brand = Just <| Navbar.brand [ href "#" ] [ text "Logo" ]
         , items =
-            [ Navbar.brand [ href "#" ] [ text "Logo" ]
-            , Navbar.itemLink [ href "#" ] [ text "Page" ]
+            [ Navbar.itemLink [ href "#" ] [ text "Page" ]
             , Navbar.itemLink [ href "#" ] [ text "Another" ]
             , Navbar.customItem <|
                 Dropdown.navDropdown
+                    model.navDropState
                     { toggleMsg = NavDropMsg
                     , toggleButton = Dropdown.navToggle [] [ text "NavDrop" ]
                     , items =
@@ -314,10 +309,9 @@ navbar model =
                         , Dropdown.anchorItem [ href "#" ] [ text "Menuitem 2" ]
                         ]
                     }
-                    model.navDropState
             , Navbar.customItem <|
                 span
-                    [ class "navbar-text float-xs-right text-success" ]
+                    [ class "navbar-text text-success" ]
                     [ text "Some text" ]
             ]
         }
@@ -564,7 +558,7 @@ listGroup =
             , options = [ ListGroup.roleSuccess ]
             , children =
                 [ text "Hello"
-                , Tag.pill [ Tag.floatXsRight, Tag.roleDefault ] [ text "1" ]
+                , Badge.pill [ Badge.roleDefault ] [ text "1" ]
                 ]
             }
         , ListGroup.anchorItem
@@ -572,8 +566,8 @@ listGroup =
             , options = [ ListGroup.roleInfo ]
             , children =
                 [ text "Aloha"
-                , Tag.pill
-                    [ Tag.floatXsRight, Tag.roleInfo ]
+                , Badge.pill
+                    [ Badge.roleInfo ]
                     [ text "2" ]
                 ]
             }
