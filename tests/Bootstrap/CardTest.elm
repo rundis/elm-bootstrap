@@ -59,7 +59,7 @@ notSoSimpleCard =
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.has [ classes [ "card", "card-block", "card-outline-info", "text-xs-center" ] ]
+                        |> Query.has [ classes [ "card", "card-block", "card-outline-info", "text-center" ] ]
             , test "expect title" <|
                 \() ->
                     html

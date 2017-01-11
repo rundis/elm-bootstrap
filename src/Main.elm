@@ -221,7 +221,7 @@ mainContent model =
                     , children =
                         [ Dropdown.dropdown
                             model.dropdownState
-                            { options = [ Dropdown.AlignMenuRight ]
+                            { options = [ Dropdown.alignMenuRight ]
                             , toggleMsg = DropdownMsg
                             , toggleButton =
                                 Dropdown.toggle
@@ -250,7 +250,7 @@ mainContent model =
                     , children =
                         [ Dropdown.splitDropdown
                             model.splitDropState
-                            { options = [ Dropdown.Dropup ]
+                            { options = [ Dropdown.dropUp ]
                             , toggleMsg = SplitMsg
                             , toggleButton =
                                 Dropdown.splitToggle
