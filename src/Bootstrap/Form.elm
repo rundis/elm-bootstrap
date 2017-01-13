@@ -131,7 +131,7 @@ type Radio msg
 
 
 type FormCheckOption msg
-    = Disabled
+    = CheckDisabled
     | CheckAttr (Html.Attribute msg)
 
 
@@ -181,7 +181,7 @@ group { label, control, validationResult } =
             )
 
 
-disableWhen : Bool -> Html.Html msg -> Html.Html msg
+{- disableWhen : Bool -> Html.Html msg -> Html.Html msg
 disableWhen isDisabled element =
     if isDisabled then
         Html.fieldset
@@ -189,7 +189,7 @@ disableWhen isDisabled element =
             [ element ]
     else
         element
-
+ -}
 
 groupRowSimple :
     { label : Label msg
@@ -294,24 +294,23 @@ addLabelOptions options (Label label) =
 
 getFormControlId : FormControl msg -> Maybe (InputOption msg)
 getFormControlId control =
-    case control of
-        InputControl (Input input) ->
-            List.head input.options
+    let
+        optionFilter opt =
+            case opt of
+                InputId _ ->
+                    True
 
-        {- List.filter (\opt -> case opt of
-                       Input _ ->
-                           True
-                       _ -> False) input.options
-           |> List.head
-        -}
-        SelectControl (Select select) ->
-            List.head select.options
+                _ ->
+                    False
+    in
+        case control of
+            InputControl (Input input) ->
+                List.filter optionFilter input.options
+                    |> List.head
 
-
-
-{- List.filter (\opt -> opt == InputId) select.options
-   |> List.head
--}
+            SelectControl (Select select) ->
+                List.filter optionFilter select.options
+                    |> List.head
 
 
 labelAttr : Html.Attribute msg -> LabelOption msg
@@ -474,17 +473,15 @@ checkbox options label =
     Html.div
         [ classList
             [ ( "form-check", True )
-            , ( "disabled", isDisabled options )
+            , ( "disabled", isCheckDisabled options )
             ]
         ]
         [ Html.label
             [ class "form-check-label" ]
             [ Html.input
-                -- TODO: What about any the rest of the options
-                [ class "form-check-input"
-                , type_ "checkbox"
-                , Html.Attributes.disabled <| isDisabled options
-                ]
+                ( type_ "checkbox"
+                    :: (checkAttributes options )
+                )
                 []
             , renderLabel label
             ]
@@ -574,7 +571,7 @@ radioControl options label =
 
 checkDisabled : FormCheckOption msg
 checkDisabled =
-    Disabled
+    CheckDisabled
 
 
 checkAttr : Html.Attribute msg -> FormCheckOption msg
@@ -593,26 +590,40 @@ renderRadio (Radio { label, options }) =
     Html.div
         [ classList
             [ ( "form-check", True )
-            , ( "disabled", isDisabled options )
+            , ( "disabled", isCheckDisabled options )
             ]
         ]
         [ Html.label
             [ class "form-check-label" ]
             [ Html.input
-                -- TODO: what about the rest of the options !?
-                [ type_ "radio"
-                , class "form-check-input"
-                , Html.Attributes.disabled <| isDisabled options
-                ]
+                ( type_ "radio"
+                    :: (checkAttributes options )
+                )
                 []
             , renderLabel label
             ]
         ]
 
+checkAttributes : List (FormCheckOption msg) -> List (Html.Attribute msg)
+checkAttributes options =
+    class "form-check-input"
+        :: (List.map checkAttribute options)
 
-isDisabled : List (FormCheckOption msg) -> Bool
-isDisabled options =
-    List.any (\opt -> opt == Disabled) options
+
+checkAttribute : FormCheckOption msg -> Html.Attribute msg
+checkAttribute option =
+    case option of
+        CheckAttr attr ->
+            attr
+
+        CheckDisabled ->
+            Html.Attributes.disabled True
+
+
+
+isCheckDisabled : List (FormCheckOption msg) -> Bool
+isCheckDisabled options =
+    List.any (\opt -> opt == CheckDisabled) options
 
 
 renderLabel : Label msg -> Html.Html msg
