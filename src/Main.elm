@@ -154,7 +154,7 @@ view model =
 
 mainContent : Model -> Html Msg
 mainContent model =
-    Grid.container [style [ ( "margin-top", "60px" ) ] ]
+    Grid.container [ style [ ( "margin-top", "60px" ) ] ]
         [ simpleForm
         , gridForm
         , Grid.row
@@ -286,6 +286,7 @@ mainContent model =
         , tabs model
         , cards
         , tables
+        , listGroup2
         , modal model.modalState
         ]
 
@@ -293,7 +294,7 @@ mainContent model =
 navbar : Model -> Html Msg
 navbar model =
     Navbar.navbar
-        { options = [Navbar.fixTop, Navbar.primary ]
+        { options = [ Navbar.fixTop, Navbar.primary ]
         , attributes = [ class "container" ]
         , brand = Just <| Navbar.brand [ href "#" ] [ text "Logo" ]
         , items =
@@ -319,28 +320,28 @@ navbar model =
 
 simpleForm : Html Msg
 simpleForm =
-    Html.form
+    Form.form
         []
-        [ h1 [] [ text "Form" ]
+        [ Form.customItem <| h1 [] [ text "Form" ]
         , Form.group
             { validation = Just <| Form.success "This went well"
-            , help = Just <| Form.helpText [] [ text "Enter something clever here"]
+            , help = Just <| Form.help [] [ text "Enter something clever here" ]
             , label = Form.textLabel "SimpleInput"
-            , control = Form.text [ Form.inputId "simpleInput"]
+            , control = Form.text [ Form.inputId "simpleInput" ]
             }
         , Form.groupSimple
             { label = Form.textLabel "Sample select"
             , control =
-                Form.selectControl
-                    [Form.inputId "simpleSelect"]
+                Form.select
+                    [ Form.inputId "simpleSelect" ]
                     [ Form.selectItem [] [ text "Option 1" ]
                     , Form.selectItem [] [ text "Option 2" ]
                     ]
             }
         , Form.checkbox [] "Check me!"
         , Form.checkbox
-            [ Form.checkDisabled] "Can't check me!"
-
+            [ Form.checkDisabled ]
+            "Can't check me!"
         , Form.radioGroup
             { label = Form.textLabel "My radios"
             , name = "MyRadios"
@@ -353,7 +354,7 @@ simpleForm =
         , Form.group
             { validation = Nothing
             , help = Nothing
-            , label = Form.label [] [ text "Small input"]
+            , label = Form.label [] [ text "Small input" ]
             , control =
                 Form.text
                     [ Form.inputId "smallinput"
@@ -363,20 +364,20 @@ simpleForm =
             }
         , Form.group
             { validation = Just <| Form.warning "A bit short ?"
-            , help = Just <| Form.helpText [] [text "Enter a password with atleast 8 characters"]
-            , label = Form.label [] [ text "Password"]
+            , help = Just <| Form.help [] [ text "Enter a password with at least 8 characters" ]
+            , label = Form.label [] [ text "Password" ]
             , control =
                 Form.password
-                    [ Form.inputId "pwd"]
+                    [ Form.inputId "pwd" ]
             }
         ]
 
 
 gridForm : Html Msg
 gridForm =
-    Html.form
+    Form.form
         [ class "container" ]
-        [ h2 [] [ text "Form grid" ]
+        [ Form.customItem <| h2 [] [ text "Form grid" ]
         , Form.groupRowSimple
             { label = Form.textLabel "TextInput"
             , labelWidth = Grid.colXsFour
@@ -387,12 +388,11 @@ gridForm =
             { label = Form.textLabel "Select"
             , labelWidth = Grid.colXsFour
             , control =
-                Form.selectControl
+                Form.select
                     [ Form.inputId "rowSimpleSelect" ]
-                        [ Form.selectItem [] [ text "Option 1" ]
-                        , Form.selectItem [] [ text "Option 2" ]
-                        ]
-
+                    [ Form.selectItem [] [ text "Option 1" ]
+                    , Form.selectItem [] [ text "Option 2" ]
+                    ]
             , controlWidth = Grid.colXsEight
             }
         , Form.groupRow
@@ -400,7 +400,7 @@ gridForm =
             , help = Nothing
             , label = Form.textLabel "TextWithValidation"
             , labelWidth = Grid.colXsFour
-            , control = Form.text [ Form.inputId "rowtextinputvalidation"]
+            , control = Form.text [ Form.inputId "rowtextinputvalidation" ]
             , controlWidth = Grid.colXsEight
             }
         , Form.groupRow
@@ -426,7 +426,8 @@ gridForm =
                 [ Form.radio [] "Radio 1"
                 , Form.radio [] "Radio 2"
                 , Form.radio
-                    [ Form.radioDisabled ] "Radio 3"
+                    [ Form.radioDisabled ]
+                    "Radio 3"
                 ]
             }
         , Form.checkboxRow
@@ -491,7 +492,7 @@ tabs model =
                 }
             , Tab.tabItem
                 { link = Tab.tabLink [] [ text "Tab2" ]
-                , pane = Tab.tabPane [] [ listGroup2 ]
+                , pane = Tab.tabPane [] [ text "TAB 2 Content" ]
                 }
             ]
         }
@@ -500,48 +501,68 @@ tabs model =
 
 listGroup : Html Msg
 listGroup =
-    ListGroup.customList
-        [ ListGroup.anchorItem
-            { attributes = [ href "#" ]
-            , options = [ ListGroup.roleSuccess ]
-            , children =
-                [ text "Hello"
-                , Badge.pill [ Badge.roleDefault ] [ text "1" ]
-                ]
-            }
-        , ListGroup.anchorItem
-            { attributes = [ href "#" ]
-            , options = [ ListGroup.roleInfo ]
-            , children =
-                [ text "Aloha"
-                , Badge.pill
-                    [ Badge.roleInfo ]
-                    [ text "2" ]
-                ]
-            }
+    ListGroup.custom
+        [ ListGroup.anchor
+            [ ListGroup.roleSuccess
+            , ListGroup.attr <| href "#"
+            , ListGroup.attr <| class "justify-content-between"
+            ]
+            [ text "Hello"
+            , Badge.pill [ Badge.roleDefault ] [ text "1" ]
+            ]
+        , ListGroup.anchor
+            [ ListGroup.roleInfo
+            , ListGroup.attr <| href "#"
+            , ListGroup.attr <| class "justify-content-between"
+            ]
+            [ text "Aloha"
+            , Badge.pill
+                [ Badge.roleInfo ]
+                [ text "2" ]
+            ]
         ]
 
 
 listGroup2 : Html Msg
 listGroup2 =
-    ListGroup.customList
-        [ ListGroup.anchorItem
-            { attributes = [ href "#" ]
-            , options = []
-            , children =
-                [ ListGroup.h5 [] [ text "Item 1" ]
-                , ListGroup.text [] [ text "Some text paragraph" ]
+    ListGroup.custom
+        [ ListGroup.anchor
+            [ ListGroup.active
+            , ListGroup.attr <| href "#"
+            , ListGroup.attr <| class "flex-column align-items-start"
+            ]
+            [ div [ class "d-flex w-100 justify-content-between"]
+                [ h5 [ class "mb-1"] [ text "List group heading"]
+                , small [] [ text "3 days ago" ]
                 ]
-            }
-        , ListGroup.anchorItem
-            { attributes = [ href "#" ]
-            , options = []
-            , children =
-                [ ListGroup.h5 [] [ text "Item 2" ]
-                , ListGroup.text [] [ text "Some other text paragraph" ]
+            , p [ class "mb-1"] [ text "Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit."]
+            , small [] [ text "Oh yea that's neat"]
+            ]
+        , ListGroup.anchor
+            [ ListGroup.attr <| href "#"
+            , ListGroup.attr <| class "flex-column align-items-start"
+            ]
+            [ div [ class "d-flex w-100 justify-content-between"]
+                [ h5 [ class "mb-1"] [ text "List group heading"]
+                , small [] [ text "3 days ago" ]
                 ]
-            }
+            , p [ class "mb-1"] [ text "Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit."]
+            , small [] [ text "Oh yea that's neat"]
+            ]
+        , ListGroup.anchor
+            [ ListGroup.attr <| href "#"
+            , ListGroup.attr <| class "flex-column align-items-start"
+            ]
+            [ div [ class "d-flex w-100 justify-content-between"]
+                [ h5 [ class "mb-1"] [ text "List group heading"]
+                , small [] [ text "3 days ago" ]
+                ]
+            , p [ class "mb-1"] [ text "Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit."]
+            , small [] [ text "Oh yea that's neat"]
+            ]
         ]
+
+
 
 
 accordion : Model -> Html Msg

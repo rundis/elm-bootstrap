@@ -21,7 +21,10 @@ type alias FormCheckOption msg = FormInternal.FormCheckOption msg
 
 {-| Create as input type="checkbox"
 
-    Checkbox.checkbox [] "My check"
+    Checkbox.checkbox [ Checkbox.attr <| onCheck MyCheckMsg ] "My check"
+
+* `options` List of options to custimize the checkbox
+* `textLabel` Label text for the checkbox
 
 -}
 checkbox :
@@ -50,3 +53,4 @@ disabled =
 inline : FormCheckOption msg
 inline =
     CheckInline
+

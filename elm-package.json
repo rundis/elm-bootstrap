@@ -12,8 +12,11 @@
       "Bootstrap.Button",
       "Bootstrap.Card",
       "Bootstrap.Checkbox",
+      "Bootstrap.Form",
       "Bootstrap.Dropdown",
-      "Bootstrap.Table"
+      "Bootstrap.ListGroup",
+      "Bootstrap.Table",
+      "Bootstrap.TextInput"
     ],
     "dependencies": {
         "MichaelCombs28/elm-dom": "1.0.0 <= v < 2.0.0",
