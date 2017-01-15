@@ -158,130 +158,101 @@ mainContent model =
         [ simpleForm
         , gridForm
         , Grid.row
-            { options = [ Grid.rowBottom ]
-            , attributes = [ rowStyle ]
-            , cols =
-                [ Grid.col
-                    { options = [ Grid.colWidth Grid.colXsTwo ]
-                    , attributes = [ colStyle ]
-                    , children =
-                        [ span [ class "fa fa-car" ] []
-                        , text " Col 1 Row 1"
-                        ]
-                    }
-                , Grid.col
-                    { options =
-                        [ Grid.colWidth Grid.colXsNone
-                        , Grid.colTop
-                        ]
-                    , attributes = [ colStyle ]
-                    , children = [ text "Col 2 Row 1" ]
-                    }
-                , Grid.col
-                    { options =
-                        [ Grid.colWidth Grid.colXsFive
-                        , Grid.colMiddle
-                        ]
-                    , attributes = [ colStyle ]
-                    , children = [ text "Col 3 Row 1" ]
-                    }
-                , Grid.col
-                    { options = [ Grid.colWidth Grid.colXsNone ]
-                    , attributes = [ colStyle ]
-                    , children = [ text "Col 4 Row 1" ]
-                    }
+            [ Grid.rowBottom, Grid.rowAttr rowStyle ]
+            [ Grid.col
+                [ Grid.colWidth Grid.colXsTwo, Grid.colAttr colStyle ]
+                [ span [ class "fa fa-car" ] []
+                , text " Col 1 Row 1"
                 ]
-            }
+            , Grid.col
+                [ Grid.colWidth Grid.colXsNone
+                , Grid.colTop
+                , Grid.colAttr colStyle
+                ]
+                [ text "Col 2 Row 1" ]
+            , Grid.col
+                [ Grid.colWidth Grid.colXsFive
+                , Grid.colMiddle
+                , Grid.colAttr colStyle
+                ]
+                [ text "Col 3 Row 1" ]
+            , Grid.col
+                [ Grid.colWidth Grid.colXsNone, Grid.colAttr colStyle ]
+                [ text "Col 4 Row 1" ]
+            ]
         , Grid.row
-            { options = [ Grid.rowMiddle ]
-            , attributes = [ rowStyle ]
-            , cols =
-                [ Grid.col
-                    { options = [ Grid.colWidth Grid.colXsFive ]
-                    , attributes = [ colStyle ]
-                    , children =
-                        [ Button.linkButton
-                            [ Button.small
-                            , Button.outlineSuccess
-                            , Button.block
-                            , Button.attr <| onClick <| ModalMsg Modal.visibleState
+            [ Grid.rowMiddle, Grid.rowAttr rowStyle ]
+            [ Grid.col
+                [ Grid.colWidth Grid.colXsFive ]
+                [ Button.linkButton
+                    [ Button.small
+                    , Button.outlineSuccess
+                    , Button.block
+                    , Button.attr <| onClick <| ModalMsg Modal.visibleState
+                    ]
+                    [ text "Show modal" ]
+                ]
+            ]
+        , Grid.row
+            [ Grid.rowTop, Grid.rowAttr rowStyle ]
+            [ Grid.col
+                [ Grid.colWidth Grid.colXsFive, Grid.colAttr colStyle ]
+                [ Dropdown.dropdown
+                    model.dropdownState
+                    { options = [ Dropdown.alignMenuRight ]
+                    , toggleMsg = DropdownMsg
+                    , toggleButton =
+                        Dropdown.toggle
+                            [ Button.roleWarning ]
+                            [ text "MyDropdown "
+                            , span [ class "tag tag-pill tag-info" ] [ text "(2)" ]
                             ]
-                            [ text "Show modal" ]
+                    , items =
+                        [ Dropdown.anchorItem
+                            [ href "#", onClick Item1Msg ]
+                            [ text "Item 1" ]
+                        , Dropdown.anchorItem
+                            [ href "#", onClick Item2Msg ]
+                            [ text "Item 2" ]
+                        , Dropdown.divider
+                        , Dropdown.header [ text "Silly items" ]
+                        , Dropdown.anchorItem [ href "#meh", class "disabled" ] [ text "DoNothing1" ]
+                        , Dropdown.anchorItem [ href "#" ] [ text "DoNothing2" ]
                         ]
                     }
                 ]
-            }
-        , Grid.row
-            { options = [ Grid.rowTop ]
-            , attributes = [ rowStyle ]
-            , cols =
-                [ Grid.col
-                    { options = [ Grid.colWidth Grid.colXsFive ]
-                    , attributes = [ colStyle ]
-                    , children =
-                        [ Dropdown.dropdown
-                            model.dropdownState
-                            { options = [ Dropdown.alignMenuRight ]
-                            , toggleMsg = DropdownMsg
-                            , toggleButton =
-                                Dropdown.toggle
-                                    [ Button.roleWarning ]
-                                    [ text "MyDropdown "
-                                    , span [ class "tag tag-pill tag-info" ] [ text "(2)" ]
-                                    ]
-                            , items =
-                                [ Dropdown.anchorItem
-                                    [ href "#", onClick Item1Msg ]
-                                    [ text "Item 1" ]
-                                , Dropdown.anchorItem
-                                    [ href "#", onClick Item2Msg ]
-                                    [ text "Item 2" ]
-                                , Dropdown.divider
-                                , Dropdown.header [ text "Silly items" ]
-                                , Dropdown.anchorItem [ href "#meh", class "disabled" ] [ text "DoNothing1" ]
-                                , Dropdown.anchorItem [ href "#" ] [ text "DoNothing2" ]
+            , Grid.col
+                [ Grid.colWidth Grid.colXsFive, Grid.colAttr colStyle ]
+                [ Dropdown.splitDropdown
+                    model.splitDropState
+                    { options = [ Dropdown.dropUp ]
+                    , toggleMsg = SplitMsg
+                    , toggleButton =
+                        Dropdown.splitToggle
+                            { options =
+                                [ Button.roleWarning
+                                , Button.attr <| onClick SplitMainMsg
                                 ]
+                            , togglerOptions = [ Button.roleWarning ]
+                            , children = [ text "My split drop" ]
                             }
+                    , items =
+                        [ Dropdown.buttonItem
+                            [ onClick SplitItem1Msg ]
+                            [ text "SplitItem 1" ]
+                        , Dropdown.buttonItem
+                            [ onClick SplitItem2Msg ]
+                            [ text "SplitItem 2" ]
+                        , Dropdown.buttonItem
+                            [ onClick SplitItem2Msg, class "disabled", disabled True ]
+                            [ text "SplitItem 2" ]
                         ]
-                    }
-                , Grid.col
-                    { options = [ Grid.colWidth Grid.colXsFive ]
-                    , attributes = [ colStyle ]
-                    , children =
-                        [ Dropdown.splitDropdown
-                            model.splitDropState
-                            { options = [ Dropdown.dropUp ]
-                            , toggleMsg = SplitMsg
-                            , toggleButton =
-                                Dropdown.splitToggle
-                                    { options =
-                                        [ Button.roleWarning
-                                        , Button.attr <| onClick SplitMainMsg
-                                        ]
-                                    , togglerOptions = [ Button.roleWarning ]
-                                    , children = [ text "My split drop" ]
-                                    }
-                            , items =
-                                [ Dropdown.buttonItem
-                                    [ onClick SplitItem1Msg ]
-                                    [ text "SplitItem 1" ]
-                                , Dropdown.buttonItem
-                                    [ onClick SplitItem2Msg ]
-                                    [ text "SplitItem 2" ]
-                                , Dropdown.buttonItem
-                                    [ onClick SplitItem2Msg, class "disabled", disabled True ]
-                                    [ text "SplitItem 2" ]
-                                ]
-                            }
-                        ]
-                    }
-                , Grid.col
-                    { options = [ Grid.colWidth Grid.colXsNone ]
-                    , attributes = [ colStyle ]
-                    , children = [ text model.dummy ]
                     }
                 ]
-            }
+            , Grid.col
+                [ Grid.colWidth Grid.colXsNone, Grid.colAttr colStyle ]
+                [ text model.dummy ]
+            ]
         , accordion model
         , tabs model
         , cards
@@ -468,15 +439,11 @@ modalBody =
     Grid.containerFluid []
         [ Grid.simpleRow
             [ Grid.col
-                { options = [ Grid.colWidth Grid.colXsSix ]
-                , attributes = []
-                , children = [ text "Col 1" ]
-                }
+                [ Grid.colWidth Grid.colXsSix ]
+                [ text "Col 1" ]
             , Grid.col
-                { options = [ Grid.colWidth Grid.colXsSix ]
-                , attributes = []
-                , children = [ text "Col 2" ]
-                }
+                [ Grid.colWidth Grid.colXsSix ]
+                [ text "Col 2" ]
             ]
         ]
 
@@ -531,38 +498,36 @@ listGroup2 =
             , ListGroup.attr <| href "#"
             , ListGroup.attr <| class "flex-column align-items-start"
             ]
-            [ div [ class "d-flex w-100 justify-content-between"]
-                [ h5 [ class "mb-1"] [ text "List group heading"]
+            [ div [ class "d-flex w-100 justify-content-between" ]
+                [ h5 [ class "mb-1" ] [ text "List group heading" ]
                 , small [] [ text "3 days ago" ]
                 ]
-            , p [ class "mb-1"] [ text "Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit."]
-            , small [] [ text "Oh yea that's neat"]
+            , p [ class "mb-1" ] [ text "Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit." ]
+            , small [] [ text "Oh yea that's neat" ]
             ]
         , ListGroup.anchor
             [ ListGroup.attr <| href "#"
             , ListGroup.attr <| class "flex-column align-items-start"
             ]
-            [ div [ class "d-flex w-100 justify-content-between"]
-                [ h5 [ class "mb-1"] [ text "List group heading"]
+            [ div [ class "d-flex w-100 justify-content-between" ]
+                [ h5 [ class "mb-1" ] [ text "List group heading" ]
                 , small [] [ text "3 days ago" ]
                 ]
-            , p [ class "mb-1"] [ text "Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit."]
-            , small [] [ text "Oh yea that's neat"]
+            , p [ class "mb-1" ] [ text "Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit." ]
+            , small [] [ text "Oh yea that's neat" ]
             ]
         , ListGroup.anchor
             [ ListGroup.attr <| href "#"
             , ListGroup.attr <| class "flex-column align-items-start"
             ]
-            [ div [ class "d-flex w-100 justify-content-between"]
-                [ h5 [ class "mb-1"] [ text "List group heading"]
+            [ div [ class "d-flex w-100 justify-content-between" ]
+                [ h5 [ class "mb-1" ] [ text "List group heading" ]
                 , small [] [ text "3 days ago" ]
                 ]
-            , p [ class "mb-1"] [ text "Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit."]
-            , small [] [ text "Oh yea that's neat"]
+            , p [ class "mb-1" ] [ text "Donec id elit non mi porta gravida at eget metus. Maecenas sed diam eget risus varius blandit." ]
+            , small [] [ text "Oh yea that's neat" ]
             ]
         ]
-
-
 
 
 accordion : Model -> Html Msg

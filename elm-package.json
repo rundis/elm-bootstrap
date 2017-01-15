@@ -12,8 +12,9 @@
       "Bootstrap.Button",
       "Bootstrap.Card",
       "Bootstrap.Checkbox",
-      "Bootstrap.Form",
       "Bootstrap.Dropdown",
+      "Bootstrap.Form",
+      "Bootstrap.Grid",
       "Bootstrap.ListGroup",
       "Bootstrap.Table",
       "Bootstrap.TextInput"
