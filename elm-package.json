@@ -11,6 +11,7 @@
       "Bootstrap.Badge",
       "Bootstrap.Button",
       "Bootstrap.Card",
+      "Bootstrap.Checkbox",
       "Bootstrap.Dropdown",
       "Bootstrap.Table"
     ],

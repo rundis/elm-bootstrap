@@ -7,24 +7,24 @@ module Bootstrap.Form
         , groupRow
         , groupRowSimple
         , validationResult
-        , textLabelControl
-        , labelControl
+        , textLabel
+        , label
         , labelSmall
         , labelMedium
         , labelLarge
-        , textControl
-        , passwordControl
-        , datetimeLocalControl
-        , dateControl
-        , monthControl
-        , timeControl
-        , weekControl
-        , numberControl
-        , emailControl
-        , urlControl
-        , searchControl
-        , telControl
-        , colorControl
+        , text
+        , password
+        , datetimeLocal
+        , date
+        , month
+        , time
+        , week
+        , number
+        , email
+        , url
+        , search
+        , tel
+        , color
         , inputSmall
         , inputMedium
         , inputLarge
@@ -32,41 +32,38 @@ module Bootstrap.Form
         , inputAttr
         , selectControl
         , selectItem
+        , renderControl
         , checkbox
         , checkboxRow
         , radioGroup
+        , radioGroupSimple
         , radioGroupRow
-        , radioControl
+        , radio
+        , renderRadio
         , checkDisabled
+        , radioDisabled
+        , checkInline
+        , radioInline
         , checkAttr
-        , Validation(..)
+        , radioAttr
+        , labelAttr
+        , helpText
+        , success
+        , warning
+        , error
         , FormCheckOption
         , Label
         , FormControl
         , InputOption
         , SelectItem
+        , FormHelp
         )
 
 import Html
-import Html.Attributes exposing (class, classList, type_)
+import Html.Attributes exposing (class, classList, type_, style)
+import Bootstrap.Internal.Form as FormInternal exposing (InputType(..), Input, Select, SelectItem, InputOption(..), FormCheckOption(..))
 import Bootstrap.Grid as Grid
 import Bootstrap.Internal.Grid as GridInternal
-
-
-type InputType
-    = Text
-    | Password
-    | DatetimeLocal
-    | Date
-    | Month
-    | Time
-    | Week
-    | Number
-    | Email
-    | Url
-    | Search
-    | Tel
-    | Color
 
 
 type Validation
@@ -102,37 +99,28 @@ type FormControl msg
     | SelectControl (Select msg)
 
 
-type Input msg
-    = Input { options : List (InputOption msg) }
+type alias InputOption msg =
+    FormInternal.InputOption msg
 
 
-type InputOption msg
-    = InputSize GridInternal.ScreenSize
-    | InputId String
-    | InputAttr (Html.Attribute msg)
+type alias SelectItem msg =
+    FormInternal.SelectItem msg
 
 
-type Select msg
-    = Select
-        { items : List (SelectItem msg)
-        , options : List (InputOption msg)
-        }
+type alias Radio msg =
+    FormInternal.Radio msg
 
 
-type SelectItem msg
-    = SelectItem (Html.Html msg)
+type alias FormCheckOption msg =
+    FormInternal.FormCheckOption msg
 
 
-type Radio msg
-    = Radio
-        { label : Label msg
-        , options : List (FormCheckOption msg)
-        }
+type FormHelp msg
+    = FormHelp (Html.Html msg)
 
 
-type FormCheckOption msg
-    = CheckDisabled
-    | CheckAttr (Html.Attribute msg)
+
+-- FORMS
 
 
 inlineForm : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
@@ -147,6 +135,10 @@ form attributes children =
     Html.form attributes children
 
 
+
+-- FORM GROUPS
+
+
 groupSimple :
     { label : Label msg
     , control : FormControl msg
@@ -156,40 +148,34 @@ groupSimple { label, control } =
     group
         { label = label
         , control = control
-        , validationResult = Nothing
+        , validation = Nothing
+        , help = Nothing
         }
 
 
 group :
     { label : Label msg
     , control : FormControl msg
-    , validationResult : Maybe ValidationResult
+    , validation : Maybe ValidationResult
+    , help : Maybe (FormHelp msg)
     }
     -> Html.Html msg
-group { label, control, validationResult } =
+group { label, control, validation, help } =
     let
         updLabel =
             maybeAddLabelFor (getFormControlId control) label
                 |> addLabelOptions [ FormLabel ]
     in
         Html.div
-            [ groupOptions validationResult False ]
+            (groupOptions validation True)
             ([ renderLabel updLabel
-             , renderControl control
+             , maybeAddControlValidationSymbol validation control
+                |> renderControl
              ]
-                ++ maybeValidation validationResult
+                ++ maybeValidation validation
+                ++ maybeHelp help
             )
 
-
-{- disableWhen : Bool -> Html.Html msg -> Html.Html msg
-disableWhen isDisabled element =
-    if isDisabled then
-        Html.fieldset
-            [ Html.Attributes.disabled isDisabled ]
-            [ element ]
-    else
-        element
- -}
 
 groupRowSimple :
     { label : Label msg
@@ -204,7 +190,8 @@ groupRowSimple { label, labelWidth, control, controlWidth } =
         , labelWidth = labelWidth
         , control = control
         , controlWidth = controlWidth
-        , validationResult = Nothing
+        , validation = Nothing
+        , help = Nothing
         }
 
 
@@ -213,39 +200,44 @@ groupRow :
     , labelWidth : Grid.ColumnWidth
     , control : FormControl msg
     , controlWidth : Grid.ColumnWidth
-    , validationResult : Maybe ValidationResult
+    , validation : Maybe ValidationResult
+    , help : Maybe (FormHelp msg)
     }
     -> Html.Html msg
-groupRow { label, labelWidth, control, controlWidth, validationResult } =
+groupRow { label, labelWidth, control, controlWidth, validation, help } =
     let
         updLabel =
             maybeAddLabelFor (getFormControlId control) label
                 |> addLabelOptions [ FormLabel, ColumnLabel, LabelWidth labelWidth ]
     in
         Html.div
-            [ groupOptions validationResult True ]
+            (groupOptions validation True)
             [ renderLabel updLabel
             , Html.div
                 [ GridInternal.colWidthClass controlWidth ]
-                ([ renderControl control ]
-                    ++ maybeValidation validationResult
+                ([ maybeAddControlValidationSymbol validation control
+                    |> renderControl
+                 ]
+                    ++ maybeValidation validation
+                    ++ maybeHelp help
                 )
             ]
 
 
-groupOptions : Maybe ValidationResult -> Bool -> Html.Attribute msg
+groupOptions : Maybe ValidationResult -> Bool -> List (Html.Attribute msg)
 groupOptions validationResult isRow =
-    classList <|
+    [ classList <|
         [ ( "form-group", True )
         , ( "row", isRow )
         ]
-            ++ (case validationResult of
-                    Nothing ->
-                        []
+    ]
+        ++ (case validationResult of
+                Nothing ->
+                    []
 
-                    Just (ValidationResult res) ->
-                        [ ( validationOption res.validation, True ) ]
-               )
+                Just (ValidationResult res) ->
+                    [ validationWrapperAttribute res.validation ]
+           )
 
 
 maybeValidation : Maybe ValidationResult -> List (Html.Html msg)
@@ -261,12 +253,56 @@ maybeValidation validationResult =
             ]
 
 
+maybeHelp : Maybe (FormHelp msg) -> List (Html.Html msg)
+maybeHelp help =
+    case help of
+        Nothing ->
+            []
+
+        Just (FormHelp elem) ->
+            [ elem ]
+
+
+error : String -> ValidationResult
+error message =
+    validationResult Danger message
+
+
+warning : String -> ValidationResult
+warning message =
+    validationResult Warning message
+
+
+success : String -> ValidationResult
+success message =
+    validationResult Success message
+
+
 validationResult : Validation -> String -> ValidationResult
 validationResult validation feedback =
     ValidationResult
         { validation = validation
         , feedback = feedback
         }
+
+
+maybeAddControlValidationSymbol :
+    Maybe ValidationResult
+    -> FormControl msg
+    -> FormControl msg
+maybeAddControlValidationSymbol validationRes control =
+    case ( validationRes, control ) of
+        ( Just (ValidationResult { validation }), InputControl inputCfg ) ->
+            { inputCfg
+                | options =
+                    (inputCfg.options
+                        ++ [ inputAttr <| validationInputAttribute validation ]
+                    )
+            }
+                |> InputControl
+
+        _ ->
+            control
 
 
 maybeAddLabelFor : Maybe (InputOption msg) -> Label msg -> Label msg
@@ -304,33 +340,32 @@ getFormControlId control =
                     False
     in
         case control of
-            InputControl (Input input) ->
+            InputControl input ->
                 List.filter optionFilter input.options
                     |> List.head
 
-            SelectControl (Select select) ->
+            SelectControl select ->
                 List.filter optionFilter select.options
                     |> List.head
 
 
-labelAttr : Html.Attribute msg -> LabelOption msg
-labelAttr attr =
-    LabelAttr attr
+
+-- FORM LABELS
 
 
-textLabelControl : String -> Label msg
-textLabelControl text =
+textLabel : String -> Label msg
+textLabel text =
     Label
         { options = []
         , children = [ Html.text text ]
         }
 
 
-labelControl :
+label :
     List (LabelOption msg)
     -> List (Html.Html msg)
     -> Label msg
-labelControl options children =
+label options children =
     Label
         { options = options
         , children = children
@@ -352,68 +387,109 @@ labelLarge =
     LabelSize GridInternal.Large
 
 
-textControl : List (InputOption msg) -> FormControl msg
-textControl =
+labelAttr : Html.Attribute msg -> LabelOption msg
+labelAttr attr =
+    LabelAttr attr
+
+
+renderLabel : Label msg -> Html.Html msg
+renderLabel (Label { options, children }) =
+    Html.label
+        (labelAttributes options)
+        children
+
+
+labelAttributes : List (LabelOption msg) -> List (Html.Attribute msg)
+labelAttributes options =
+    List.map labelAttribute options
+        |> List.filterMap identity
+
+
+labelAttribute : LabelOption msg -> Maybe (Html.Attribute msg)
+labelAttribute option =
+    case option of
+        FormLabel ->
+            Just <| class "form-control-label"
+
+        LabelSize size ->
+            labelSizeOption size
+
+        LabelWidth columnWidth ->
+            Just <| GridInternal.colWidthClass columnWidth
+
+        ColumnLabel ->
+            Just <| class "col-form-label"
+
+        LabelAttr attr ->
+            Just attr
+
+
+
+-- FORM INPUT CONTROLS
+
+
+text : List (InputOption msg) -> FormControl msg
+text =
     inputControl Text
 
 
-passwordControl : List (InputOption msg) -> FormControl msg
-passwordControl =
+password : List (InputOption msg) -> FormControl msg
+password =
     inputControl Password
 
 
-datetimeLocalControl : List (InputOption msg) -> FormControl msg
-datetimeLocalControl =
+datetimeLocal : List (InputOption msg) -> FormControl msg
+datetimeLocal =
     inputControl DatetimeLocal
 
 
-dateControl : List (InputOption msg) -> FormControl msg
-dateControl =
+date : List (InputOption msg) -> FormControl msg
+date =
     inputControl Date
 
 
-monthControl : List (InputOption msg) -> FormControl msg
-monthControl =
+month : List (InputOption msg) -> FormControl msg
+month =
     inputControl Month
 
 
-timeControl : List (InputOption msg) -> FormControl msg
-timeControl =
+time : List (InputOption msg) -> FormControl msg
+time =
     inputControl Time
 
 
-weekControl : List (InputOption msg) -> FormControl msg
-weekControl =
+week : List (InputOption msg) -> FormControl msg
+week =
     inputControl Week
 
 
-numberControl : List (InputOption msg) -> FormControl msg
-numberControl =
+number : List (InputOption msg) -> FormControl msg
+number =
     inputControl Number
 
 
-emailControl : List (InputOption msg) -> FormControl msg
-emailControl =
+email : List (InputOption msg) -> FormControl msg
+email =
     inputControl Email
 
 
-urlControl : List (InputOption msg) -> FormControl msg
-urlControl =
+url : List (InputOption msg) -> FormControl msg
+url =
     inputControl Url
 
 
-searchControl : List (InputOption msg) -> FormControl msg
-searchControl =
+search : List (InputOption msg) -> FormControl msg
+search =
     inputControl Search
 
 
-telControl : List (InputOption msg) -> FormControl msg
-telControl =
+tel : List (InputOption msg) -> FormControl msg
+tel =
     inputControl Tel
 
 
-colorControl : List (InputOption msg) -> FormControl msg
-colorControl =
+color : List (InputOption msg) -> FormControl msg
+color =
     inputControl Color
 
 
@@ -445,7 +521,26 @@ inputAttr attr =
 inputControl : InputType -> List (InputOption msg) -> FormControl msg
 inputControl tipe options =
     InputControl <|
-        Input { options = options }
+        FormInternal.input tipe options
+
+
+renderControl : FormControl msg -> Html.Html msg
+renderControl control =
+    case control of
+        InputControl input ->
+            renderInput input
+
+        SelectControl select ->
+            renderSelect select
+
+
+renderInput : Input msg -> Html.Html msg
+renderInput input =
+    FormInternal.renderInput input
+
+
+
+-- FORM SELECT CONTROL
 
 
 selectControl :
@@ -454,48 +549,43 @@ selectControl :
     -> FormControl msg
 selectControl options items =
     SelectControl <|
-        Select
-            { options = options
-            , items = items
-            }
+        FormInternal.select options items
 
 
 selectItem : List (Html.Attribute msg) -> List (Html.Html msg) -> SelectItem msg
-selectItem attributes children =
-    SelectItem <| Html.option attributes children
+selectItem =
+    FormInternal.selectItem
+
+
+
+-- SelectItem <| Html.option attributes children
+
+
+renderSelect : Select msg -> Html.Html msg
+renderSelect =
+    FormInternal.renderSelect
+
+
+
+-- CHECKBOXES AND RADIOS
 
 
 checkbox :
     List (FormCheckOption msg)
-    -> Label msg
+    -> String
     -> Html.Html msg
-checkbox options label =
-    Html.div
-        [ classList
-            [ ( "form-check", True )
-            , ( "disabled", isCheckDisabled options )
-            ]
-        ]
-        [ Html.label
-            [ class "form-check-label" ]
-            [ Html.input
-                ( type_ "checkbox"
-                    :: (checkAttributes options )
-                )
-                []
-            , renderLabel label
-            ]
-        ]
+checkbox =
+    FormInternal.checkbox
 
 
 checkboxRow :
-    { label : Label msg
+    { labelText : String
     , options : List (FormCheckOption msg)
     , offset : Grid.ColumnWidth
     , controlWidth : Grid.ColumnWidth
     }
     -> Html.Html msg
-checkboxRow { label, options, offset, controlWidth } =
+checkboxRow { labelText, options, offset, controlWidth } =
     Html.div
         [ class "form-group row" ]
         [ Html.div
@@ -504,7 +594,7 @@ checkboxRow { label, options, offset, controlWidth } =
                 , Just <| GridInternal.colWidthClass controlWidth
                 ]
             )
-            [ checkbox options label ]
+            [ checkbox options labelText ]
         ]
 
 
@@ -518,16 +608,18 @@ radioGroup { label, name, radios } =
     Html.fieldset
         [ class "form-group" ]
         ([ Html.legend
-            []
+            [ class "col-form-legend" ]
             [ renderLabel label ]
          ]
-            ++ List.map
-                (\r ->
-                    addRadioAttribute (Html.Attributes.name name) r
-                        |> renderRadio
-                )
-                radios
+            ++ renderRadios name radios
         )
+
+
+radioGroupSimple : String -> List (Radio msg) -> Html.Html msg
+radioGroupSimple name radios =
+    Html.div
+        []
+        (renderRadios name radios)
 
 
 radioGroupRow :
@@ -548,29 +640,32 @@ radioGroupRow { label, name, radios, labelWidth, controlWidth } =
             [ renderLabel updLabel
             , Html.div
                 [ GridInternal.colWidthClass controlWidth ]
-                (List.map
-                    (\r ->
-                        addRadioAttribute (Html.Attributes.name name) r
-                            |> renderRadio
-                    )
-                    radios
-                )
+                ( renderRadios name radios )
             ]
 
 
-radioControl :
-    List (FormCheckOption msg)
-    -> Label msg
-    -> Radio msg
-radioControl options label =
-    Radio
-        { label = label
-        , options = options
-        }
+renderRadios : String -> List (FormInternal.Radio msg) -> List (Html.Html msg)
+renderRadios name radios =
+    List.map
+        (\r ->
+            FormInternal.addRadioAttribute (Html.Attributes.name name) r
+                |> renderRadio
+        )
+        radios
+
+
+radio : List (FormCheckOption msg) -> String -> FormInternal.Radio msg
+radio =
+    FormInternal.radio
 
 
 checkDisabled : FormCheckOption msg
 checkDisabled =
+    CheckDisabled
+
+
+radioDisabled : FormCheckOption msg
+radioDisabled =
     CheckDisabled
 
 
@@ -579,181 +674,40 @@ checkAttr attr =
     CheckAttr attr
 
 
-addRadioAttribute : Html.Attribute msg -> Radio msg -> Radio msg
-addRadioAttribute attribute (Radio rec) =
-    Radio <|
-        { rec | options = rec.options ++ [ checkAttr attribute ] }
+radioAttr : Html.Attribute msg -> FormCheckOption msg
+radioAttr =
+    checkAttr
+
+
+checkInline : FormCheckOption msg
+checkInline =
+    CheckInline
+
+
+radioInline : FormCheckOption msg
+radioInline =
+    CheckInline
 
 
 renderRadio : Radio msg -> Html.Html msg
-renderRadio (Radio { label, options }) =
-    Html.div
-        [ classList
-            [ ( "form-check", True )
-            , ( "disabled", isCheckDisabled options )
-            ]
-        ]
-        [ Html.label
-            [ class "form-check-label" ]
-            [ Html.input
-                ( type_ "radio"
-                    :: (checkAttributes options )
-                )
-                []
-            , renderLabel label
-            ]
-        ]
-
-checkAttributes : List (FormCheckOption msg) -> List (Html.Attribute msg)
-checkAttributes options =
-    class "form-check-input"
-        :: (List.map checkAttribute options)
-
-
-checkAttribute : FormCheckOption msg -> Html.Attribute msg
-checkAttribute option =
-    case option of
-        CheckAttr attr ->
-            attr
-
-        CheckDisabled ->
-            Html.Attributes.disabled True
+renderRadio =
+    FormInternal.renderRadio
 
 
 
-isCheckDisabled : List (FormCheckOption msg) -> Bool
-isCheckDisabled options =
-    List.any (\opt -> opt == CheckDisabled) options
+-- FORM HELP TEXT
 
 
-renderLabel : Label msg -> Html.Html msg
-renderLabel (Label { options, children }) =
-    Html.label
-        (labelAttributes options)
+helpText : List (Html.Attribute msg) -> List (Html.Html msg) -> FormHelp msg
+helpText attributes children =
+    Html.small
+        ([ class "form-text text-muted" ] ++ attributes)
         children
+        |> FormHelp
 
 
-renderControl : FormControl msg -> Html.Html msg
-renderControl control =
-    case control of
-        InputControl input ->
-            renderInput input
 
-        SelectControl select ->
-            renderSelect select
-
-
-renderInput : Input msg -> Html.Html msg
-renderInput (Input { options }) =
-    Html.input
-        (inputAttributes options)
-        []
-
-
-renderSelect : Select msg -> Html.Html msg
-renderSelect (Select { items, options }) =
-    Html.select
-        (inputAttributes options)
-        (List.map (\(SelectItem item) -> item) items)
-
-
-inputAttributes : List (InputOption msg) -> List (Html.Attribute msg)
-inputAttributes options =
-    class "form-control"
-        :: (List.map inputAttribute options
-                |> List.filterMap identity
-           )
-
-
-inputAttribute : InputOption msg -> Maybe (Html.Attribute msg)
-inputAttribute option =
-    case option of
-        InputSize size ->
-            inputSizeOption size
-
-        InputId id ->
-            Just <| Html.Attributes.id id
-
-        InputAttr attr ->
-            Just attr
-
-
-labelAttributes : List (LabelOption msg) -> List (Html.Attribute msg)
-labelAttributes options =
-    List.map labelAttribute options
-        |> List.filterMap identity
-
-
-labelAttribute : LabelOption msg -> Maybe (Html.Attribute msg)
-labelAttribute option =
-    case option of
-        FormLabel ->
-            Just <| class "form-control-label"
-
-        LabelSize size ->
-            labelSizeOption size
-
-        LabelWidth columnWidth ->
-            Just <| GridInternal.colWidthClass columnWidth
-
-        ColumnLabel ->
-            Just <| class "col-form-label"
-
-        LabelAttr attr ->
-            Just attr
-
-
-inputTypeToString : InputType -> String
-inputTypeToString inputType =
-    case inputType of
-        Text ->
-            "text"
-
-        Password ->
-            "password"
-
-        DatetimeLocal ->
-            "datetime-local"
-
-        Date ->
-            "date"
-
-        Month ->
-            "month"
-
-        Time ->
-            "time"
-
-        Week ->
-            "week"
-
-        Number ->
-            "number"
-
-        Email ->
-            "email"
-
-        Url ->
-            "url"
-
-        Search ->
-            "search"
-
-        Tel ->
-            "tel"
-
-        Color ->
-            "color"
-
-
-inputSizeOption : GridInternal.ScreenSize -> Maybe (Html.Attribute msg)
-inputSizeOption size =
-    case GridInternal.screenSizeOption size of
-        Just s ->
-            Just <| class <| "form-control-" ++ s
-
-        Nothing ->
-            Nothing
+-- Misc helpers
 
 
 labelSizeOption : GridInternal.ScreenSize -> Maybe (Html.Attribute msg)
@@ -766,14 +720,24 @@ labelSizeOption size =
             Nothing
 
 
-validationOption : Validation -> String
-validationOption validation =
+validationInputAttribute : Validation -> Html.Attribute msg
+validationInputAttribute validation =
+    class <| "form-control-" ++ validationToString validation
+
+
+validationWrapperAttribute : Validation -> Html.Attribute msg
+validationWrapperAttribute validation =
+    class <| "has-" ++ validationToString validation
+
+
+validationToString : Validation -> String
+validationToString validation =
     case validation of
         Success ->
-            "has-success"
+            "success"
 
         Warning ->
-            "has-warning"
+            "warning"
 
         Danger ->
-            "has-danger"
+            "danger"
