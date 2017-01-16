@@ -23,7 +23,6 @@ type ModalOption
     = ModalSize GridInternal.ScreenSize
 
 
-
 small : ModalOption
 small =
     ModalSize Small
@@ -45,15 +44,15 @@ visibleState =
 
 
 modal :
-    { closeMsg : State -> msg
-    , header : Maybe (Html.Html msg)
-    , body : Maybe (Html.Html msg)
-    , footer : Maybe (Html.Html msg)
-    , options : List ModalOption
-    }
-    -> State
+    State
+    -> { toMsg : State -> msg
+       , header : Maybe (Html.Html msg)
+       , body : Maybe (Html.Html msg)
+       , footer : Maybe (Html.Html msg)
+       , options : List ModalOption
+       }
     -> Html.Html msg
-modal { closeMsg, header, body, footer, options } state =
+modal state { toMsg, header, body, footer, options } =
     Html.div
         []
         ([ Html.div
@@ -62,24 +61,27 @@ modal { closeMsg, header, body, footer, options } state =
                 (Attr.attribute "role" "document" :: modalAttributes options)
                 [ Html.div
                     [ Attr.class "modal-content" ]
-                    (modalHeader closeMsg header
+                    (modalHeader toMsg header
                         :: List.filterMap
                             modalItem
                             [ ( "modal-body", body ), ( "modal-footer", footer ) ]
                     )
                 ]
             ]
-        ] ++  backdrop state)
+         ]
+            ++ backdrop state
+        )
 
 
 display : State -> List (Html.Attribute msg)
 display (State open) =
-    [ Attr.style
-        [ ( "display", ifElse open "block" "none" ) ]
+    [
+    Attr.style
+        ([ ( "display", "block") ] ++ ifElse open [] [("height", "0px")])
     , Attr.classList
-        [ ("modal", True)
-        , ("fade", True)
-        , ("show", open)
+        [ ( "modal", True )
+        , ( "fade", True )
+        , ( "show", open )
         ]
     ]
 
@@ -105,10 +107,10 @@ modalClass option =
 
 
 modalHeader : (State -> msg) -> Maybe (Html.Html msg) -> Html.Html msg
-modalHeader closeMsg maybeHeader =
+modalHeader toMsg maybeHeader =
     Html.div
         [ Attr.class "modal-header" ]
-        ([ closeButton closeMsg ]
+        ([ closeButton toMsg ]
             ++ case maybeHeader of
                 Just header ->
                     [ header ]
@@ -129,9 +131,9 @@ modalItem ( itemClass, maybeItem ) =
 
 
 closeButton : (State -> msg) -> Html.Html msg
-closeButton closeMsg =
+closeButton toMsg =
     Html.button
-        [ Attr.class "close", Events.onClick (closeMsg hiddenState) ]
+        [ Attr.class "close", Events.onClick (toMsg hiddenState) ]
         [ Html.text "x" ]
 
 
@@ -144,7 +146,6 @@ backdrop ((State open) as state) =
         ]
     else
         []
-
 
 
 ifElse : Bool -> a -> a -> a

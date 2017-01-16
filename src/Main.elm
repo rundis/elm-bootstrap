@@ -419,7 +419,8 @@ gridForm =
 modal : Modal.State -> Html Msg
 modal modalState =
     Modal.modal
-        { closeMsg = ModalMsg
+        modalState
+        { toMsg = ModalMsg
         , header = Just <| h4 [ class "modal-title" ] [ text "Modal header" ]
         , body = Just <| modalBody
         , footer =
@@ -431,7 +432,7 @@ modal modalState =
                     [ text "Close" ]
         , options = [ Modal.small ]
         }
-        modalState
+
 
 
 modalBody : Html Msg
