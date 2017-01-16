@@ -421,30 +421,34 @@ modal modalState =
     Modal.modal
         modalState
         { toMsg = ModalMsg
-        , header = Just <| h4 [ class "modal-title" ] [ text "Modal header" ]
+        , header = Just <| Modal.h5 [] [ text "Modal header" ]
         , body = Just <| modalBody
         , footer =
             Just <|
-                Button.button
-                    [ Button.outlinePrimary
-                    , Button.attr <| onClick <| ModalMsg Modal.hiddenState
-                    ]
-                    [ text "Close" ]
+                Modal.footer []
+                    [ Button.button
+                        [ Button.outlinePrimary
+                        , Button.attr <| onClick <| ModalMsg Modal.hiddenState
+                        ]
+                        [ text "Close" ]
+                     ]
         , options = [ Modal.small ]
         }
 
 
 
-modalBody : Html Msg
+modalBody : Modal.Body msg
 modalBody =
-    Grid.containerFluid []
-        [ Grid.simpleRow
-            [ Grid.col
-                [ Grid.colWidth Grid.colXsSix ]
-                [ text "Col 1" ]
-            , Grid.col
-                [ Grid.colWidth Grid.colXsSix ]
-                [ text "Col 2" ]
+    Modal.body []
+        [ Grid.containerFluid []
+            [ Grid.simpleRow
+                [ Grid.col
+                    [ Grid.colWidth Grid.colXsSix ]
+                    [ text "Col 1" ]
+                , Grid.col
+                    [ Grid.colWidth Grid.colXsSix ]
+                    [ text "Col 2" ]
+                ]
             ]
         ]
 

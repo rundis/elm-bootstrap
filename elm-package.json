@@ -16,6 +16,7 @@
       "Bootstrap.Form",
       "Bootstrap.Grid",
       "Bootstrap.ListGroup",
+      "Bootstrap.Modal",
       "Bootstrap.Table",
       "Bootstrap.TextInput"
     ],
