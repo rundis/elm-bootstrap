@@ -24,6 +24,9 @@ module Bootstrap.Modal
 
 
 
+    type alias Model =
+        { modalState : Modal.State }
+
 
     init : ( Model, Cmd Msg )
     init =
