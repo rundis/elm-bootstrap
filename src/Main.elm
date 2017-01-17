@@ -48,7 +48,7 @@ init =
       , splitDropState = Dropdown.initialState
       , navDropState = Dropdown.initialState
       , modalState = Modal.hiddenState
-      , tabState = Tab.state 0
+      , tabState = Tab.initialState 0
       , accordionState =
             Dict.fromList
                 [ ( "card1", Accordion.cardHidden )
@@ -137,6 +137,7 @@ subscriptions model =
             ([ Dropdown.subscriptions model.dropdownState DropdownMsg
              , Dropdown.subscriptions model.splitDropState SplitMsg
              , Dropdown.subscriptions model.navDropState NavDropMsg
+             , Tab.subscriptions model.tabState TabMsg
              ]
                 ++ accordionSubs
             )
@@ -455,20 +456,25 @@ modalBody =
 
 tabs : Model -> Html Msg
 tabs model =
-    Tab.tab
-        { toMsg = TabMsg
-        , items =
-            [ Tab.tabItem
-                { link = Tab.tabLink [] [ text "Tab1" ]
-                , pane = Tab.tabPane [] [ listGroup ]
-                }
-            , Tab.tabItem
-                { link = Tab.tabLink [] [ text "Tab2" ]
-                , pane = Tab.tabPane [] [ text "TAB 2 Content" ]
-                }
-            ]
-        }
-        model.tabState
+    div []
+        [ h1 [] [ text "Tabs"]
+        , Tab.pills
+            model.tabState
+            { toMsg = TabMsg
+            , options = [Tab.center ]
+            , withAnimation = True
+            , items =
+                [ Tab.item
+                    { link = Tab.link [] [ text "Tab1" ]
+                    , pane = Tab.pane [] [ listGroup ]
+                    }
+                , Tab.item
+                    { link = Tab.link [] [ text "Tab2" ]
+                    , pane = Tab.pane [] [ listGroup2 ]
+                    }
+                ]
+            }
+        ]
 
 
 listGroup : Html Msg

@@ -18,6 +18,7 @@
       "Bootstrap.ListGroup",
       "Bootstrap.Modal",
       "Bootstrap.Table",
+      "Bootstrap.Tab",
       "Bootstrap.TextInput"
     ],
     "dependencies": {
