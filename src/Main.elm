@@ -17,7 +17,6 @@ import Bootstrap.Table as Table
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Dict
 
 
 main : Program Never Model Msg
@@ -37,7 +36,7 @@ type alias Model =
     , navDropState : Dropdown.State
     , modalState : Modal.State
     , tabState : Tab.State
-    , accordionState : Dict.Dict String Accordion.CardState
+    , accordionState : Accordion.State
     }
 
 
@@ -48,12 +47,8 @@ init =
       , splitDropState = Dropdown.initialState
       , navDropState = Dropdown.initialState
       , modalState = Modal.hiddenState
-      , tabState = Tab.initialState 0
-      , accordionState =
-            Dict.fromList
-                [ ( "card1", Accordion.cardHidden )
-                , ( "card2", Accordion.cardHidden )
-                ]
+      , tabState = Tab.initialState
+      , accordionState = Accordion.initialState
       }
     , Cmd.none
     )
@@ -71,7 +66,7 @@ type Msg
     | SplitItem2Msg
     | ModalMsg Modal.State
     | TabMsg Tab.State
-    | AccordionMsg String Accordion.CardState
+    | AccordionMsg Accordion.State
 
 
 update : Msg -> Model -> ( Model, Cmd msg )
@@ -120,27 +115,21 @@ update msg ({ accordionState } as model) =
             , Cmd.none
             )
 
-        AccordionMsg cardId state ->
-            ( { model | accordionState = Dict.insert cardId state accordionState }
+        AccordionMsg state ->
+            ( { model | accordionState = state }
             , Cmd.none
             )
 
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    let
-        accordionSubs =
-            Dict.toList model.accordionState
-                |> List.map (\( key, val ) -> Accordion.subscriptions (AccordionMsg key) val)
-    in
-        Sub.batch
-            ([ Dropdown.subscriptions model.dropdownState DropdownMsg
-             , Dropdown.subscriptions model.splitDropState SplitMsg
-             , Dropdown.subscriptions model.navDropState NavDropMsg
-             , Tab.subscriptions model.tabState TabMsg
-             ]
-                ++ accordionSubs
-            )
+    Sub.batch
+        [ Accordion.subscriptions model.accordionState AccordionMsg
+        , Dropdown.subscriptions model.dropdownState DropdownMsg
+        , Dropdown.subscriptions model.splitDropState SplitMsg
+        , Dropdown.subscriptions model.navDropState NavDropMsg
+        , Tab.subscriptions model.tabState TabMsg
+        ]
 
 
 view : Model -> Html Msg
@@ -432,10 +421,9 @@ modal modalState =
                         , Button.attr <| onClick <| ModalMsg Modal.hiddenState
                         ]
                         [ text "Close" ]
-                     ]
+                    ]
         , options = [ Modal.small ]
         }
-
 
 
 modalBody : Modal.Body msg
@@ -457,11 +445,11 @@ modalBody =
 tabs : Model -> Html Msg
 tabs model =
     div []
-        [ h1 [] [ text "Tabs"]
+        [ h1 [] [ text "Tabs" ]
         , Tab.pills
             model.tabState
             { toMsg = TabMsg
-            , options = [Tab.center ]
+            , options = [ Tab.center ]
             , withAnimation = True
             , items =
                 [ Tab.item
@@ -546,23 +534,18 @@ accordion { accordionState } =
     div []
         [ h1 [] [ text "Accordion" ]
         , Accordion.accordion
-            ([ Dict.get "card1" accordionState
-                |> Maybe.map renderCardOne
-             , Dict.get "card2" accordionState
-                |> Maybe.map renderCardTwo
-             ]
-                |> List.filterMap identity
-            )
+            accordionState
+            { toMsg = AccordionMsg
+            , withAnimation = True
+            , cards = [ cardOne, cardTwo ]
+            }
         ]
 
 
-renderCardOne : Accordion.CardState -> Accordion.Card Msg
-renderCardOne state =
+cardOne : Accordion.Card Msg
+cardOne =
     Accordion.card
         { id = "card1"
-        , toMsg = AccordionMsg "card1"
-        , state = state
-        , withAnimation = True
         , toggle = Accordion.cardToggle [] [ text " Card With container" ]
         , toggleContainer =
             Just <|
@@ -573,24 +556,21 @@ renderCardOne state =
                     , childrenPostToggle = []
                     }
         , block =
-            Accordion.cardBlock
+            Accordion.cardBlock []
                 [ text "Contents of Card 1"
                 , div [] [ text "Some more content" ]
                 ]
         }
 
 
-renderCardTwo : Accordion.CardState -> Accordion.Card Msg
-renderCardTwo state =
+cardTwo : Accordion.Card Msg
+cardTwo =
     Accordion.card
         { id = "card2"
-        , toMsg = AccordionMsg "card2"
-        , state = state
-        , withAnimation = False
         , toggle = Accordion.cardToggle [] [ text "Card 2" ]
         , toggleContainer = Nothing
         , block =
-            Accordion.cardBlock
+            Accordion.cardBlock []
                 [ text "Contants of Card 2"
                 , div [] [ text "Some more for 2" ]
                 , div [] [ text "Yet even more" ]
