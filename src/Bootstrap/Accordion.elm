@@ -158,7 +158,8 @@ type CardToggle msg
 -}
 type ToggleContainer msg
     = ToggleContainer
-        { attributes : List (Html.Attribute msg)
+        { elemFn : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
+        , attributes : List (Html.Attribute msg)
         , childrenPreToggle : List (Html.Html msg)
         , childrenPostToggle : List (Html.Html msg)
         }
@@ -293,22 +294,26 @@ cardToggle attributes children =
 {-| You may wish to wrap your card toggle in a containing element for customizing card headers in your accordion
 
 * configuration record with the following fields
+    * `elemFn` A html element function (example a h1, h2 etc)
     * attributes Html attributes for the container element
     * childrenPreToggle List of elements to be displayed before the toggle element
     * childrenPostToggle List of elements to displayed after the toggle element
 -}
 toggleContainer :
-    { attributes : List (Html.Attribute msg)
+    { elemFn : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
+    , attributes : List (Html.Attribute msg)
     , childrenPreToggle : List (Html.Html msg)
     , childrenPostToggle : List (Html.Html msg)
     }
     -> ToggleContainer msg
-toggleContainer { attributes, childrenPreToggle, childrenPostToggle } =
+toggleContainer { elemFn, attributes, childrenPreToggle, childrenPostToggle } =
     ToggleContainer
-        { attributes = attributes
+        { elemFn = elemFn
+        , attributes = attributes
         , childrenPreToggle = childrenPreToggle
         , childrenPostToggle = childrenPostToggle
         }
+
 
 
 {-| Creates the main (toggleable) content for a card item for use in an accordion
@@ -349,8 +354,8 @@ renderCardHeader state config ((Card { toggleContainer }) as card) =
             Nothing ->
                 [ renderCardToggle state config False card ]
 
-            Just (ToggleContainer { attributes, childrenPreToggle, childrenPostToggle }) ->
-                [ Html.div attributes <|
+            Just (ToggleContainer { elemFn, attributes, childrenPreToggle, childrenPostToggle }) ->
+                [ elemFn attributes <|
                     List.concat
                         [ childrenPreToggle
                         , [ renderCardToggle state config True card ]
