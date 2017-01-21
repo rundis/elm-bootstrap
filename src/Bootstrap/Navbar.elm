@@ -2,7 +2,6 @@ module Bootstrap.Navbar
     exposing
         ( navbar
         , initialState
-        , initWindowSize
         , subscriptions
         , fixTop
         , fixBottom
@@ -13,16 +12,19 @@ module Bootstrap.Navbar
         , warning
         , danger
         , inverse
-        , brand
-        , itemLink
-        , customItem
-        , container
-        , toggleSmall
-        , toggleMedium
-        , toggleLarge
-        , toggleExtraLarge
         , lightCustom
         , darkCustom
+        , brand
+        , itemLink
+        , itemLinkActive
+        , textItem
+        , formItem
+        , customItem
+        , container
+        , collapseSmall
+        , collapseMedium
+        , collapseLarge
+        , collapseExtraLarge
         , dropdown
         , dropdownItem
         , dropdownDivider
@@ -38,6 +40,43 @@ module Bootstrap.Navbar
         , DropdownItem
         )
 
+{-| The navbar is a wrapper that positions branding, navigation, and other elements in a concise header.
+The navbar is designed to be responsive by default and made interactive with a tiny sprinkle of Elm.
+
+
+# Navbar
+@docs navbar, Config
+
+
+## Options
+@docs primary, success, info, warning, danger, inverse, faded, fixTop, fixBottom, lightCustom, darkCustom, collapseSmall, collapseMedium, collapseLarge, collapseExtraLarge, container, Option
+
+
+## Brand
+@docs brand, Brand
+
+## Menu items
+@docs itemLink, itemLinkActive, Item
+
+## Dropdown menu
+@docs dropdown, dropdownToggle, dropdownItem, dropdownDivider, dropdownHeader, DropdownToggle, DropdownItem
+
+
+## Custom items
+@docs textItem, formItem, customItem, CustomItem
+
+
+
+# State
+@docs initialState, State
+
+
+# Interactive elements and subscriptions
+@docs subscriptions
+
+
+-}
+
 import Html
 import Html.Attributes exposing (class, classList, style, type_, id, href)
 import Html.Events exposing (onClick, on, onWithOptions)
@@ -52,6 +91,8 @@ import Task
 import Mouse
 
 
+{-| Opaque type representing the view state of the navbar and any navbar dropdown menus
+-}
 type State
     = State VisibilityState
 
@@ -77,7 +118,15 @@ type DropdownStatus
     | ListenClicks
     | Closed
 
+{-| Configuration information for describing the view of the Navbar
 
+* `options` List of [`configuration options`](#options)
+* `toMsg` Message function used for stepping the viewstate of the navbar forward
+* `withAnimation` Set to True if you wish the menu to slide up/down with an animation effect
+* `brand` Optional [`brand`](#brand) element (typically a logo)
+* `items` List of menu items that the user can select from
+* `customItems` List of custom (inline) items that you may place to the right of the std. navigation items
+-}
 type alias Config msg =
     { options : List (Option msg)
     , toMsg : State -> msg
@@ -88,6 +137,8 @@ type alias Config msg =
     }
 
 
+{-| Opaque type represeting available configuration options for the navbar
+-}
 type Option msg
     = NavbarFix Fix
     | NavbarScheme Scheme
@@ -122,16 +173,24 @@ type BackgroundColor
     | Inverse
     | Custom Color.Color
 
-
+{-| Opaque type representing a selectable menu item
+-}
 type Item msg
-    = Item (Html.Html msg)
+    = Item
+        { attributes : List (Html.Attribute msg)
+        , children : List (Html.Html msg)
+        }
     | NavDropdown (Dropdown msg)
 
 
+{-| Opaque type representing a custom (inline) navbar item
+-}
 type CustomItem msg
     = CustomItem (Html.Html msg)
 
 
+{-| Opaque type representing a brand element
+-}
 type Brand msg
     = Brand (Html.Html msg)
 
@@ -143,30 +202,55 @@ type Dropdown msg
         , items : List (DropdownItem msg)
         }
 
+{-| Opaque type representing the toggle element for a dropdown menu
+-}
 type DropdownToggle msg
     = DropdownToggle
         { attributes : List (Html.Attribute msg)
         , children : List (Html.Html msg)
         }
 
+{-| Opaque type representing an item in a dropdown menu
+-}
 type DropdownItem msg
     = DropdownItem (Html.Html msg)
 
 
 
+{-| You need to call this function to initialize the view state for the navbar
+and store the state in your main model.
 
-initialState : State
-initialState =
-    State
-        { visibility = Hidden
-        , height = Nothing
-        , windowSize = Nothing
-        , dropdowns = Dict.empty
-        }
+    init : ( Model, Cmd Msg )
+    init =
+        let
+            (navbarState, navCmd) =
+                Navbar.initializeState NavbarMsg
+        in
+            ( { navbarState = navbarState }
+            , navCmd
+            )
+
+The Cmd part is needed, because the navbar as implemented currently needs the window size.
+Hopefully a smoother solution can be devised in the future.
 
 
-initWindowSize : State -> (State -> msg) -> Cmd msg
-initWindowSize state toMsg =
+-}
+initialState : (State -> msg) -> (State, Cmd msg)
+initialState toMsg =
+    let
+        state =
+            State
+                { visibility = Hidden
+                , height = Nothing
+                , windowSize = Nothing
+                , dropdowns = Dict.empty
+                }
+    in
+        ( state, initWindowSize toMsg state)
+
+
+initWindowSize : (State -> msg) -> State  -> Cmd msg
+initWindowSize toMsg state  =
     Window.size
         |> Task.perform
             (\size ->
@@ -175,6 +259,17 @@ initWindowSize state toMsg =
             )
 
 
+{-| To support animations and managing the state of dropdown you need to wire up this
+function in your main subscriptions function.
+
+    subscriptions : Model -> Sub Msg
+    subscriptions model =
+        Navbar.subscriptions model.navbarState NavbarMsg
+
+
+**Note: ** If you ar NOT using dropdowns in your navbar AND you are using a navbar without animation
+you can skip this. But it's not that much work, so maybe you are better off doing it anyway.
+-}
 subscriptions : State -> (State -> msg) -> Sub msg
 subscriptions (State { visibility } as state) toMsg =
     let
@@ -238,7 +333,46 @@ dropdownSubscriptions (State {dropdowns} as state) toMsg =
             ]
 
 
+{-| The main view function for displaying a navbar.
 
+    Navbar.navbar
+        model.navbarState
+        { toMsg = NavbarMsg
+        , withAnimation = True
+        , options =
+            [ Navbar.container
+            , Navbar.collapsMedium
+            ]
+        , brand = Just <| Navbar.brand [ href "#" ] [ text "Logo" ]
+        , items =
+            [ Navbar.itemLink [ href "#" ] [ text "Page" ]
+            , Navbar.itemLinkActive [ href "#" ] [ text "Another" ]
+            , Navbar.itemLink [ href "#" ] [ text "More" ]
+            , Navbar.dropdown
+                { id = "navdropdown1"
+                , toggle = Navbar.dropdownToggle [] [ text "Navdrop" ]
+                , items =
+                    [ Navbar.dropdownItem [ href "#" ] [ text "Menuitem1" ]
+                    , Navbar.dropdownItem [ href "#" ] [ text "Menuitem2" ]
+                    ]
+                }
+            ]
+        , customItems =
+            [ Navbar.textItem [] [ text "Some text" ]
+            , Navbar.formItem [ class "ml-xl-2" ]
+                [ Input.text
+                    [Input.small]
+                , Button.button
+                    [ Button.roleSuccess, Button.small]
+                    [ text "Submit"]]
+            ]
+        }
+
+
+* `state` Required view state the navbar uses to support interactive behavior
+* `config` The view [`configuration`](#Configuration) that determines to look and feel of the navbar
+
+-}
 navbar :
     State
     -> Config msg
@@ -267,87 +401,128 @@ navbar state ({ options, brand, items, customItems } as config) =
 
 
 
+{-| Option to fix the menu to the top of the viewport
 
+**Note: You probably need to add some margin-top to the content element following the navbar when using this option **
+-}
 fixTop : Option msg
 fixTop =
     NavbarFix Top
 
 
+{-| Option to fix the menu to the bottom of the viewport
+-}
 fixBottom : Option msg
 fixBottom =
     NavbarFix Bottom
 
 
+{-| Use this option when you want a fixed width menu (typically because you're main content is also confgirued to be fixed width)
+-}
 container : Option msg
 container =
     Container
 
 
+{-| Inverse the colors of your menu. Dark background and light text
+-}
 inverse : Option msg
 inverse =
     scheme Dark Inverse
 
 
+{-| Give your menu a light faded gray look
+-}
 faded : Option msg
 faded =
     scheme Light Faded
 
 
+{-| Option to color menu using the primary color
+-}
 primary : Option msg
 primary =
     scheme Dark Primary
 
 
+{-| Option to color menu using the success color
+-}
 success : Option msg
 success =
     scheme Dark Success
 
 
+{-| Option to color menu using the info color
+-}
 info : Option msg
 info =
     scheme Dark Info
 
-
+{-| Option to color menu using the warning color
+-}
 warning : Option msg
 warning =
     scheme Dark Warning
 
 
+{-| Option to color menu using the danger color
+-}
 danger : Option msg
 danger =
     scheme Dark Danger
 
 
+{-| Option to color menu using a dark custom background color
+-}
 darkCustom : Color.Color -> Option msg
 darkCustom color =
     scheme Dark <| Custom color
 
 
+{-| Option to color menu using a light custom background color
+-}
 lightCustom : Color.Color -> Option msg
 lightCustom color =
     scheme Light <| Custom color
 
-toggleSmall : Option msg
-toggleSmall =
+
+{-| Collapse the menu at the small media breakpoint
+-}
+collapseSmall : Option msg
+collapseSmall =
     ToggleAt GridInternal.Small
 
 
-toggleMedium : Option msg
-toggleMedium =
+{-| Collapse the menu at the medium media breakpoint
+-}
+collapseMedium : Option msg
+collapseMedium =
     ToggleAt GridInternal.Medium
 
 
-toggleLarge : Option msg
-toggleLarge =
+{-| Collapse the menu at the large media breakpoint
+-}
+collapseLarge : Option msg
+collapseLarge =
     ToggleAt GridInternal.Large
 
 
-toggleExtraLarge : Option msg
-toggleExtraLarge =
+{-| Collapse the menu at the extra large media breakpoint
+-}
+collapseExtraLarge : Option msg
+collapseExtraLarge =
     ToggleAt GridInternal.ExtraLarge
 
 
+{-| Create a brand element for your navbar
 
+    Navbar.brand
+        [ href "#" ] -- (and perhaps use onWithOptions for custom handling of clicks !)
+        [ img [src "assets/logo.svg" ] [ text "MyCompany" ] ]
+
+* `attributes` List of attributes
+* `children` List of children
+-}
 brand : List (Html.Attribute msg) -> List (Html.Html msg) -> Brand msg
 brand attributes children =
     Brand <|
@@ -356,17 +531,80 @@ brand attributes children =
             children
 
 
+
+{-| Create a menu item (as an `a` element)
+
+* `attributes` List of attributes
+* `children` List of children
+
+-}
 itemLink : List (Html.Attribute msg) -> List (Html.Html msg) -> Item msg
 itemLink attributes children =
-    Item <|
-        Html.li
-            [ class "nav-item" ]
-            [ Html.a
-                ([ class "nav-link" ] ++ attributes)
-                children
-            ]
+    Item
+        { attributes = attributes
+        , children = children
+        }
 
 
+{-| Create a menu item that is styled as active (as an `a` element)
+
+* `attributes` List of attributes
+* `children` List of children
+
+-}
+itemLinkActive : List (Html.Attribute msg) -> List (Html.Html msg) -> Item msg
+itemLinkActive attributes =
+    itemLink (class "active" :: attributes)
+
+
+{-| Create a custom inline text element, which will float to the right when the menu isn't collapsed
+
+* `attributes` List of attributes
+* `children` List of children
+
+
+**Note: If you have multiple custom items you will need to provide spacing between them yourself **
+-}
+textItem : List (Html.Attribute msg) -> List (Html.Html msg) -> CustomItem msg
+textItem attributes children =
+    Html.span
+        (class "navbar-text" :: attributes)
+        children
+        |> CustomItem
+
+
+{-| Create a custom inline form element, which will float to the right when the menu isn't collapsed
+
+    Navbar.formItem []
+        [ TextInput.text
+            [ TextInput.small ]
+        , Button.button
+            [ Button.roleSuccess, Button.small]
+            [ text "Submit"]]
+        ]
+
+* `attributes` List of attributes
+* `children` List of children
+
+
+**Note: If you have multiple custom items you will need to provide spacing between them yourself **
+-}
+formItem : List (Html.Attribute msg) -> List (Html.Html msg) -> CustomItem msg
+formItem attributes children =
+    Html.form
+        (class "form-inline" :: attributes)
+        children
+        |> CustomItem
+
+
+{-| Create a completely custom, which will float to the right when the menu isn't collapsed. You should ensure that you create inline elements or else your menu will break in unfortunate ways !
+
+* `attributes` List of attributes
+* `children` List of children
+
+
+**Note: If you have multiple custom items you will need to provide spacing between them yourself **
+-}
 customItem : Html.Html msg -> CustomItem msg
 customItem elem =
     CustomItem elem
@@ -374,11 +612,10 @@ customItem elem =
 
 
 
-
 toggleHandler : State -> Config msg -> Html.Attribute msg
 toggleHandler ((State { height }) as state) { withAnimation, toMsg } =
     let
-        updState h =
+        updState h  =
             mapState
                 (\s ->
                     { s
@@ -651,12 +888,26 @@ renderNav state config navItems =
             (\item ->
                 case item of
                     Item item ->
-                        item
+                        renderItemLink item
                     NavDropdown dropdown ->
                         renderDropdown state config dropdown
             )
             navItems
         )
+
+renderItemLink :
+    { attributes : List (Html.Attribute msg)
+    , children : List (Html.Html msg)
+    }
+    -> Html.Html msg
+renderItemLink { attributes, children } =
+    Html.li
+        [ class "nav-item" ]
+        [ Html.a
+            ([ class "nav-link" ] ++ attributes)
+            children
+        ]
+
 
 
 renderCustom : List (CustomItem msg) -> List (Html.Html msg)
@@ -803,6 +1054,13 @@ visibilityTransition withAnimation visibility =
 
 --- NAV DROPDOWNS
 
+
+{-| Create a dropdown menu for use in a navbar
+
+* `config` A record with the following properties
+    * `id` A unique id for your dropdown. It's important, because it's used to keep track of the state of the dropdown !
+    * `toggle` The main item/[`toggle`](#dropdownToggle) that toggles the dropdown menu up or down
+-}
 dropdown :
     { id : String
     , toggle : DropdownToggle msg
@@ -871,18 +1129,33 @@ renderDropdown :
     -> Dropdown msg
     -> Html.Html msg
 renderDropdown state config (Dropdown {id, toggle, items}) =
-    Html.li
-        [ classList
-                [ ( "nav-item", True )
-                , ( "dropdown", True )
-                , ( "show", getOrInitDropdownStatus id state /= Closed )
-                ]
-        ]
-        [ renderDropdownToggle state id config toggle
-        , Html.div
-            [ class "dropdown-menu" ]
-            ( List.map (\(DropdownItem item) -> item) items)
-        ]
+    let
+        needsDropup =
+            List.any
+                (\opt ->
+                    case opt of
+                        NavbarFix Bottom ->
+                            True
+                        _ ->
+                            False
+                )
+                config.options
+    in
+        Html.li
+            [ classList
+                    [ ( "nav-item", True )
+                    , ( "dropdown", True )
+                    , ( "dropup", needsDropup)
+                    , ( "show", getOrInitDropdownStatus id state /= Closed )
+                    ]
+            ]
+            [ renderDropdownToggle state id config toggle
+            , Html.div
+                [ class "dropdown-menu" ]
+                ( List.map (\(DropdownItem item) -> item) items)
+            ]
+
+
 
 
 renderDropdownToggle :

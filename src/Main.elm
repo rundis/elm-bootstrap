@@ -14,6 +14,7 @@ import Bootstrap.Badge as Badge
 import Bootstrap.Form as Form
 import Bootstrap.Card as Card
 import Bootstrap.Table as Table
+import Bootstrap.TextInput as Input
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -44,17 +45,21 @@ type alias Model =
 
 init : ( Model, Cmd Msg )
 init =
-    ( { dummy = "init"
-      , dropdownState = Dropdown.initialState
-      , splitDropState = Dropdown.initialState
-      , modalState = Modal.hiddenState
-      , tabState = Tab.initialState
-      , accordionState = Accordion.initialState
-      , navbarState = Navbar.initialState
-      , navMsgCounter = 0
-      }
-    , Navbar.initWindowSize Navbar.initialState NavbarMsg
-    )
+    let
+        (navbarState, navbarCmd)
+            = Navbar.initialState NavbarMsg
+    in
+        ( { dummy = "init"
+          , dropdownState = Dropdown.initialState
+          , splitDropState = Dropdown.initialState
+          , modalState = Modal.hiddenState
+          , tabState = Tab.initialState
+          , accordionState = Accordion.initialState
+          , navbarState = navbarState
+          , navMsgCounter = 0
+          }
+        , navbarCmd
+        )
 
 
 type Msg
@@ -264,14 +269,14 @@ navbar model =
         , options =
             [ Navbar.container
             , Navbar.fixTop
-              --, Navbar.primary
             , Navbar.darkCustom Color.brown
-            , Navbar.toggleLarge
+            , Navbar.collapseMedium
             ]
         , brand = Just <| Navbar.brand [ href "#" ] [ text "Logo" ]
         , items =
             [ Navbar.itemLink [ href "#" ] [ text "Page" ]
-            , Navbar.itemLink [ href "#" ] [ text "Another" ]
+            , Navbar.itemLinkActive [ href "#" ] [ text "Another" ]
+            , Navbar.itemLink [ href "#" ] [ text "More" ]
             , Navbar.dropdown
                 { id = "navdropdown1"
                 , toggle = Navbar.dropdownToggle [] [ text "Navdrop" ]
@@ -286,10 +291,13 @@ navbar model =
                    else
                     []
         , customItems =
-            [ Navbar.customItem <|
-                span
-                    [ class "navbar-text text-success" ]
-                    [ text "Some text" ]
+            [ Navbar.textItem [] [ text "Some text" ]
+            , Navbar.formItem [ class "ml-xl-2" ]
+                [ Input.text
+                    [Input.small]
+                , Button.button
+                    [ Button.roleSuccess, Button.small]
+                    [ text "Submit"]]
             ]
         }
 
