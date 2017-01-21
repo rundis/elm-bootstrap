@@ -17,6 +17,7 @@ import Bootstrap.Table as Table
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
+import Color
 
 
 main : Program Never Model Msg
@@ -33,10 +34,11 @@ type alias Model =
     { dummy : String
     , dropdownState : Dropdown.State
     , splitDropState : Dropdown.State
-    , navDropState : Dropdown.State
     , modalState : Modal.State
     , tabState : Tab.State
     , accordionState : Accordion.State
+    , navbarState : Navbar.State
+    , navMsgCounter : Int
     }
 
 
@@ -45,12 +47,13 @@ init =
     ( { dummy = "init"
       , dropdownState = Dropdown.initialState
       , splitDropState = Dropdown.initialState
-      , navDropState = Dropdown.initialState
       , modalState = Modal.hiddenState
       , tabState = Tab.initialState
       , accordionState = Accordion.initialState
+      , navbarState = Navbar.initialState
+      , navMsgCounter = 0
       }
-    , Cmd.none
+    , Navbar.initWindowSize Navbar.initialState NavbarMsg
     )
 
 
@@ -58,7 +61,6 @@ type Msg
     = NoOp
     | DropdownMsg Dropdown.State
     | SplitMsg Dropdown.State
-    | NavDropMsg Dropdown.State
     | Item1Msg
     | Item2Msg
     | SplitMainMsg
@@ -67,6 +69,7 @@ type Msg
     | ModalMsg Modal.State
     | TabMsg Tab.State
     | AccordionMsg Accordion.State
+    | NavbarMsg Navbar.State
 
 
 update : Msg -> Model -> ( Model, Cmd msg )
@@ -100,11 +103,6 @@ update msg ({ accordionState } as model) =
             , Cmd.none
             )
 
-        NavDropMsg state ->
-            ( { model | navDropState = state }
-            , Cmd.none
-            )
-
         ModalMsg state ->
             ( { model | modalState = state }
             , Cmd.none
@@ -120,6 +118,11 @@ update msg ({ accordionState } as model) =
             , Cmd.none
             )
 
+        NavbarMsg state ->
+            ( { model | navbarState = state, navMsgCounter = model.navMsgCounter + 1 }
+            , Cmd.none
+            )
+
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
@@ -127,8 +130,8 @@ subscriptions model =
         [ Accordion.subscriptions model.accordionState AccordionMsg
         , Dropdown.subscriptions model.dropdownState DropdownMsg
         , Dropdown.subscriptions model.splitDropState SplitMsg
-        , Dropdown.subscriptions model.navDropState NavDropMsg
         , Tab.subscriptions model.tabState TabMsg
+        , Navbar.subscriptions model.navbarState NavbarMsg
         ]
 
 
@@ -255,23 +258,35 @@ mainContent model =
 navbar : Model -> Html Msg
 navbar model =
     Navbar.navbar
-        { options = [ Navbar.fixTop, Navbar.primary ]
-        , attributes = [ class "container" ]
+        model.navbarState
+        { toMsg = NavbarMsg
+        , withAnimation = True
+        , options =
+            [ Navbar.container
+            , Navbar.fixTop
+              --, Navbar.primary
+            , Navbar.darkCustom Color.brown
+            , Navbar.toggleLarge
+            ]
         , brand = Just <| Navbar.brand [ href "#" ] [ text "Logo" ]
         , items =
             [ Navbar.itemLink [ href "#" ] [ text "Page" ]
             , Navbar.itemLink [ href "#" ] [ text "Another" ]
-            , Navbar.customItem <|
-                Dropdown.navDropdown
-                    model.navDropState
-                    { toggleMsg = NavDropMsg
-                    , toggleButton = Dropdown.navToggle [] [ text "NavDrop" ]
-                    , items =
-                        [ Dropdown.anchorItem [ href "#" ] [ text "Menuitem 1" ]
-                        , Dropdown.anchorItem [ href "#" ] [ text "Menuitem 2" ]
-                        ]
-                    }
-            , Navbar.customItem <|
+            , Navbar.dropdown
+                { id = "navdropdown1"
+                , toggle = Navbar.dropdownToggle [] [ text "Navdrop" ]
+                , items =
+                    [ Navbar.dropdownItem [ href "#meh" ] [ text "Menuitem1" ]
+                    , Navbar.dropdownItem [ href "#meh" ] [ text "Menuitem2" ]
+                    ]
+                }
+            ]
+                ++ if model.navMsgCounter > 10 then
+                    [ Navbar.itemLink [ href "#" ] [ text "Bonus" ] ]
+                   else
+                    []
+        , customItems =
+            [ Navbar.customItem <|
                 span
                     [ class "navbar-text text-success" ]
                     [ text "Some text" ]
@@ -550,7 +565,7 @@ cardOne =
         , toggleContainer =
             Just <|
                 Accordion.toggleContainer
-                    { elemFn = h3
+                    { elemFn = h1
                     , attributes = []
                     , childrenPreToggle = [ span [ class "fa fa-car" ] [] ]
                     , childrenPostToggle = []

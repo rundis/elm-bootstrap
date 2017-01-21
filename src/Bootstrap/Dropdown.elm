@@ -2,11 +2,9 @@ module Bootstrap.Dropdown
     exposing
         ( dropdown
         , splitDropdown
-        , navDropdown
         , initialState
         , toggle
         , splitToggle
-        , navToggle
         , dropUp
         , alignMenuRight
         , anchorItem
@@ -18,7 +16,6 @@ module Bootstrap.Dropdown
         , DropdownItem
         , DropdownToggle
         , SplitDropdownToggle
-        , NavDropdownToggle
         , SplitToggleConfig
         , DropdownOption
         )
@@ -122,9 +119,6 @@ bit of wiring involved when using them in your Elm Application.
 @docs splitDropdown, splitToggle, SplitToggleConfig, SplitDropdownToggle
 
 
-# Nav dropdown
-@docs navDropdown, navToggle, NavDropdownToggle
-
 
 # Required wiring
 @docs subscriptions, initialState, State
@@ -139,7 +133,6 @@ import Html.Attributes exposing (class, classList, type_, id, href)
 import Html.Events exposing (onClick, on, onWithOptions)
 import Mouse
 import AnimationFrame
-import Json.Decode as Json
 
 
 {-| Opaque type representing the view state of a Dropdown. You need to store this state
@@ -153,6 +146,7 @@ type DropDownStatus
     = Open
     | ListenClicks
     | Closed
+
 
 {-| The configuration options available for the toggle in a Split Dropdown.
 
@@ -170,6 +164,7 @@ type alias SplitToggleConfig msg =
     , togglerOptions : List (Button.ButtonOption msg)
     , children : List (Html.Html msg)
     }
+
 
 {-| Opaque type representing configuration options for a Dropdown
 -}
@@ -196,12 +191,6 @@ type SplitDropdownToggle msg
     = SplitDropdownToggle ((State -> msg) -> State -> List (Html.Html msg))
 
 
-{-| Opaque type representing a nav toggle for a Nav Dropdown
--}
-type NavDropdownToggle msg
-    = NavDropdownToggle ((State -> msg) -> State -> Html.Html msg)
-
-
 {-| Initializes the view state for a dropdown. Typically you would call this from
 you main init function
 -}
@@ -216,6 +205,7 @@ dropUp : DropdownOption
 dropUp =
     Dropup
 
+
 {-| Option to align the dropdown menu to the right of the dropdown button.
 
 **NOTE!** Dropdowns are positioned only with CSS and may need some additional styles for exact alignment.
@@ -223,6 +213,7 @@ dropUp =
 alignMenuRight : DropdownOption
 alignMenuRight =
     AlignMenuRight
+
 
 {-| Creates a Dropdown button. You can think of this as the view function.
 It takes the current (view) state and a configuration record as parameters.
@@ -276,6 +267,7 @@ dropdown ((State status) as state) { toggleMsg, toggleButton, items, options } =
                 (List.map (\(DropdownItem x) -> x) items)
             ]
 
+
 {-| Function to construct a toggle for a [`dropdown`](#dropdown)
 
 * buttonOptions List of button options for styling the button
@@ -305,6 +297,7 @@ togglePrivate buttonOptions children toggleMsg state =
                ]
         )
         children
+
 
 {-| Creates a split dropdown. Contains a normal button and a toggle button that are placed next to each other.
 
@@ -345,6 +338,7 @@ splitDropdown ((State status) as state) { toggleMsg, toggleButton, items, option
                         (List.map (\(DropdownItem x) -> x) items)
                    ]
             )
+
 
 {-| Function to construct a split button toggle for a  [`splitDropdown`](#splitDropdown)
 
@@ -400,76 +394,6 @@ hasMenuRight options =
 isDropUp : List DropdownOption -> Bool
 isDropUp options =
     List.any (\opt -> opt == Dropup) options
-
-
-{-| Creates a dropdown appropriate for use in a Nav or Navbar.
-
-* `state` The current view state of the Nav dropdown
-* Configuration
-  * `toggleMsg` A `msg` function that takes a state and returns a msg
-  * `toggleButton` The actual button for the dropdown
-  * `items` List of menu items for the dropdown
--}
-navDropdown :
-    State
-    -> { toggleMsg : State -> msg
-       , toggleButton : NavDropdownToggle msg
-       , items : List (DropdownItem msg)
-       }
-    -> Html.Html msg
-navDropdown ((State status) as state) { toggleMsg, toggleButton, items } =
-    let
-        (NavDropdownToggle buttonFn) =
-            toggleButton
-    in
-        Html.li
-            [ classList
-                [ ( "nav-item", True )
-                , ( "dropdown", True )
-                , ( "show", status /= Closed )
-                ]
-            ]
-            [ buttonFn toggleMsg state
-            , Html.div
-                [ class "dropdown-menu" ]
-                (List.map (\(DropdownItem x) -> x) items)
-            ]
-
-{-| Function to construct a toggle for a [`navDropdown`](#navDropdown)
-
-* attributes List of attributes
-* children List of child elements
--}
-navToggle :
-    List (Html.Attribute msg)
-    -> List (Html.Html msg)
-    -> NavDropdownToggle msg
-navToggle attributes children =
-    NavDropdownToggle <|
-        navTogglePrivate attributes children
-
-
-navTogglePrivate :
-    List (Html.Attribute msg)
-    -> List (Html.Html msg)
-    -> (State -> msg)
-    -> State
-    -> Html.Html msg
-navTogglePrivate attributes children toggleMsg state =
-    Html.a
-        ([ class "nav-link dropdown-toggle"
-         , href "#"
-         , onWithOptions
-             "click"
-             { stopPropagation = False
-             , preventDefault = True
-             }
-             <| Json.succeed (toggleOpen toggleMsg state)
-         --, onClick <| toggleOpen toggleMsg state
-         ]
-            ++ attributes
-        )
-        children
 
 
 {-| Creates an `a` element appropriate for use in dropdowns

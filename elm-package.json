@@ -7,28 +7,29 @@
         "src/"
     ],
     "exposed-modules": [
-      "Bootstrap.Accordion",
-      "Bootstrap.Alert",
-      "Bootstrap.Badge",
-      "Bootstrap.Button",
-      "Bootstrap.Card",
-      "Bootstrap.Checkbox",
-      "Bootstrap.Dropdown",
-      "Bootstrap.Form",
-      "Bootstrap.Grid",
-      "Bootstrap.ListGroup",
-      "Bootstrap.Modal",
-      "Bootstrap.Tab",
-      "Bootstrap.Table",
-      "Bootstrap.Text",
-      "Bootstrap.TextInput"
+        "Bootstrap.Accordion",
+        "Bootstrap.Alert",
+        "Bootstrap.Badge",
+        "Bootstrap.Button",
+        "Bootstrap.Card",
+        "Bootstrap.Checkbox",
+        "Bootstrap.Dropdown",
+        "Bootstrap.Form",
+        "Bootstrap.Grid",
+        "Bootstrap.ListGroup",
+        "Bootstrap.Modal",
+        "Bootstrap.Tab",
+        "Bootstrap.Table",
+        "Bootstrap.Text",
+        "Bootstrap.TextInput"
     ],
     "dependencies": {
         "debois/elm-dom": "1.0.0 <= v < 2.0.0",
         "elm-lang/animation-frame": "1.0.1 <= v < 2.0.0",
         "elm-lang/core": "5.0.0 <= v < 6.0.0",
         "elm-lang/html": "2.0.0 <= v < 3.0.0",
-        "elm-lang/mouse": "1.0.1 <= v < 2.0.0"
+        "elm-lang/mouse": "1.0.1 <= v < 2.0.0",
+        "elm-lang/window": "1.0.1 <= v < 2.0.0"
     },
     "elm-version": "0.18.0 <= v < 0.19.0"
 }

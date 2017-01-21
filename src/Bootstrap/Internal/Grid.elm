@@ -1,18 +1,18 @@
-module Bootstrap.Internal.Grid exposing
-    ( colWidthClass
-    , offsetClass
-    , screenSizeOption
-    , alignOption
-    , ColumnWidth
-    , ScreenSize (..)
-    , ColumnCount (..)
-    , Align(..)
-    )
-
-
+module Bootstrap.Internal.Grid
+    exposing
+        ( colWidthClass
+        , offsetClass
+        , screenSizeOption
+        , alignOption
+        , ColumnWidth
+        , ScreenSize(..)
+        , ColumnCount(..)
+        , Align(..)
+        )
 
 import Html
 import Html.Attributes exposing (class)
+
 
 type ScreenSize
     = ExtraSmall
@@ -28,11 +28,11 @@ type Align
     | End
 
 
-
 type alias ColumnWidth =
     { size : ScreenSize
     , columns : ColumnCount
     }
+
 
 type ColumnCount
     = One
@@ -50,8 +50,6 @@ type ColumnCount
     | None
 
 
-
-
 colWidthClass : ColumnWidth -> Html.Attribute msg
 colWidthClass { size, columns } =
     "col"
@@ -65,37 +63,64 @@ colWidthClass { size, columns } =
 
 
 offsetClass : ColumnWidth -> Maybe (Html.Attribute msg)
-offsetClass {size, columns} =
+offsetClass { size, columns } =
     case columns of
         None ->
             Nothing
+
         _ ->
-          "offset"
-            ++ (Maybe.map (\v -> "-" ++ v ) (screenSizeOption size)
-                    |> Maybe.withDefault "")
-            ++ (Maybe.map (\v -> "-" ++ v ) (columnCountOption columns)
-                    |> Maybe.withDefault "")
-            |> class
-            |> Just
+            "offset"
+                ++ (Maybe.map (\v -> "-" ++ v) (screenSizeOption size)
+                        |> Maybe.withDefault ""
+                   )
+                ++ (Maybe.map (\v -> "-" ++ v) (columnCountOption columns)
+                        |> Maybe.withDefault ""
+                   )
+                |> class
+                |> Just
 
 
 columnCountOption : ColumnCount -> Maybe String
 columnCountOption size =
     case size of
-        One -> Just "1"
-        Two -> Just "2"
-        Three -> Just "3"
-        Four -> Just "4"
-        Five -> Just "5"
-        Six -> Just "6"
-        Seven -> Just "7"
-        Eight -> Just "8"
-        Nine -> Just "9"
-        Ten -> Just "10"
-        Eleven -> Just "11"
-        Twelve -> Just "12"
-        None -> Nothing
+        One ->
+            Just "1"
 
+        Two ->
+            Just "2"
+
+        Three ->
+            Just "3"
+
+        Four ->
+            Just "4"
+
+        Five ->
+            Just "5"
+
+        Six ->
+            Just "6"
+
+        Seven ->
+            Just "7"
+
+        Eight ->
+            Just "8"
+
+        Nine ->
+            Just "9"
+
+        Ten ->
+            Just "10"
+
+        Eleven ->
+            Just "11"
+
+        Twelve ->
+            Just "12"
+
+        None ->
+            Nothing
 
 
 alignOption : Align -> String
@@ -109,9 +134,6 @@ alignOption align =
 
         End ->
             "end"
-
-
-
 
 
 screenSizeOption : ScreenSize -> Maybe String

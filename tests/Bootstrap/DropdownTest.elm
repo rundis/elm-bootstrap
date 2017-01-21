@@ -15,7 +15,7 @@ import Expect
 {-| @ltignore -}
 all : Test
 all =
-    Test.concat [ dropDown, splitDropDown, navDropdown ]
+    Test.concat [ dropDown, splitDropDown ]
 
 
 state : Dropdown.State
@@ -147,44 +147,3 @@ splitDropDown =
                             ]
             ]
 
-navDropdown : Test
-navDropdown =
-    let
-        html =
-            Dropdown.navDropdown
-                state
-                { toggleMsg = ToggleMsg
-                , toggleButton =
-                    Dropdown.navToggle [] [ Html.text "Menu"]
-                , items =
-                    [ Dropdown.buttonItem [ ] [ Html.text "Item 1" ] ]
-                }
-    in
-        describe "Nav dropdown"
-            [ test "expect wrapping li and classes" <|
-                \() ->
-                    html
-                        |> Query.fromHtml
-                        |> Query.has  [ classes ["nav-item", "dropdown"], tag "li" ]
-
-            , test "expect toggle" <|
-                \() ->
-                    html
-                        |> Query.fromHtml
-                        |> Query.children [ tag "li"]
-                        |> Query.first
-                        |> Query.has [ classes ["nav-link", "dropdown-toggle"], tag "a"]
-
-            , test "expect menu items" <|
-                \() ->
-                    html
-                        |> Query.fromHtml
-                        |> Query.children [tag "div"]
-                        |> Query.first
-                        |> Query.has
-                            [ class "dropdown-item"
-                            , tag "button"
-                            , attribute "type" "button"
-                            , text "Item 1"
-                            ]
-            ]
