@@ -142,18 +142,20 @@ subscriptions model =
 
 view : Model -> Html Msg
 view model =
-    div []
+    Grid.container [] --div []
         [ CDN.stylesheet
         , CDN.fontAwesome
-        , navbar model
+        --, navbar model
         , mainContent model
         ]
 
 
 mainContent : Model -> Html Msg
 mainContent model =
-    Grid.container [ style [ ( "margin-top", "60px" ) ] ]
-        [ simpleForm
+    div [ style [ ( "margin-top", "60px" ) ] ]
+    --Grid.container [ style [ ( "margin-top", "60px" ) ] ]
+        [ navbar model
+        , simpleForm
         , gridForm
         , Grid.row
             [ Grid.rowBottom, Grid.rowAttr rowStyle ]
