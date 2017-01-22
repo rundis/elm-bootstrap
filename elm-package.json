@@ -20,6 +20,7 @@
         "Bootstrap.ListGroup",
         "Bootstrap.Modal",
         "Bootstrap.Navbar",
+        "Bootstrap.Progress",
         "Bootstrap.Tab",
         "Bootstrap.Table",
         "Bootstrap.Text",

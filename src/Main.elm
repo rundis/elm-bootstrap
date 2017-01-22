@@ -15,6 +15,7 @@ import Bootstrap.Form as Form
 import Bootstrap.Card as Card
 import Bootstrap.Table as Table
 import Bootstrap.TextInput as Input
+import Bootstrap.Progress as Progress
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -258,6 +259,7 @@ mainContent model =
         , cards
         , tables
         , listGroup2
+        , progressBars
         , modal model.modalState
         ]
 
@@ -294,7 +296,7 @@ navbar model =
                     []
         , customItems =
             [ Navbar.textItem [] [ text "Some text" ]
-            , Navbar.formItem [ class "ml-xl-2" ]
+            , Navbar.formItem [ class "ml-lg-2" ]
                 [ Input.text
                     [Input.small]
                 , Button.button
@@ -727,6 +729,28 @@ tables =
                         ]
                     ]
             }
+        ]
+
+
+progressBars : Html msg
+progressBars =
+    div []
+        [ h1 [] [text "Progress bars" ]
+        , Progress.progress [ Progress.label "Won't show..." ]
+        , Progress.progress [ Progress.value 50 ]
+        , Progress.progress [ Progress.value 30, Progress.striped ]
+        , Progress.progress [ Progress.value 20, Progress.success, Progress.height 10 ]
+        , Progress.progressMulti
+            [ [ Progress.height 25, Progress.value 30 ]
+            , [ Progress.value 100, Progress.info, Progress.striped ]
+            , [ Progress.value 100, Progress.label "Silly" ]
+            , [ Progress.value 100, Progress.danger,  Progress.animated ]
+            ]
+        , Progress.progress
+            [ Progress.value 50
+            , Progress.customLabel
+                [ span [ class "fa fa-car" ] [] ]
+            ]
         ]
 
 
