@@ -25,6 +25,7 @@ module Bootstrap.Navbar
         , collapseMedium
         , collapseLarge
         , collapseExtraLarge
+        , attr
         , dropdown
         , dropdownItem
         , dropdownDivider
@@ -49,7 +50,7 @@ The navbar is designed to be responsive by default and made interactive with a t
 
 
 ## Options
-@docs primary, success, info, warning, danger, inverse, faded, fixTop, fixBottom, lightCustom, darkCustom, collapseSmall, collapseMedium, collapseLarge, collapseExtraLarge, container, Option
+@docs primary, success, info, warning, danger, inverse, faded, fixTop, fixBottom, lightCustom, darkCustom, collapseSmall, collapseMedium, collapseLarge, collapseExtraLarge, container, attr, Option
 
 
 ## Brand
@@ -512,6 +513,11 @@ collapseLarge =
 collapseExtraLarge : Option msg
 collapseExtraLarge =
     ToggleAt GridInternal.ExtraLarge
+
+{-| Add a custom Html.Attribute to the navbar element using this function -}
+attr : Html.Attribute msg -> Option msg
+attr attr =
+    NavbarAttr attr
 
 
 {-| Create a brand element for your navbar

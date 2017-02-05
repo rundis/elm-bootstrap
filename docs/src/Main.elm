@@ -2,25 +2,30 @@ module Main exposing (..)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Color
 import Navigation exposing (Location)
 import Route
-import Bootstrap.Grid as Grid
 import Bootstrap.Navbar as Navbar
-import Page.Table as PTable
+import Page.Home as PHome
+import Page.Table as Table
+import Page.Progress as Progress
+import Page.Grid as Grid
 
 
 type alias Model =
     { route : Route.Route
     , navbarState : Navbar.State
-    , pTableState : PTable.State
+    , tableState : Table.State
+    , progressState : Progress.State
+    , gridState : Grid.State
     }
 
 
 type Msg
     = UrlChange Location
     | NavbarMsg Navbar.State
-    | PTableMsg PTable.State
+    | TableMsg Table.State
+    | ProgressMsg Progress.State
+    | GridMsg Grid.State
 
 
 type Page
@@ -37,7 +42,9 @@ init location =
         ( model, urlCmd) =
             urlUpdate location { route = Route.Home
                                , navbarState = navbarState
-                               , pTableState = PTable.initialState
+                               , tableState = Table.initialState
+                               , progressState = Progress.initialState
+                               , gridState = Grid.initialState
                                }
     in
         ( model, Cmd.batch [navbarCmd, urlCmd] )
@@ -68,8 +75,14 @@ update msg model =
         NavbarMsg state ->
             ( { model | navbarState = state }, Cmd.none )
 
-        PTableMsg state ->
-            ( { model | pTableState = state }, Cmd.none )
+        TableMsg state ->
+            ( { model | tableState = state }, Cmd.none )
+
+        ProgressMsg state ->
+            ( { model | progressState = state }, Cmd.none )
+
+        GridMsg state ->
+            ( { model | gridState = state }, Cmd.none )
 
 
 urlUpdate : Navigation.Location -> Model -> ( Model, Cmd Msg )
@@ -84,11 +97,9 @@ urlUpdate location model =
 
 view : Model -> Html Msg
 view model =
-    Grid.container
-        [ style [ ( "margin-top", "70px" ) ] ]
-        [ viewMenu model
-        , viewPage model
-        ]
+    div
+        []
+        ( viewMenu model :: viewPage model)
 
 
 viewMenu : Model -> Html Msg
@@ -97,45 +108,42 @@ viewMenu model =
         model.navbarState
         { toMsg = NavbarMsg
         , withAnimation = True
-        , options = [ Navbar.container, Navbar.fixTop, Navbar.container, Navbar.darkCustom Color.brown ]
+        , options =
+            [ Navbar.container
+            , Navbar.attr <| class "bd-navbar navbar-light"
+            ]
         , brand = Just <| Navbar.brand [ href "#" ] [ text "Elm Bootstrap" ]
         , items =
             [ Navbar.itemLink [ href "#grid" ] [ text "Grid" ]
             , Navbar.itemLink [ href "#table" ] [ text "Table" ]
+            , Navbar.itemLink [ href "#progress" ] [ text "Progress" ]
             ]
         , customItems = []
         }
 
 
-viewPage : Model -> Html Msg
+viewPage : Model -> List (Html Msg)
 viewPage model =
-    let
+{-     let
         pageView pageFn =
             div [ class "row" ]
-                [ div [ class "col" ] pageFn ]
-    in
+                [ div [ class "col bd-content" ] pageFn ]
+    in -}
         case model.route of
             Route.Home ->
-                pageView <| viewHome model
+                PHome.view
 
             Route.Grid ->
-                pageView <| viewGrid model
+                Grid.view model.gridState GridMsg
 
             Route.Table ->
-                pageView <| PTable.view model.pTableState PTableMsg
+                Table.view model.tableState TableMsg
+
+            Route.Progress ->
+                Progress.view model.progressState ProgressMsg
 
             Route.NotFound ->
-                pageView <| viewNotFound model
-
-
-viewHome : Model -> List (Html Msg)
-viewHome model =
-    [ h1 [] [ text "Home" ] ]
-
-
-viewGrid : Model -> List (Html Msg)
-viewGrid model =
-    [ h1 [] [ text "Grid" ] ]
+                viewNotFound model
 
 
 
