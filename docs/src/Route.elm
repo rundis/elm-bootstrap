@@ -10,6 +10,7 @@ type Route
     | Grid
     | Table
     | Progress
+    | Alert
     | NotFound
 
 
@@ -22,6 +23,7 @@ routeParser =
         , UrlParser.map Grid (s "grid")
         , UrlParser.map Table (s "table")
         , UrlParser.map Progress (s "progress")
+        , UrlParser.map Alert (s "alert")
         ]
 
 decode : Location -> Maybe Route

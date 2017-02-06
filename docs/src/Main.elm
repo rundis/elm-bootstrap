@@ -9,6 +9,7 @@ import Page.Home as PHome
 import Page.Table as Table
 import Page.Progress as Progress
 import Page.Grid as Grid
+import Page.Alert as Alert
 
 
 type alias Model =
@@ -117,6 +118,7 @@ viewMenu model =
             [ Navbar.itemLink [ href "#grid" ] [ text "Grid" ]
             , Navbar.itemLink [ href "#table" ] [ text "Table" ]
             , Navbar.itemLink [ href "#progress" ] [ text "Progress" ]
+            , Navbar.itemLink [ href "#alert" ] [ text "Alert" ]
             ]
         , customItems = []
         }
@@ -141,6 +143,9 @@ viewPage model =
 
             Route.Progress ->
                 Progress.view model.progressState ProgressMsg
+
+            Route.Alert ->
+                Alert.view
 
             Route.NotFound ->
                 viewNotFound model

@@ -4,12 +4,11 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (onClick, onInput)
 import Bootstrap.Progress as Progress
-import Bootstrap.Accordion as Accordion
 import Util
 import Bootstrap.Checkbox as Checkbox
 import Bootstrap.Form as Form
 import Bootstrap.TextInput as Input
-import Bootstrap.Grid as Grid
+
 
 
 type alias State =
