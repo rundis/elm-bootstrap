@@ -5,10 +5,10 @@ module Bootstrap.ListGroup
         , custom
         , anchor
         , button
-        , roleSuccess
-        , roleInfo
-        , roleWarning
-        , roleDanger
+        , success
+        , info
+        , warning
+        , danger
         , active
         , disabled
         , attrs
@@ -28,7 +28,7 @@ module Bootstrap.ListGroup
 
 
 # Options
-@docs roleSuccess, roleSuccess, roleInfo, roleWarning, roleDanger, active, disabled, attrs, ItemOption
+@docs success, info, warning, danger, active, disabled, attrs, ItemOption
 
 
 -}
@@ -112,12 +112,12 @@ li options children =
     ListGroup.custom
         [ ListGroup.button
             [ ListGroup.attr <| onClick "MyItem1Msg"
-            , ListGroup.roleInfo
+            , ListGroup.info
             ]
             [ text "List item 1" ]
         , ListGroup.button
             [ ListGroup.attr <| onClick "MyItem2Msg"
-            , ListGroup.roleWarning
+            , ListGroup.warning
             ]
             [ text "List item 2" ]
         ]
@@ -140,11 +140,18 @@ anchor :
     -> List (Html.Html msg)
     -> CustomItem msg
 anchor options children =
-    CustomItem
-        { itemFn = Html.a
-        , children = children
-        , options = Action :: options
-        }
+    let
+        updOptions =
+            if List.any ((==) Disabled) options then
+                options ++ [ Attrs [preventClick] ]
+            else
+                options
+    in
+        CustomItem
+            { itemFn = Html.a
+            , children = children
+            , options = Action :: updOptions
+            }
 
 
 {-| Create a composable button list item for use in a custom list
@@ -207,31 +214,39 @@ applyModifier modifier options =
             { options | attributes = options.attributes ++ attrs }
 
 
+{-| Nasty hack to prevent click handler on -}
+preventClick : Html.Attribute a
+preventClick =
+    Attr.attribute
+        "onclick"
+        "var event = arguments[0] || window.event; event.preventDefault();"
+
+
 {-| Option to style a list item with success colors
 -}
-roleSuccess : ItemOption msg
-roleSuccess =
+success : ItemOption msg
+success =
     Roled Success
 
 
 {-| Option to style a list item with info colors
 -}
-roleInfo : ItemOption msg
-roleInfo =
+info : ItemOption msg
+info =
     Roled Info
 
 
 {-| Option to style a list item with warning colors
 -}
-roleWarning : ItemOption msg
-roleWarning =
+warning : ItemOption msg
+warning =
     Roled Warning
 
 
 {-| Option to style a list item with danger colors
 -}
-roleDanger : ItemOption msg
-roleDanger =
+danger : ItemOption msg
+danger =
     Roled Danger
 
 
@@ -262,13 +277,14 @@ itemAttributes options =
         [ ( "list-group-item", True )
         , ( "disabled", options.disabled )
         , ( "active", options.active )
-        , ( "action", options.action )
+        , ( "list-group-item-action", options.action )
         ]
     ]
         ++ [ Attr.disabled options.disabled ]
         ++ (Maybe.map (\r -> [ roleClass r ]) options.role
                 |> Maybe.withDefault []
            )
+        ++ options.attributes
 
 
 roleClass : Role -> Html.Attribute msg

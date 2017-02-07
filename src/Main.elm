@@ -496,7 +496,7 @@ listGroup : Html Msg
 listGroup =
     ListGroup.custom
         [ ListGroup.anchor
-            [ ListGroup.roleSuccess
+            [ ListGroup.success
             , ListGroup.attrs  [ href "#" ]
             , ListGroup.attrs  [class "justify-content-between"]
             ]
@@ -504,7 +504,7 @@ listGroup =
             , Badge.pill [ ] [ text "1" ]
             ]
         , ListGroup.anchor
-            [ ListGroup.roleInfo
+            [ ListGroup.info
             , ListGroup.attrs  [href "#"]
             , ListGroup.attrs  [class "justify-content-between"]
             ]
