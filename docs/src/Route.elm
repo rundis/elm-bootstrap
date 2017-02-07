@@ -11,9 +11,8 @@ type Route
     | Table
     | Progress
     | Alert
+    | Badge
     | NotFound
-
-
 
 
 routeParser : Parser (Route -> a) a
@@ -24,6 +23,7 @@ routeParser =
         , UrlParser.map Table (s "table")
         , UrlParser.map Progress (s "progress")
         , UrlParser.map Alert (s "alert")
+        , UrlParser.map Badge (s "badge")
         ]
 
 decode : Location -> Maybe Route

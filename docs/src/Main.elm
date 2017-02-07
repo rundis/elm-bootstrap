@@ -10,6 +10,7 @@ import Page.Table as Table
 import Page.Progress as Progress
 import Page.Grid as Grid
 import Page.Alert as Alert
+import Page.Badge as Badge
 
 
 type alias Model =
@@ -119,6 +120,7 @@ viewMenu model =
             , Navbar.itemLink [ href "#table" ] [ text "Table" ]
             , Navbar.itemLink [ href "#progress" ] [ text "Progress" ]
             , Navbar.itemLink [ href "#alert" ] [ text "Alert" ]
+            , Navbar.itemLink [ href "#badge"] [ text "Badge"]
             ]
         , customItems = []
         }
@@ -146,6 +148,9 @@ viewPage model =
 
             Route.Alert ->
                 Alert.view
+
+            Route.Badge ->
+                Badge.view
 
             Route.NotFound ->
                 viewNotFound model
