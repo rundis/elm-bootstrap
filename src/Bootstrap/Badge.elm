@@ -1,38 +1,33 @@
 module Bootstrap.Badge
     exposing
-        ( simpleBadge
-        , simplePill
-        , badge
+        ( badge
+        , badgePrimary
+        , badgeSuccess
+        , badgeInfo
+        , badgeWarning
+        , badgeDanger
         , pill
-        , roleDefault
-        , rolePrimary
-        , roleSuccess
-        , roleInfo
-        , roleWarning
-        , roleDanger
-        , BadgeOption
+        , pillPrimary
+        , pillSuccess
+        , pillInfo
+        , pillWarning
+        , pillDanger
         )
 
 {-| Small and adaptive badge for adding context to just about any content.
 
 # Tags
-@docs simpleBadge, badge
+@docs badge, badgePrimary, badgeSuccess, badgeInfo, badgeWarning, badgeDanger
 
 
 # Pills
-@docs simplePill, pill
-
-# Options
-
-@docs BadgeOption
-
-## Roles
-@docs roleDefault, rolePrimary, roleSuccess, roleInfo, roleWarning, roleDanger
+@docs pill, pillPrimary, pillSuccess, pillInfo, pillWarning, pillDanger
 
 -}
 
 import Html
 import Html.Attributes exposing (class)
+
 
 type Role
     = Default
@@ -43,112 +38,174 @@ type Role
     | Danger
 
 
-
-{-| Opaque type representing a badge styling option -}
+{-| Opaque type representing a badge styling option
+-}
 type BadgeOption
     = Roled Role
     | Pill
 
+
 {-| Create a badge with default styling
 
+* `attributes` List of attributes
 * `children` List of child elements
 
 -}
-simpleBadge : List (Html.Html msg) -> Html.Html msg
-simpleBadge children =
-    badgeRoled Default children
+badge : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
+badge =
+    badgeInternal [ Roled Default ]
 
 
-badgeRoled : Role -> List (Html.Html msg) -> Html.Html msg
-badgeRoled role children =
-    badge [ Roled role ] children
+{-| Create a badge with primary colors
 
-
-
-{-| Create a badge with potential several styling options
-
-    div
-        []
-        [ Badge.badge [Badge.rolePrimary] [Html.text "1"] ]
-
-
-* `options` List of options to style the badge
+* `attributes` List of attributes
 * `children` List of child elements
 
 -}
-badge : List BadgeOption -> List (Html.Html msg) -> Html.Html msg
-badge options children =
-    Html.span
-        (badgeAttributes options)
-        children
+badgePrimary :
+    List (Html.Attribute msg)
+    -> List (Html.Html msg)
+    -> Html.Html msg
+badgePrimary =
+    badgeInternal [ Roled Primary ]
+
+
+{-| Create a badge with success colors
+
+* `attributes` List of attributes
+* `children` List of child elements
+
+-}
+badgeSuccess :
+    List (Html.Attribute msg)
+    -> List (Html.Html msg)
+    -> Html.Html msg
+badgeSuccess =
+    badgeInternal [ Roled Success ]
+
+
+{-| Create a badge with info colors
+
+* `attributes` List of attributes
+* `children` List of child elements
+
+-}
+badgeInfo : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
+badgeInfo =
+    badgeInternal [ Roled Info ]
+
+
+{-| Create a badge with warning colors
+
+* `attributes` List of attributes
+* `children` List of child elements
+
+-}
+badgeWarning :
+    List (Html.Attribute msg)
+    -> List (Html.Html msg)
+    -> Html.Html msg
+badgeWarning =
+    badgeInternal [ Roled Warning ]
+
+
+{-| Create a badge with danger colors
+
+* `attributes` List of attributes
+* `children` List of child elements
+
+-}
+badgeDanger : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
+badgeDanger =
+    badgeInternal [ Roled Danger ]
 
 
 {-| Create a pill (badge with rounded corners) using default coloring
 
+* `attributes` List of attributes
 * `children` List of child elements
 
 -}
-simplePill : List (Html.Html msg) -> Html.Html msg
-simplePill children =
-    pillRoled Default children
+pill : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
+pill =
+    badgeInternal [ Roled Default, Pill ]
 
 
-pillRoled : Role -> List (Html.Html msg) -> Html.Html msg
-pillRoled role children =
-    pill [ Roled role ] children
+{-| Create a pill with primary colors
 
-
-{-| Create a pill with potential several styling options
-
-    div
-        []
-        [ Badge.pill [Badge.rolePrimary] [Html.text "1"] ]
-
-
-* `options` List of options to style the badge
+* `attributes` List of attributes
 * `children` List of child elements
 
 -}
-pill : List BadgeOption -> List (Html.Html msg) -> Html.Html msg
-pill classes children =
-    badge (Pill :: classes) children
+pillPrimary :
+    List (Html.Attribute msg)
+    -> List (Html.Html msg)
+    -> Html.Html msg
+pillPrimary =
+    badgeInternal [ Roled Primary, Pill ]
+
+
+{-| Create a pill with success colors
+
+* `attributes` List of attributes
+* `children` List of child elements
+
+-}
+pillSuccess :
+    List (Html.Attribute msg)
+    -> List (Html.Html msg)
+    -> Html.Html msg
+pillSuccess =
+    badgeInternal [ Roled Success, Pill ]
+
+
+{-| Create a pill with info colors
+
+* `attributes` List of attributes
+* `children` List of child elements
+
+-}
+pillInfo : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
+pillInfo =
+    badgeInternal [ Roled Info, Pill ]
+
+
+{-| Create a pill with warning colors
+
+* `attributes` List of attributes
+* `children` List of child elements
+
+-}
+pillWarning :
+    List (Html.Attribute msg)
+    -> List (Html.Html msg)
+    -> Html.Html msg
+pillWarning =
+    badgeInternal [ Roled Warning, Pill ]
+
+
+{-| Create a pill with danger colors
+
+* `attributes` List of attributes
+* `children` List of child elements
+
+-}
+pillDanger : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
+pillDanger =
+    badgeInternal [ Roled Danger, Pill ]
 
 
 
-{-| Option for Default colored badge/pill -}
-roleDefault : BadgeOption
-roleDefault =
-    Roled Default
 
-
-{-| Option for Primary colored badge/pill -}
-rolePrimary : BadgeOption
-rolePrimary =
-    Roled Primary
-
-
-{-| Option for Success colored badge/pill -}
-roleSuccess : BadgeOption
-roleSuccess =
-    Roled Success
-
-{-| Option for Info colored badge/pill -}
-roleInfo : BadgeOption
-roleInfo =
-    Roled Info
-
-{-| Option for Warning colored badge/pill -}
-roleWarning : BadgeOption
-roleWarning =
-    Roled Warning
-
-
-{-| Option for Danger colored badge/pill -}
-roleDanger : BadgeOption
-roleDanger =
-    Roled Danger
-
-
+badgeInternal :
+    List BadgeOption
+    -> List (Html.Attribute msg)
+    -> List (Html.Html msg)
+    -> Html.Html msg
+badgeInternal options attributes children =
+    Html.span
+        (badgeAttributes options ++ attributes)
+        children
 
 
 
@@ -166,7 +223,6 @@ badgeClass option =
 
             Roled role ->
                 roleOption role
-
 
 
 roleOption : Role -> String

@@ -18,7 +18,7 @@ all =
 simpleBadge : Test
 simpleBadge =
     let
-        html = Badge.simpleBadge [Html.text "1"]
+        html = Badge.badge [] [Html.text "1"]
     in
         describe "Simple badge"
             [ test "expect span and text" <|
@@ -39,7 +39,7 @@ simpleBadge =
 simplePill : Test
 simplePill =
     let
-        html = Badge.simplePill [Html.text "1"]
+        html = Badge.pill [] [Html.text "1"]
     in
         describe "Simple pill"
             [ test "expect span and text" <|
@@ -59,7 +59,7 @@ simplePill =
 badgeWithOptions : Test
 badgeWithOptions =
     let
-        html = Badge.badge [Badge.roleDanger] [ Html.text "X"]
+        html = Badge.badgeDanger [] [ Html.text "X"]
     in
         describe "Badge with options"
             [ test "expect span and text" <|
@@ -80,7 +80,7 @@ badgeWithOptions =
 pillWithOptions : Test
 pillWithOptions =
     let
-        html = Badge.pill [ Badge.roleDanger] [ Html.text "X"]
+        html = Badge.pillDanger [] [ Html.text "X"]
     in
         describe "Pill with options"
             [ test "expect span and text" <|

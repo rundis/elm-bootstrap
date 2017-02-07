@@ -501,7 +501,7 @@ listGroup =
             , ListGroup.attr <| class "justify-content-between"
             ]
             [ text "Hello"
-            , Badge.pill [ Badge.roleDefault ] [ text "1" ]
+            , Badge.pill [ ] [ text "1" ]
             ]
         , ListGroup.anchor
             [ ListGroup.roleInfo
@@ -509,9 +509,7 @@ listGroup =
             , ListGroup.attr <| class "justify-content-between"
             ]
             [ text "Aloha"
-            , Badge.pill
-                [ Badge.roleInfo ]
-                [ text "2" ]
+            , Badge.pillInfo [] [ text "2" ]
             ]
         ]
 
