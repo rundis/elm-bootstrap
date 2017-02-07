@@ -1,4 +1,4 @@
-module Util exposing (toMarkdown, simplePageHeader, pageContent, example)
+module Util exposing (..)
 
 import Html.Attributes exposing (..)
 import Html exposing (..)
@@ -37,14 +37,30 @@ example children =
         children
 
 
+
+
+
 toMarkdown : String -> Html.Html msg
 toMarkdown code =
     Markdown.toHtml
-        [ style
-            [ ( "background-color", "#f7f7f9" )
-            , ( "border", "1px solid f7f7aa" )
-            , ( "padding", "10px" )
-            , ( "margin-top", "10px" )
-            ]
-        ]
+        []
         code
+
+
+toMarkdownElm : String -> Html.Html msg
+toMarkdownElm code =
+    Markdown.toHtml
+        []
+        ("```elm" ++ code ++ "```")
+
+
+code : Html.Html msg -> Html.Html msg
+code codeElem =
+    div
+        [ class "highlight"]
+        [ codeElem ]
+
+
+calloutWarning : List (Html msg) -> Html msg
+calloutWarning children =
+    div [ class "bd-callout bd-callout-warning" ] children

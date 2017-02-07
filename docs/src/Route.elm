@@ -12,6 +12,7 @@ type Route
     | Progress
     | Alert
     | Badge
+    | ListGroup
     | NotFound
 
 
@@ -24,6 +25,7 @@ routeParser =
         , UrlParser.map Progress (s "progress")
         , UrlParser.map Alert (s "alert")
         , UrlParser.map Badge (s "badge")
+        , UrlParser.map ListGroup (s "listgroup")
         ]
 
 decode : Location -> Maybe Route
