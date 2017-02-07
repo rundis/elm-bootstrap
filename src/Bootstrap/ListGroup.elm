@@ -11,11 +11,12 @@ module Bootstrap.ListGroup
         , roleDanger
         , active
         , disabled
-        , attr
+        , attrs
         , ItemOption
         , Item
         , CustomItem
         )
+
 {-| List groups are a flexible and powerful component for displaying a series of content. List group items can be modified and extended to support just about any content within. They can also be used as navigation with the right modifier class
 
 # Simple lists
@@ -27,12 +28,13 @@ module Bootstrap.ListGroup
 
 
 # Options
-@docs roleSuccess, roleSuccess, roleInfo, roleWarning, roleDanger, active, disabled, attr, ItemOption
+@docs roleSuccess, roleSuccess, roleInfo, roleWarning, roleDanger, active, disabled, attrs, ItemOption
 
 
 -}
+
 import Html
-import Html.Attributes as Attr exposing (class, type_)
+import Html.Attributes as Attr exposing (class, classList, type_)
 
 
 {-| Opaque type representing configuration options for a list item
@@ -42,7 +44,7 @@ type ItemOption msg
     | Active
     | Disabled
     | Action
-    | Attr (Html.Attribute msg)
+    | Attrs (List (Html.Attribute msg))
 
 
 type Role
@@ -50,6 +52,15 @@ type Role
     | Info
     | Warning
     | Danger
+
+
+type alias ItemOptions msg =
+    { role : Maybe Role
+    , active : Bool
+    , disabled : Bool
+    , action : Bool
+    , attributes : List (Html.Attribute msg)
+    }
 
 
 {-| Opaque type representing a list item in a ul based list group
@@ -135,6 +146,7 @@ anchor options children =
         , options = Action :: options
         }
 
+
 {-| Create a composable button list item for use in a custom list
 
 * `options` List of options to configure the list item
@@ -148,24 +160,51 @@ button options children =
     CustomItem
         { itemFn = Html.button
         , children = children
-        , options = Action :: (options ++ [ Attr <| type_ "button" ])
+        , options = Action :: (options ++ [ Attrs [ type_ "button" ] ])
         }
-
-
 
 
 renderItem : Item msg -> Html.Html msg
 renderItem (Item { itemFn, options, children }) =
     itemFn
-        (itemAttributes options)
+        (List.foldl applyModifier defaultOptions options |> itemAttributes)
         children
 
 
 renderCustomItem : CustomItem msg -> Html.Html msg
 renderCustomItem (CustomItem { itemFn, options, children }) =
     itemFn
-        (itemAttributes options)
+        (List.foldl applyModifier defaultOptions options |> itemAttributes)
         children
+
+
+defaultOptions : ItemOptions msg
+defaultOptions =
+    { role = Nothing
+    , active = False
+    , disabled = False
+    , action = False
+    , attributes = []
+    }
+
+
+applyModifier : ItemOption msg -> ItemOptions msg -> ItemOptions msg
+applyModifier modifier options =
+    case modifier of
+        Roled role ->
+            { options | role = Just role }
+
+        Action ->
+            { options | action = True }
+
+        Disabled ->
+            { options | disabled = True }
+
+        Active ->
+            { options | active = True }
+
+        Attrs attrs ->
+            { options | attributes = options.attributes ++ attrs }
 
 
 {-| Option to style a list item with success colors
@@ -212,53 +251,38 @@ disabled =
 
 {-| Use this function to supply any additional Hmtl.Attribute you need for your list items
 -}
-attr : Html.Attribute msg -> ItemOption msg
-attr attr =
-    Attr attr
+attrs : List (Html.Attribute msg) -> ItemOption msg
+attrs attrs =
+    Attrs attrs
 
 
-itemAttributes : List (ItemOption msg) -> List (Html.Attribute msg)
+itemAttributes : ItemOptions msg -> List (Html.Attribute msg)
 itemAttributes options =
-    let
-        hasDisabled =
-            List.any (\opt -> opt == Disabled) options
-    in
-        [ class "list-group-item"
-        , Attr.disabled hasDisabled
+    [ classList
+        [ ( "list-group-item", True )
+        , ( "disabled", options.disabled )
+        , ( "active", options.active )
+        , ( "action", options.action )
         ]
-            ++ List.map itemClass options
+    ]
+        ++ [ Attr.disabled options.disabled ]
+        ++ (Maybe.map (\r -> [ roleClass r ]) options.role
+                |> Maybe.withDefault []
+           )
 
 
-itemClass : (ItemOption msg) -> Html.Attribute msg
-itemClass option =
-        case option of
-            Roled role ->
-                class <| roleOption role
+roleClass : Role -> Html.Attribute msg
+roleClass role =
+    class <|
+        case role of
+            Success ->
+                "list-group-item-success"
 
-            Active ->
-                class <| "active"
+            Info ->
+                "list-group-item-info"
 
-            Disabled ->
-                class <| "disabled"
+            Warning ->
+                "list-group-item-warning"
 
-            Action ->
-                class <| "list-group-item-action"
-
-            Attr attr ->
-                attr
-
-
-roleOption : Role -> String
-roleOption role =
-    case role of
-        Success ->
-            "list-group-item-success"
-
-        Info ->
-            "list-group-item-info"
-
-        Warning ->
-            "list-group-item-warning"
-
-        Danger ->
-            "list-group-item-danger"
+            Danger ->
+                "list-group-item-danger"

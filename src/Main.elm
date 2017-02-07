@@ -497,16 +497,16 @@ listGroup =
     ListGroup.custom
         [ ListGroup.anchor
             [ ListGroup.roleSuccess
-            , ListGroup.attr <| href "#"
-            , ListGroup.attr <| class "justify-content-between"
+            , ListGroup.attrs  [ href "#" ]
+            , ListGroup.attrs  [class "justify-content-between"]
             ]
             [ text "Hello"
             , Badge.pill [ ] [ text "1" ]
             ]
         , ListGroup.anchor
             [ ListGroup.roleInfo
-            , ListGroup.attr <| href "#"
-            , ListGroup.attr <| class "justify-content-between"
+            , ListGroup.attrs  [href "#"]
+            , ListGroup.attrs  [class "justify-content-between"]
             ]
             [ text "Aloha"
             , Badge.pillInfo [] [ text "2" ]
@@ -519,8 +519,8 @@ listGroup2 =
     ListGroup.custom
         [ ListGroup.anchor
             [ ListGroup.active
-            , ListGroup.attr <| href "#"
-            , ListGroup.attr <| class "flex-column align-items-start"
+            , ListGroup.attrs  [href "#"]
+            , ListGroup.attrs  [class "flex-column align-items-start"]
             ]
             [ div [ class "d-flex w-100 justify-content-between" ]
                 [ h5 [ class "mb-1" ] [ text "List group heading" ]
@@ -530,8 +530,8 @@ listGroup2 =
             , small [] [ text "Oh yea that's neat" ]
             ]
         , ListGroup.anchor
-            [ ListGroup.attr <| href "#"
-            , ListGroup.attr <| class "flex-column align-items-start"
+            [ ListGroup.attrs  [href "#"]
+            , ListGroup.attrs  [class "flex-column align-items-start"]
             ]
             [ div [ class "d-flex w-100 justify-content-between" ]
                 [ h5 [ class "mb-1" ] [ text "List group heading" ]
@@ -541,8 +541,8 @@ listGroup2 =
             , small [] [ text "Oh yea that's neat" ]
             ]
         , ListGroup.anchor
-            [ ListGroup.attr <| href "#"
-            , ListGroup.attr <| class "flex-column align-items-start"
+            [ ListGroup.attrs  [href "#"]
+            , ListGroup.attrs  [class "flex-column align-items-start"]
             ]
             [ div [ class "d-flex w-100 justify-content-between" ]
                 [ h5 [ class "mb-1" ] [ text "List group heading" ]
