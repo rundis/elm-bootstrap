@@ -12,6 +12,7 @@ import Page.Grid as Grid
 import Page.Alert as Alert
 import Page.Badge as Badge
 import Page.ListGroup as ListGroup
+import Page.Tab as Tab
 
 
 type alias Model =
@@ -20,6 +21,7 @@ type alias Model =
     , tableState : Table.State
     , progressState : Progress.State
     , gridState : Grid.State
+    , tabState : Tab.State
     }
 
 
@@ -29,10 +31,8 @@ type Msg
     | TableMsg Table.State
     | ProgressMsg Progress.State
     | GridMsg Grid.State
+    | TabMsg Tab.State
 
-
-type Page
-    = Grid
 
 
 
@@ -48,6 +48,7 @@ init location =
                                , tableState = Table.initialState
                                , progressState = Progress.initialState
                                , gridState = Grid.initialState
+                               , tabState = Tab.initialState
                                }
     in
         ( model, Cmd.batch [navbarCmd, urlCmd] )
@@ -66,7 +67,9 @@ main =
 subscriptions : Model -> Sub Msg
 subscriptions model =
     Sub.batch
-        [ Navbar.subscriptions model.navbarState NavbarMsg ]
+        [ Navbar.subscriptions model.navbarState NavbarMsg
+        , Tab.subscriptions model.tabState TabMsg
+        ]
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -86,6 +89,9 @@ update msg model =
 
         GridMsg state ->
             ( { model | gridState = state }, Cmd.none )
+
+        TabMsg state ->
+            ( { model | tabState = state }, Cmd.none )
 
 
 urlUpdate : Navigation.Location -> Model -> ( Model, Cmd Msg )
@@ -123,6 +129,7 @@ viewMenu model =
             , Navbar.itemLink [ href "#alert" ] [ text "Alert" ]
             , Navbar.itemLink [ href "#badge"] [ text "Badge"]
             , Navbar.itemLink [ href "#listgroup"] [ text "ListGroup"]
+            , Navbar.itemLink [ href "#tab"] [ text "Tab"]
             ]
         , customItems = []
         }
@@ -156,6 +163,9 @@ viewPage model =
 
             Route.ListGroup ->
                 ListGroup.view
+
+            Route.Tab ->
+                Tab.view model.tabState TabMsg
 
             Route.NotFound ->
                 viewNotFound model

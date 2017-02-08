@@ -13,6 +13,7 @@ type Route
     | Alert
     | Badge
     | ListGroup
+    | Tab
     | NotFound
 
 
@@ -26,6 +27,7 @@ routeParser =
         , UrlParser.map Alert (s "alert")
         , UrlParser.map Badge (s "badge")
         , UrlParser.map ListGroup (s "listgroup")
+        , UrlParser.map Tab (s "tab")
         ]
 
 decode : Location -> Maybe Route
