@@ -62,7 +62,7 @@ extended =
 
         ]
     , div [ class "highlight" ]
-        [ basicCode ]
+        [ extendedCode ]
     ]
 
 
