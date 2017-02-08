@@ -12,7 +12,7 @@ module Bootstrap.Tab
         , fill
         , right
         , center
-        , attr
+        , attrs
         , Config
         , State
         , Item
@@ -77,7 +77,7 @@ module Bootstrap.Tab
 @docs tabs, pills, initialState, customInitialState, Config, State
 
 # Options
-@docs justified, fill, center, right, attr, Option
+@docs justified, fill, center, right, attrs, Option
 
 # Tab items
 @docs item, link, pane, Item, Link, Pane
@@ -108,21 +108,28 @@ type State
 {-| Opaque type representing customization options for a tabs control
 -}
 type Option msg
-    = Fill
-    | Justified
-    | Aligned HAlign
-    | Attr (Html.Attribute msg)
+    = Layout TabLayout
+    | Attrs (List (Html.Attribute msg))
 
 
-type HAlign
+type TabLayout
     = Center
     | Right
+    | Fill
+    | Justified
+
 
 
 type Visibility
     = Hidden
     | Start
     | Showing
+
+
+type alias Options msg =
+    { layout : Maybe TabLayout
+    , attributes : List (Html.Attribute msg)
+    }
 
 
 {-| Configuration for a tabs control
@@ -213,35 +220,35 @@ customInitialState idx =
 -}
 justified : Option msg
 justified =
-    Justified
+    Layout Justified
 
 
 {-| Space out tab menu items to use the entire tabs control width, as opposed to [`justified`](#justified) items will not get equal widths
 -}
 fill : Option msg
 fill =
-    Fill
+    Layout Fill
 
 
 {-| Option to center the tab menu items
 -}
 center : Option msg
 center =
-    Aligned Center
+    Layout Center
 
 
 {-| Option to place tab menu items to the right
 -}
 right : Option msg
 right =
-    Aligned Right
+    Layout Right
 
 
 {-| Use this function when you need additional customization with Html.Attribute attributes for the tabs control
 -}
-attr : Html.Attribute msg -> Option msg
-attr attr =
-    Attr attr
+attrs : List (Html.Attribute msg) -> Option msg
+attrs attrs =
+    Attrs attrs
 
 
 {-| Creates a tab control which keeps track of the selected tab item and displays the corresponding tab pane for you
@@ -270,7 +277,7 @@ tabs : State -> Config msg -> Html.Html msg
 tabs state config =
     renderTab
         state
-        { config | options = (Attr <| class "nav-tabs") :: config.options }
+        { config | options = Attrs [ class "nav-tabs" ] :: config.options }
 
 
 {-| Pills are similar to [`tabs`](#tabs), but the menu items are displays with a pilled/buttonish look
@@ -282,7 +289,7 @@ pills : State -> Config msg -> Html.Html msg
 pills state config =
     renderTab
         state
-        { config | options = (Attr <| class "nav-pills") :: config.options }
+        { config | options = Attrs [ class "nav-pills" ] :: config.options }
 
 
 renderTab : State -> Config msg -> Html.Html msg
@@ -417,28 +424,50 @@ transitionStyle opacity =
 
 
 tabAttributes : List (Option msg) -> List (Html.Attribute msg)
-tabAttributes options =
-    class "nav"
-        :: List.map tabAttribute options
+tabAttributes modifiers =
+    let
+        options =
+            List.foldl applyModifier defaultOptions modifiers
+    in
+        [ class "nav" ]
+            ++ (case options.layout of
+                    Just Justified ->
+                        [ class "nav-justified" ]
+
+                    Just Fill ->
+                        [ class "nav-fill" ]
+
+                    Just Center ->
+                        [ class "justify-content-center"]
+
+                    Just Right ->
+                        [ class "justify-content-end"]
+
+                    Nothing ->
+                        []
+               )
+            ++ options.attributes
 
 
-tabAttribute : Option msg -> Html.Attribute msg
-tabAttribute option =
+defaultOptions : Options msg
+defaultOptions =
+    { layout = Nothing
+    , attributes = []
+    }
+
+
+applyModifier : Option msg -> Options msg -> Options msg
+applyModifier option options =
     case option of
-        Fill ->
-            class "nav-fill"
+        Attrs attrs ->
+            { options | attributes = options.attributes ++ attrs }
 
-        Justified ->
-            class "nav-justified"
-
-        Aligned align ->
-            alignAttribute align
-
-        Attr attr ->
-            attr
+        Layout layout ->
+            { options | layout = Just layout }
 
 
-alignAttribute : HAlign -> Html.Attribute msg
+
+{- alignAttribute : HAlign -> Html.Attribute msg
 alignAttribute align =
     "justify-content-"
         ++ (case align of
@@ -449,7 +478,7 @@ alignAttribute align =
                     "end"
            )
         |> class
-
+ -}
 
 {-| Create a composable tab item
 
