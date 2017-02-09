@@ -608,57 +608,50 @@ cards =
     div []
         [ h1 [] [ text "Cards" ]
         , Card.deck
-            [ Card.cardItem
-                { options = [ Card.outlinePrimary ]
-                , header = Just <| Card.headerH1 [] [ text "Primary" ]
-                , footer = Just <| Card.footer [] [ text "Primary footer" ]
-                , imgTop = Nothing
-                , imgBottom = Nothing
-                , blocks =
-                    [ Card.block []
+            [ Card.config [ Card.outlinePrimary ]
+                |> Card.headerH1 [] [ text "Primary" ]
+                |> Card.footer [] [ text "Primary footer" ]
+                |> Card.block []
                         [ Card.titleH4 [] [ text "Primary outlined" ]
                         , Card.text [] [ text "Outlined primary card. Cool." ]
                         ]
-                    ]
-                }
-            , Card.cardItem
-                { options = [ Card.outlineSuccess ]
-                , header = Just <| Card.headerH1 [] [ text "Success" ]
-                , footer = Just <| Card.footer [] [ text "Success footer" ]
-                , imgTop = Nothing
-                , imgBottom = Nothing
-                , blocks =
-                    [ Card.block
+
+            , Card.config [ Card.outlineSuccess ]
+                |> Card.headerH1 [] [ text "Success" ]
+                |> Card.footer [] [ text "Success footer" ]
+                |> Card.block
                         [ Card.blockAlign Text.alignXsLeft ]
                         [ Card.titleH4 [] [ text "Success outlined" ]
                         , Card.text [] [ text "The success of outlining cards is staggering" ]
                         , Card.link [ href "#" ] [ text "Link 1" ]
                         , Card.link [ href "#" ] [ text "Link 2" ]
                         ]
-                    ]
-                }
             ]
+
         , Card.group
-            [ Card.simpleCardItem
-                [ Card.roleDanger, Card.align Text.alignXsCenter ]
-                [ Card.titleH4 [] [ text "Danger inverse " ]
-                , Card.text [] [ text " A Simple card with a dangerous role" ]
-                , Card.link [ href "#" ] [ text "A Link !" ]
-                ]
-            , Card.simpleCardItem
-                [ Card.roleWarning, Card.align Text.alignXsLeft ]
-                [ Card.titleH4 [] [ text "Warning inverse " ]
-                , Card.text [] [ text " A Simple card with a warning role" ]
-                ]
-            , Card.simpleCardItem
-                [ Card.roleInfo, Card.align Text.alignXsRight ]
-                [ Card.titleH4 [] [ text "Info inverse " ]
-                , Card.text [] [ text " A Simple card with a info role" ]
-                ]
+            [ Card.config [ Card.danger, Card.align Text.alignXsCenter]
+                |> Card.block []
+                    [ Card.titleH4 [] [ text "Danger inverse " ]
+                    , Card.text [] [ text " A Simple card with a dangerous role" ]
+                    , Card.link [ href "#" ] [ text "A Link !" ]
+                    ]
+
+            , Card.config [ Card.warning, Card.align Text.alignXsLeft ]
+                |> Card.block []
+                    [ Card.titleH4 [] [ text "Warning inverse " ]
+                    , Card.text [] [ text " A Simple card with a warning role" ]
+                    ]
+            , Card.config [ Card.info, Card.align Text.alignXsRight ]
+                |> Card.block []
+                    [ Card.titleH4 [] [ text "Info inverse " ]
+                    , Card.text [] [ text " A Simple card with a info role" ]
+                    ]
             ]
-        , Card.simpleCard
-            [ Card.outlineSuccess ]
-            [ Card.text [] [ text "Just some text you know" ] ]
+
+        , Card.config [ Card.outlineDanger ]
+            |> Card.block []
+                [ Card.text [] [ text "Just some text you know" ] ]
+                |> Card.view
         ]
 
 
