@@ -15,6 +15,7 @@ module Bootstrap.Card
         , outlinePrimary
         , outlineSuccess
         , outlineWarning
+        , inverted
         , link
         , text
         , blockQuote
@@ -31,6 +32,7 @@ module Bootstrap.Card
         , headerH6
         , block
         , blockAlign
+        , listGroup
         , titleH1
         , titleH2
         , titleH3
@@ -72,11 +74,11 @@ module Bootstrap.Card
 ## Options
 You can customize the look and feel of your cards using the following options
 
-@docs config, align, primary, success, info, warning, danger, outlinePrimary, outlineSuccess, outlineInfo, outlineWarning, outlineDanger, attrs, CardOption
+@docs config, align, primary, success, info, warning, danger, outlinePrimary, outlineSuccess, outlineInfo, outlineWarning, outlineDanger, inverted, attrs, CardOption
 
 
 # Blocks
-@docs block, CardBlock, BlockItem
+@docs block, listGroup, CardBlock, BlockItem
 
 
 ## Block title
@@ -102,8 +104,11 @@ Cards can be composed into
 
 import Html
 import Html.Attributes exposing (class)
+import Color
 import Bootstrap.Text as Text
 import Bootstrap.Internal.Text as TextInternal
+import Bootstrap.Internal.ListGroup as ListGroupInternal
+import Bootstrap.ListGroup as ListGroup
 
 
 {-| Opaque type representing options for customizing the styling of a card
@@ -118,6 +123,7 @@ type CardOption msg
 type RoleOption
     = Roled Role
     | Outlined Role
+    | Inverted Color.Color
 
 
 type alias CardOptions msg =
@@ -198,6 +204,7 @@ type CardImageBottom msg
 -}
 type CardBlock msg
     = CardBlock (Html.Html msg)
+    | ListGroup (Html.Html msg)
 
 
 {-| Opaque type representing a legal card block child element
@@ -286,6 +293,11 @@ outlineDanger : CardOption msg
 outlineDanger =
     Coloring <| Outlined Danger
 
+{-| Give cards a custom dark background color with light text -}
+inverted : Color.Color -> CardOption msg
+inverted color =
+    Coloring <| Inverted color
+
 
 {-| When you need to customize a card item with std Html.Attribute attributes use this function
 -}
@@ -336,7 +348,16 @@ view (Config { options, header, footer, imgTop, imgBottom, blocks }) =
             [ Maybe.map (\(CardHeader e) -> e) header
             , Maybe.map (\(CardImageTop e) -> e) imgTop
             ]
-            ++ (List.map (\(CardBlock e) -> e) blocks)
+            ++ (List.map
+                    (\block ->
+                        case block of
+                            CardBlock e ->
+                                e
+                            ListGroup e ->
+                                e
+                    )
+                    blocks
+               )
             ++ List.filterMap
                 identity
                 [ Maybe.map (\(CardFooter e) -> e) footer
@@ -579,6 +600,29 @@ block options items (Config config) =
         }
 
 
+{-| You may add list groups, just like you can add card blocks to a Card.
+Use the li function in the ListGroup module to add and configure the list items.
+-}
+listGroup :
+    List (ListGroup.Item msg)
+    -> Config msg
+    -> Config msg
+listGroup items (Config config) =
+    Config
+        { config
+            | blocks =
+                config.blocks
+                    ++ [ Html.ul
+                            [ class "list-group list-group-flush" ]
+                            (List.map ListGroupInternal.renderItem items)
+                            |> ListGroup
+                       ]
+        }
+
+
+
+
+
 {-| Create link elements that are placed next to each other in a block using this function
 
 * `attributes` List of attributes
@@ -750,6 +794,11 @@ cardAttributes modifiers =
                 Just (Outlined role) ->
                     [ class <| "card-outline-" ++ roleOption role ]
 
+                Just (Inverted color) ->
+                    [ class "card-inverse"
+                    , Html.Attributes.style [("background-color", toRGBString color), ("border-color", toRGBString color)]
+                    ]
+
                 Nothing ->
                     []
             )
@@ -838,3 +887,12 @@ roleOption role =
 
         Danger ->
             "danger"
+
+
+toRGBString : Color.Color -> String
+toRGBString color =
+    let
+        { red, green, blue } =
+            Color.toRgb color
+    in
+        "RGB(" ++ toString red ++ "," ++ toString green ++ "," ++ toString blue ++ ")"
