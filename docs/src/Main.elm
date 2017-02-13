@@ -109,7 +109,7 @@ view : Model -> Html Msg
 view model =
     div
         []
-        ( viewMenu model :: viewPage model)
+        (viewMenu model :: viewPage model)
 
 
 viewMenu : Model -> Html Msg
@@ -121,6 +121,7 @@ viewMenu model =
         , options =
             [ Navbar.container
             , Navbar.attr <| class "bd-navbar navbar-light"
+            , Navbar.collapseMedium
             ]
         , brand = Just <| Navbar.brand [ href "#" ] [ text "Elm Bootstrap" ]
         , items =
