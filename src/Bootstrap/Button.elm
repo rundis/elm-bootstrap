@@ -14,12 +14,12 @@ module Bootstrap.Button
         , large
         , largeGroup
         , verticalGroup
-        , rolePrimary
-        , roleSecondary
-        , roleSuccess
-        , roleInfo
-        , roleWarning
-        , roleDanger
+        , primary
+        , secondary
+        , success
+        , info
+        , warning
+        , danger
         , roleLink
         , block
         , outlinePrimary
@@ -46,7 +46,7 @@ You can also group a series of buttons together on a single line with the button
 @docs attr, ButtonOption
 
 ## Roled
-@docs rolePrimary, roleSecondary, roleSuccess, roleInfo, roleWarning, roleDanger, roleLink
+@docs primary, secondary, success, info, warning, danger, roleLink
 
 ## Outlined
 @docs outlinePrimary, outlineSecondary, outlineSuccess, outlineInfo, outlineWarning, outlineDanger
@@ -163,8 +163,8 @@ groupAttr attr =
 
     Button.buttonGroup
         [ Button.smallGroup ]
-        [ Button.button [ Button.rolePrimary ] [ text "Primary" ]
-        , Button.button [ Button.roleSecondary ] [ text "Secondary" ]
+        [ Button.button [ Button.primary ] [ text "Primary" ]
+        , Button.button [ Button.secondary ] [ text "Secondary" ]
         ]
 
   * `options` List of styling options
@@ -202,7 +202,7 @@ renderButtonGroup (ButtonGroupItem elem) =
 
 {-| Create a button
 
-    Button.button [ Button.rolePrimary ] [ text "Primary" ]
+    Button.button [ Button.primary ] [ text "Primary" ]
 
 
 * `options` List of styling options
@@ -235,7 +235,7 @@ buttonItem options children  =
 
 {-| Create a link that appears as a button
 
-    Button.linkButton [ Button.rolePrimary ] [ text "Primary" ]
+    Button.linkButton [ Button.primary ] [ text "Primary" ]
 
 
 
@@ -296,43 +296,43 @@ large =
 
 {-| Option to color a button to signal a primary action
 -}
-rolePrimary : ButtonOption msg
-rolePrimary =
+primary : ButtonOption msg
+primary =
     ButtonInternal.RoleButton ButtonInternal.Primary
 
 
 {-| Option to color a button to signal a secondary action
 -}
-roleSecondary : ButtonOption msg
-roleSecondary =
+secondary : ButtonOption msg
+secondary =
     ButtonInternal.RoleButton ButtonInternal.Secondary
 
 
 {-| Option to indicate a successful or positive action
 -}
-roleSuccess : ButtonOption msg
-roleSuccess =
+success : ButtonOption msg
+success =
     ButtonInternal.RoleButton ButtonInternal.Success
 
 
 {-| Option to indicate a info action. Typically used for alerts.
 -}
-roleInfo : ButtonOption msg
-roleInfo =
+info : ButtonOption msg
+info =
     ButtonInternal.RoleButton ButtonInternal.Info
 
 
 {-| Option to indicate an action that should be taken with caution
 -}
-roleWarning : ButtonOption msg
-roleWarning =
+warning : ButtonOption msg
+warning =
     ButtonInternal.RoleButton ButtonInternal.Warning
 
 
 {-| Option to indicate an action that is potentially negative or dangerous
 -}
-roleDanger : ButtonOption msg
-roleDanger =
+danger : ButtonOption msg
+danger =
     ButtonInternal.RoleButton ButtonInternal.Danger
 
 
