@@ -1,22 +1,28 @@
 module Bootstrap.Internal.Button exposing
     (buttonAttributes
-    , ButtonOption (..)
+    , Option (..)
     , Role (..)
+    , RoledButton (..)
     )
 
 
 import Bootstrap.Internal.Grid as GridInternal
 import Html
-import Html.Attributes as Attributes exposing (class)
+import Html.Attributes as Attributes exposing (class, classList)
 
 
 
-type ButtonOption msg
-    = SizeButton GridInternal.ScreenSize
-    | RoleButton Role
-    | OutlineButton Role
-    | BlockButton
-    | ButtonAttr (Html.Attribute msg)
+type Option msg
+    = Size GridInternal.ScreenSize
+    | Coloring RoledButton
+    | Block
+    | Attrs (List (Html.Attribute msg))
+
+
+
+type RoledButton
+    = Roled Role
+    | Outlined Role
 
 
 type Role
@@ -29,37 +35,71 @@ type Role
     | Link
 
 
-buttonAttributes : List (ButtonOption msg)  -> List (Html.Attribute msg)
-buttonAttributes options =
-    class "btn"
-        :: (List.map buttonAttribute options
-                |> List.filterMap identity)
+
+type alias Options msg =
+    { coloring : Maybe RoledButton
+    , block : Bool
+    , size : Maybe GridInternal.ScreenSize
+    , attributes : List (Html.Attribute msg)
+    }
 
 
+buttonAttributes : List (Option msg)  -> List (Html.Attribute msg)
+buttonAttributes modifiers =
+    let
+        options =
+            List.foldl applyModifier defaultOptions modifiers
+    in
+        [ classList
+            [ ("btn", True)
+            , ("btn-block", options.block)
+            ]
 
-buttonAttribute : ButtonOption msg -> Maybe (Html.Attribute msg)
-buttonAttribute style =
+        ]
+        ++ ( case (options.size |> Maybe.andThen GridInternal.screenSizeOption) of
+                Just s ->
+                    [ class <| "btn-" ++ s ]
 
-        case style of
-            RoleButton role ->
-                Just <| class <| "btn-" ++ roleClass role
+                Nothing ->
+                    []
+          )
+        ++ ( case options.coloring of
+                Just (Roled role) ->
+                    [ class <| "btn-" ++ roleClass role ]
 
-            SizeButton size ->
-                case GridInternal.screenSizeOption size of
-                    Just s ->
-                        Just <| class <| "btn-" ++ s
-                    Nothing ->
-                        Nothing
+                Just (Outlined role) ->
+                    [ class <| "btn-outline-" ++ roleClass role ]
 
-            OutlineButton role ->
-                Just <| class <| "btn-outline-" ++ roleClass role
+                Nothing ->
+                    []
+            )
 
-            BlockButton ->
-                Just <| class <| "btn-block"
 
-            ButtonAttr attr ->
-                Just <| attr
+        ++ options.attributes
 
+
+defaultOptions : Options msg
+defaultOptions =
+    { coloring = Nothing
+    , block = False
+    , size = Nothing
+    , attributes = []
+    }
+
+applyModifier : Option msg -> Options msg -> Options msg
+applyModifier modifier options =
+    case modifier of
+        Size size ->
+            { options | size = Just size }
+
+        Coloring coloring ->
+            { options | coloring = Just coloring }
+
+        Block ->
+            { options | block = True }
+
+        Attrs attrs ->
+            { options | attributes = options.attributes ++ attrs }
 
 
 roleClass : Role -> String

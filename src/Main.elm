@@ -189,7 +189,7 @@ mainContent model =
                     [ Button.small
                     , Button.outlineSuccess
                     , Button.block
-                    , Button.attr <| onClick <| ModalMsg Modal.visibleState
+                    , Button.attrs [ onClick <| ModalMsg Modal.visibleState]
                     ]
                     [ text "Show modal" ]
                 ]
@@ -204,7 +204,7 @@ mainContent model =
                     , toggleMsg = DropdownMsg
                     , toggleButton =
                         Dropdown.toggle
-                            [ Button.roleWarning ]
+                            [ Button.warning ]
                             [ text "MyDropdown "
                             , span [ class "tag tag-pill tag-info" ] [ text "(2)" ]
                             ]
@@ -231,10 +231,10 @@ mainContent model =
                     , toggleButton =
                         Dropdown.splitToggle
                             { options =
-                                [ Button.roleWarning
-                                , Button.attr <| onClick SplitMainMsg
+                                [ Button.warning
+                                , Button.attrs [ onClick SplitMainMsg ]
                                 ]
-                            , togglerOptions = [ Button.roleWarning ]
+                            , togglerOptions = [ Button.warning ]
                             , children = [ text "My split drop" ]
                             }
                     , items =
@@ -300,7 +300,7 @@ navbar model =
                 [ Input.text
                     [Input.small]
                 , Button.button
-                    [ Button.roleSuccess, Button.small]
+                    [ Button.success, Button.small]
                     [ text "Submit"]]
             ]
         }
@@ -445,7 +445,7 @@ modal modalState =
                 Modal.footer []
                     [ Button.button
                         [ Button.outlinePrimary
-                        , Button.attr <| onClick <| ModalMsg Modal.hiddenState
+                        , Button.attrs [ onClick <| ModalMsg Modal.hiddenState]
                         ]
                         [ text "Close" ]
                     ]

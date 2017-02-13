@@ -160,8 +160,8 @@ You mustn't define an onClick handler as an option in `options`. That will mess 
 
 -}
 type alias SplitToggleConfig msg =
-    { options : List (Button.ButtonOption msg)
-    , togglerOptions : List (Button.ButtonOption msg)
+    { options : List (Button.Option msg)
+    , togglerOptions : List (Button.Option msg)
     , children : List (Html.Html msg)
     }
 
@@ -274,7 +274,7 @@ dropdown ((State status) as state) { toggleMsg, toggleButton, items, options } =
 * children List of child elements
 -}
 toggle :
-    List (Button.ButtonOption msg)
+    List (Button.Option msg)
     -> List (Html.Html msg)
     -> DropdownToggle msg
 toggle buttonOptions children =
@@ -283,7 +283,7 @@ toggle buttonOptions children =
 
 
 togglePrivate :
-    List (Button.ButtonOption msg)
+    List (Button.Option msg)
     -> List (Html.Html msg)
     -> (State -> msg)
     -> State
