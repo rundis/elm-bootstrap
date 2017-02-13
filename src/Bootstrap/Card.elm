@@ -18,6 +18,7 @@ module Bootstrap.Card
         , link
         , text
         , blockQuote
+        , custom
         , imgTop
         , imgBottom
         , header
@@ -83,7 +84,7 @@ You can customize the look and feel of your cards using the following options
 
 
 ## Misc
-@docs link, text, blockQuote
+@docs link, text, blockQuote, custom
 
 ## Block options
 @docs blockAlign, blockAttrs, BlockOption
@@ -603,6 +604,12 @@ text attributes children =
         children
         |> BlockItem
 
+
+{-|  Add a custom HTML element to be displayed in a Card block
+-}
+custom : Html.Html msg -> BlockItem msg
+custom element =
+    BlockItem element
 
 {-| Create a block quote element
 
