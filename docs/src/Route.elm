@@ -14,6 +14,7 @@ type Route
     | Badge
     | ListGroup
     | Tab
+    | Card
     | NotFound
 
 
@@ -28,6 +29,7 @@ routeParser =
         , UrlParser.map Badge (s "badge")
         , UrlParser.map ListGroup (s "listgroup")
         , UrlParser.map Tab (s "tab")
+        , UrlParser.map Card (s "card")
         ]
 
 decode : Location -> Maybe Route

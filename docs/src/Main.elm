@@ -13,6 +13,7 @@ import Page.Alert as Alert
 import Page.Badge as Badge
 import Page.ListGroup as ListGroup
 import Page.Tab as Tab
+import Page.Card as Card
 
 
 type alias Model =
@@ -124,6 +125,7 @@ viewMenu model =
         , brand = Just <| Navbar.brand [ href "#" ] [ text "Elm Bootstrap" ]
         , items =
             [ Navbar.itemLink [ href "#grid" ] [ text "Grid" ]
+            , Navbar.itemLink [ href "#card" ] [ text "Card" ]
             , Navbar.itemLink [ href "#table" ] [ text "Table" ]
             , Navbar.itemLink [ href "#progress" ] [ text "Progress" ]
             , Navbar.itemLink [ href "#alert" ] [ text "Alert" ]
@@ -148,6 +150,9 @@ viewPage model =
 
             Route.Grid ->
                 Grid.view model.gridState GridMsg
+
+            Route.Card ->
+                Card.view
 
             Route.Table ->
                 Table.view model.tableState TableMsg
