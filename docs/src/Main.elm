@@ -14,6 +14,7 @@ import Page.Badge as Badge
 import Page.ListGroup as ListGroup
 import Page.Tab as Tab
 import Page.Card as Card
+import Page.Button as Button
 
 
 type alias Model =
@@ -128,6 +129,7 @@ viewMenu model =
             [ Navbar.itemLink [ href "#grid" ] [ text "Grid" ]
             , Navbar.itemLink [ href "#card" ] [ text "Card" ]
             , Navbar.itemLink [ href "#table" ] [ text "Table" ]
+            , Navbar.itemLink [ href "#button" ] [ text "Button" ]
             , Navbar.itemLink [ href "#progress" ] [ text "Progress" ]
             , Navbar.itemLink [ href "#alert" ] [ text "Alert" ]
             , Navbar.itemLink [ href "#badge"] [ text "Badge"]
@@ -172,6 +174,9 @@ viewPage model =
 
             Route.Tab ->
                 Tab.view model.tabState TabMsg
+
+            Route.Button ->
+                Button.view
 
             Route.NotFound ->
                 viewNotFound model

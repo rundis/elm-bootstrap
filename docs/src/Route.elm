@@ -15,6 +15,7 @@ type Route
     | ListGroup
     | Tab
     | Card
+    | Button
     | NotFound
 
 
@@ -30,6 +31,7 @@ routeParser =
         , UrlParser.map ListGroup (s "listgroup")
         , UrlParser.map Tab (s "tab")
         , UrlParser.map Card (s "card")
+        , UrlParser.map Button (s "button")
         ]
 
 decode : Location -> Maybe Route
