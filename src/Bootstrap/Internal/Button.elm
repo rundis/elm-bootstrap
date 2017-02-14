@@ -16,6 +16,7 @@ type Option msg
     = Size GridInternal.ScreenSize
     | Coloring RoledButton
     | Block
+    | Disabled
     | Attrs (List (Html.Attribute msg))
 
 
@@ -39,6 +40,7 @@ type Role
 type alias Options msg =
     { coloring : Maybe RoledButton
     , block : Bool
+    , disabled : Bool
     , size : Maybe GridInternal.ScreenSize
     , attributes : List (Html.Attribute msg)
     }
@@ -53,8 +55,9 @@ buttonAttributes modifiers =
         [ classList
             [ ("btn", True)
             , ("btn-block", options.block)
+            , ("disabled", options.disabled)
             ]
-
+        , Attributes.disabled options.disabled
         ]
         ++ ( case (options.size |> Maybe.andThen GridInternal.screenSizeOption) of
                 Just s ->
@@ -82,6 +85,7 @@ defaultOptions : Options msg
 defaultOptions =
     { coloring = Nothing
     , block = False
+    , disabled = False
     , size = Nothing
     , attributes = []
     }
@@ -97,6 +101,9 @@ applyModifier modifier options =
 
         Block ->
             { options | block = True }
+
+        Disabled ->
+            { options | disabled = True }
 
         Attrs attrs ->
             { options | attributes = options.attributes ++ attrs }

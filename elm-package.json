@@ -11,6 +11,7 @@
         "Bootstrap.Alert",
         "Bootstrap.Badge",
         "Bootstrap.Button",
+        "Bootstrap.ButtonGroup",
         "Bootstrap.Card",
         "Bootstrap.CDN",
         "Bootstrap.Checkbox",
