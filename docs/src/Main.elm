@@ -15,6 +15,7 @@ import Page.ListGroup as ListGroup
 import Page.Tab as Tab
 import Page.Card as Card
 import Page.Button as Button
+import Page.Dropdown as Dropdown
 
 
 type alias Model =
@@ -24,6 +25,7 @@ type alias Model =
     , progressState : Progress.State
     , gridState : Grid.State
     , tabState : Tab.State
+    , dropdownState : Dropdown.State
     }
 
 
@@ -34,6 +36,7 @@ type Msg
     | ProgressMsg Progress.State
     | GridMsg Grid.State
     | TabMsg Tab.State
+    | DropdownMsg Dropdown.State
 
 
 
@@ -51,6 +54,7 @@ init location =
                                , progressState = Progress.initialState
                                , gridState = Grid.initialState
                                , tabState = Tab.initialState
+                               , dropdownState = Dropdown.initialState
                                }
     in
         ( model, Cmd.batch [navbarCmd, urlCmd] )
@@ -71,6 +75,7 @@ subscriptions model =
     Sub.batch
         [ Navbar.subscriptions model.navbarState NavbarMsg
         , Tab.subscriptions model.tabState TabMsg
+        , Dropdown.subscriptions model.dropdownState DropdownMsg
         ]
 
 
@@ -94,6 +99,9 @@ update msg model =
 
         TabMsg state ->
             ( { model | tabState = state }, Cmd.none )
+
+        DropdownMsg state ->
+            ( { model | dropdownState = state }, Cmd.none )
 
 
 urlUpdate : Navigation.Location -> Model -> ( Model, Cmd Msg )
@@ -130,6 +138,7 @@ viewMenu model =
             , Navbar.itemLink [ href "#card" ] [ text "Card" ]
             , Navbar.itemLink [ href "#table" ] [ text "Table" ]
             , Navbar.itemLink [ href "#button" ] [ text "Button" ]
+            , Navbar.itemLink [ href "#dropdown" ] [ text "Dropdown" ]
             , Navbar.itemLink [ href "#progress" ] [ text "Progress" ]
             , Navbar.itemLink [ href "#alert" ] [ text "Alert" ]
             , Navbar.itemLink [ href "#badge"] [ text "Badge"]
@@ -177,6 +186,9 @@ viewPage model =
 
             Route.Button ->
                 Button.view
+
+            Route.Dropdown ->
+                Dropdown.view model.dropdownState DropdownMsg
 
             Route.NotFound ->
                 viewNotFound model

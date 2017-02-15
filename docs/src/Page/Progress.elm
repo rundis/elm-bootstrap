@@ -116,10 +116,10 @@ optionsForm ({ options } as state) toMsg =
                         , name = "myradios"
                         , radios =
                             [ Form.radio (radioAttr Default) "Default"
-                            , Form.radio (radioAttr Success) "Form.success"
-                            , Form.radio (radioAttr Info) "Form.info"
-                            , Form.radio (radioAttr Warning) "Form.warning"
-                            , Form.radio (radioAttr Danger) "Form.danger"
+                            , Form.radio (radioAttr Success) "Progress.success"
+                            , Form.radio (radioAttr Info) "Progress.info"
+                            , Form.radio (radioAttr Warning) "Progress.warning"
+                            , Form.radio (radioAttr Danger) "Progress.danger"
                             ]
                         }
                     ]
