@@ -66,9 +66,9 @@ type ButtonItem msg
 {-| Create a group of related buttons
 
     ButtonGroup.group
-        [ Button.smallGroup ]
-        [ Button.button [ Button.primary ] [ text "Primary" ]
-        , Button.button [ Button.secondary ] [ text "Secondary" ]
+        [ Button.small ]
+        [ ButtonGroup.button [ Button.primary ] [ text "Primary" ]
+        , ButtonGroup.button [ Button.secondary ] [ text "Secondary" ]
         ]
 
   * `options` List of styling options
@@ -101,12 +101,12 @@ groupItem options items =
 
 {-| Create a toolbar of buttons by composing button groups. Separate groups by margins on the button groups.
 
-    Button.buttonToolbar []
-        [ Button.buttonGroupItem []
+    ButtonGroup.buttonToolbar []
+        [ ButtonGroup.groupItem []
             [] -- should contain a list of button items
 
-        , Button.buttonGroupItem
-            [ Button.groupAttr <| class "ml-2" ]
+        , ButtonGroup.groupItem
+            [ Button.attrs [ class "ml-2" ] ]
             [] -- should contain a list of button items
 
         ]
