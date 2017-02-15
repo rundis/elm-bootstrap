@@ -226,7 +226,7 @@ mainContent model =
                 [ Grid.colWidth Grid.colXsFive, Grid.colAttr colStyle ]
                 [ Dropdown.splitDropdown
                     model.splitDropState
-                    { options = [ Dropdown.dropUp ]
+                    { options = [ Dropdown.dropUp, Dropdown.alignMenuRight ]
                     , toggleMsg = SplitMsg
                     , toggleButton =
                         Dropdown.splitToggle

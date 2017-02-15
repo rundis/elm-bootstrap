@@ -353,6 +353,7 @@ splitDropdown ((State status) as state) { toggleMsg, toggleButton, items, option
             [ Button.primary
             , Button.small
             ]
+        , [ text "My Dropdown"]
         }
 
 
