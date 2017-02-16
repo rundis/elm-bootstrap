@@ -107,8 +107,8 @@ import Html.Attributes exposing (class)
 import Color
 import Bootstrap.Text as Text
 import Bootstrap.Internal.Text as TextInternal
-import Bootstrap.Internal.ListGroup as ListGroupInternal
 import Bootstrap.ListGroup as ListGroup
+import Bootstrap.Internal.Card as CardInternal
 
 
 {-| Opaque type representing options for customizing the styling of a card
@@ -135,15 +135,7 @@ type alias CardOptions msg =
 
 {-| Opaque type representing options for styling a card block
 -}
-type BlockOption msg
-    = AlignedBlock Text.HAlign
-    | BlockAttrs (List (Html.Attribute msg))
-
-
-type alias BlockOptions msg =
-    { aligned : Maybe Text.HAlign
-    , attributes : List (Html.Attribute msg)
-    }
+type alias BlockOption msg = CardInternal.BlockOption msg
 
 
 type Role
@@ -172,7 +164,7 @@ type Config msg
         , footer : Maybe (CardFooter msg)
         , imgTop : Maybe (CardImageTop msg)
         , imgBottom : Maybe (CardImageBottom msg)
-        , blocks : List (CardBlock msg)
+        , blocks : List (CardInternal.CardBlock msg)
         }
 
 
@@ -209,8 +201,8 @@ type CardBlock msg
 
 {-| Opaque type representing a legal card block child element
 -}
-type BlockItem msg
-    = BlockItem (Html.Html msg)
+type alias BlockItem msg = CardInternal.BlockItem msg
+
 
 
 
@@ -348,16 +340,7 @@ view (Config { options, header, footer, imgTop, imgBottom, blocks }) =
             [ Maybe.map (\(CardHeader e) -> e) header
             , Maybe.map (\(CardImageTop e) -> e) imgTop
             ]
-            ++ (List.map
-                    (\block ->
-                        case block of
-                            CardBlock e ->
-                                e
-                            ListGroup e ->
-                                e
-                    )
-                    blocks
-               )
+            ++ ( CardInternal.renderBlocks blocks )
             ++ List.filterMap
                 identity
                 [ Maybe.map (\(CardFooter e) -> e) footer
@@ -565,14 +548,14 @@ headerPrivate elemFn attributes children (Config config) =
 -}
 blockAlign : Text.HAlign -> BlockOption msg
 blockAlign align =
-    AlignedBlock align
+    CardInternal.AlignedBlock align
 
 
 {-| When you need to customize a block item with std Html.Attribute attributes use this function
 -}
 blockAttrs : List (Html.Attribute msg) -> BlockOption msg
 blockAttrs attrs =
-    BlockAttrs attrs
+    CardInternal.BlockAttrs attrs
 
 
 {-| The building block of a card is the card block. Use it whenever you need a padded section within a card.
@@ -592,11 +575,7 @@ block options items (Config config) =
         { config
             | blocks =
                 config.blocks
-                    ++ [ Html.div
-                            (blockAttributes options)
-                            (List.map (\(BlockItem e) -> e) items)
-                            |> CardBlock
-                       ]
+                    ++ [ CardInternal.block options items]
         }
 
 
@@ -612,11 +591,7 @@ listGroup items (Config config) =
         { config
             | blocks =
                 config.blocks
-                    ++ [ Html.ul
-                            [ class "list-group list-group-flush" ]
-                            (List.map ListGroupInternal.renderItem items)
-                            |> ListGroup
-                       ]
+                    ++ [ CardInternal.listGroup items ]
         }
 
 
@@ -633,7 +608,7 @@ link attributes children =
     Html.a
         ([ class "card-link" ] ++ attributes)
         children
-        |> BlockItem
+        |> CardInternal.BlockItem
 
 
 {-| Create a card text element
@@ -646,14 +621,14 @@ text attributes children =
     Html.p
         ([ class "card-text" ] ++ attributes)
         children
-        |> BlockItem
+        |> CardInternal.BlockItem
 
 
 {-|  Add a custom HTML element to be displayed in a Card block
 -}
 custom : Html.Html msg -> BlockItem msg
 custom element =
-    BlockItem element
+    CardInternal.BlockItem element
 
 {-| Create a block quote element
 
@@ -665,7 +640,7 @@ blockQuote attributes children =
     Html.blockquote
         ([ class "card-blockquote" ] ++ attributes)
         children
-        |> BlockItem
+        |> CardInternal.BlockItem
 
 
 {-| Create a block h1 title
@@ -735,7 +710,7 @@ title :
     -> BlockItem msg
 title elemFn attributes children =
     elemFn (class "card-title" :: attributes) children
-        |> BlockItem
+        |> CardInternal.BlockItem
 
 
 
@@ -829,43 +804,6 @@ applyModifier option options =
             { options | coloring = Just coloring }
 
         Attrs attrs ->
-            { options | attributes = options.attributes ++ attrs }
-
-
-
-blockAttributes : List (BlockOption msg) -> List (Html.Attribute msg)
-blockAttributes modifiers =
-    let
-        options =
-            List.foldl applyBlockModifier defaultBlockOptions modifiers
-    in
-        [ class "card-block" ]
-        ++ ( case options.aligned of
-                Just align ->
-                    [ TextInternal.textAlignClass align ]
-                Nothing ->
-                    []
-          )
-        ++ options.attributes
-
-
-    --class "card-block" :: List.map blockAttribute options
-
-
-
-defaultBlockOptions : BlockOptions msg
-defaultBlockOptions =
-    { aligned = Nothing
-    , attributes = []
-    }
-
-applyBlockModifier : BlockOption msg -> BlockOptions msg -> BlockOptions msg
-applyBlockModifier option options =
-    case option of
-        AlignedBlock align ->
-            { options | aligned = Just align }
-
-        BlockAttrs attrs ->
             { options | attributes = options.attributes ++ attrs }
 
 

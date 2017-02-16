@@ -47,8 +47,8 @@ type alias Model =
 init : ( Model, Cmd Msg )
 init =
     let
-        (navbarState, navbarCmd)
-            = Navbar.initialState NavbarMsg
+        ( navbarState, navbarCmd ) =
+            Navbar.initialState NavbarMsg
     in
         ( { dummy = "init"
           , dropdownState = Dropdown.initialState
@@ -143,10 +143,11 @@ subscriptions model =
 
 view : Model -> Html Msg
 view model =
-    Grid.container [] --div []
+    Grid.container []
+        --div []
         [ CDN.stylesheet
         , CDN.fontAwesome
-        --, navbar model
+          --, navbar model
         , mainContent model
         ]
 
@@ -154,7 +155,7 @@ view model =
 mainContent : Model -> Html Msg
 mainContent model =
     div [ style [ ( "margin-top", "60px" ) ] ]
-    --Grid.container [ style [ ( "margin-top", "60px" ) ] ]
+        --Grid.container [ style [ ( "margin-top", "60px" ) ] ]
         [ navbar model
         , simpleForm
         , gridForm
@@ -189,7 +190,7 @@ mainContent model =
                     [ Button.small
                     , Button.outlineSuccess
                     , Button.block
-                    , Button.attrs [ onClick <| ModalMsg Modal.visibleState]
+                    , Button.attrs [ onClick <| ModalMsg Modal.visibleState ]
                     ]
                     [ text "Show modal" ]
                 ]
@@ -298,10 +299,11 @@ navbar model =
             [ Navbar.textItem [] [ text "Some text" ]
             , Navbar.formItem [ class "ml-lg-2" ]
                 [ Input.text
-                    [Input.small]
+                    [ Input.small ]
                 , Button.button
-                    [ Button.success, Button.small]
-                    [ text "Submit"]]
+                    [ Button.success, Button.small ]
+                    [ text "Submit" ]
+                ]
             ]
         }
 
@@ -445,7 +447,7 @@ modal modalState =
                 Modal.footer []
                     [ Button.button
                         [ Button.outlinePrimary
-                        , Button.attrs [ onClick <| ModalMsg Modal.hiddenState]
+                        , Button.attrs [ onClick <| ModalMsg Modal.hiddenState ]
                         ]
                         [ text "Close" ]
                     ]
@@ -497,16 +499,16 @@ listGroup =
     ListGroup.custom
         [ ListGroup.anchor
             [ ListGroup.success
-            , ListGroup.attrs  [ href "#" ]
-            , ListGroup.attrs  [class "justify-content-between"]
+            , ListGroup.attrs [ href "#" ]
+            , ListGroup.attrs [ class "justify-content-between" ]
             ]
             [ text "Hello"
-            , Badge.pill [ ] [ text "1" ]
+            , Badge.pill [] [ text "1" ]
             ]
         , ListGroup.anchor
             [ ListGroup.info
-            , ListGroup.attrs  [href "#"]
-            , ListGroup.attrs  [class "justify-content-between"]
+            , ListGroup.attrs [ href "#" ]
+            , ListGroup.attrs [ class "justify-content-between" ]
             ]
             [ text "Aloha"
             , Badge.pillInfo [] [ text "2" ]
@@ -519,8 +521,8 @@ listGroup2 =
     ListGroup.custom
         [ ListGroup.anchor
             [ ListGroup.active
-            , ListGroup.attrs  [href "#"]
-            , ListGroup.attrs  [class "flex-column align-items-start"]
+            , ListGroup.attrs [ href "#" ]
+            , ListGroup.attrs [ class "flex-column align-items-start" ]
             ]
             [ div [ class "d-flex w-100 justify-content-between" ]
                 [ h5 [ class "mb-1" ] [ text "List group heading" ]
@@ -530,8 +532,8 @@ listGroup2 =
             , small [] [ text "Oh yea that's neat" ]
             ]
         , ListGroup.anchor
-            [ ListGroup.attrs  [href "#"]
-            , ListGroup.attrs  [class "flex-column align-items-start"]
+            [ ListGroup.attrs [ href "#" ]
+            , ListGroup.attrs [ class "flex-column align-items-start" ]
             ]
             [ div [ class "d-flex w-100 justify-content-between" ]
                 [ h5 [ class "mb-1" ] [ text "List group heading" ]
@@ -541,8 +543,8 @@ listGroup2 =
             , small [] [ text "Oh yea that's neat" ]
             ]
         , ListGroup.anchor
-            [ ListGroup.attrs  [href "#"]
-            , ListGroup.attrs  [class "flex-column align-items-start"]
+            [ ListGroup.attrs [ href "#" ]
+            , ListGroup.attrs [ class "flex-column align-items-start" ]
             ]
             [ div [ class "d-flex w-100 justify-content-between" ]
                 [ h5 [ class "mb-1" ] [ text "List group heading" ]
@@ -571,20 +573,20 @@ cardOne : Accordion.Card Msg
 cardOne =
     Accordion.card
         { id = "card1"
-        , toggle = Accordion.cardToggle [] [ text " Card With container" ]
-        , toggleContainer =
-            Just <|
-                Accordion.toggleContainer
-                    { elemFn = h1
-                    , attributes = []
-                    , childrenPreToggle = [ span [ class "fa fa-car" ] [] ]
-                    , childrenPostToggle = []
-                    }
-        , block =
-            Accordion.cardBlock []
-                [ text "Contents of Card 1"
-                , div [] [ text "Some more content" ]
+        , header =
+            Accordion.headerH3 []
+                (Accordion.toggle [] [ text " Card With container" ])
+                |> Accordion.prependHeader [ span [ class "fa fa-car" ] [] ]
+        , blocks =
+            [ Accordion.block []
+                [ Card.titleH4 [] [ text "Some title" ]
+                , Card.text [] [ text "Some content, lorem ipsum etc" ]
                 ]
+            , Accordion.listGroup
+                [ ListGroup.li [] [ text "List item 1" ]
+                , ListGroup.li [] [ text "List item 2" ]
+                ]
+            ]
         }
 
 
@@ -592,14 +594,19 @@ cardTwo : Accordion.Card Msg
 cardTwo =
     Accordion.card
         { id = "card2"
-        , toggle = Accordion.cardToggle [] [ text "Card 2" ]
-        , toggleContainer = Nothing
-        , block =
-            Accordion.cardBlock []
-                [ text "Contants of Card 2"
-                , div [] [ text "Some more for 2" ]
-                , div [] [ text "Yet even more" ]
+        , header =
+            Accordion.header [] <|
+                Accordion.toggle [] [ text "Card 2" ]
+        , blocks =
+            [ Accordion.block []
+                [ Card.titleH4 [] [ text "Some other title" ]
+                , Card.text [] [ text "Different content, lorem ipsum etc" ]
                 ]
+            , Accordion.block [ Card.blockAlign Text.alignXsCenter ]
+                [ Card.titleH5 [] [ text "Another block title" ]
+                , Card.text [] [ text "Even more content, lorem ipsum etc" ]
+                ]
+            ]
         }
 
 
@@ -612,30 +619,27 @@ cards =
                 |> Card.headerH1 [] [ text "Primary" ]
                 |> Card.footer [] [ text "Primary footer" ]
                 |> Card.block []
-                        [ Card.titleH4 [] [ text "Primary outlined" ]
-                        , Card.text [] [ text "Outlined primary card. Cool." ]
-                        ]
-
+                    [ Card.titleH4 [] [ text "Primary outlined" ]
+                    , Card.text [] [ text "Outlined primary card. Cool." ]
+                    ]
             , Card.config [ Card.outlineSuccess ]
                 |> Card.headerH1 [] [ text "Success" ]
                 |> Card.footer [] [ text "Success footer" ]
                 |> Card.block
-                        [ Card.blockAlign Text.alignXsLeft ]
-                        [ Card.titleH4 [] [ text "Success outlined" ]
-                        , Card.text [] [ text "The success of outlining cards is staggering" ]
-                        , Card.link [ href "#" ] [ text "Link 1" ]
-                        , Card.link [ href "#" ] [ text "Link 2" ]
-                        ]
+                    [ Card.blockAlign Text.alignXsLeft ]
+                    [ Card.titleH4 [] [ text "Success outlined" ]
+                    , Card.text [] [ text "The success of outlining cards is staggering" ]
+                    , Card.link [ href "#" ] [ text "Link 1" ]
+                    , Card.link [ href "#" ] [ text "Link 2" ]
+                    ]
             ]
-
         , Card.group
-            [ Card.config [ Card.danger, Card.align Text.alignXsCenter]
+            [ Card.config [ Card.danger, Card.align Text.alignXsCenter ]
                 |> Card.block []
                     [ Card.titleH4 [] [ text "Danger inverse " ]
                     , Card.text [] [ text " A Simple card with a dangerous role" ]
                     , Card.link [ href "#" ] [ text "A Link !" ]
                     ]
-
             , Card.config [ Card.warning, Card.align Text.alignXsLeft ]
                 |> Card.block []
                     [ Card.titleH4 [] [ text "Warning inverse " ]
@@ -647,11 +651,10 @@ cards =
                     , Card.text [] [ text " A Simple card with a info role" ]
                     ]
             ]
-
         , Card.config [ Card.outlineDanger ]
             |> Card.block []
                 [ Card.text [] [ text "Just some text you know" ] ]
-                |> Card.view
+            |> Card.view
         ]
 
 
@@ -726,7 +729,7 @@ tables =
 progressBars : Html msg
 progressBars =
     div []
-        [ h1 [] [text "Progress bars" ]
+        [ h1 [] [ text "Progress bars" ]
         , Progress.progress [ Progress.label "Won't show..." ]
         , Progress.progress [ Progress.value 50 ]
         , Progress.progress [ Progress.value 30, Progress.striped ]
@@ -735,7 +738,7 @@ progressBars =
             [ [ Progress.height 25, Progress.value 30 ]
             , [ Progress.value 100, Progress.info, Progress.striped ]
             , [ Progress.value 100, Progress.label "Silly" ]
-            , [ Progress.value 100, Progress.danger,  Progress.animated ]
+            , [ Progress.value 100, Progress.danger, Progress.animated ]
             ]
         , Progress.progress
             [ Progress.value 50

@@ -1,21 +1,31 @@
 module Bootstrap.Accordion
     exposing
         ( accordion
-        , cardToggle
-        , cardBlock
+        , toggle
+        , block
+        , listGroup
         , card
-        , toggleContainer
+        , header
+        , headerH1
+        , headerH2
+        , headerH3
+        , headerH4
+        , headerH5
+        , headerH6
+        , prependHeader
+        , appendHeader
         , subscriptions
         , initialState
         , State
         , Config
         , Card
         , CardBlock
-        , CardToggle
-        , ToggleContainer
+        , Header
+        , Toggle
         )
 
 {-| An accordion is a group of stacked cards where you can toggle the visibility (slide up/down) of each card
+
 
     type alias Model =
         { accordionState = Accordion.state }
@@ -48,17 +58,21 @@ module Bootstrap.Accordion
             , cards
                 [ Accordion.card
                     { id = "card1"
-                    , toggle = Accordion.cardToggle [] [ text "Card 1" ]
-                    , toggleContainer = Nothing
-                    , block =
-                        Accordion.cardBlock [] [ text "Contants of Card 1"]
+                    , header =
+                        Accordion.header [] <| Accordion.toggle [] [ text "Card 1" ]
+                    , blocks =
+                        [ Accordion.block []
+                            [ Card.text [] [ text "Lorem ipsum etc" ] ]
+                        ]
                     }
                 , Accordion.card
                     { id = "card2"
-                    , toggle = Accordion.cardToggle [] [ text "Card 2" ]
-                    , toggleContainer = Nothing
-                    , block =
-                        Accordion.cardBlock [] [ text "Contants of Card 2"]
+                    , header =
+                        Accordion.header [] <| Accordion.toggle [] [ text "Card 2" ]
+                    , blocks =
+                        [ Accordion.block []
+                            [ Card.text [] [ text "Lorem ipsum etc" ] ]
+                        ]
                     }
                 ]
             }
@@ -72,10 +86,15 @@ module Bootstrap.Accordion
 
 
 
+## Accordion
+@docs accordion, Config, initialState, State
 
-@docs accordion, card, cardToggle, cardBlock, toggleContainer, Config, initialState, State, subscriptions, Card, CardBlock, CardToggle, ToggleContainer
+## Contents
+@docs card, block, listGroup, header, toggle, headerH1, headerH2, headerH3, headerH4, headerH5, headerH6, appendHeader, prependHeader, Card, CardBlock, Header, Toggle
 
 
+## Animation
+@docs subscriptions
 
 
 -}
@@ -87,6 +106,9 @@ import Json.Decode as Json
 import DOM
 import Dict exposing (Dict)
 import AnimationFrame
+import Bootstrap.Card as Card
+import Bootstrap.Internal.Card as CardInternal
+import Bootstrap.ListGroup as ListGroup
 
 
 {-| Configuration information that defines the view of your accordion
@@ -139,40 +161,36 @@ type Visibility
 type Card msg
     = Card
         { id : String
-        , toggle : CardToggle msg
-        , toggleContainer : Maybe (ToggleContainer msg)
-        , block : CardBlock msg
+        , header : Header msg
+        , blocks : List (CardBlock msg)
         }
 
 
 {-| Opaque representation of toggle element for initating slide up/down for a card
 -}
-type CardToggle msg
-    = CardToggle
+type Toggle msg
+    = Toggle
         { attributes : List (Html.Attribute msg)
         , children : List (Html.Html msg)
-        }
-
-
-{-| Opaque representation for a toggle container element
--}
-type ToggleContainer msg
-    = ToggleContainer
-        { elemFn : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
-        , attributes : List (Html.Attribute msg)
-        , childrenPreToggle : List (Html.Html msg)
-        , childrenPostToggle : List (Html.Html msg)
         }
 
 
 {-| Opaque representation of a card block element
 -}
-type CardBlock msg
-    = CardBlock
-        { attributes : List (Html.Attribute msg)
-        , children : List (Html.Html msg)
-        }
+type alias CardBlock msg =
+    CardInternal.CardBlock msg
 
+
+{-| Opaque type representing the header for an accordion card
+-}
+type Header msg
+    = Header
+        { elemFn : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
+        , attributes : List (Html.Attribute msg)
+        , toggle : Toggle msg
+        , childrenPreToggle : List (Html.Html msg)
+        , childrenPostToggle : List (Html.Html msg)
+        }
 
 
 {-| When using animations you must remember to call this function for you main subscriptions function
@@ -207,7 +225,7 @@ subscriptions (State cardStates) toMsg =
             Dict.toList cardStates
                 |> List.any
                     (\( _, state ) ->
-                        List.member state.visibility [StartDown, StartUp]
+                        List.member state.visibility [ StartDown, StartUp ]
                     )
     in
         if needsSub then
@@ -243,90 +261,138 @@ accordion state ({ cards } as config) =
 
 {-| Creates a card item for use in an accordion
 
-    Accordion.card
-        { id = "myCard"
-        , toggle = Accordion.cardToggle [] [ text "My card header"]
-        , toggleContainer = Nothing
-        , cardBlock =
-            Accordion.cardBlock []
-                [ text "Contents of My card"
-                , p [] [ text "A paragraph in my card "]
-                ]
-
-        }
-
 * card config record
     * `id` Unique id for your card
-    * `toggle` The element responsible for toggling the display of your card content
-    * `toggleContainer`Optional container element for your toggle for greater customization
-    * `block` The main content of the card
-
+    * `header` Card header containing a toggle to hide/show the details of a card
+    * `blocks` The main content elements of the card
 -}
 card :
     { id : String
-    , block : CardBlock msg
-    , toggle : CardToggle msg
-    , toggleContainer : Maybe (ToggleContainer msg)
+    , blocks : List (CardBlock msg)
+    , header : Header msg
     }
     -> Card msg
-card { id, toggle, toggleContainer, block } =
+card { id, header, blocks } =
     Card
         { id = id
-        , toggle = toggle
-        , toggleContainer = toggleContainer
-        , block = block
+        , header = header
+        , blocks = blocks
         }
+
 
 {-| Creates a card toggle element used for toggling the display of you cards main content
 
 * `attributes` List of attributes
 * `children` List of child elements
 -}
-cardToggle : List (Html.Attribute msg) -> List (Html.Html msg) -> CardToggle msg
-cardToggle attributes children =
-    CardToggle
+toggle : List (Html.Attribute msg) -> List (Html.Html msg) -> Toggle msg
+toggle attributes children =
+    Toggle
         { attributes = attributes
         , children = children
         }
 
 
+{-| Create a header (div) for an accordion card. It must contain a [`toggle`](#toggle)
+element which will be responsible for display/hide the details of an individual card.
 
-{-| You may wish to wrap your card toggle in a containing element for customizing card headers in your accordion
+You may optionally [`prepend`](#prependHeader) or [`append`](#appendHeader) children to the header for further customization.
 
-* configuration record with the following fields
-    * `elemFn` A html element function (example a h1, h2 etc)
-    * attributes Html attributes for the container element
-    * childrenPreToggle List of elements to be displayed before the toggle element
-    * childrenPostToggle List of elements to displayed after the toggle element
+* attributes - List of attributes
+* toggle - A toggle element
+
 -}
-toggleContainer :
-    { elemFn : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
-    , attributes : List (Html.Attribute msg)
-    , childrenPreToggle : List (Html.Html msg)
-    , childrenPostToggle : List (Html.Html msg)
-    }
-    -> ToggleContainer msg
-toggleContainer { elemFn, attributes, childrenPreToggle, childrenPostToggle } =
-    ToggleContainer
+header : List (Html.Attribute msg) -> Toggle msg -> Header msg
+header =
+    headerPrivate Html.div
+
+
+{-| Create an accordion card header but rather than a div, using a h1 element
+-}
+headerH1 : List (Html.Attribute msg) -> Toggle msg -> Header msg
+headerH1 =
+    headerPrivate Html.h1
+
+
+{-| Create an accordion card header but rather than a div, using a h2 element
+-}
+headerH2 : List (Html.Attribute msg) -> Toggle msg -> Header msg
+headerH2 =
+    headerPrivate Html.h2
+
+
+{-| Create an accordion card header but rather than a div, using a h3 element
+-}
+headerH3 : List (Html.Attribute msg) -> Toggle msg -> Header msg
+headerH3 =
+    headerPrivate Html.h3
+
+
+{-| Create an accordion card header but rather than a div, using a h4 element
+-}
+headerH4 : List (Html.Attribute msg) -> Toggle msg -> Header msg
+headerH4 =
+    headerPrivate Html.h4
+
+
+{-| Create an accordion card header but rather than a div, using a h5 element
+-}
+headerH5 : List (Html.Attribute msg) -> Toggle msg -> Header msg
+headerH5 =
+    headerPrivate Html.h5
+
+
+{-| Create an accordion card header but rather than a div, using a h6 element
+-}
+headerH6 : List (Html.Attribute msg) -> Toggle msg -> Header msg
+headerH6 =
+    headerPrivate Html.h6
+
+
+{-| Add elements before the toggle elemeent in a accordion card header
+-}
+prependHeader : List (Html.Html msg) -> Header msg -> Header msg
+prependHeader elements (Header header) =
+    Header { header | childrenPreToggle = elements ++ header.childrenPreToggle }
+
+
+{-| Add elements after the toggle elemeent in a accordion card header
+-}
+appendHeader : List (Html.Html msg) -> Header msg -> Header msg
+appendHeader elements (Header header) =
+    Header { header | childrenPostToggle = header.childrenPreToggle ++ elements }
+
+
+headerPrivate :
+    (List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg)
+    -> List (Html.Attribute msg)
+    -> Toggle msg
+    -> Header msg
+headerPrivate elemFn attributes toggle =
+    Header
         { elemFn = elemFn
         , attributes = attributes
-        , childrenPreToggle = childrenPreToggle
-        , childrenPostToggle = childrenPostToggle
+        , toggle = toggle
+        , childrenPreToggle = []
+        , childrenPostToggle = []
         }
 
 
+{-| -}
+block :
+    List (Card.BlockOption msg)
+    -> List (Card.BlockItem msg)
+    -> CardBlock msg
+block =
+    CardInternal.block
 
-{-| Creates the main (toggleable) content for a card item for use in an accordion
 
-* `attributes` List of attributes
-` `children` List of child elements
--}
-cardBlock : List (Html.Attribute msg) -> List (Html.Html msg) -> CardBlock msg
-cardBlock attributes children =
-    CardBlock
-        { attributes = attributes
-        , children = children
-        }
+{-| -}
+listGroup :
+    List (ListGroup.Item msg)
+    -> CardBlock msg
+listGroup =
+    CardInternal.listGroup
 
 
 renderCard :
@@ -347,33 +413,30 @@ renderCardHeader :
     -> Config msg
     -> Card msg
     -> Html.Html msg
-renderCardHeader state config ((Card { toggleContainer }) as card) =
-    Html.div
-        [ class "card-header" ]
-        (case toggleContainer of
-            Nothing ->
-                [ renderCardToggle state config False card ]
-
-            Just (ToggleContainer { elemFn, attributes, childrenPreToggle, childrenPostToggle }) ->
-                [ elemFn attributes <|
-                    List.concat
-                        [ childrenPreToggle
-                        , [ renderCardToggle state config True card ]
-                        , childrenPostToggle
-                        ]
-                ]
-        )
+renderCardHeader state config ((Card { header }) as card) =
+    let
+        (Header { elemFn, attributes, toggle, childrenPreToggle, childrenPostToggle }) =
+            header
+    in
+        elemFn
+            (attributes ++ [ class "card-header" ])
+            (childrenPreToggle
+                ++ [ renderToggle state config card ]
+                ++ childrenPostToggle
+            )
 
 
-renderCardToggle :
+renderToggle :
     State
     -> Config msg
-    -> Bool
     -> Card msg
     -> Html.Html msg
-renderCardToggle state config isContained ((Card { id, toggle }) as card) =
+renderToggle state config ((Card { id, header }) as card) =
     let
-        (CardToggle { attributes, children }) =
+        (Header { toggle }) =
+            header
+
+        (Toggle { attributes, children }) =
             toggle
     in
         Html.a
@@ -384,7 +447,7 @@ renderCardToggle state config isContained ((Card { id, toggle }) as card) =
                 , preventDefault = True
                 }
                <|
-                clickHandler state config (heightDecoder isContained) card
+                clickHandler state config heightDecoder card
              ]
                 ++ attributes
             )
@@ -449,19 +512,13 @@ visibilityTransition withAnimation visibility =
             Shown
 
 
-heightDecoder : Bool -> Json.Decoder Float
-heightDecoder isContained =
+heightDecoder : Json.Decoder Float
+heightDecoder =
     DOM.target <|
         DOM.parentElement <|
-            (if isContained then
-                DOM.parentElement
-             else
-                identity
-            )
-            <|
-                DOM.nextSibling <|
-                    DOM.childNode 0 <|
-                        DOM.offsetHeight
+            DOM.nextSibling <|
+                DOM.childNode 0 <|
+                    DOM.offsetHeight
 
 
 renderCardBlock :
@@ -469,19 +526,10 @@ renderCardBlock :
     -> Config msg
     -> Card msg
     -> Html.Html msg
-renderCardBlock state config ((Card { id, block }) as card) =
-    let
-        (CardBlock { attributes, children }) =
-            block
-    in
-        Html.div
-            ([ Html.Attributes.id id ]
-                ++ attributes
-                ++ animationAttributes state config card)
-            [ Html.div
-                [ class "card-block" ]
-                children
-            ]
+renderCardBlock state config ((Card { id, blocks }) as card) =
+    Html.div
+        ([ Html.Attributes.id id ] ++ animationAttributes state config card)
+        [ Html.div [] (CardInternal.renderBlocks blocks) ]
 
 
 animationAttributes :
