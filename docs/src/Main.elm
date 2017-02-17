@@ -17,6 +17,7 @@ import Page.Card as Card
 import Page.Button as Button
 import Page.Dropdown as Dropdown
 import Page.Accordion as Accordion
+import Page.Modal as Modal
 
 
 type alias Model =
@@ -28,6 +29,7 @@ type alias Model =
     , tabState : Tab.State
     , dropdownState : Dropdown.State
     , accordionState : Accordion.State
+    , modalState : Modal.State
     }
 
 
@@ -40,9 +42,7 @@ type Msg
     | TabMsg Tab.State
     | DropdownMsg Dropdown.State
     | AccordionMsg Accordion.State
-
-
-
+    | ModalMsg Modal.State
 
 
 init : Navigation.Location -> ( Model, Cmd Msg )
@@ -50,18 +50,21 @@ init location =
     let
         ( navbarState, navbarCmd ) =
             Navbar.initialState NavbarMsg
-        ( model, urlCmd) =
-            urlUpdate location { route = Route.Home
-                               , navbarState = navbarState
-                               , tableState = Table.initialState
-                               , progressState = Progress.initialState
-                               , gridState = Grid.initialState
-                               , tabState = Tab.initialState
-                               , dropdownState = Dropdown.initialState
-                               , accordionState = Accordion.initialState
-                               }
+
+        ( model, urlCmd ) =
+            urlUpdate location
+                { route = Route.Home
+                , navbarState = navbarState
+                , tableState = Table.initialState
+                , progressState = Progress.initialState
+                , gridState = Grid.initialState
+                , tabState = Tab.initialState
+                , dropdownState = Dropdown.initialState
+                , accordionState = Accordion.initialState
+                , modalState = Modal.initialState
+                }
     in
-        ( model, Cmd.batch [navbarCmd, urlCmd] )
+        ( model, Cmd.batch [ navbarCmd, urlCmd ] )
 
 
 main : Program Never Model Msg
@@ -111,6 +114,9 @@ update msg model =
         AccordionMsg state ->
             ( { model | accordionState = state }, Cmd.none )
 
+        ModalMsg state ->
+            ( { model | modalState = state }, Cmd.none )
+
 
 urlUpdate : Navigation.Location -> Model -> ( Model, Cmd Msg )
 urlUpdate location model =
@@ -149,10 +155,11 @@ viewMenu model =
             , Navbar.itemLink [ href "#dropdown" ] [ text "Dropdown" ]
             , Navbar.itemLink [ href "#progress" ] [ text "Progress" ]
             , Navbar.itemLink [ href "#alert" ] [ text "Alert" ]
-            , Navbar.itemLink [ href "#badge"] [ text "Badge"]
-            , Navbar.itemLink [ href "#listgroup"] [ text "ListGroup"]
-            , Navbar.itemLink [ href "#tab"] [ text "Tab"]
-            , Navbar.itemLink [ href "#accordion"] [ text "Accordion"]
+            , Navbar.itemLink [ href "#badge" ] [ text "Badge" ]
+            , Navbar.itemLink [ href "#listgroup" ] [ text "ListGroup" ]
+            , Navbar.itemLink [ href "#tab" ] [ text "Tab" ]
+            , Navbar.itemLink [ href "#accordion" ] [ text "Accordion" ]
+            , Navbar.itemLink [ href "#modal" ] [ text "Modal" ]
             ]
         , customItems = []
         }
@@ -160,51 +167,54 @@ viewMenu model =
 
 viewPage : Model -> List (Html Msg)
 viewPage model =
-{-     let
-        pageView pageFn =
-            div [ class "row" ]
-                [ div [ class "col bd-content" ] pageFn ]
-    in -}
-        case model.route of
-            Route.Home ->
-                PHome.view
+    {- let
+           pageView pageFn =
+               div [ class "row" ]
+                   [ div [ class "col bd-content" ] pageFn ]
+       in
+    -}
+    case model.route of
+        Route.Home ->
+            PHome.view
 
-            Route.Grid ->
-                Grid.view model.gridState GridMsg
+        Route.Grid ->
+            Grid.view model.gridState GridMsg
 
-            Route.Card ->
-                Card.view
+        Route.Card ->
+            Card.view
 
-            Route.Table ->
-                Table.view model.tableState TableMsg
+        Route.Table ->
+            Table.view model.tableState TableMsg
 
-            Route.Progress ->
-                Progress.view model.progressState ProgressMsg
+        Route.Progress ->
+            Progress.view model.progressState ProgressMsg
 
-            Route.Alert ->
-                Alert.view
+        Route.Alert ->
+            Alert.view
 
-            Route.Badge ->
-                Badge.view
+        Route.Badge ->
+            Badge.view
 
-            Route.ListGroup ->
-                ListGroup.view
+        Route.ListGroup ->
+            ListGroup.view
 
-            Route.Tab ->
-                Tab.view model.tabState TabMsg
+        Route.Tab ->
+            Tab.view model.tabState TabMsg
 
-            Route.Button ->
-                Button.view
+        Route.Button ->
+            Button.view
 
-            Route.Dropdown ->
-                Dropdown.view model.dropdownState DropdownMsg
+        Route.Dropdown ->
+            Dropdown.view model.dropdownState DropdownMsg
 
-            Route.Accordion ->
-                Accordion.view model.accordionState AccordionMsg
+        Route.Accordion ->
+            Accordion.view model.accordionState AccordionMsg
 
-            Route.NotFound ->
-                viewNotFound model
+        Route.Modal ->
+            Modal.view model.modalState ModalMsg
 
+        Route.NotFound ->
+            viewNotFound model
 
 
 viewNotFound : Model -> List (Html Msg)

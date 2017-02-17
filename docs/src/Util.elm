@@ -61,6 +61,12 @@ code codeElem =
         [ codeElem ]
 
 
+calloutInfo : List (Html msg) -> Html msg
+calloutInfo children =
+    div [ class "bd-callout bd-callout-info" ] children
+
 calloutWarning : List (Html msg) -> Html msg
 calloutWarning children =
     div [ class "bd-callout bd-callout-warning" ] children
+
+
