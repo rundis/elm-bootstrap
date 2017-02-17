@@ -52,7 +52,7 @@ module Bootstrap.Modal
     view model =
         Grid.container []
             [ Button.button
-                [ Button.attr <| onClick ModalMsg Modal.visibleState ]
+                [ Button.attrs [ onClick ModalMsg Modal.visibleState ] ]
                 [ text "Show modal" ]
 
             , Modal.config ModalMsg
@@ -81,7 +81,7 @@ module Bootstrap.Modal
             ]
 
 
-**NOTE:** You should really only have one modal window in your app.
+**NOTE:** Don't to open several modals at the same time. It probably won't end well.
 
 
 
