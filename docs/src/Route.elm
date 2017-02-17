@@ -17,6 +17,7 @@ type Route
     | Card
     | Button
     | Dropdown
+    | Accordion
     | NotFound
 
 
@@ -34,6 +35,7 @@ routeParser =
         , UrlParser.map Card (s "card")
         , UrlParser.map Button (s "button")
         , UrlParser.map Dropdown (s "dropdown")
+        , UrlParser.map Accordion (s "accordion")
         ]
 
 decode : Location -> Maybe Route

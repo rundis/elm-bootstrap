@@ -16,6 +16,7 @@ import Page.Tab as Tab
 import Page.Card as Card
 import Page.Button as Button
 import Page.Dropdown as Dropdown
+import Page.Accordion as Accordion
 
 
 type alias Model =
@@ -26,6 +27,7 @@ type alias Model =
     , gridState : Grid.State
     , tabState : Tab.State
     , dropdownState : Dropdown.State
+    , accordionState : Accordion.State
     }
 
 
@@ -37,6 +39,7 @@ type Msg
     | GridMsg Grid.State
     | TabMsg Tab.State
     | DropdownMsg Dropdown.State
+    | AccordionMsg Accordion.State
 
 
 
@@ -55,6 +58,7 @@ init location =
                                , gridState = Grid.initialState
                                , tabState = Tab.initialState
                                , dropdownState = Dropdown.initialState
+                               , accordionState = Accordion.initialState
                                }
     in
         ( model, Cmd.batch [navbarCmd, urlCmd] )
@@ -76,6 +80,7 @@ subscriptions model =
         [ Navbar.subscriptions model.navbarState NavbarMsg
         , Tab.subscriptions model.tabState TabMsg
         , Dropdown.subscriptions model.dropdownState DropdownMsg
+        , Accordion.subscriptions model.accordionState AccordionMsg
         ]
 
 
@@ -102,6 +107,9 @@ update msg model =
 
         DropdownMsg state ->
             ( { model | dropdownState = state }, Cmd.none )
+
+        AccordionMsg state ->
+            ( { model | accordionState = state }, Cmd.none )
 
 
 urlUpdate : Navigation.Location -> Model -> ( Model, Cmd Msg )
@@ -144,6 +152,7 @@ viewMenu model =
             , Navbar.itemLink [ href "#badge"] [ text "Badge"]
             , Navbar.itemLink [ href "#listgroup"] [ text "ListGroup"]
             , Navbar.itemLink [ href "#tab"] [ text "Tab"]
+            , Navbar.itemLink [ href "#accordion"] [ text "Accordion"]
             ]
         , customItems = []
         }
@@ -189,6 +198,9 @@ viewPage model =
 
             Route.Dropdown ->
                 Dropdown.view model.dropdownState DropdownMsg
+
+            Route.Accordion ->
+                Accordion.view model.accordionState AccordionMsg
 
             Route.NotFound ->
                 viewNotFound model
