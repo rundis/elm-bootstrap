@@ -106,44 +106,20 @@ import Html
 import Html.Attributes exposing (class)
 import Color
 import Bootstrap.Text as Text
-import Bootstrap.Internal.Text as TextInternal
 import Bootstrap.ListGroup as ListGroup
 import Bootstrap.Internal.Card as CardInternal
 
 
 {-| Opaque type representing options for customizing the styling of a card
 -}
-type CardOption msg
-    = Aligned Text.HAlign
-    | Coloring RoleOption
-    | Attrs (List (Html.Attribute msg))
+type alias CardOption msg = CardInternal.CardOption msg
 
-
-
-type RoleOption
-    = Roled Role
-    | Outlined Role
-    | Inverted Color.Color
-
-
-type alias CardOptions msg =
-    { aligned : Maybe Text.HAlign
-    , coloring : Maybe RoleOption
-    , attributes : List (Html.Attribute msg )
-    }
 
 
 {-| Opaque type representing options for styling a card block
 -}
 type alias BlockOption msg = CardInternal.BlockOption msg
 
-
-type Role
-    = Primary
-    | Success
-    | Info
-    | Warning
-    | Danger
 
 
 
@@ -213,89 +189,89 @@ type alias BlockItem msg = CardInternal.BlockItem msg
 -}
 align : Text.HAlign -> CardOption msg
 align align =
-    Aligned align
+    CardInternal.Aligned align
 
 
 {-| Give cards a primary background color and appropriate foreground color
 -}
 primary : CardOption msg
 primary =
-    Coloring <| Roled Primary
+    CardInternal.Coloring <| CardInternal.Roled CardInternal.Primary
 
 
 {-| Give cards a success background color and appropriate foreground color
 -}
 success : CardOption msg
 success =
-    Coloring <| Roled Success
+    CardInternal.Coloring <| CardInternal.Roled CardInternal.Success
 
 
 {-| Give cards a info background color and appropriate foreground color
 -}
 info : CardOption msg
 info =
-    Coloring <| Roled Info
+    CardInternal.Coloring <| CardInternal.Roled CardInternal.Info
 
 
 {-| Give cards a warning background color and appropriate foreground color
 -}
 warning : CardOption msg
 warning =
-    Coloring <| Roled Warning
+    CardInternal.Coloring <| CardInternal.Roled CardInternal.Warning
 
 
 {-| Give cards a danger background color and appropriate foreground color
 -}
 danger : CardOption msg
 danger =
-    Coloring <| Roled Danger
+    CardInternal.Coloring <| CardInternal.Roled CardInternal.Danger
 
 
 {-| Give cards a primary colored outline
 -}
 outlinePrimary : CardOption msg
 outlinePrimary =
-    Coloring <| Outlined Primary
+    CardInternal.Coloring <| CardInternal.Outlined CardInternal.Primary
 
 
 {-| Give cards a success colored outline
 -}
 outlineSuccess : CardOption msg
 outlineSuccess =
-    Coloring <| Outlined Success
+    CardInternal.Coloring <| CardInternal.Outlined CardInternal.Success
 
 
 {-| Give cards a info colored outline
 -}
 outlineInfo : CardOption msg
 outlineInfo =
-    Coloring <| Outlined Info
+    CardInternal.Coloring <| CardInternal.Outlined CardInternal.Info
 
 
 {-| Give cards a warning colored outline
 -}
 outlineWarning : CardOption msg
 outlineWarning =
-    Coloring <| Outlined Warning
+    CardInternal.Coloring <| CardInternal.Outlined CardInternal.Warning
 
 
 {-| Give cards a danger colored outline
 -}
 outlineDanger : CardOption msg
 outlineDanger =
-    Coloring <| Outlined Danger
+    CardInternal.Coloring <| CardInternal.Outlined CardInternal.Danger
 
 {-| Give cards a custom dark background color with light text -}
 inverted : Color.Color -> CardOption msg
 inverted color =
-    Coloring <| Inverted color
+    CardInternal.Coloring <| CardInternal.Inverted color
 
 
 {-| When you need to customize a card item with std Html.Attribute attributes use this function
 -}
 attrs : List (Html.Attribute msg) -> CardOption msg
 attrs attrs =
-    Attrs attrs
+    CardInternal.Attrs attrs
 
 
 {-| Template/default config which you use as a starting point to compose your cards.
@@ -334,7 +310,7 @@ view :
     -> Html.Html msg
 view (Config { options, header, footer, imgTop, imgBottom, blocks }) =
     Html.div
-        (cardAttributes options)
+        (CardInternal.cardAttributes options )
         (List.filterMap
             identity
             [ Maybe.map (\(CardHeader e) -> e) header
@@ -755,82 +731,3 @@ columns cards =
 -- PRIVATE Helpers etc
 
 
-cardAttributes : List (CardOption msg) -> List (Html.Attribute msg)
-cardAttributes modifiers =
-    let
-        options =
-            List.foldl applyModifier defaultOptions modifiers
-    in
-        [ class "card" ]
-        ++ (case options.coloring of
-                Just (Roled role) ->
-                    [ class <| "card-inverse card-" ++ roleOption role ]
-
-                Just (Outlined role) ->
-                    [ class <| "card-outline-" ++ roleOption role ]
-
-                Just (Inverted color) ->
-                    [ class "card-inverse"
-                    , Html.Attributes.style [("background-color", toRGBString color), ("border-color", toRGBString color)]
-                    ]
-
-                Nothing ->
-                    []
-            )
-        ++ ( case options.aligned of
-                Just align ->
-                    [ TextInternal.textAlignClass align ]
-
-                Nothing ->
-                    []
-            )
-        ++ options.attributes
-
-
-defaultOptions : CardOptions msg
-defaultOptions =
-    { aligned = Nothing
-    , coloring = Nothing
-    , attributes = []
-    }
-
-applyModifier : CardOption msg -> CardOptions msg -> CardOptions msg
-applyModifier option options =
-    case option of
-        Aligned align ->
-            { options | aligned = Just align }
-
-        Coloring coloring ->
-            { options | coloring = Just coloring }
-
-        Attrs attrs ->
-            { options | attributes = options.attributes ++ attrs }
-
-
-
-roleOption : Role -> String
-roleOption role =
-    case role of
-        Primary ->
-            "primary"
-
-        Success ->
-            "success"
-
-        Info ->
-            "info"
-
-        Warning ->
-            "warning"
-
-        Danger ->
-            "danger"
-
-
-toRGBString : Color.Color -> String
-toRGBString color =
-    let
-        { red, green, blue } =
-            Color.toRgb color
-    in
-        "RGB(" ++ toString red ++ "," ++ toString green ++ "," ++ toString blue ++ ")"

@@ -573,6 +573,7 @@ cardOne : Accordion.Card Msg
 cardOne =
     Accordion.card
         { id = "card1"
+        , options = []
         , header =
             Accordion.headerH3 []
                 (Accordion.toggle [] [ text " Card With container" ])
@@ -594,6 +595,7 @@ cardTwo : Accordion.Card Msg
 cardTwo =
     Accordion.card
         { id = "card2"
+        , options = []
         , header =
             Accordion.header [] <|
                 Accordion.toggle [] [ text "Card 2" ]

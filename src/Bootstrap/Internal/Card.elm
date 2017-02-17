@@ -1,19 +1,40 @@
-module Bootstrap.Internal.Card
-    exposing
-        ( block
-        , listGroup
-        , renderBlocks
-        , renderBlock
-        , BlockOption(..)
-        , BlockOptions
-        , CardBlock(..)
-        , BlockItem(..)
-        )
+module Bootstrap.Internal.Card exposing (..)
+
 
 import Html
 import Html.Attributes exposing (class)
+import Color
 import Bootstrap.Internal.Text as Text
 import Bootstrap.Internal.ListGroup as ListGroup
+
+
+
+type CardOption msg
+    = Aligned Text.HAlign
+    | Coloring RoleOption
+    | Attrs (List (Html.Attribute msg))
+
+
+
+type RoleOption
+    = Roled Role
+    | Outlined Role
+    | Inverted Color.Color
+
+
+type Role
+    = Primary
+    | Success
+    | Info
+    | Warning
+    | Danger
+
+
+type alias CardOptions msg =
+    { aligned : Maybe Text.HAlign
+    , coloring : Maybe RoleOption
+    , attributes : List (Html.Attribute msg )
+    }
 
 
 type BlockOption msg
@@ -111,3 +132,84 @@ applyBlockModifier option options =
 
         BlockAttrs attrs ->
             { options | attributes = options.attributes ++ attrs }
+
+
+cardAttributes : List (CardOption msg) -> List (Html.Attribute msg)
+cardAttributes modifiers =
+    let
+        options =
+            List.foldl applyModifier defaultOptions modifiers
+    in
+        [ class "card" ]
+        ++ (case options.coloring of
+                Just (Roled role) ->
+                    [ class <| "card-inverse card-" ++ roleOption role ]
+
+                Just (Outlined role) ->
+                    [ class <| "card-outline-" ++ roleOption role ]
+
+                Just (Inverted color) ->
+                    [ class "card-inverse"
+                    , Html.Attributes.style [("background-color", toRGBString color), ("border-color", toRGBString color)]
+                    ]
+
+                Nothing ->
+                    []
+            )
+        ++ ( case options.aligned of
+                Just align ->
+                    [ Text.textAlignClass align ]
+
+                Nothing ->
+                    []
+            )
+        ++ options.attributes
+
+
+defaultOptions : CardOptions msg
+defaultOptions =
+    { aligned = Nothing
+    , coloring = Nothing
+    , attributes = []
+    }
+
+applyModifier : CardOption msg -> CardOptions msg -> CardOptions msg
+applyModifier option options =
+    case option of
+        Aligned align ->
+            { options | aligned = Just align }
+
+        Coloring coloring ->
+            { options | coloring = Just coloring }
+
+        Attrs attrs ->
+            { options | attributes = options.attributes ++ attrs }
+
+
+
+roleOption : Role -> String
+roleOption role =
+    case role of
+        Primary ->
+            "primary"
+
+        Success ->
+            "success"
+
+        Info ->
+            "info"
+
+        Warning ->
+            "warning"
+
+        Danger ->
+            "danger"
+
+
+toRGBString : Color.Color -> String
+toRGBString color =
+    let
+        { red, green, blue } =
+            Color.toRgb color
+    in
+        "RGB(" ++ toString red ++ "," ++ toString green ++ "," ++ toString blue ++ ")"

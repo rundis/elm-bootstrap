@@ -55,9 +55,10 @@ module Bootstrap.Accordion
             model.accordionState
             { toMsg = AccordionMsg
             , withAnimation = True
-            , cards
+            , cards =
                 [ Accordion.card
                     { id = "card1"
+                    , options = []
                     , header =
                         Accordion.header [] <| Accordion.toggle [] [ text "Card 1" ]
                     , blocks =
@@ -67,6 +68,7 @@ module Bootstrap.Accordion
                     }
                 , Accordion.card
                     { id = "card2"
+                    , options = []
                     , header =
                         Accordion.header [] <| Accordion.toggle [] [ text "Card 2" ]
                     , blocks =
@@ -161,6 +163,7 @@ type Visibility
 type Card msg
     = Card
         { id : String
+        , options : List ( Card.CardOption msg )
         , header : Header msg
         , blocks : List (CardBlock msg)
         }
@@ -263,18 +266,21 @@ accordion state ({ cards } as config) =
 
 * card config record
     * `id` Unique id for your card
+    * `options` List of card styling options
     * `header` Card header containing a toggle to hide/show the details of a card
     * `blocks` The main content elements of the card
 -}
 card :
     { id : String
+    , options : List (Card.CardOption msg)
     , blocks : List (CardBlock msg)
     , header : Header msg
     }
     -> Card msg
-card { id, header, blocks } =
+card { id, options, header, blocks } =
     Card
         { id = id
+        , options = options
         , header = header
         , blocks = blocks
         }
@@ -400,9 +406,9 @@ renderCard :
     -> Config msg
     -> Card msg
     -> Html.Html msg
-renderCard state config card =
+renderCard state config (Card {options} as card) =
     Html.div
-        [ class "card" ]
+        ( CardInternal.cardAttributes  options ++ [ class "card" ])
         [ renderCardHeader state config card
         , renderCardBlock state config card
         ]
