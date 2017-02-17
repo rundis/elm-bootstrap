@@ -1,6 +1,7 @@
 module Bootstrap.Modal
     exposing
-        ( modal
+        ( view
+        , config
         , header
         , body
         , footer
@@ -19,7 +20,9 @@ module Bootstrap.Modal
         , Header
         , Body
         , Footer
+        , Config
         )
+
 {-| Modals are streamlined, but flexible dialog prompts. They support a number of use cases from user notification to completely custom content and feature a handful of helpful subcomponents, sizes, and more.
 
 
@@ -52,35 +55,29 @@ module Bootstrap.Modal
                 [ Button.attr <| onClick ModalMsg Modal.visibleState ]
                 [ text "Show modal" ]
 
-            , Modal.modal modal.modalState
-                { toMsg = ModalMsg
-                , options = [ Modal.small ]
-                , header = Just <| Modal.h5 [] [ text "Modal header" ]
-                , body =
-                    Just <|
-                        Modal.body []
-                            [ Grid.containerFluid []
-                                [ Grid.simpleRow
-                                    [ Grid.col
-                                        [ Grid.colWidth Grid.colXsSix ]
-                                        [ text "Col 1" ]
-                                    , Grid.col
-                                        [ Grid.colWidth Grid.colXsSix ]
-                                        [ text "Col 2" ]
-                                    ]
-                                ]
+            , Modal.config ModalMsg
+                |> Modal.small
+                |> Modal.h5 [] [ text "Modal header" ]
+                |> Modal.body []
+                    [ Grid.containerFluid []
+                        [ Grid.simpleRow
+                            [ Grid.col
+                                [ Grid.colWidth Grid.colXsSix ]
+                                [ text "Col 1" ]
+                            , Grid.col
+                                [ Grid.colWidth Grid.colXsSix ]
+                                [ text "Col 2" ]
                             ]
-
-                , footer =
-                    Just <|
-                        Modal.footer []
-                            [ Button.button
-                                [ Button.outlinePrimary
-                                , Button.attr <| onClick <| ModalMsg Modal.hiddenState
-                                ]
-                                [ text "Close" ]
-                            ]
-                }
+                        ]
+                    ]
+                |> Modal.footer []
+                    [ Button.button
+                        [ Button.outlinePrimary
+                        , Button.attr <| onClick <| ModalMsg Modal.hiddenState
+                        ]
+                        [ text "Close" ]
+                    ]
+                |> Modal.view
             ]
 
 
@@ -89,7 +86,7 @@ module Bootstrap.Modal
 
 
 # Modal
-@docs modal
+@docs view, config, Config
 
 
 ## State
@@ -112,10 +109,23 @@ module Bootstrap.Modal
 
 
 -}
+
 import Html
 import Html.Attributes as Attr
 import Html.Events as Events
 import Bootstrap.Internal.Grid as GridInternal exposing (ScreenSize(..))
+
+
+{-| Opaque type representing view config for a model. Use the [`config`](#config) function to create an inital config.
+-}
+type Config msg
+    = Config
+        { toMsg : State -> msg
+        , header : Maybe (Header msg)
+        , body : Maybe (Body msg)
+        , footer : Maybe (Footer msg)
+        , options : List Option
+        }
 
 
 {-| Opaque representation of the view state of a modal
@@ -153,18 +163,20 @@ type alias Item msg =
     , children : List (Html.Html msg)
     }
 
+
 {-| Option to make a modal smaller than the default
 -}
-small : Option
-small =
-    ModalSize Small
+small : Config msg -> Config msg
+small (Config config) =
+    Config {config | options = config.options ++ [ ModalSize Small ] }
 
 
 {-| Option to make a modal larger than the default
 -}
-large : Option
-large =
-    ModalSize Large
+large : Config msg -> Config msg
+large (Config config) =
+    Config {config | options = config.options ++ [ ModalSize Large ] }
+
 
 
 {-| Ensures the modal is not displayed (it's still in the DOM though !)
@@ -184,23 +196,14 @@ visibleState =
 {-| Create a modal for your application
 
 * `state` The vurrent view state of the modal. You need to keep track of this state in your model
-* `config` Record with configuration options for the modal
-    * `toMsg` Msg constructor function that takes State as an argument
-    * `options` List of configuration options
-    * `header` Optional header
-    * `body` Optional body (but usually this is minimum what you would include)
-    * `footer` Optional footer (great for buttons with actions)
+* `config` View configuration
+
 -}
-modal :
+view :
     State
-    -> { toMsg : State -> msg
-       , header : Maybe (Header msg)
-       , body : Maybe (Body msg)
-       , footer : Maybe (Footer msg)
-       , options : List Option
-       }
+    -> Config msg
     -> Html.Html msg
-modal state { toMsg, header, body, footer, options } =
+view state (Config { toMsg, header, body, footer, options }) =
     Html.div
         []
         ([ Html.div
@@ -223,16 +226,41 @@ modal state { toMsg, header, body, footer, options } =
         )
 
 
+{-| Create an initial modal config. You can enrich the config by using the header, body, footer and option related functions.
+-}
+config : (State -> msg) -> Config msg
+config toMsg =
+    Config
+        { toMsg = toMsg
+        , options = []
+        , header = Nothing
+        , body = Nothing
+        , footer = Nothing
+        }
+
+
+
+
 {-| Create a header for a modal, typically for titles, but you can me imaginative
 
 * `attributes` List of attributes
 * `children` List of child elements
+* `config` configuration settings to configure header for
 -}
-header : List (Html.Attribute msg) -> List (Html.Html msg) -> Header msg
-header attributes children =
-    Header
-        { attributes = attributes
-        , children = children
+header :
+    List (Html.Attribute msg)
+    -> List (Html.Html msg)
+    -> Config msg
+    -> Config msg
+header attributes children (Config config) =
+    Config
+        { config
+            | header =
+                Just <|
+                    Header
+                        { attributes = attributes
+                        , children = children
+                        }
         }
 
 
@@ -240,8 +268,13 @@ header attributes children =
 
 * `attributes` List of attributes
 * `children` List of child elements
+* `config` configuration settings to configure header for
 -}
-h1 : List (Html.Attribute msg) -> List (Html.Html msg) -> Header msg
+h1 :
+    List (Html.Attribute msg)
+    -> List (Html.Html msg)
+    -> Config msg
+    -> Config msg
 h1 =
     titledHeader Html.h1
 
@@ -250,8 +283,13 @@ h1 =
 
 * `attributes` List of attributes
 * `children` List of child elements
+* `config` configuration settings to configure header for
 -}
-h2 : List (Html.Attribute msg) -> List (Html.Html msg) -> Header msg
+h2 :
+    List (Html.Attribute msg)
+    -> List (Html.Html msg)
+    -> Config msg
+    -> Config msg
 h2 =
     titledHeader Html.h2
 
@@ -260,8 +298,13 @@ h2 =
 
 * `attributes` List of attributes
 * `children` List of child elements
+* `config` configuration settings to configure header for
 -}
-h3 : List (Html.Attribute msg) -> List (Html.Html msg) -> Header msg
+h3 :
+    List (Html.Attribute msg)
+    -> List (Html.Html msg)
+    -> Config msg
+    -> Config msg
 h3 =
     titledHeader Html.h3
 
@@ -270,8 +313,13 @@ h3 =
 
 * `attributes` List of attributes
 * `children` List of child elements
+* `config` configuration settings to configure header for
 -}
-h4 : List (Html.Attribute msg) -> List (Html.Html msg) -> Header msg
+h4 :
+    List (Html.Attribute msg)
+    -> List (Html.Html msg)
+    -> Config msg
+    -> Config msg
 h4 =
     titledHeader Html.h4
 
@@ -280,8 +328,13 @@ h4 =
 
 * `attributes` List of attributes
 * `children` List of child elements
+* `config` configuration settings to configure header for
 -}
-h5 : List (Html.Attribute msg) -> List (Html.Html msg) -> Header msg
+h5 :
+    List (Html.Attribute msg)
+    -> List (Html.Html msg)
+    -> Config msg
+    -> Config msg
 h5 =
     titledHeader Html.h5
 
@@ -290,8 +343,13 @@ h5 =
 
 * `attributes` List of attributes
 * `children` List of child elements
+* `config` configuration settings to configure header for
 -}
-h6 : List (Html.Attribute msg) -> List (Html.Html msg) -> Header msg
+h6 :
+    List (Html.Attribute msg)
+    -> List (Html.Html msg)
+    -> Config msg
+    -> Config msg
 h6 =
     titledHeader Html.h6
 
@@ -300,7 +358,8 @@ titledHeader :
     (List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg)
     -> List (Html.Attribute msg)
     -> List (Html.Html msg)
-    -> Header msg
+    -> Config msg
+    -> Config msg
 titledHeader itemFn attributes children =
     header []
         [ itemFn (Attr.class "modal-title" :: attributes) children ]
@@ -310,26 +369,46 @@ titledHeader itemFn attributes children =
 
 * `attributes` List of attributes
 * `children` List of child elements
+* `config` configuration settings to configure body for
 -}
-body : List (Html.Attribute msg) -> List (Html.Html msg) -> Body msg
-body attributes children =
-    Body
-        { attributes = attributes
-        , children = children
-        }
+body :
+    List (Html.Attribute msg)
+    -> List (Html.Html msg)
+    -> Config msg
+    -> Config msg
+body attributes children (Config config) =
+    { config
+        | body =
+            Just <|
+                Body
+                    { attributes = attributes
+                    , children = children
+                    }
+    }
+        |> Config
 
 
 {-| Create a footer for a modal. Normally used for action buttons, but you might be creative
 
 * `attributes` List of attributes
 * `children` List of child elements
+* `config` configuration settings to configure header for
 -}
-footer : List (Html.Attribute msg) -> List (Html.Html msg) -> Footer msg
-footer attributes children =
-    Footer
-        { attributes = attributes
-        , children = children
-        }
+footer :
+    List (Html.Attribute msg)
+    -> List (Html.Html msg)
+    -> Config msg
+    -> Config msg
+footer attributes children (Config config) =
+    { config
+        | footer =
+            Just <|
+                Footer
+                    { attributes = attributes
+                    , children = children
+                    }
+    }
+        |> Config
 
 
 display : State -> List (Html.Attribute msg)

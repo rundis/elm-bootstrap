@@ -437,25 +437,22 @@ gridForm =
 
 modal : Modal.State -> Html Msg
 modal modalState =
-    Modal.modal
-        modalState
-        { toMsg = ModalMsg
-        , header = Just <| Modal.h5 [] [ text "Modal header" ]
-        , body = Just <| modalBody
-        , footer =
-            Just <|
-                Modal.footer []
-                    [ Button.button
-                        [ Button.outlinePrimary
-                        , Button.attrs [ onClick <| ModalMsg Modal.hiddenState ]
-                        ]
-                        [ text "Close" ]
-                    ]
-        , options = [ Modal.small ]
-        }
+    Modal.config ModalMsg
+        |> Modal.h5 [] [ text "Modal header" ]
+        |> modalBody
+        |> Modal.footer
+            []
+            [ Button.button
+                [ Button.outlinePrimary
+                , Button.attrs [ onClick <| ModalMsg Modal.hiddenState ]
+                ]
+                [ text "Close" ]
+            ]
+        |> Modal.small
+        |> Modal.view modalState
 
 
-modalBody : Modal.Body msg
+modalBody : Modal.Config msg -> Modal.Config msg
 modalBody =
     Modal.body []
         [ Grid.containerFluid []
