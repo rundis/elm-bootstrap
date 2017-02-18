@@ -80,7 +80,7 @@ type Msg
 
 update : Msg -> Model -> ( Model, Cmd msg )
 update msg ({ accordionState } as model) =
-    case (Debug.log "MSG" msg) of
+    case msg of
         NoOp ->
             ( { model | dummy = "NoOp" }, Cmd.none )
 
@@ -144,10 +144,8 @@ subscriptions model =
 view : Model -> Html Msg
 view model =
     Grid.container []
-        --div []
         [ CDN.stylesheet
         , CDN.fontAwesome
-          --, navbar model
         , mainContent model
         ]
 
@@ -155,7 +153,6 @@ view model =
 mainContent : Model -> Html Msg
 mainContent model =
     div [ style [ ( "margin-top", "60px" ) ] ]
-        --Grid.container [ style [ ( "margin-top", "60px" ) ] ]
         [ navbar model
         , simpleForm
         , gridForm
@@ -267,18 +264,14 @@ mainContent model =
 
 navbar : Model -> Html Msg
 navbar model =
-    Navbar.navbar
-        model.navbarState
-        { toMsg = NavbarMsg
-        , withAnimation = True
-        , options =
-            [ Navbar.container
-            , Navbar.fixTop
-            , Navbar.darkCustom Color.brown
-            , Navbar.collapseMedium
-            ]
-        , brand = Just <| Navbar.brand [ href "#" ] [ text "Logo" ]
-        , items =
+    Navbar.config NavbarMsg
+        |> Navbar.withAnimation
+        |> Navbar.container
+        |> Navbar.fixTop
+        |> Navbar.darkCustom Color.brown
+        |> Navbar.collapseMedium
+        |> Navbar.brand [ href "#" ] [ text "Logo" ]
+        |> Navbar.items
             [ Navbar.itemLink [ href "#" ] [ text "Page" ]
             , Navbar.itemLinkActive [ href "#" ] [ text "Another" ]
             , Navbar.itemLink [ href "#" ] [ text "More" ]
@@ -291,12 +284,8 @@ navbar model =
                     ]
                 }
             ]
-                ++ if model.navMsgCounter > 10 then
-                    [ Navbar.itemLink [ href "#" ] [ text "Bonus" ] ]
-                   else
-                    []
-        , customItems =
-            [ Navbar.textItem [] [ text "Some text" ]
+        |> Navbar.customItems
+             [ Navbar.textItem [] [ text "Some text" ]
             , Navbar.formItem [ class "ml-lg-2" ]
                 [ Input.text
                     [ Input.small ]
@@ -305,7 +294,8 @@ navbar model =
                     [ text "Submit" ]
                 ]
             ]
-        }
+        |> Navbar.view model.navbarState
+
 
 
 simpleForm : Html Msg

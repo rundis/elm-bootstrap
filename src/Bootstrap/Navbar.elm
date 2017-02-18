@@ -1,8 +1,10 @@
 module Bootstrap.Navbar
     exposing
-        ( navbar
+        ( view
+        , config
         , initialState
         , subscriptions
+        , withAnimation
         , fixTop
         , fixBottom
         , faded
@@ -15,6 +17,8 @@ module Bootstrap.Navbar
         , lightCustom
         , darkCustom
         , brand
+        , items
+        , customItems
         , itemLink
         , itemLinkActive
         , textItem
@@ -25,13 +29,12 @@ module Bootstrap.Navbar
         , collapseMedium
         , collapseLarge
         , collapseExtraLarge
-        , attr
+        , attrs
         , dropdown
         , dropdownItem
         , dropdownDivider
         , dropdownHeader
         , dropdownToggle
-        , Option
         , Item
         , CustomItem
         , Brand
@@ -46,25 +49,25 @@ The navbar is designed to be responsive by default and made interactive with a t
 
 
 # Navbar
-@docs navbar, Config
+@docs view, config, Config
 
 
 ## Options
-@docs primary, success, info, warning, danger, inverse, faded, fixTop, fixBottom, lightCustom, darkCustom, collapseSmall, collapseMedium, collapseLarge, collapseExtraLarge, container, attr, Option
+@docs withAnimation, primary, success, info, warning, danger, inverse, faded, fixTop, fixBottom, lightCustom, darkCustom, collapseSmall, collapseMedium, collapseLarge, collapseExtraLarge, container, attrs
 
 
 ## Brand
 @docs brand, Brand
 
 ## Menu items
-@docs itemLink, itemLinkActive, Item
+@docs items, itemLink, itemLinkActive, Item
 
 ## Dropdown menu
 @docs dropdown, dropdownToggle, dropdownItem, dropdownDivider, dropdownHeader, DropdownToggle, DropdownItem
 
 
 ## Custom items
-@docs textItem, formItem, customItem, CustomItem
+@docs customItems, textItem, formItem, customItem, CustomItem
 
 
 
@@ -114,10 +117,12 @@ type Visibility
     | AnimatingUp
     | Shown
 
+
 type DropdownStatus
     = Open
     | ListenClicks
     | Closed
+
 
 {-| Configuration information for describing the view of the Navbar
 
@@ -128,8 +133,12 @@ type DropdownStatus
 * `items` List of menu items that the user can select from
 * `customItems` List of custom (inline) items that you may place to the right of the std. navigation items
 -}
-type alias Config msg =
-    { options : List (Option msg)
+type Config msg
+    = Config (ConfigRec msg)
+
+
+type alias ConfigRec msg =
+    { options : Options msg
     , toMsg : State -> msg
     , withAnimation : Bool
     , brand : Maybe (Brand msg)
@@ -138,14 +147,13 @@ type alias Config msg =
     }
 
 
-{-| Opaque type represeting available configuration options for the navbar
--}
-type Option msg
-    = NavbarFix Fix
-    | NavbarScheme Scheme
-    | Container
-    | ToggleAt GridInternal.ScreenSize
-    | NavbarAttr (Html.Attribute msg)
+type alias Options msg =
+    { fix : Maybe Fix
+    , isContainer : Bool
+    , scheme : Maybe Scheme
+    , toggleAt : GridInternal.ScreenSize
+    , attributes : List (Html.Attribute msg)
+    }
 
 
 type Fix
@@ -173,6 +181,7 @@ type BackgroundColor
     | Danger
     | Inverse
     | Custom Color.Color
+
 
 {-| Opaque type representing a selectable menu item
 -}
@@ -203,6 +212,7 @@ type Dropdown msg
         , items : List (DropdownItem msg)
         }
 
+
 {-| Opaque type representing the toggle element for a dropdown menu
 -}
 type DropdownToggle msg
@@ -211,11 +221,11 @@ type DropdownToggle msg
         , children : List (Html.Html msg)
         }
 
+
 {-| Opaque type representing an item in a dropdown menu
 -}
 type DropdownItem msg
     = DropdownItem (Html.Html msg)
-
 
 
 {-| You need to call this function to initialize the view state for the navbar
@@ -236,7 +246,7 @@ Hopefully a smoother solution can be devised in the future.
 
 
 -}
-initialState : (State -> msg) -> (State, Cmd msg)
+initialState : (State -> msg) -> ( State, Cmd msg )
 initialState toMsg =
     let
         state =
@@ -247,11 +257,11 @@ initialState toMsg =
                 , dropdowns = Dict.empty
                 }
     in
-        ( state, initWindowSize toMsg state)
+        ( state, initWindowSize toMsg state )
 
 
-initWindowSize : (State -> msg) -> State  -> Cmd msg
-initWindowSize toMsg state  =
+initWindowSize : (State -> msg) -> State -> Cmd msg
+initWindowSize toMsg state =
     Window.size
         |> Task.perform
             (\size ->
@@ -272,7 +282,7 @@ function in your main subscriptions function.
 you can skip this. But it's not that much work, so maybe you are better off doing it anyway.
 -}
 subscriptions : State -> (State -> msg) -> Sub msg
-subscriptions (State { visibility } as state) toMsg =
+subscriptions ((State { visibility }) as state) toMsg =
     let
         updState v =
             mapState
@@ -299,40 +309,74 @@ subscriptions (State { visibility } as state) toMsg =
             , dropdownSubscriptions state toMsg
             ]
 
+
 dropdownSubscriptions : State -> (State -> msg) -> Sub msg
-dropdownSubscriptions (State {dropdowns} as state) toMsg =
+dropdownSubscriptions ((State { dropdowns }) as state) toMsg =
     let
         updDropdowns =
             Dict.map
                 (\_ status ->
                     case status of
-                        Open -> ListenClicks
-                        ListenClicks -> Closed
-                        Closed -> Closed
+                        Open ->
+                            ListenClicks
+
+                        ListenClicks ->
+                            Closed
+
+                        Closed ->
+                            Closed
                 )
                 dropdowns
 
         updState =
-            mapState (\s -> {s | dropdowns = updDropdowns}) state
+            mapState (\s -> { s | dropdowns = updDropdowns }) state
 
         needsSub s =
             Dict.toList dropdowns
-                |> List.any (\(_, status) -> status == s )
+                |> List.any (\( _, status ) -> status == s)
     in
         Sub.batch
             [ if needsSub Open then
-                  AnimationFrame.times
-                      (\_ ->  toMsg updState)
+                AnimationFrame.times
+                    (\_ -> toMsg updState)
               else
-                  Sub.none
-
+                Sub.none
             , if needsSub ListenClicks then
-                  Mouse.clicks
-                      (\_ ->  toMsg updState)
+                Mouse.clicks
+                    (\_ -> toMsg updState)
               else
-                  Sub.none
+                Sub.none
             ]
 
+{-| Creates a default navbar view configuration. Providing a starting point
+to set up your navbar how you'd like.
+-}
+config : (State -> msg) -> Config msg
+config toMsg =
+    Config
+        { toMsg = toMsg
+        , withAnimation = False
+        , brand = Nothing
+        , items = []
+        , customItems = []
+        , options =
+            { fix = Nothing
+            , isContainer = False
+            , scheme = Nothing
+            , toggleAt = GridInternal.ExtraSmall
+            , attributes = []
+            }
+        }
+
+
+updateConfig : (ConfigRec msg -> ConfigRec msg) -> Config msg -> Config msg
+updateConfig mapper (Config config) =
+    Config <| mapper config
+
+
+updateOptions : (Options msg -> Options msg) -> Config msg -> Config msg
+updateOptions mapper (Config config)  =
+    Config { config | options = mapper config.options }
 
 {-| The main view function for displaying a navbar.
 
@@ -370,154 +414,197 @@ dropdownSubscriptions (State {dropdowns} as state) toMsg =
         }
 
 
+
+
+
 * `state` Required view state the navbar uses to support interactive behavior
 * `config` The view [`configuration`](#Configuration) that determines to look and feel of the navbar
 
 -}
-navbar :
+view :
     State
     -> Config msg
     -> Html.Html msg
-navbar state ({ options, brand, items, customItems } as config) =
-    let
-        updConfig =
-            { config | options = ensureToggleable options }
-    in
-        Html.nav
-            (navbarAttributes updConfig.options)
-            (maybeBrand brand
-                ++ [ Html.button
-                        [ class "navbar-toggler navbar-toggler-right"
-                        , type_ "button"
-                        , toggleHandler state updConfig
-                        ]
-                        [ Html.span [ class "navbar-toggler-icon" ] [] ]
-                   , Html.div
-                        (menuAttributes state updConfig)
-                        [ Html.div (menuWrapperAttributes state updConfig)
-                            ([ renderNav state updConfig items ] ++ renderCustom customItems)
-                        ]
-                   ]
-            )
+view state ((Config { options, brand, items, customItems }) as config) =
+    Html.nav
+        (navbarAttributes options)
+        ([ Html.button
+            [ class <|
+                "navbar-toggler"
+                    ++ (Maybe.map (\_ -> " navbar-toggler-right") brand
+                            |> Maybe.withDefault ""
+                       )
+              -- navbar-toggler-right"
+            , type_ "button"
+            , toggleHandler state config
+            ]
+            [ Html.span [ class "navbar-toggler-icon" ] [] ]
+         ]
+            ++ maybeBrand brand
+            ++ [ Html.div
+                    (menuAttributes state config)
+                    [ Html.div (menuWrapperAttributes state config)
+                        ([ renderNav state config items ] ++ renderCustom customItems)
+                    ]
+               ]
+        )
 
+
+
+{-| Use a slide up/down animation for toggling the navbar menu when collapsed.
+
+**NOTE: ** Do remember to set up the subscriptions function when using this option.
+-}
+withAnimation : Config msg -> Config msg
+withAnimation config =
+    updateConfig (\conf -> { conf | withAnimation = True } ) config
 
 
 {-| Option to fix the menu to the top of the viewport
 
 **Note: You probably need to add some margin-top to the content element following the navbar when using this option **
 -}
-fixTop : Option msg
-fixTop =
-    NavbarFix Top
+fixTop : Config msg -> Config msg
+fixTop config =
+    updateOptions (\opts -> {opts | fix = Just Top}) config
+    --NavbarFix Top
 
 
 {-| Option to fix the menu to the bottom of the viewport
 -}
-fixBottom : Option msg
-fixBottom =
-    NavbarFix Bottom
+fixBottom : Config msg -> Config msg
+fixBottom config =
+    updateOptions (\opts -> {opts | fix = Just Bottom} ) config
 
 
 {-| Use this option when you want a fixed width menu (typically because you're main content is also confgirued to be fixed width)
 -}
-container : Option msg
-container =
-    Container
+container : Config msg -> Config msg
+container config =
+    updateOptions (\opts -> {opts | isContainer = True } ) config
 
 
 {-| Inverse the colors of your menu. Dark background and light text
 -}
-inverse : Option msg
+inverse : Config msg -> Config msg
 inverse =
     scheme Dark Inverse
 
 
 {-| Give your menu a light faded gray look
 -}
-faded : Option msg
+faded : Config msg -> Config msg
 faded =
     scheme Light Faded
 
 
 {-| Option to color menu using the primary color
 -}
-primary : Option msg
+primary : Config msg -> Config msg
 primary =
     scheme Dark Primary
 
 
 {-| Option to color menu using the success color
 -}
-success : Option msg
+success : Config msg -> Config msg
 success =
     scheme Dark Success
 
 
 {-| Option to color menu using the info color
 -}
-info : Option msg
+info : Config msg -> Config msg
 info =
     scheme Dark Info
 
+
 {-| Option to color menu using the warning color
 -}
-warning : Option msg
+warning : Config msg -> Config msg
 warning =
     scheme Dark Warning
 
 
 {-| Option to color menu using the danger color
 -}
-danger : Option msg
+danger : Config msg -> Config msg
 danger =
     scheme Dark Danger
 
 
 {-| Option to color menu using a dark custom background color
 -}
-darkCustom : Color.Color -> Option msg
+darkCustom : Color.Color -> Config msg -> Config msg
 darkCustom color =
     scheme Dark <| Custom color
 
 
 {-| Option to color menu using a light custom background color
 -}
-lightCustom : Color.Color -> Option msg
+lightCustom : Color.Color -> Config msg -> Config msg
 lightCustom color =
     scheme Light <| Custom color
 
 
+scheme : LinkModifier -> BackgroundColor -> Config msg -> Config msg
+scheme modifier bgColor config =
+    updateOptions
+        (\opt ->
+            { opt
+                | scheme =
+                    Just
+                        { modifier = modifier
+                        , bgColor = bgColor
+                        }
+            }
+        )
+        config
+
+
+
+
+
+
 {-| Collapse the menu at the small media breakpoint
 -}
-collapseSmall : Option msg
+collapseSmall : Config msg -> Config msg
 collapseSmall =
-    ToggleAt GridInternal.Small
+    toggleAt GridInternal.Small
 
 
 {-| Collapse the menu at the medium media breakpoint
 -}
-collapseMedium : Option msg
+collapseMedium : Config msg -> Config msg
 collapseMedium =
-    ToggleAt GridInternal.Medium
+    toggleAt GridInternal.Medium
 
 
 {-| Collapse the menu at the large media breakpoint
 -}
-collapseLarge : Option msg
+collapseLarge : Config msg -> Config msg
 collapseLarge =
-    ToggleAt GridInternal.Large
+    toggleAt GridInternal.Large
 
 
 {-| Collapse the menu at the extra large media breakpoint
 -}
-collapseExtraLarge : Option msg
+collapseExtraLarge : Config msg -> Config msg
 collapseExtraLarge =
-    ToggleAt GridInternal.ExtraLarge
+    toggleAt GridInternal.ExtraLarge
 
-{-| Add a custom Html.Attribute to the navbar element using this function -}
-attr : Html.Attribute msg -> Option msg
-attr attr =
-    NavbarAttr attr
+
+
+toggleAt : GridInternal.ScreenSize -> Config msg -> Config msg
+toggleAt size config =
+    updateOptions (\opt -> {opt | toggleAt = size }) config
+
+
+{-| Add a custom Html.Attribute to the navbar element using this function
+-}
+attrs : List (Html.Attribute msg) -> Config msg -> Config msg
+attrs attrs config =
+    updateOptions (\opt -> {opt | attributes = opt.attributes ++ attrs }) config
 
 
 {-| Create a brand element for your navbar
@@ -525,16 +612,48 @@ attr attr =
     Navbar.brand
         [ href "#" ] -- (and perhaps use onWithOptions for custom handling of clicks !)
         [ img [src "assets/logo.svg" ] [ text "MyCompany" ] ]
+        config
 
 * `attributes` List of attributes
 * `children` List of children
+* `config` Navbar config record to add/modify brand for
 -}
-brand : List (Html.Attribute msg) -> List (Html.Html msg) -> Brand msg
-brand attributes children =
-    Brand <|
-        Html.a
-            ([ class "navbar-brand" ] ++ attributes)
-            children
+brand
+    : List (Html.Attribute msg)
+    -> List (Html.Html msg)
+    -> Config msg
+    -> Config msg
+brand attributes children config =
+    updateConfig
+        (\conf ->
+            { conf
+                | brand =
+                    Html.a
+                        ([ class "navbar-brand" ] ++ attributes)
+                        children
+                        |> Brand
+                        |> Just
+            }
+        )
+        config
+
+{-| Configure your navbar with a list of navigation links and/or dropdowns.
+
+**NOTE** If you call this function several times, last time "wins".
+-}
+items : List (Item msg) -> Config msg -> Config msg
+items items config =
+    updateConfig (\conf -> { conf | items = items}) config
+
+
+
+{-| You can add custom items to a navbar too. These are placed after any navigation items.
+
+**NOTE** If you call this function several times, last time "wins".
+-}
+customItems : List (CustomItem msg) -> Config msg -> Config msg
+customItems items config =
+    updateConfig (\conf -> { conf | customItems = items}) config
 
 
 
@@ -616,12 +735,10 @@ customItem elem =
     CustomItem elem
 
 
-
-
 toggleHandler : State -> Config msg -> Html.Attribute msg
-toggleHandler ((State { height }) as state) { withAnimation, toMsg } =
+toggleHandler ((State { height }) as state) (Config { withAnimation, toMsg }) =
     let
-        updState h  =
+        updState h =
             mapState
                 (\s ->
                     { s
@@ -648,15 +765,55 @@ toggleHandler ((State { height }) as state) { withAnimation, toMsg } =
 
 heightDecoder : Json.Decoder Float
 heightDecoder =
-    DOM.target <|
-        DOM.parentElement <|
-            DOM.nextSibling <|
-                DOM.childNode 0 <|
-                    DOM.offsetHeight
+    let
+        tagDecoder =
+            Json.map2 (\tag val -> ( tag, val ))
+                (Json.field "tagName" Json.string)
+                (Json.value)
+
+        fromNavDec =
+            Json.oneOf
+                [ Json.at [ "childNodes", "2", "childNodes", "0", "offsetHeight" ] Json.float
+                , Json.at [ "childNodes", "1", "childNodes", "0", "offsetHeight" ] Json.float
+                ]
+
+        fromButtonDec =
+            DOM.parentElement <| fromNavDec
+
+        resToDec res =
+            case res of
+                Result.Ok v ->
+                    Json.succeed v
+
+                Result.Err err ->
+                    Json.fail err
+    in
+        (DOM.target <|
+            DOM.parentElement <|
+                tagDecoder
+        )
+            |> Json.andThen
+                (\( tag, val ) ->
+                    case tag of
+                        "NAV" ->
+                            Json.decodeValue
+                                fromNavDec
+                                val
+                                |> resToDec
+
+                        "BUTTON" ->
+                            Json.decodeValue
+                                fromButtonDec
+                                val
+                                |> resToDec
+
+                        _ ->
+                            Json.succeed 0
+                )
 
 
 menuAttributes : State -> Config msg -> List (Html.Attribute msg)
-menuAttributes ((State { visibility, height }) as state) ({ withAnimation, toMsg, options } as config) =
+menuAttributes ((State { visibility, height }) as state) ((Config { withAnimation, toMsg, options }) as config) =
     let
         defaults =
             [ class "collapse navbar-collapse" ]
@@ -701,15 +858,15 @@ menuAttributes ((State { visibility, height }) as state) ({ withAnimation, toMsg
 
 
 menuWrapperAttributes : State -> Config msg -> List (Html.Attribute msg)
-menuWrapperAttributes ((State { visibility, height }) as state) config =
+menuWrapperAttributes ((State { visibility, height }) as state) ((Config { withAnimation }) as config) =
     let
-        styleBlock
-            = [ style [ ( "display", "block" ) ] ]
+        styleBlock =
+            [ style [ ( "display", "block" ) ] ]
 
         display =
             case height of
                 Nothing ->
-                    if not config.withAnimation || shouldHideMenu state config then
+                    if not withAnimation || shouldHideMenu state config then
                         "flex"
                     else
                         "block"
@@ -734,14 +891,14 @@ menuWrapperAttributes ((State { visibility, height }) as state) config =
                 styleBlock
 
             Shown ->
-                if not config.withAnimation || shouldHideMenu state config then
+                if not withAnimation || shouldHideMenu state config then
                     [ class "collapse navbar-collapse show" ]
                 else
                     [ style [ ( "display", "block" ) ] ]
 
 
 shouldHideMenu : State -> Config msg -> Bool
-shouldHideMenu (State { windowSize }) { options } =
+shouldHideMenu (State { windowSize }) (Config { options }) =
     let
         winMedia =
             case windowSize of
@@ -751,10 +908,8 @@ shouldHideMenu (State { windowSize }) { options } =
                 Nothing ->
                     GridInternal.ExtraSmall
 
-        toggleMedia =
-            getToggleAtOption options
     in
-        sizeToComparable winMedia > sizeToComparable toggleMedia
+        sizeToComparable winMedia > sizeToComparable options.toggleAt
 
 
 sizeToComparable : GridInternal.ScreenSize -> number
@@ -776,24 +931,6 @@ sizeToComparable size =
             5
 
 
-getToggleAtOption : List (Option msg) -> GridInternal.ScreenSize
-getToggleAtOption options =
-    let
-        maybeSize =
-            List.filterMap
-                (\opt ->
-                    case opt of
-                        ToggleAt size ->
-                            Just size
-
-                        _ ->
-                            Nothing
-                )
-                options
-                |> List.head
-    in
-        Maybe.withDefault GridInternal.ExtraSmall maybeSize
-
 
 toScreenSize : Window.Size -> GridInternal.ScreenSize
 toScreenSize { width } =
@@ -810,7 +947,7 @@ toScreenSize { width } =
 
 
 transitionHandler : State -> Config msg -> Json.Decoder msg
-transitionHandler state { toMsg, withAnimation } =
+transitionHandler state (Config { toMsg, withAnimation }) =
     mapState
         (\s ->
             { s
@@ -851,26 +988,6 @@ mapState mapper (State state) =
     State <| mapper state
 
 
-ensureToggleable : List (Option msg) -> List (Option msg)
-ensureToggleable options =
-    let
-        hasToggle =
-            List.any
-                (\opt ->
-                    case opt of
-                        ToggleAt _ ->
-                            True
-
-                        _ ->
-                            False
-                )
-                options
-    in
-        if hasToggle then
-            options
-        else
-            (ToggleAt GridInternal.ExtraSmall) :: options
-
 
 maybeBrand : Maybe (Brand msg) -> List (Html.Html msg)
 maybeBrand brand =
@@ -895,11 +1012,13 @@ renderNav state config navItems =
                 case item of
                     Item item ->
                         renderItemLink item
+
                     NavDropdown dropdown ->
                         renderDropdown state config dropdown
             )
             navItems
         )
+
 
 renderItemLink :
     { attributes : List (Html.Attribute msg)
@@ -915,7 +1034,6 @@ renderItemLink { attributes, children } =
         ]
 
 
-
 renderCustom : List (CustomItem msg) -> List (Html.Html msg)
 renderCustom items =
     List.map (\(CustomItem item) -> item) items
@@ -923,43 +1041,39 @@ renderCustom items =
 
 
 
-scheme : LinkModifier -> BackgroundColor -> Option msg
-scheme modifier bgColor =
-    { modifier = modifier
-    , bgColor = bgColor
-    }
-        |> NavbarScheme
+{- navbarAttributes : List (Option msg) -> List (Html.Attribute msg)
+   navbarAttributes options =
+       class "navbar" :: List.concatMap navbarAttribute options
+-}
 
 
-
-
-navbarAttributes : List (Option msg) -> List (Html.Attribute msg)
+navbarAttributes : Options msg -> List (Html.Attribute msg)
 navbarAttributes options =
-    class "navbar" :: List.concatMap navbarAttribute options
+    [ classList
+        [ ( "navbar", True )
+        , ( "container", options.isContainer )
+        ]
+    , class <|
+        "navbar-toggleable"
+            ++ (Maybe.map (\s -> "-" ++ s) (GridInternal.screenSizeOption options.toggleAt)
+                    |> Maybe.withDefault ""
+               )
+    ]
+        ++ (case options.scheme of
+                Just scheme ->
+                    schemeAttributes scheme
 
+                Nothing ->
+                    []
+           )
+        ++ (case options.fix of
+                Just fix ->
+                    [ class <| fixOption fix ]
 
-navbarAttribute : Option msg -> List (Html.Attribute msg)
-navbarAttribute option =
-    case option of
-        NavbarFix fix ->
-            [ class <| fixOption fix ]
-
-        NavbarScheme scheme ->
-            schemeAttributes scheme
-
-        Container ->
-            [ class "container" ]
-
-        NavbarAttr attr ->
-            [ attr ]
-
-        ToggleAt size ->
-            [ class <|
-                "navbar-toggleable"
-                    ++ (Maybe.map (\s -> "-" ++ s) (GridInternal.screenSizeOption size)
-                            |> Maybe.withDefault ""
-                       )
-            ]
+                Nothing ->
+                    []
+           )
+        ++ options.attributes
 
 
 fixOption : Fix -> String
@@ -1058,6 +1172,7 @@ visibilityTransition withAnimation visibility =
             Hidden
 
 
+
 --- NAV DROPDOWNS
 
 
@@ -1115,6 +1230,7 @@ dropdownDivider =
     Html.div [ class "dropdown-divider" ] []
         |> DropdownItem
 
+
 {-| Creates an header element appropriate for use in dropdowns
 Handy when you want to provide a heading for a group of menu items in a dropdown menu
 
@@ -1134,34 +1250,34 @@ renderDropdown :
     -> Config msg
     -> Dropdown msg
     -> Html.Html msg
-renderDropdown state config (Dropdown {id, toggle, items}) =
+renderDropdown state ((Config { options }) as config) (Dropdown { id, toggle, items }) =
     let
         needsDropup =
-            List.any
-                (\opt ->
-                    case opt of
-                        NavbarFix Bottom ->
+            Maybe.map
+                (\fix ->
+                    case fix of
+                        Bottom ->
                             True
-                        _ ->
+
+                        Top ->
                             False
                 )
-                config.options
+                options.fix
+                |> Maybe.withDefault False
     in
         Html.li
             [ classList
-                    [ ( "nav-item", True )
-                    , ( "dropdown", True )
-                    , ( "dropup", needsDropup)
-                    , ( "show", getOrInitDropdownStatus id state /= Closed )
-                    ]
+                [ ( "nav-item", True )
+                , ( "dropdown", True )
+                , ( "dropup", needsDropup )
+                , ( "show", getOrInitDropdownStatus id state /= Closed )
+                ]
             ]
             [ renderDropdownToggle state id config toggle
             , Html.div
                 [ class "dropdown-menu" ]
-                ( List.map (\(DropdownItem item) -> item) items)
+                (List.map (\(DropdownItem item) -> item) items)
             ]
-
-
 
 
 renderDropdownToggle :
@@ -1170,16 +1286,17 @@ renderDropdownToggle :
     -> Config msg
     -> DropdownToggle msg
     -> Html.Html msg
-renderDropdownToggle state id config (DropdownToggle {attributes, children} ) =
+renderDropdownToggle state id config (DropdownToggle { attributes, children }) =
     Html.a
         ([ class "nav-link dropdown-toggle"
          , href "#"
          , onWithOptions
-             "click"
-             { stopPropagation = False
-             , preventDefault = True
-             }
-             <| Json.succeed (toggleOpen state id config)
+            "click"
+            { stopPropagation = False
+            , preventDefault = True
+            }
+           <|
+            Json.succeed (toggleOpen state id config)
          ]
             ++ attributes
         )
@@ -1191,9 +1308,11 @@ toggleOpen :
     -> String
     -> Config msg
     -> msg
-toggleOpen state id {toMsg} =
+toggleOpen state id (Config { toMsg }) =
     let
-        currStatus = getOrInitDropdownStatus id state
+        currStatus =
+            getOrInitDropdownStatus id state
+
         newStatus =
             case currStatus of
                 Open ->
@@ -1207,17 +1326,13 @@ toggleOpen state id {toMsg} =
     in
         mapState
             (\s ->
-                {s | dropdowns = Dict.insert id newStatus s.dropdowns }
+                { s | dropdowns = Dict.insert id newStatus s.dropdowns }
             )
             state
             |> toMsg
 
 
-
 getOrInitDropdownStatus : String -> State -> DropdownStatus
-getOrInitDropdownStatus id (State {dropdowns}) =
+getOrInitDropdownStatus id (State { dropdowns }) =
     Dict.get id dropdowns
         |> Maybe.withDefault Closed
-
-
-
