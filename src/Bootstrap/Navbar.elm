@@ -16,6 +16,8 @@ module Bootstrap.Navbar
         , inverse
         , lightCustom
         , darkCustom
+        , lightCustomClass
+        , darkCustomClass
         , brand
         , items
         , customItems
@@ -53,7 +55,7 @@ The navbar is designed to be responsive by default and made interactive with a t
 
 
 ## Options
-@docs withAnimation, primary, success, info, warning, danger, inverse, faded, fixTop, fixBottom, lightCustom, darkCustom, collapseSmall, collapseMedium, collapseLarge, collapseExtraLarge, container, attrs
+@docs withAnimation, primary, success, info, warning, danger, inverse, faded, fixTop, fixBottom, lightCustom, darkCustom, lightCustomClass, darkCustomClass, collapseSmall, collapseMedium, collapseLarge, collapseExtraLarge, container, attrs
 
 
 ## Brand
@@ -181,6 +183,7 @@ type BackgroundColor
     | Danger
     | Inverse
     | Custom Color.Color
+    | Class String
 
 
 {-| Opaque type representing a selectable menu item
@@ -362,7 +365,7 @@ config toMsg =
         , options =
             { fix = Nothing
             , isContainer = False
-            , scheme = Nothing
+            , scheme = Just { modifier = Light, bgColor = Faded }
             , toggleAt = GridInternal.ExtraSmall
             , attributes = []
             }
@@ -545,6 +548,21 @@ darkCustom color =
 lightCustom : Color.Color -> Config msg -> Config msg
 lightCustom color =
     scheme Light <| Custom color
+
+
+{-| Option to color menu using a dark custom background color defined by css class(es)
+-}
+darkCustomClass : String -> Config msg -> Config msg
+darkCustomClass classString =
+    scheme Dark <| Class classString
+
+
+{-| Option to color menu using a light custom background color defined by css class(es)
+-}
+lightCustomClass : String -> Config msg -> Config msg
+lightCustomClass classString =
+    scheme Light <| Class classString
+
 
 
 scheme : LinkModifier -> BackgroundColor -> Config msg -> Config msg
@@ -1130,6 +1148,9 @@ backgroundColorOption bgClass =
 
         Custom color ->
             style [ ( "background-color", toRGBString color ) ]
+
+        Class classString ->
+            class classString
 
 
 toRGBString : Color.Color -> String

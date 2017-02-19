@@ -18,6 +18,7 @@ import Page.Button as Button
 import Page.Dropdown as Dropdown
 import Page.Accordion as Accordion
 import Page.Modal as Modal
+import Page.Navbar as PageNav
 
 
 type alias Model =
@@ -30,6 +31,7 @@ type alias Model =
     , dropdownState : Dropdown.State
     , accordionState : Accordion.State
     , modalState : Modal.State
+    , pageNavState : PageNav.State
     }
 
 
@@ -43,6 +45,7 @@ type Msg
     | DropdownMsg Dropdown.State
     | AccordionMsg Accordion.State
     | ModalMsg Modal.State
+    | PageNavMsg PageNav.State
 
 
 init : Navigation.Location -> ( Model, Cmd Msg )
@@ -50,6 +53,9 @@ init location =
     let
         ( navbarState, navbarCmd ) =
             Navbar.initialState NavbarMsg
+
+        ( pageNavState, pageNavCmd) =
+            PageNav.initialState PageNavMsg
 
         ( model, urlCmd ) =
             urlUpdate location
@@ -62,9 +68,10 @@ init location =
                 , dropdownState = Dropdown.initialState
                 , accordionState = Accordion.initialState
                 , modalState = Modal.initialState
+                , pageNavState = pageNavState
                 }
     in
-        ( model, Cmd.batch [ navbarCmd, urlCmd ] )
+        ( model, Cmd.batch [ navbarCmd, urlCmd, pageNavCmd ] )
 
 
 main : Program Never Model Msg
@@ -84,6 +91,7 @@ subscriptions model =
         , Tab.subscriptions model.tabState TabMsg
         , Dropdown.subscriptions model.dropdownState DropdownMsg
         , Accordion.subscriptions model.accordionState AccordionMsg
+        , PageNav.subscriptions model.pageNavState PageNavMsg
         ]
 
 
@@ -117,6 +125,9 @@ update msg model =
         ModalMsg state ->
             ( { model | modalState = state }, Cmd.none )
 
+        PageNavMsg state ->
+            ( { model | pageNavState = state}, Cmd.none )
+
 
 urlUpdate : Navigation.Location -> Model -> ( Model, Cmd Msg )
 urlUpdate location model =
@@ -137,17 +148,13 @@ view model =
 
 viewMenu : Model -> Html Msg
 viewMenu model =
-    Navbar.navbar
-        model.navbarState
-        { toMsg = NavbarMsg
-        , withAnimation = True
-        , options =
-            [ Navbar.container
-            , Navbar.attr <| class "bd-navbar navbar-light"
-            , Navbar.collapseMedium
-            ]
-        , brand = Just <| Navbar.brand [ href "#" ] [ text "Elm Bootstrap" ]
-        , items =
+    Navbar.config NavbarMsg
+        |> Navbar.container
+        |> Navbar.collapseLarge
+        |> Navbar.withAnimation
+        |> Navbar.lightCustomClass "bd-navbar"
+        |> Navbar.brand [ href "#" ] [ text "Elm Bootstrap" ]
+        |> Navbar.items
             [ Navbar.itemLink [ href "#grid" ] [ text "Grid" ]
             , Navbar.itemLink [ href "#card" ] [ text "Card" ]
             , Navbar.itemLink [ href "#table" ] [ text "Table" ]
@@ -160,19 +167,13 @@ viewMenu model =
             , Navbar.itemLink [ href "#tab" ] [ text "Tab" ]
             , Navbar.itemLink [ href "#accordion" ] [ text "Accordion" ]
             , Navbar.itemLink [ href "#modal" ] [ text "Modal" ]
+            , Navbar.itemLink [ href "#navbar"] [ text "Navbar" ]
             ]
-        , customItems = []
-        }
+        |> Navbar.view model.navbarState
 
 
 viewPage : Model -> List (Html Msg)
 viewPage model =
-    {- let
-           pageView pageFn =
-               div [ class "row" ]
-                   [ div [ class "col bd-content" ] pageFn ]
-       in
-    -}
     case model.route of
         Route.Home ->
             PHome.view
@@ -212,6 +213,9 @@ viewPage model =
 
         Route.Modal ->
             Modal.view model.modalState ModalMsg
+
+        Route.Navbar ->
+            PageNav.view model.pageNavState PageNavMsg
 
         Route.NotFound ->
             viewNotFound model
