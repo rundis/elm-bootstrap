@@ -27,13 +27,13 @@ verticalAligns vAligns =
     RowVAligns vAligns
 
 
-horisontalAlign : HAlign -> RowOption msg
-horisontalAlign hAlign =
+horizontalAlign : HAlign -> RowOption msg
+horizontalAlign hAlign =
     RowHAligns [ hAlign ]
 
 
-horisontalAligns : List HAlign -> RowOption msg
-horisontalAligns hAligns =
+horizontalAligns : List HAlign -> RowOption msg
+horizontalAligns hAligns =
     RowHAligns hAligns
 
 

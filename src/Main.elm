@@ -170,13 +170,13 @@ mainContent model =
                 , text " Col 1 Row 1"
                 ]
             , Grid.col
-                [ Col.align Col.topXs
+                [ Col.verticalAlign Col.topXs
                 , Col.attrs [colStyle]
                 ]
                 [ text "Col 2 Row 1" ]
             , Grid.col
                 [ Col.width Col.xs5
-                , Col.align Col.middleXs
+                , Col.verticalAlign Col.middleXs
                 , Col.attrs [colStyle]
                 ]
                 [ text "Col 3 Row 1" ]

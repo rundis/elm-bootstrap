@@ -55,12 +55,12 @@ pushes : List Push -> ColOption msg
 pushes pushes =
     Pushes pushes
 
-align : VAlign -> ColOption msg
-align align =
+verticalAlign : VAlign -> ColOption msg
+verticalAlign align =
     ColAligns [ align ]
 
-aligns : List VAlign -> ColOption msg
-aligns aligns =
+verticalAligns : List VAlign -> ColOption msg
+verticalAligns aligns =
     ColAligns aligns
 
 
@@ -404,7 +404,7 @@ md12 =
 {-| -}
 mdAuto : Width
 mdAuto =
-    Width XS ColAuto
+    Width MD ColAuto
 
 
 -- LG Widths
@@ -491,7 +491,7 @@ lg12 =
 {-| -}
 lgAuto : Width
 lgAuto =
-    Width XS ColAuto
+    Width LG ColAuto
 
 
 -- XL Widths
@@ -578,7 +578,7 @@ xl12 =
 {-| -}
 xlAuto : Width
 xlAuto =
-    Width XS ColAuto
+    Width XL ColAuto
 
 
 {- *************** OFFSETS ******************** -}

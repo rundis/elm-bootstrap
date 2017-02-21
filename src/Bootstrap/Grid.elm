@@ -5,6 +5,7 @@ module Bootstrap.Grid
         , simpleRow
         , row
         , col
+        , colBreak
         , Column
         )
 
@@ -42,7 +43,7 @@ module Bootstrap.Grid
 
 
 # Columns
-@docs col, Column
+@docs col, colBreak, Column
 
 
 -}
@@ -64,6 +65,7 @@ type Column msg
         { options : List (GridInternal2.ColOption msg)
         , children : List (Html msg)
         }
+    | ColBreak (Html.Html msg)
 
 
 {-| Responsive fixed width container, which changes it's maz-width at breakpoint
@@ -111,11 +113,24 @@ col options children =
         , children = children
         }
 
+{-| Creates a full width column with no content. Handy for creating equal width multi-row columns.
+-}
+colBreak : List (Html.Attribute msg) -> Column msg
+colBreak attributes =
+    ColBreak <|
+        Html.div
+            ([class "w-100"] ++ attributes)
+            []
+
 renderCol : Column msg -> Html msg
-renderCol (Column { options, children }) =
-    div
-        (GridInternal2.colAttributes options)
-        children
+renderCol column =
+    case column of
+        (Column { options, children }) ->
+            div
+                (GridInternal2.colAttributes options)
+                children
+        (ColBreak e) ->
+            e
 
 
 
