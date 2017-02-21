@@ -36,6 +36,17 @@ example children =
     div [ class "bd-example" ]
         children
 
+exampleRow : List (Html msg) -> Html msg
+exampleRow children =
+    div [ class "bd-example-row" ]
+        children
+
+
+
+exampleAndRow : List (Html msg) -> Html msg
+exampleAndRow children =
+    div [ class "bd-example bd-example-row" ]
+        children
 
 
 
