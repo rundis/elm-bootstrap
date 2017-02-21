@@ -52,7 +52,7 @@ You can also group a series of buttons together on a single line with the button
 import Html
 import Html.Attributes as Attributes exposing (class, classList)
 import Bootstrap.Internal.Button as ButtonInternal
-import Bootstrap.Internal.Grid as GridInternal
+import Bootstrap.Grid.Internal as GridInternal
 
 
 {-| Opaque type reresenting available options for styling a button
@@ -113,14 +113,14 @@ attrs attrs =
 -}
 small : Option msg
 small =
-    ButtonInternal.Size GridInternal.Small
+    ButtonInternal.Size GridInternal.SM
 
 
 {-| Option to make a button large
 -}
 large : Option msg
 large =
-    ButtonInternal.Size GridInternal.Large
+    ButtonInternal.Size GridInternal.LG
 
 
 {-| Option to color a button to signal a primary action

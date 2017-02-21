@@ -22,6 +22,10 @@ import Html.Events exposing (..)
 import Color
 
 
+import Bootstrap.Grid.Col as Col
+import Bootstrap.Grid.Row as Row
+
+
 main : Program Never Model Msg
 main =
     Html.program
@@ -157,32 +161,33 @@ mainContent model =
         , simpleForm
         , gridForm
         , Grid.row
-            [ Grid.rowBottom, Grid.rowAttr rowStyle ]
+            [ Row.verticalAlign Row.bottomXs, Row.attrs [rowStyle] ]
             [ Grid.col
-                [ Grid.colWidth Grid.colXsTwo, Grid.colAttr colStyle ]
+                [ Col.width Col.xs2
+                , Col.attrs [ colStyle]
+                ]
                 [ span [ class "fa fa-car" ] []
                 , text " Col 1 Row 1"
                 ]
             , Grid.col
-                [ Grid.colWidth Grid.colXsNone
-                , Grid.colTop
-                , Grid.colAttr colStyle
+                [ Col.align Col.topXs
+                , Col.attrs [colStyle]
                 ]
                 [ text "Col 2 Row 1" ]
             , Grid.col
-                [ Grid.colWidth Grid.colXsFive
-                , Grid.colMiddle
-                , Grid.colAttr colStyle
+                [ Col.width Col.xs5
+                , Col.align Col.middleXs
+                , Col.attrs [colStyle]
                 ]
                 [ text "Col 3 Row 1" ]
             , Grid.col
-                [ Grid.colWidth Grid.colXsNone, Grid.colAttr colStyle ]
+                [ Col.attrs [colStyle] ]
                 [ text "Col 4 Row 1" ]
             ]
         , Grid.row
-            [ Grid.rowMiddle, Grid.rowAttr rowStyle ]
+            [ Row.verticalAlign Row.middleXs, Row.attrs [rowStyle] ]
             [ Grid.col
-                [ Grid.colWidth Grid.colXsFive ]
+                [ Col.width Col.xs5 ]
                 [ Button.linkButton
                     [ Button.small
                     , Button.outlineSuccess
@@ -193,9 +198,9 @@ mainContent model =
                 ]
             ]
         , Grid.row
-            [ Grid.rowTop, Grid.rowAttr rowStyle ]
+            [ Row.verticalAlign Row.topXs, Row.attrs [rowStyle] ]
             [ Grid.col
-                [ Grid.colWidth Grid.colXsFive, Grid.colAttr colStyle ]
+                [ Col.width Col.xs5, Col.attrs [colStyle] ]
                 [ Dropdown.dropdown
                     model.dropdownState
                     { options = [ Dropdown.alignMenuRight ]
@@ -221,7 +226,7 @@ mainContent model =
                     }
                 ]
             , Grid.col
-                [ Grid.colWidth Grid.colXsFive, Grid.colAttr colStyle ]
+                [ Col.width Col.xs5, Col.attrs [colStyle] ]
                 [ Dropdown.splitDropdown
                     model.splitDropState
                     { options = [ Dropdown.dropUp, Dropdown.alignMenuRight ]
@@ -249,7 +254,7 @@ mainContent model =
                     }
                 ]
             , Grid.col
-                [ Grid.colWidth Grid.colXsNone, Grid.colAttr colStyle ]
+                [ Col.attrs [colStyle] ]
                 [ text model.dummy ]
             ]
         , accordion model
@@ -360,48 +365,48 @@ gridForm =
         [ Form.customItem <| h2 [] [ text "Form grid" ]
         , Form.groupRowSimple
             { label = Form.textLabel "TextInput"
-            , labelWidth = Grid.colXsFour
+            , labelWidth = Col.xs4
             , control = Form.text [ Form.inputId "rowtextinput" ]
-            , controlWidth = Grid.colXsEight
+            , controlWidth = Col.xs8
             }
         , Form.groupRowSimple
             { label = Form.textLabel "Select"
-            , labelWidth = Grid.colXsFour
+            , labelWidth = Col.xs4
             , control =
                 Form.select
                     [ Form.inputId "rowSimpleSelect" ]
                     [ Form.selectItem [] [ text "Option 1" ]
                     , Form.selectItem [] [ text "Option 2" ]
                     ]
-            , controlWidth = Grid.colXsEight
+            , controlWidth = Col.xs8
             }
         , Form.groupRow
             { validation = Just <| Form.error "Forgot to fill in?"
             , help = Nothing
             , label = Form.textLabel "TextWithValidation"
-            , labelWidth = Grid.colXsFour
+            , labelWidth = Col.xs4
             , control = Form.text [ Form.inputId "rowtextinputvalidation" ]
-            , controlWidth = Grid.colXsEight
+            , controlWidth = Col.xs8
             }
         , Form.groupRow
             { validation = Nothing
             , help = Nothing
             , label =
                 Form.label [ Form.labelSmall ] [ text "Small input" ]
-            , labelWidth = Grid.colXsFour
+            , labelWidth = Col.xs4
             , control =
                 Form.text
                     [ Form.inputId "rowtextinputxs"
                     , Form.inputAttr <| disabled True
                     , Form.inputSmall
                     ]
-            , controlWidth = Grid.colXsEight
+            , controlWidth = Col.xs8
             }
         , Form.radioGroupRow
             { label = Form.textLabel "My radios"
             , name = "MyRowRadios"
-            , labelWidth = Grid.colXsFour
-            , controlWidth = Grid.colXsEight
+            , labelWidth = Col.xs4
+            , controlWidth = Col.xs8
             , radios =
                 [ Form.radio [] "Radio 1"
                 , Form.radio [] "Radio 2"
@@ -413,14 +418,14 @@ gridForm =
         , Form.checkboxRow
             { labelText = "Check me!"
             , options = []
-            , offset = Grid.colXsFour
-            , controlWidth = Grid.colXsEight
+            , offset = Col.offsetXs4
+            , controlWidth = Col.xs8
             }
         , Form.checkboxRow
             { labelText = "Can't check me!"
             , options = [ Form.checkDisabled ]
-            , offset = Grid.colXsFour
-            , controlWidth = Grid.colXsEight
+            , offset = Col.offsetXs4
+            , controlWidth = Col.xs8
             }
         ]
 
@@ -448,10 +453,10 @@ modalBody =
         [ Grid.containerFluid []
             [ Grid.simpleRow
                 [ Grid.col
-                    [ Grid.colWidth Grid.colXsSix ]
+                    [ Col.width Col.xs6 ]
                     [ text "Col 1" ]
                 , Grid.col
-                    [ Grid.colWidth Grid.colXsSix ]
+                    [ Col.width Col.xs6 ]
                     [ text "Col 2" ]
                 ]
             ]

@@ -1,14 +1,16 @@
-module Page.Modal exposing
-    (view
-    , initialState
-    , State
-    )
+module Page.Modal
+    exposing
+        ( view
+        , initialState
+        , State
+        )
 
 import Html exposing (..)
 import Html.Events exposing (onClick)
 import Bootstrap.Modal as Modal
 import Bootstrap.Button as Button
 import Util
+
 
 type alias State =
     { modalState : Modal.State }
@@ -30,25 +32,24 @@ view state toMsg =
     ]
 
 
-
 example : State -> (State -> msg) -> List (Html msg)
 example state toMsg =
-    [ h2 [] [text "Example"]
-    , p [] [ text "Click the button below to show a simple example modal"]
+    [ h2 [] [ text "Example" ]
+    , p [] [ text "Click the button below to show a simple example modal" ]
     , Util.example
         [ Button.button
             [ Button.outlineSuccess
-            , Button.attrs [ onClick <| toMsg { state | modalState = Modal.visibleState} ]
+            , Button.attrs [ onClick <| toMsg { state | modalState = Modal.visibleState } ]
             ]
-            [ text "Open modal"]
-        , Modal.config (\ms -> toMsg { state | modalState = ms})
+            [ text "Open modal" ]
+        , Modal.config (\ms -> toMsg { state | modalState = ms })
             |> Modal.small
             |> Modal.h3 [] [ text "Modal header" ]
-            |> Modal.body [] [ p [] [ text "This is a modal for you !"] ]
+            |> Modal.body [] [ p [] [ text "This is a modal for you !" ] ]
             |> Modal.footer []
-                [Button.button
+                [ Button.button
                     [ Button.outlinePrimary
-                    , Button.attrs [ onClick <| toMsg { state | modalState = Modal.hiddenState} ]
+                    , Button.attrs [ onClick <| toMsg { state | modalState = Modal.hiddenState } ]
                     ]
                     [ text "Close" ]
                 ]
@@ -56,7 +57,7 @@ example state toMsg =
         ]
     , Util.code exampleCode
     , Util.calloutInfo
-        [ h3 [] [ text "Modal composition"]
+        [ h3 [] [ text "Modal composition" ]
         , ul []
             [ textLi "You start out by using the config function providing the modal *Msg as it's argument"
             , textLi "Then compose your modal with optional options, header, body and footer. The order is not important."
@@ -64,6 +65,7 @@ example state toMsg =
             ]
         ]
     ]
+
 
 textLi : String -> Html msg
 textLi str =
@@ -128,3 +130,4 @@ view model =
         ]
 
 """
+

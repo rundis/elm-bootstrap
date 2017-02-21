@@ -33,7 +33,7 @@ for HTML 5 input types.
 -}
 
 import Bootstrap.Internal.Form as FormInternal exposing (InputOption(..), InputType(..))
-import Bootstrap.Internal.Grid as GridInternal
+import Bootstrap.Grid.Internal as GridInternal
 import Html
 
 
@@ -47,7 +47,7 @@ type alias InputOption msg =
 -}
 small : InputOption msg
 small =
-    InputSize GridInternal.Small
+    InputSize GridInternal.SM
 
 
 
@@ -55,7 +55,7 @@ small =
 -}
 large : InputOption msg
 large =
-    InputSize GridInternal.Large
+    InputSize GridInternal.LG
 
 
 {-| Options/shorthand for setting the id of an input -}

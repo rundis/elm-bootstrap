@@ -6,7 +6,7 @@ module Bootstrap.Internal.Button exposing
     )
 
 
-import Bootstrap.Internal.Grid as GridInternal
+import Bootstrap.Grid.Internal as GridInternal
 import Html
 import Html.Attributes as Attributes exposing (class, classList)
 

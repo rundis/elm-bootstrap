@@ -86,7 +86,7 @@ The navbar is designed to be responsive by default and made interactive with a t
 import Html
 import Html.Attributes exposing (class, classList, style, type_, id, href)
 import Html.Events exposing (onClick, on, onWithOptions)
-import Bootstrap.Internal.Grid as GridInternal
+import Bootstrap.Grid.Internal as GridInternal
 import Color
 import Dict
 import Json.Decode as Json
@@ -366,7 +366,7 @@ config toMsg =
             { fix = Nothing
             , isContainer = False
             , scheme = Just { modifier = Light, bgColor = Faded }
-            , toggleAt = GridInternal.ExtraSmall
+            , toggleAt = GridInternal.XS
             , attributes = []
             }
         }
@@ -588,28 +588,28 @@ scheme modifier bgColor config =
 -}
 collapseSmall : Config msg -> Config msg
 collapseSmall =
-    toggleAt GridInternal.Small
+    toggleAt GridInternal.SM
 
 
 {-| Collapse the menu at the medium media breakpoint
 -}
 collapseMedium : Config msg -> Config msg
 collapseMedium =
-    toggleAt GridInternal.Medium
+    toggleAt GridInternal.MD
 
 
 {-| Collapse the menu at the large media breakpoint
 -}
 collapseLarge : Config msg -> Config msg
 collapseLarge =
-    toggleAt GridInternal.Large
+    toggleAt GridInternal.LG
 
 
 {-| Collapse the menu at the extra large media breakpoint
 -}
 collapseExtraLarge : Config msg -> Config msg
 collapseExtraLarge =
-    toggleAt GridInternal.ExtraLarge
+    toggleAt GridInternal.XL
 
 
 
@@ -924,7 +924,7 @@ shouldHideMenu (State { windowSize }) (Config { options }) =
                     toScreenSize s
 
                 Nothing ->
-                    GridInternal.ExtraSmall
+                    GridInternal.XS
 
     in
         sizeToComparable winMedia > sizeToComparable options.toggleAt
@@ -933,19 +933,19 @@ shouldHideMenu (State { windowSize }) (Config { options }) =
 sizeToComparable : GridInternal.ScreenSize -> number
 sizeToComparable size =
     case size of
-        GridInternal.ExtraSmall ->
+        GridInternal.XS ->
             1
 
-        GridInternal.Small ->
+        GridInternal.SM ->
             2
 
-        GridInternal.Medium ->
+        GridInternal.MD ->
             3
 
-        GridInternal.Large ->
+        GridInternal.LG ->
             4
 
-        GridInternal.ExtraLarge ->
+        GridInternal.XL ->
             5
 
 
@@ -953,15 +953,15 @@ sizeToComparable size =
 toScreenSize : Window.Size -> GridInternal.ScreenSize
 toScreenSize { width } =
     if width <= 576 then
-        GridInternal.ExtraSmall
+        GridInternal.XS
     else if width <= 768 then
-        GridInternal.Small
+        GridInternal.SM
     else if width <= 992 then
-        GridInternal.Medium
+        GridInternal.MD
     else if width <= 1200 then
-        GridInternal.Large
+        GridInternal.LG
     else
-        GridInternal.ExtraLarge
+        GridInternal.XL
 
 
 transitionHandler : State -> Config msg -> Json.Decoder msg

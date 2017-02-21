@@ -22,7 +22,7 @@ module Bootstrap.Text
 
 -}
 
-import Bootstrap.Internal.Grid as GridInternal
+import Bootstrap.Grid.Internal as GridInternal
 import Bootstrap.Internal.Text as TextInternal exposing (TextAlignDir(..))
 
 
@@ -56,7 +56,7 @@ alignXsRight =
 alignXs : TextAlignDir -> HAlign
 alignXs dir =
     { dir = dir
-    , size = GridInternal.ExtraSmall
+    , size = GridInternal.SM
     }
 
 
@@ -83,7 +83,7 @@ alignSmRight =
 alignSm : TextAlignDir -> HAlign
 alignSm dir =
     { dir = dir
-    , size = GridInternal.Small
+    , size = GridInternal.SM
     }
 
 
@@ -110,7 +110,7 @@ alignMdRight =
 alignMd : TextAlignDir -> HAlign
 alignMd dir =
     { dir = dir
-    , size = GridInternal.Medium
+    , size = GridInternal.MD
     }
 
 {-| Align left at large responsive breakpoint
@@ -137,7 +137,7 @@ alignLgRight =
 alignLg : TextAlignDir -> HAlign
 alignLg dir =
     { dir = dir
-    , size = GridInternal.Large
+    , size = GridInternal.LG
     }
 
 
@@ -165,5 +165,5 @@ alignXlRight =
 alignXl : TextAlignDir -> HAlign
 alignXl dir =
     { dir = dir
-    , size = GridInternal.ExtraLarge
+    , size = GridInternal.XL
     }

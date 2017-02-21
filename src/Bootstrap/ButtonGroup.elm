@@ -33,7 +33,7 @@ module Bootstrap.ButtonGroup
 import Html
 import Html.Attributes exposing (class, classList, attribute)
 import Bootstrap.Button as Button
-import Bootstrap.Internal.Grid as GridInternal
+import Bootstrap.Grid.Internal as GridInternal
 
 
 {-| Opaque type representing the possible styling options for a button group
@@ -149,14 +149,14 @@ linkButton options children =
 -}
 small : Option msg
 small =
-    Size GridInternal.Small
+    Size GridInternal.SM
 
 
 {-| Option to make all buttons in the given group large
 -}
 large : Option msg
 large =
-    Size GridInternal.Large
+    Size GridInternal.LG
 
 
 {-| Option to make all buttons stack vertically for a button group

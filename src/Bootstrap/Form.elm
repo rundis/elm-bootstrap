@@ -120,8 +120,9 @@ When all else fails and you need custom items
 import Html
 import Html.Attributes exposing (class, classList, type_, style)
 import Bootstrap.Internal.Form as FormInternal exposing (InputType(..), Input, Select, SelectItem, InputOption(..), FormCheckOption(..))
-import Bootstrap.Grid as Grid
-import Bootstrap.Internal.Grid as GridInternal
+import Bootstrap.Grid.Internal as GridInternal
+import Bootstrap.Grid.Col as Col
+
 
 
 type Validation
@@ -153,7 +154,7 @@ type LabelOption msg
     = FormLabel
     | ColumnLabel
     | LabelSize GridInternal.ScreenSize
-    | LabelWidth Grid.ColumnWidth
+    | LabelWidth Col.Width
     | LabelAttr (Html.Attribute msg)
 
 
@@ -294,9 +295,9 @@ If you need validation or helptexts you should be using [`groupRow`](#groupRow)
 -}
 groupRowSimple :
     { label : Label msg
-    , labelWidth : Grid.ColumnWidth
+    , labelWidth : Col.Width
     , control : FormControl msg
-    , controlWidth : Grid.ColumnWidth
+    , controlWidth : Col.Width
     }
     -> FormItem msg
 groupRowSimple { label, labelWidth, control, controlWidth } =
@@ -324,9 +325,9 @@ groupRowSimple { label, labelWidth, control, controlWidth } =
 -}
 groupRow :
     { label : Label msg
-    , labelWidth : Grid.ColumnWidth
+    , labelWidth : Col.Width
     , control : FormControl msg
-    , controlWidth : Grid.ColumnWidth
+    , controlWidth : Col.Width
     , validation : Maybe ValidationResult
     , help : Maybe (FormHelp msg)
     }
@@ -520,14 +521,14 @@ label options children =
 -}
 labelSmall : LabelOption msg
 labelSmall =
-    LabelSize GridInternal.Small
+    LabelSize GridInternal.SM
 
 
 {-| Option to make a label taller
 -}
 labelLarge : LabelOption msg
 labelLarge =
-    LabelSize GridInternal.Large
+    LabelSize GridInternal.LG
 
 
 {-| Use this function if you need to customize your label with additional Html.Attribute attributes
@@ -674,7 +675,7 @@ color =
 -}
 inputSmall : InputOption msg
 inputSmall =
-    InputSize GridInternal.Small
+    InputSize GridInternal.SM
 
 
 
@@ -682,7 +683,7 @@ inputSmall =
 -}
 inputLarge : InputOption msg
 inputLarge =
-    InputSize GridInternal.Large
+    InputSize GridInternal.LG
 
 
 {-| Provide the id attribute for a text input or select.
@@ -798,19 +799,17 @@ checkbox options label =
 checkboxRow :
     { labelText : String
     , options : List (FormCheckOption msg)
-    , offset : Grid.ColumnWidth
-    , controlWidth : Grid.ColumnWidth
+    , offset : Col.Offset
+    , controlWidth : Col.Width
     }
     -> FormItem msg
 checkboxRow { labelText, options, offset, controlWidth } =
     Html.div
         [ class "form-group row" ]
         [ Html.div
-            (List.filterMap identity
-                [ GridInternal.offsetClass offset
-                , Just <| GridInternal.colWidthClass controlWidth
-                ]
-            )
+            [ GridInternal.offsetClass offset
+            , GridInternal.colWidthClass controlWidth
+            ]
             [ FormInternal.checkbox options labelText ]
         ]
         |> FormItem
@@ -873,10 +872,10 @@ radioGroupSimple name radios =
 -}
 radioGroupRow :
     { label : Label msg
-    , labelWidth : Grid.ColumnWidth
+    , labelWidth : Col.Width
     , name : String
     , radios : List (Radio msg)
-    , controlWidth : Grid.ColumnWidth
+    , controlWidth : Col.Width
     }
     -> FormItem msg
 radioGroupRow { label, name, radios, labelWidth, controlWidth } =

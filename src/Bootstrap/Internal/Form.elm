@@ -18,7 +18,7 @@ module Bootstrap.Internal.Form
         , Radio
         )
 
-import Bootstrap.Internal.Grid as GridInternal
+import Bootstrap.Grid.Internal as GridInternal
 import Html
 import Html.Attributes as Attr
 

@@ -113,7 +113,7 @@ module Bootstrap.Modal
 import Html
 import Html.Attributes as Attr
 import Html.Events as Events
-import Bootstrap.Internal.Grid as GridInternal exposing (ScreenSize(..))
+import Bootstrap.Grid.Internal as GridInternal exposing (ScreenSize(..))
 
 
 {-| Opaque type representing view config for a model. Use the [`config`](#config) function to create an inital config.
@@ -168,14 +168,14 @@ type alias Item msg =
 -}
 small : Config msg -> Config msg
 small (Config config) =
-    Config {config | options = config.options ++ [ ModalSize Small ] }
+    Config {config | options = config.options ++ [ ModalSize SM ] }
 
 
 {-| Option to make a modal larger than the default
 -}
 large : Config msg -> Config msg
 large (Config config) =
-    Config {config | options = config.options ++ [ ModalSize Large ] }
+    Config {config | options = config.options ++ [ ModalSize LG ] }
 
 
 

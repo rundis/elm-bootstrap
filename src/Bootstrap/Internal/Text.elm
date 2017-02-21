@@ -7,7 +7,7 @@ module Bootstrap.Internal.Text
 
 import Html
 import Html.Attributes
-import Bootstrap.Internal.Grid as GridInternal
+import Bootstrap.Grid.Internal as GridInternal
 
 
 type alias HAlign =
