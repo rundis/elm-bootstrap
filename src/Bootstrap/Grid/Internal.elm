@@ -127,7 +127,7 @@ type HorizontalAlign
 
 type alias ColOptions msg =
     { attributes : List (Html.Attribute msg)
-    , widthXs : Width
+    , widthXs : Maybe Width
     , widthSm : Maybe Width
     , widthMd : Maybe Width
     , widthLg : Maybe Width
@@ -177,9 +177,22 @@ colAttributes modifiers =
     let
         options =
             List.foldl applyColOption defaultColOptions modifiers
+
+        shouldAddDefaultXs =
+            (List.filterMap identity
+                [ options.widthXs
+                , options.widthSm
+                , options.widthMd
+                , options.widthLg
+                , options.widthXl
+                ]
+                |> List.length) == 0
     in
         colWidthsToAttributes
-            [ Just options.widthXs
+            [ if shouldAddDefaultXs then
+                Just <| Width XS Col
+              else
+                  options.widthXs
             , options.widthSm
             , options.widthMd
             , options.widthLg
@@ -268,7 +281,7 @@ applyColWidth : Width -> ColOptions msg -> ColOptions msg
 applyColWidth width options =
     case width.screenSize of
         XS ->
-            { options | widthXs = width }
+            { options | widthXs = Just width }
 
         SM ->
             { options | widthSm = Just width }
@@ -414,7 +427,7 @@ applyRowHAlign align options =
 defaultColOptions : ColOptions msg
 defaultColOptions =
     { attributes = []
-    , widthXs = Width XS Col
+    , widthXs = Nothing
     , widthSm = Nothing
     , widthMd = Nothing
     , widthLg = Nothing

@@ -6,19 +6,26 @@ module Page.Modal
         )
 
 import Html exposing (..)
+import Html.Attributes exposing (..)
 import Html.Events exposing (onClick)
 import Bootstrap.Modal as Modal
 import Bootstrap.Button as Button
+import Bootstrap.Grid as Grid
+import Bootstrap.Grid.Col as Col
 import Util
 
 
 type alias State =
-    { modalState : Modal.State }
+    { modalState : Modal.State
+    , gridState : Modal.State
+    }
 
 
 initialState : State
 initialState =
-    { modalState = Modal.hiddenState }
+    { modalState = Modal.hiddenState
+    , gridState = Modal.hiddenState
+    }
 
 
 view : State -> (State -> msg) -> List (Html msg)
@@ -28,7 +35,9 @@ view state toMsg =
         """Modals are streamlined, but flexible dialog prompts powered by Elm !
         They support a number of use cases from user notification to completely custom content and feature a handful of helpful subcomponents, sizes, and more."""
     , Util.pageContent
-        (example state toMsg)
+        (example state toMsg
+            ++ grid state toMsg
+        )
     ]
 
 
@@ -65,6 +74,7 @@ example state toMsg =
             ]
         ]
     ]
+
 
 
 textLi : String -> Html msg
@@ -130,4 +140,97 @@ view model =
         ]
 
 """
+
+
+grid : State -> (State -> msg) -> List (Html msg)
+grid state toMsg =
+    [ h2 [] [ text "Using the Grid" ]
+    , p [] [ text """Utilize the Bootstrap grid system within a modal by nesting Grid.containerFluid inside the Modal.body.
+                    Then, use the normal grid system classes as you would anywhere else.""" ]
+    , Util.example
+        [ Button.button
+            [ Button.outlineSuccess
+            , Button.attrs [ onClick <| toMsg { state | gridState = Modal.visibleState } ]
+            ]
+            [ text "Open modal" ]
+        , Modal.config (\ms -> toMsg { state | gridState = ms })
+            |> Modal.large
+            |> Modal.h3 [] [ text "Modal grid header" ]
+            |> Modal.body []
+                [ Grid.containerFluid [ class "bd-example-row" ]
+                    [ Grid.row [ ]
+                        [ Grid.col
+                            [ Col.width Col.sm4 ] [ text "Col sm4" ]
+                        , Grid.col
+                            [ Col.width Col.sm8 ] [ text "Col sm8" ]
+                        ]
+                    , Grid.row [ ]
+                        [ Grid.col
+                            [ Col.width Col.md4 ] [ text "Col md4" ]
+                        , Grid.col
+                            [ Col.width Col.md8 ] [ text "Col md8" ]
+                        ]
+                    ]
+                ]
+            |> Modal.footer []
+                [ Button.button
+                    [ Button.outlinePrimary
+                    , Button.attrs [ onClick <| toMsg { state | gridState = Modal.hiddenState } ]
+                    ]
+                    [ text "Close" ]
+                ]
+            |> Modal.view state.gridState
+
+        , Util.calloutInfo
+            [ p [] [ text "Try resizing the window with the modal open to observe the responsive behavior." ] ]
+
+        , Util.code gridCode
+        ]
+    ]
+
+
+gridCode : Html msg
+gridCode =
+    Util.toMarkdownElm """
+
+-- ..
+import Bootstrap.Grid as Grid
+import Bootstrap.Grid.Col as Col
+
+div []
+    [ Button.button
+        [ Button.outlineSuccess
+        , Button.attrs [ onClick <| ModalMsg Modal.visibleState ]
+        ]
+        [ text "Open modal" ]
+        , Modal.config ModalMsg
+            |> Modal.large
+            |> Modal.h3 [] [ text "Modal grid header" ]
+            |> Modal.body []
+                [ Grid.containerFluid [ ]
+                    [ Grid.row [ ]
+                        [ Grid.col
+                            [ Col.width Col.sm4 ] [ text "Col sm4" ]
+                        , Grid.col
+                            [ Col.width Col.sm8 ] [ text "Col sm8" ]
+                        ]
+                    , Grid.row [ ]
+                        [ Grid.col
+                            [ Col.width Col.md4 ] [ text "Col md4" ]
+                        , Grid.col
+                            [ Col.width Col.md8 ] [ text "Col md8" ]
+                        ]
+                    ]
+                ]
+            |> Modal.footer []
+                [ Button.button
+                    [ Button.outlinePrimary
+                    , Button.attrs [ onClick <| ModalMsg Modal.hiddenState ]
+                    ]
+                    [ text "Close" ]
+                ]
+            |> Modal.view model.modalState
+        ]
+"""
+
 
