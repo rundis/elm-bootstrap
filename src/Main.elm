@@ -12,9 +12,12 @@ import Bootstrap.Accordion as Accordion
 import Bootstrap.ListGroup as ListGroup
 import Bootstrap.Badge as Badge
 import Bootstrap.Form as Form
+import Bootstrap.Form.Checkbox as Chk
+import Bootstrap.Form.Radio as Radio
+import Bootstrap.Form.Input as Input
+import Bootstrap.Form.Select as Select
 import Bootstrap.Card as Card
 import Bootstrap.Table as Table
-import Bootstrap.TextInput as Input
 import Bootstrap.Progress as Progress
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -24,6 +27,9 @@ import Color
 
 import Bootstrap.Grid.Col as Col
 import Bootstrap.Grid.Row as Row
+
+
+
 
 
 main : Program Never Model Msg
@@ -161,22 +167,38 @@ mainContent model =
         , simpleForm
         , gridForm
         , Grid.row
-            [ Row.verticalAlign Row.bottomXs, Row.attrs [rowStyle] ]
+            [ Row.bottomXs, Row.attrs [rowStyle] ]
             [ Grid.col
-                [ Col.width Col.xs2
+                [ Col.xs2
                 , Col.attrs [ colStyle]
                 ]
                 [ span [ class "fa fa-car" ] []
                 , text " Col 1 Row 1"
+                , div [ class "form-inline"]
+                    [ Chk.checkbox [ Chk.inline ] "Chk"
+                    , Chk.checkbox [ Chk.inline, Chk.disabled ] "Chk"
+                    , Chk.checkbox [ ] "Stacked"
+                    ]
                 ]
             , Grid.col
-                [ Col.verticalAlign Col.topXs
+                [ Col.topXs
                 , Col.attrs [colStyle]
                 ]
-                [ text "Col 2 Row 1" ]
+                [ text "Col 2 Row 1"
+                , div [ class "form-inline"]
+                    [ Chk.custom [ Chk.inline ] "Chk"
+                    , Chk.custom [ Chk.inline ] "Chk"
+                    ]
+                , hr [] []
+                , div []
+                    [ Chk.custom [ Chk.inline ] "Chk"
+                    , Chk.custom [ Chk.inline ] "Chk"
+                    ]
+
+                ]
             , Grid.col
-                [ Col.width Col.xs5
-                , Col.verticalAlign Col.middleXs
+                [ Col.xs5
+                , Col.middleXs
                 , Col.attrs [colStyle]
                 ]
                 [ text "Col 3 Row 1" ]
@@ -185,9 +207,9 @@ mainContent model =
                 [ text "Col 4 Row 1" ]
             ]
         , Grid.row
-            [ Row.verticalAlign Row.middleXs, Row.attrs [rowStyle] ]
+            [ Row.middleXs, Row.attrs [rowStyle] ]
             [ Grid.col
-                [ Col.width Col.xs5 ]
+                [ Col.xs5 ]
                 [ Button.linkButton
                     [ Button.small
                     , Button.outlineSuccess
@@ -198,9 +220,9 @@ mainContent model =
                 ]
             ]
         , Grid.row
-            [ Row.verticalAlign Row.topXs, Row.attrs [rowStyle] ]
+            [ Row.topXs, Row.attrs [rowStyle] ]
             [ Grid.col
-                [ Col.width Col.xs5, Col.attrs [colStyle] ]
+                [ Col.xs5, Col.attrs [colStyle] ]
                 [ Dropdown.dropdown
                     model.dropdownState
                     { options = [ Dropdown.alignMenuRight ]
@@ -226,7 +248,7 @@ mainContent model =
                     }
                 ]
             , Grid.col
-                [ Col.width Col.xs5, Col.attrs [colStyle] ]
+                [ Col.xs5, Col.attrs [colStyle] ]
                 [ Dropdown.splitDropdown
                     model.splitDropState
                     { options = [ Dropdown.dropUp, Dropdown.alignMenuRight ]
@@ -292,8 +314,7 @@ navbar model =
         |> Navbar.customItems
              [ Navbar.textItem [] [ text "Some text" ]
             , Navbar.formItem [ class "ml-lg-2" ]
-                [ Input.text
-                    [ Input.small ]
+                [ Input.text [ Input.small ]
                 , Button.button
                     [ Button.success, Button.small ]
                     [ text "Submit" ]
@@ -307,127 +328,86 @@ simpleForm : Html Msg
 simpleForm =
     Form.form
         []
-        [ Form.customItem <| h1 [] [ text "Form" ]
-        , Form.group
-            { validation = Just <| Form.success "This went well"
-            , help = Just <| Form.help [] [ text "Enter something clever here" ]
-            , label = Form.textLabel "SimpleInput"
-            , control = Form.text [ Form.inputId "simpleInput" ]
-            }
-        , Form.groupSimple
-            { label = Form.textLabel "Sample select"
-            , control =
-                Form.select
-                    [ Form.inputId "simpleSelect" ]
-                    [ Form.selectItem [] [ text "Option 1" ]
-                    , Form.selectItem [] [ text "Option 2" ]
-                    ]
-            }
-        , Form.checkbox [] "Check me!"
-        , Form.checkbox
-            [ Form.checkDisabled ]
-            "Can't check me!"
-        , Form.radioGroup
-            { label = Form.textLabel "My radios"
-            , name = "MyRadios"
-            , radios =
-                [ Form.radio [ Form.radioInline ] "Radio 1"
-                , Form.radio [ Form.radioInline ] "Radio 2"
-                , Form.radio [] "Radio 3"
+        [ h1 [] [ text "Vertical Form"]
+        , Form.group [ Form.groupSuccess ]
+            [ Form.label [ for "simpleInput" ] [ text "SimpleInput" ]
+            , Input.text [ Input.id "simpleInput", Input.success ]
+            , Form.validationText [] [ text "This went well !" ]
+            , Form.help [] [ text "Something really helpful" ]
+            ]
+        , Form.group [ ]
+            [ Form.label [ for "simpleselect" ] [ text "Simple select" ]
+            , Select.select [ Select.id "simpleselect" ]
+                [ Select.item [] [ text "Option 1" ]
+                , Select.item [] [ text "Option 2"]
                 ]
-            }
-        , Form.group
-            { validation = Nothing
-            , help = Nothing
-            , label = Form.label [] [ text "Small input" ]
-            , control =
-                Form.text
-                    [ Form.inputId "smallinput"
-                    , Form.inputSmall
-                    , Form.inputAttr <| disabled True
-                    ]
-            }
-        , Form.group
-            { validation = Just <| Form.warning "A bit short ?"
-            , help = Just <| Form.help [] [ text "Enter a password with at least 8 characters" ]
-            , label = Form.label [] [ text "Password" ]
-            , control =
-                Form.password
-                    [ Form.inputId "pwd" ]
-            }
+            ]
+        , Form.group [ ]
+            [ Form.label [ for "customselect" ] [ text "Custom select" ]
+            , Select.custom [ Select.id "customselect" ]
+                [ Select.item [] [ text "Option 1" ]
+                , Select.item [] [ text "Option 2"]
+                ]
+            ]
+        , Chk.checkbox [] "Lonely checker"
+        , Form.group []
+            [ Chk.custom [ Chk.attrs [ class "col-2" ] ] "Custom checker"]
+        , Form.group []
+            [ Form.label [] [ text "A couple of radios"]
+            , div [ class "form-inline"]
+                [ Radio.radio [ Radio.inline, Radio.name "myradios"] "Radio 1"
+                , Radio.radio [ Radio.inline, Radio.name "myradios"] "Radio 2"
+                , Radio.radio [ Radio.inline, Radio.disabled, Radio.name "myradios"] "Radio 3"
+                ]
+            ]
         ]
+
+
 
 
 gridForm : Html Msg
 gridForm =
-    Form.form
-        [ class "container" ]
-        [ Form.customItem <| h2 [] [ text "Form grid" ]
-        , Form.groupRowSimple
-            { label = Form.textLabel "TextInput"
-            , labelWidth = Col.xs4
-            , control = Form.text [ Form.inputId "rowtextinput" ]
-            , controlWidth = Col.xs8
-            }
-        , Form.groupRowSimple
-            { label = Form.textLabel "Select"
-            , labelWidth = Col.xs4
-            , control =
-                Form.select
-                    [ Form.inputId "rowSimpleSelect" ]
-                    [ Form.selectItem [] [ text "Option 1" ]
-                    , Form.selectItem [] [ text "Option 2" ]
+    div [ ]
+        [ h1 [] [ text "Horizontal (grid) form" ]
+        , Form.form [ class "container" ]
+            [ h3 [] [ text "Header in form" ]
+            , Form.row [ Form.rowSuccess ]
+                [ Form.colLabel [ Col.xs4 ] [ text "Fill in:" ]
+                , Form.col [ Col.xs8 ]
+                    [ Input.text
+                        [ Input.id "rowinput", Input.success ]
+                    , Form.validationText [] [ text "This was cool !" ]
+                    , Form.help [] [ text "Should be something..." ]
                     ]
-            , controlWidth = Col.xs8
-            }
-        , Form.groupRow
-            { validation = Just <| Form.error "Forgot to fill in?"
-            , help = Nothing
-            , label = Form.textLabel "TextWithValidation"
-            , labelWidth = Col.xs4
-            , control = Form.text [ Form.inputId "rowtextinputvalidation" ]
-            , controlWidth = Col.xs8
-            }
-        , Form.groupRow
-            { validation = Nothing
-            , help = Nothing
-            , label =
-                Form.label [ Form.labelSmall ] [ text "Small input" ]
-            , labelWidth = Col.xs4
-            , control =
-                Form.text
-                    [ Form.inputId "rowtextinputxs"
-                    , Form.inputAttr <| disabled True
-                    , Form.inputSmall
-                    ]
-            , controlWidth = Col.xs8
-            }
-        , Form.radioGroupRow
-            { label = Form.textLabel "My radios"
-            , name = "MyRowRadios"
-            , labelWidth = Col.xs4
-            , controlWidth = Col.xs8
-            , radios =
-                [ Form.radio [] "Radio 1"
-                , Form.radio [] "Radio 2"
-                , Form.radio
-                    [ Form.radioDisabled ]
-                    "Radio 3"
                 ]
-            }
-        , Form.checkboxRow
-            { labelText = "Check me!"
-            , options = []
-            , offset = Col.offsetXs4
-            , controlWidth = Col.xs8
-            }
-        , Form.checkboxRow
-            { labelText = "Can't check me!"
-            , options = [ Form.checkDisabled ]
-            , offset = Col.offsetXs4
-            , controlWidth = Col.xs8
-            }
+            , Form.row []
+                [ Form.colLabelSm [ Col.xs4 ] [ text "Postal" ]
+                , Form.col [ Col.xs4 ]
+                    [ Input.text [ Input.small ]
+                    , Form.help [] [ text "5 digits" ]
+                    ]
+                , Form.col [ Col.xs4 ]
+                    [ Input.text
+                        [ Input.small, Input.attrs [ placeholder "Place"]] ]
+
+                ]
+            , Form.row []
+                [ Form.col [ Col.offsetXs4, Col.xs8]
+                    [ Chk.custom [] "Lonely checker" ]
+                ]
+            , Form.row [ Form.rowWarning ]
+                [ Form.colLabel [ Col.xs4 ] [ text "Row select:" ]
+                , Form.col [ Col.xs8 ]
+                    [ Select.custom [ Select.id "rowcustomselect" ]
+                        [ Select.item [] [ text "Option 1" ]
+                        , Select.item [] [ text "Option 2"]
+                        ]
+                    , Form.validationText [] [ text "Can't select option 1 (:"]
+                    ]
+                ]
+            ]
         ]
+
 
 
 modal : Modal.State -> Html Msg
@@ -453,10 +433,10 @@ modalBody =
         [ Grid.containerFluid []
             [ Grid.simpleRow
                 [ Grid.col
-                    [ Col.width Col.xs6 ]
+                    [ Col.xs6 ]
                     [ text "Col 1" ]
                 , Grid.col
-                    [ Col.width Col.xs6 ]
+                    [ Col.xs6 ]
                     [ text "Col 2" ]
                 ]
             ]

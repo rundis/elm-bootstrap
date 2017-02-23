@@ -50,7 +50,7 @@ module Bootstrap.Grid
 
 import Html exposing (Html, div, Attribute)
 import Html.Attributes exposing (class, classList)
-import Bootstrap.Grid.Internal as GridInternal2
+import Bootstrap.Grid.Internal as GridInternal
 import Bootstrap.Grid.Col as Col
 import Bootstrap.Grid.Row as Row
 
@@ -62,7 +62,7 @@ import Bootstrap.Grid.Row as Row
 -}
 type Column msg
     = Column
-        { options : List (GridInternal2.ColOption msg)
+        { options : List (GridInternal.ColOption msg)
         , children : List (Html msg)
         }
     | ColBreak (Html.Html msg)
@@ -94,10 +94,10 @@ simpleRow cols =
 * `options` List of row options
 * `cols` List of columns
 -}
-row : List (Row.RowOption msg) -> List (Column msg) -> Html msg
+row : List (Row.Option msg) -> List (Column msg) -> Html msg
 row options cols =
     div
-        (GridInternal2.rowAttributes options)
+        (GridInternal.rowAttributes options)
         (List.map renderCol cols)
 
 
@@ -106,7 +106,7 @@ row options cols =
 * `options` List of column options
 * `cols` List of child elments
 -}
-col : List (Col.ColOption msg) -> List (Html msg) -> Column msg
+col : List (Col.Option msg) -> List (Html msg) -> Column msg
 col options children =
     Column
         { options = options
@@ -127,7 +127,7 @@ renderCol column =
     case column of
         (Column { options, children }) ->
             div
-                (GridInternal2.colAttributes options)
+                (GridInternal.colAttributes options)
                 children
         (ColBreak e) ->
             e

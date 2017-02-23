@@ -5,17 +5,17 @@ import Html.Attributes exposing (class)
 
 
 type ColOption msg
-    = Widths (List Width)
-    | Offsets (List Offset)
-    | Pulls (List Pull)
-    | Pushes (List Push)
-    | ColAligns (List VAlign)
+    = ColWidth Width
+    | ColOffset Offset
+    | ColPull Pull
+    | ColPush Push
+    | ColAlign VAlign
     | ColAttrs (List (Html.Attribute msg))
 
 
 type RowOption msg
-    = RowVAligns (List VAlign)
-    | RowHAligns (List HAlign)
+    = RowVAlign VAlign
+    | RowHAlign HAlign
     | RowAttrs (List (Html.Attribute msg))
 
 
@@ -171,6 +171,39 @@ type alias RowOptions msg =
 
 
 
+width : ScreenSize -> ColumnCount -> ColOption msg
+width size count =
+    ColWidth <| Width size count
+
+colVAlign : ScreenSize -> VerticalAlign -> ColOption msg
+colVAlign size align =
+    ColAlign <| VAlign size align
+
+
+offset : ScreenSize -> OffsetCount -> ColOption msg
+offset size count =
+    ColOffset <| Offset size count
+
+pull : ScreenSize -> MoveCount -> ColOption msg
+pull size count =
+    ColPull <| Pull size count
+
+
+push : ScreenSize -> MoveCount -> ColOption msg
+push size count =
+    ColPush <| Push size count
+
+
+rowVAlign : ScreenSize -> VerticalAlign -> RowOption msg
+rowVAlign size align =
+    RowVAlign <| VAlign size align
+
+
+rowHAlign : ScreenSize -> HorizontalAlign -> RowOption msg
+rowHAlign size align =
+    RowHAlign <| HAlign size align
+
+
 
 colAttributes : List (ColOption msg) -> List (Html.Attribute msg)
 colAttributes modifiers =
@@ -261,20 +294,20 @@ applyColOption modifier options =
         ColAttrs attrs ->
             { options | attributes = options.attributes ++ attrs }
 
-        Widths widths ->
-            List.foldl applyColWidth options widths
+        ColWidth width ->
+            applyColWidth width options
 
-        Offsets offsets ->
-            List.foldl applyColOffset options offsets
+        ColOffset offset ->
+            applyColOffset offset options
 
-        Pulls pulls ->
-            List.foldl applyColPull options pulls
+        ColPull pull ->
+            applyColPull pull options
 
-        Pushes pushes ->
-            List.foldl applyColPush options pushes
+        ColPush push ->
+            applyColPush push options
 
-        ColAligns aligns ->
-            List.foldl applyColAlign options aligns
+        ColAlign align ->
+            applyColAlign align options
 
 
 applyColWidth : Width -> ColOptions msg -> ColOptions msg
@@ -378,11 +411,11 @@ applyRowOption modifier options =
         RowAttrs attrs ->
             { options | attributes = options.attributes ++ attrs }
 
-        RowVAligns aligns ->
-            List.foldl applyRowVAlign options aligns
+        RowVAlign align ->
+            applyRowVAlign align options
 
-        RowHAligns aligns ->
-            List.foldl applyRowHAlign options aligns
+        RowHAlign align ->
+            applyRowHAlign align options
 
 
 
@@ -588,7 +621,7 @@ screenSizeToPartialString screenSize =
             "-" ++ s ++ "-"
 
         Nothing ->
-            ""
+            "-"
 
 
 screenSizeOption : ScreenSize -> Maybe String

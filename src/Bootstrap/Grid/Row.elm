@@ -1,244 +1,239 @@
 module Bootstrap.Grid.Row exposing (..)
 
 
+{-| Functions for creating grid row options.
+
+
+# Vertical alignment
+@docs topXs, topSm, topMd, topLg, topXl, middleXs, middleSm, middleMd, middleLg, middleXl, bottomXs, bottomSm, bottomMd, bottomLg, bottomXl
+
+
+# Horizontal alignment
+@docs leftXs, leftSm, leftMd, leftLg, leftXl, centerXs, centerSm, centerMd, centerLg, centerXl, rightXs, rightSm, rightMd, rightLg, rightXl, aroundXs, aroundSm, aroundMd, aroundLg, aroundXl, betweenXs, betweenSm, betweenMd, betweenLg, betweenXl
+
+
+# Misc
+@docs attrs, Option
+
+-}
 import Html
 import Bootstrap.Grid.Internal as Internal exposing (..)
 
 
-
-type alias RowOption msg = Internal.RowOption msg
-type alias VAlign = Internal.VAlign
-type alias HAlign = Internal.HAlign
-
+{-| Opaque type representing valid row options
+-}
+type alias Option msg = Internal.RowOption msg
 
 
-attrs : List (Html.Attribute msg) -> RowOption msg
+{-| Use this function when you need to add custom Html attributes to the row container element.
+-}
+attrs : List (Html.Attribute msg) -> Option msg
 attrs attrs =
     RowAttrs attrs
-
-
-verticalAlign : VAlign -> RowOption msg
-verticalAlign vAlign =
-    RowVAligns [ vAlign ]
-
-
-verticalAligns : List VAlign -> RowOption msg
-verticalAligns vAligns =
-    RowVAligns vAligns
-
-
-horizontalAlign : HAlign -> RowOption msg
-horizontalAlign hAlign =
-    RowHAligns [ hAlign ]
-
-
-horizontalAligns : List HAlign -> RowOption msg
-horizontalAligns hAligns =
-    RowHAligns hAligns
 
 
 
 {- *********** Vertical Aligns ******************* -}
 
 {-| -}
-topXs : VAlign
+topXs : Option msg
 topXs =
-    VAlign XS Top
+    rowVAlign XS Top
 
 {-| -}
-topSm : VAlign
+topSm : Option msg
 topSm =
-    VAlign SM Top
+    rowVAlign SM Top
 
 {-| -}
-topMd : VAlign
+topMd : Option msg
 topMd =
-    VAlign MD Top
+    rowVAlign MD Top
 
 {-| -}
-topLg : VAlign
+topLg : Option msg
 topLg =
-    VAlign LG Top
+    rowVAlign LG Top
 
 {-| -}
-topXl : VAlign
+topXl : Option msg
 topXl =
-    VAlign XL Top
+    rowVAlign XL Top
 
 {-| -}
-middleXs : VAlign
+middleXs : Option msg
 middleXs =
-    VAlign XS Middle
+    rowVAlign XS Middle
 
 {-| -}
-middleSm : VAlign
+middleSm : Option msg
 middleSm =
-    VAlign SM Middle
+    rowVAlign SM Middle
 
 {-| -}
-middleMd : VAlign
+middleMd : Option msg
 middleMd =
-    VAlign MD Middle
+    rowVAlign MD Middle
 
 {-| -}
-middleLg : VAlign
+middleLg : Option msg
 middleLg =
-    VAlign LG Middle
+    rowVAlign LG Middle
 
 {-| -}
-middleXl : VAlign
+middleXl : Option msg
 middleXl =
-    VAlign XL Middle
+    rowVAlign XL Middle
 
 {-| -}
-bottomXs : VAlign
+bottomXs : Option msg
 bottomXs =
-    VAlign XS Bottom
+    rowVAlign XS Bottom
 
 {-| -}
-bottomSm : VAlign
+bottomSm : Option msg
 bottomSm =
-    VAlign SM Bottom
+    rowVAlign SM Bottom
 
 {-| -}
-bottomMd : VAlign
+bottomMd : Option msg
 bottomMd =
-    VAlign MD Bottom
+    rowVAlign MD Bottom
 
 {-| -}
-bottomLg : VAlign
+bottomLg : Option msg
 bottomLg =
-    VAlign LG Bottom
+    rowVAlign LG Bottom
 
 {-| -}
-bottomXl : VAlign
+bottomXl : Option msg
 bottomXl =
-    VAlign XL Bottom
+    rowVAlign XL Bottom
 
 
 
 {- ****************** Horizontal aligns ***************** -}
 {-| -}
-leftXs : HAlign
+leftXs : Option msg
 leftXs =
-    HAlign XS Left
+    rowHAlign XS Left
 
 {-| -}
-leftSm : HAlign
+leftSm : Option msg
 leftSm =
-    HAlign SM Left
+    rowHAlign SM Left
 
 {-| -}
-leftMd : HAlign
+leftMd : Option msg
 leftMd =
-    HAlign MD Left
+    rowHAlign MD Left
 
 {-| -}
-leftLg : HAlign
+leftLg : Option msg
 leftLg =
-    HAlign LG Left
+    rowHAlign LG Left
 
 {-| -}
-leftXl : HAlign
+leftXl : Option msg
 leftXl =
-    HAlign XL Left
+    rowHAlign XL Left
 
 {-| -}
-centerXs : HAlign
+centerXs : Option msg
 centerXs =
-    HAlign XS Center
+    rowHAlign XS Center
 
 {-| -}
-centerSm : HAlign
+centerSm : Option msg
 centerSm =
-    HAlign SM Center
+    rowHAlign SM Center
 
 {-| -}
-centerMd : HAlign
+centerMd : Option msg
 centerMd =
-    HAlign MD Center
+    rowHAlign MD Center
 
 {-| -}
-centerLg : HAlign
+centerLg : Option msg
 centerLg =
-    HAlign LG Center
+    rowHAlign LG Center
 
 {-| -}
-centerXl : HAlign
+centerXl : Option msg
 centerXl =
-    HAlign XL Center
+    rowHAlign XL Center
 
 {-| -}
-rightXs : HAlign
+rightXs : Option msg
 rightXs =
-    HAlign XS Right
+    rowHAlign XS Right
 
 {-| -}
-rightSm : HAlign
+rightSm : Option msg
 rightSm =
-    HAlign SM Right
+    rowHAlign SM Right
 
 {-| -}
-rightMd : HAlign
+rightMd : Option msg
 rightMd =
-    HAlign MD Right
+    rowHAlign MD Right
 
 {-| -}
-rightLg : HAlign
+rightLg : Option msg
 rightLg =
-    HAlign LG Right
+    rowHAlign LG Right
 
 {-| -}
-rightXl : HAlign
+rightXl : Option msg
 rightXl =
-    HAlign XL Right
+    rowHAlign XL Right
 
 {-| -}
-aroundXs : HAlign
+aroundXs : Option msg
 aroundXs =
-    HAlign XS Around
+    rowHAlign XS Around
 
 {-| -}
-aroundSm : HAlign
+aroundSm : Option msg
 aroundSm =
-    HAlign SM Around
+    rowHAlign SM Around
 
 {-| -}
-aroundMd : HAlign
+aroundMd : Option msg
 aroundMd =
-    HAlign MD Around
+    rowHAlign MD Around
 
 {-| -}
-aroundLg : HAlign
+aroundLg : Option msg
 aroundLg =
-    HAlign LG Around
+    rowHAlign LG Around
 
 {-| -}
-aroundXl : HAlign
+aroundXl : Option msg
 aroundXl =
-    HAlign XL Around
+    rowHAlign XL Around
 
 {-| -}
-betweenXs : HAlign
+betweenXs : Option msg
 betweenXs =
-    HAlign XS Between
+    rowHAlign XS Between
 
 {-| -}
-betweenSm : HAlign
+betweenSm : Option msg
 betweenSm =
-    HAlign SM Between
+    rowHAlign SM Between
 
 {-| -}
-betweenMd : HAlign
+betweenMd : Option msg
 betweenMd =
-    HAlign MD Between
+    rowHAlign MD Between
 
 {-| -}
-betweenLg : HAlign
+betweenLg : Option msg
 betweenLg =
-    HAlign LG Between
+    rowHAlign LG Between
 
 {-| -}
-betweenXl : HAlign
+betweenXl : Option msg
 betweenXl =
-    HAlign XL Between
+    rowHAlign XL Between
