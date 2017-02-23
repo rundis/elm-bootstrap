@@ -2,13 +2,13 @@ module Page.Progress exposing (view, State, initialState)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick, onInput)
 import Bootstrap.Progress as Progress
 import Util
-import Bootstrap.Checkbox as Checkbox
 import Bootstrap.Form as Form
-import Bootstrap.TextInput as Input
-
+import Bootstrap.Form.Input as Input
+import Bootstrap.Form.Checkbox as Checkbox
+import Bootstrap.Form.Radio as Radio
+import Bootstrap.Grid.Col as Col
 
 
 type alias State =
@@ -57,6 +57,7 @@ view state toMsg =
     ]
 
 
+quickStart : List (Html msg)
 quickStart =
     [ h2 [] [ text "Getting started" ]
     , p [] [ text """In it's simplest form, you only need to set a progress value between 0-100.
@@ -99,63 +100,61 @@ optionsForm : State -> (State -> msg) -> Html msg
 optionsForm ({ options } as state) toMsg =
     let
         radioAttr opt =
-            [ Form.radioAttr <| checked <| opt == state.options.background
-            , Form.radioAttr <| onClick <| toMsg { state | options = { options | background = opt } }
+            [ Radio.checked <| opt == state.options.background
+            , Radio.name "bgoptions"
+            , Radio.onClick <| toMsg { state | options = { options | background = opt } }
             ]
     in
-        div [ class "row" ]
-            [ div
-                [ class "col-4" ]
-                [ Form.form
-                    []
-                    [ Form.radioGroup
-                        { label =
-                            Form.label
-                                [ Form.labelAttr <| style [ ( "font-weight", "bold" ) ] ]
-                                [ text "Background options" ]
-                        , name = "myradios"
-                        , radios =
-                            [ Form.radio (radioAttr Default) "Default"
-                            , Form.radio (radioAttr Success) "Progress.success"
-                            , Form.radio (radioAttr Info) "Progress.info"
-                            , Form.radio (radioAttr Warning) "Progress.warning"
-                            , Form.radio (radioAttr Danger) "Progress.danger"
-                            ]
-                        }
+        Form.form [ class "container" ]
+            [ Form.row []
+                [ Form.col [ Col.xs4 ]
+                    [ Form.label
+                        [ style [ ( "font-weight", "bold" ) ] ]
+                        [ text "Background options" ]
+                    , div []
+                        [ Radio.radio (radioAttr Default) "Default"
+                        , Radio.radio (radioAttr Success) "Progress.success"
+                        , Radio.radio (radioAttr Info) "Progress.info"
+                        , Radio.radio (radioAttr Warning) "Progress.warning"
+                        , Radio.radio (radioAttr Danger) "Progress.danger"
+                        ]
                     ]
-                ]
-            , div
-                [ class "col", style [ ( "margin-top", "8px" ) ] ]
-                [ Checkbox.checkbox
-                    [ Checkbox.attr <| checked options.striped
-                    , Checkbox.attr <| onClick <| toMsg { state | options = { options | striped = not options.striped } }
-                    ]
-                    "Form.striped"
-                , Checkbox.checkbox
-                    [ Checkbox.attr <| checked options.animated
-                    , Checkbox.attr <| onClick <| toMsg { state | options = { options | animated = not options.animated } }
-                    ]
-                    "Form.animated"
-                , Input.text
-                    [ Input.attr <| defaultValue options.label
-                    , Input.attr <|
-                        onInput
+                , Form.col
+                    [ Col.attrs [ style [ ( "margin-top", "8px" ) ] ] ]
+                    [ Checkbox.checkbox
+                        [ Checkbox.checked options.striped
+                        , Checkbox.onCheck
+                            (\b -> toMsg { state | options = { options | striped = b } })
+                        ]
+                        "Form.striped"
+                    , Checkbox.checkbox
+                        [ Checkbox.checked options.animated
+                        , Checkbox.onCheck
+                            (\b -> toMsg { state | options = { options | animated = b } })
+                        ]
+                        "Form.animated"
+                    , Input.text
+                        [ Input.defaultValue options.label
+                        , Input.onInput
                             (\v ->
                                 toMsg { state | options = { options | label = v } }
                             )
-                    ]
-                , Input.number
-                    [ Input.attr <| Html.Attributes.min "1"
-                    , Input.attr <| Html.Attributes.max "100"
-                    , Input.attr <| defaultValue options.height
-                    , Input.attr <|
-                        onInput
+                        ]
+                    , Input.number
+                        [ Input.attrs
+                            [ Html.Attributes.min "1"
+                            , Html.Attributes.max "100"
+                            ]
+                        , Input.defaultValue options.height
+                        , Input.onInput
                             (\v ->
                                 toMsg { state | options = { options | height = v } }
                             )
+                        ]
                     ]
                 ]
             ]
+
 
 
 progressOptions :

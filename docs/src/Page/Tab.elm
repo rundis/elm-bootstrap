@@ -2,10 +2,10 @@ module Page.Tab exposing (view, initialState, subscriptions, State)
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
 import Bootstrap.Tab as Tab
 import Util
 import Bootstrap.Form as Form
+import Bootstrap.Form.Radio as Radio
 
 
 type alias State =
@@ -292,16 +292,15 @@ customized : State -> (State -> msg) -> List (Html msg)
 customized state toMsg =
     let
         radioAttrs layout =
-            [ Form.radioInline
-            , Form.radioAttr <| onClick <| toMsg { state | layout = layout }
-            , Form.radioAttr <| checked <| layout == state.layout
+            [ Radio.inline
+            , Radio.onClick <| toMsg { state | layout = layout }
+            , Radio.checked <| layout == state.layout
             ]
 
         tabOptions =
             case state.layout of
                 None ->
                     []
-
 
                 Center ->
                     [ Tab.center ]
@@ -320,23 +319,20 @@ customized state toMsg =
         [ h2 [] [ text "Customizing with options" ]
         , p [] [ text "You can easily customize spacing and alignement of tabs using helper functions" ]
         , Util.example
-            [ div [ class "row mb-3"]
-                  [ div [ class "col"]
-                      [ Form.form []
-                          [ Form.customItem <|
-                              h5 [ ]  [ text "Tab layout options" ]
-                          , Form.radioGroupSimple
-                              "Horizontal alignment"
-                              [ Form.radio (radioAttrs None)  "Default"
-                              , Form.radio (radioAttrs Center)  "Tab.center"
-                              , Form.radio (radioAttrs Right)  "Tab.right"
-                              , Form.radio (radioAttrs Justified)  "Tab.justified"
-                              , Form.radio (radioAttrs Fill)  "Tab.fill"
-                              ]
-                          ]
-                      ]
-                  , hr [] []
-                  ]
+            [ Form.form []
+                [ h5 [] [ text "Tab layout options" ]
+                , Form.group []
+                    [ Form.label [] [ text "Horizontal alignment"]
+                    , div []
+                        [ Radio.radio (radioAttrs None)  "Default"
+                        , Radio.radio (radioAttrs Center)  "Tab.center"
+                        , Radio.radio (radioAttrs Right)  "Tab.right"
+                        , Radio.radio (radioAttrs Justified)  "Tab.justified"
+                        , Radio.radio (radioAttrs Fill)  "Tab.fill"
+                        ]
+                    ]
+                , hr [] []
+                ]
             , Tab.pills
                 state.customizedState
                 { toMsg = (\ts -> toMsg { state | customizedState = ts })

@@ -147,19 +147,19 @@ oneColWidth =
         [ Grid.container []
             [ Grid.row []
                 [ Grid.col [] [ text "1 of 3" ]
-                , Grid.col [ Col.width Col.xs6 ] [ text "2 of 3 (wider) " ]
+                , Grid.col [ Col.xs6 ] [ text "2 of 3 (wider) " ]
                 , Grid.col [] [ text "3 of 3" ]
                 ]
             , Grid.row []
                 [ Grid.col [] [ text "1 of 3" ]
-                , Grid.col [ Col.width Col.xs5 ] [ text "2 of 3 (wider)" ]
+                , Grid.col [ Col.xs5 ] [ text "2 of 3 (wider)" ]
                 , Grid.col [] [ text "3 of 3" ]
                 ]
             ]
         ]
     , Util.code oneColWidthCode
     , Util.calloutInfo
-        [ p [] [ text "To set the width of a column use the Col.width option function, or to set multiple use Col.widths." ] ]
+        [ p [] [ text "To set the width of a column use on of the Col width option functions." ] ]
     ]
 
 
@@ -169,12 +169,12 @@ oneColWidthCode =
 Grid.container []
     [ Grid.row []
         [ Grid.col [] [ text "1 of 3"]
-        , Grid.col [ Col.width Col.xs6 ] [ text "2 of 3 (wider) "]
+        , Grid.col [ Col.xs6 ] [ text "2 of 3 (wider) "]
         , Grid.col [] [ text "3 of 3"]
         ]
     , Grid.row []
         [ Grid.col [] [ text "1 of 3"]
-        , Grid.col [ Col.width Col.xs5 ] [ text "2 of 3 (wider)"]
+        , Grid.col [ Col.xs5 ] [ text "2 of 3 (wider)"]
         , Grid.col [] [ text "3 of 3"]
         ]
     ]
@@ -189,24 +189,24 @@ variableWidth =
                     This, in conjunction with horizontal alignment functions for rows, is very useful for centering layouts with uneven column sizes as viewport width changes.""" ]
     , exampleOneRow
         [ Grid.container []
-            [ Grid.row [ Row.horizontalAlign Row.centerMd ]
+            [ Grid.row [ Row.centerMd ]
                 [ Grid.col
-                    [ Col.widths [ Col.xs, Col.lg2 ] ]
+                    [ Col.xs, Col.lg2 ]
                     [ text "1 of 3" ]
                 , Grid.col
-                    [ Col.widths [ Col.xs12, Col.mdAuto ] ]
+                    [ Col.xs12, Col.mdAuto ]
                     [ text "Variable width content" ]
                 , Grid.col
-                    [ Col.widths [ Col.xs, Col.lg2 ] ]
+                    [ Col.xs, Col.lg2 ]
                     [ text "3 of 3" ]
                 ]
             , Grid.row []
                 [ Grid.col [] [ text "1 of 3" ]
                 , Grid.col
-                    [ Col.widths [ Col.xs12, Col.mdAuto ] ]
+                    [ Col.xs12, Col.mdAuto ]
                     [ text "Variable width content" ]
                 , Grid.col
-                    [ Col.widths [ Col.xs, Col.lg2 ] ]
+                    [ Col.xs, Col.lg2 ]
                     [ text "3 of 3" ]
                 ]
             ]
@@ -224,22 +224,22 @@ variableWidthCode =
 Grid.container []
     [ Grid.row [ Row.horisontalAlign Row.centerMd ] -- horizontally center all cols in this row for breakpoint MD (medium) and up.
         [ Grid.col
-            [ Col.widths [ Col.xs, Col.lg2 ] ]
+            [ Col.xs, Col.lg2 ]
             [ text "1 of 3" ]
         , Grid.col
-            [ Col.widths [ Col.xs12, Col.mdAuto ] ]
+            [ Col.xs12, Col.mdAuto ]
             [ text "Variable width content" ]
         , Grid.col
-            [ Col.widths [ Col.xs, Col.lg2 ] ]
+            [ Col.xs, Col.lg2 ]
             [ text "3 of 3" ]
         ]
     , Grid.row []
         [ Grid.col [] [ text "1 of 3" ]
         , Grid.col
-            [ Col.widths [ Col.xs12, Col.mdAuto ] ]
+            [ Col.xs12, Col.mdAuto ]
             [ text "Variable width content" ]
         , Grid.col
-            [ Col.widths [ Col.xs, Col.lg2 ] ]
+            [ Col.xs, Col.lg2 ]
             [ text "3 of 3" ]
         ]
     ]
@@ -289,13 +289,13 @@ stackedSm =
     , exampleOneRow
         [ Grid.container []
             [ Grid.row []
-                [ Grid.col [ Col.width Col.sm8 ] [ text "col-sm-8" ]
-                , Grid.col [ Col.width Col.sm4 ] [ text "col-sm-4" ]
+                [ Grid.col [ Col.sm8 ] [ text "col-sm-8" ]
+                , Grid.col [ Col.sm4 ] [ text "col-sm-4" ]
                 ]
             , Grid.row []
-                [ Grid.col [ Col.width Col.sm ] [ text "col-sm" ]
-                , Grid.col [ Col.width Col.sm ] [ text "col-sm" ]
-                , Grid.col [ Col.width Col.sm ] [ text "col-sm" ]
+                [ Grid.col [ Col.sm ] [ text "col-sm" ]
+                , Grid.col [ Col.sm ] [ text "col-sm" ]
+                , Grid.col [ Col.sm ] [ text "col-sm" ]
                 ]
             ]
         ]
@@ -308,13 +308,13 @@ stackedSmCode =
     Util.toMarkdownElm """
 Grid.container []
     [ Grid.row []
-        [ Grid.col [ Col.width Col.sm8 ] [ text "col-sm-8" ]
-        , Grid.col [ Col.width Col.sm4] [ text "col-sm-4" ]
+        [ Grid.col [ Col.sm8 ] [ text "col-sm-8" ]
+        , Grid.col [ Col.sm4] [ text "col-sm-4" ]
         ]
     , Grid.row []
-        [ Grid.col [ Col.width Col.sm ] [ text "col-sm" ]
-        , Grid.col [ Col.width Col.sm ] [ text "col-sm" ]
-        , Grid.col [ Col.width Col.sm ] [ text "col-sm" ]
+        [ Grid.col [ Col.sm ] [ text "col-sm" ]
+        , Grid.col [ Col.sm ] [ text "col-sm" ]
+        , Grid.col [ Col.sm ] [ text "col-sm" ]
         ]
     ]
 """
@@ -330,26 +330,26 @@ mixMatch =
         [ Grid.container []
             [ Grid.row []
                 [ Grid.col
-                    [ Col.widths [ Col.xs, Col.md8 ] ]
+                    [ Col.xs, Col.md8 ]
                     [ text "col col-md-8" ]
                 , Grid.col
-                    [ Col.widths [ Col.xs6, Col.md4 ] ]
+                    [ Col.xs6, Col.md4 ]
                     [ text "col-6 col-md-4" ]
                 ]
             , Grid.row []
                 [ Grid.col
-                    [ Col.widths [ Col.xs6, Col.md4 ] ]
+                    [ Col.xs6, Col.md4 ]
                     [ text "col-6 col-md-4" ]
                 , Grid.col
-                    [ Col.widths [ Col.xs6, Col.md4 ] ]
+                    [ Col.xs6, Col.md4 ]
                     [ text "col-6 col-md-4" ]
                 , Grid.col
-                    [ Col.widths [ Col.xs6, Col.md4 ] ]
+                    [ Col.xs6, Col.md4 ]
                     [ text "col-6 col-md-4" ]
                 ]
             , Grid.row []
-                [ Grid.col [ Col.width Col.xs6 ] [ text "col-6" ]
-                , Grid.col [ Col.width Col.xs6 ] [ text "col-6" ]
+                [ Grid.col [ Col.xs6 ] [ text "col-6" ]
+                , Grid.col [ Col.xs6 ] [ text "col-6" ]
                 ]
             ]
         ]
@@ -363,26 +363,26 @@ mixMatchCode =
 Grid.container []
     [ Grid.row []
         [ Grid.col
-            [ Col.widths [Col.xs, Col.md8 ] ]
+            [ Col.xs, Col.md8 ]
             [ text "col col-md-8" ]
         , Grid.col
-            [ Col.widths [Col.xs6, Col.md4 ] ]
+            [ Col.xs6, Col.md4 ]
             [ text "col-6 col-md-4" ]
         ]
     , Grid.row []
         [ Grid.col
-            [ Col.widths [ Col.xs6, Col.md4] ]
+            [  Col.xs6, Col.md4 ]
             [ text "col-6 col-md-4" ]
         , Grid.col
-            [ Col.widths [ Col.xs6, Col.md4] ]
+            [  Col.xs6, Col.md4 ]
             [ text "col-6 col-md-4" ]
         , Grid.col
-            [ Col.widths [ Col.xs6, Col.md4] ]
+            [  Col.xs6, Col.md4 ]
             [ text "col-6 col-md-4" ]
         ]
     , Grid.row []
-        [ Grid.col [ Col.width Col.xs6 ] [ text "col-6" ]
-        , Grid.col [ Col.width Col.xs6 ] [ text "col-6" ]
+        [ Grid.col [ Col.xs6 ] [ text "col-6" ]
+        , Grid.col [ Col.xs6 ] [ text "col-6" ]
         ]
     ]
 """
@@ -396,13 +396,13 @@ verticalAlign =
     , flexExampleRow
         [ Grid.container []
             [ Grid.row
-                [ Row.verticalAlign Row.topXs ]
+                [ Row.topXs ]
                 threeSimpleCols
             , Grid.row
-                [ Row.verticalAlign Row.middleXs ]
+                [ Row.middleXs ]
                 threeSimpleCols
             , Grid.row
-                [ Row.verticalAlign Row.bottomXs ]
+                [ Row.bottomXs ]
                 threeSimpleCols
             ]
         ]
@@ -411,13 +411,13 @@ verticalAlign =
         [ Grid.container []
             [ Grid.row []
                 [ Grid.col
-                    [ Col.verticalAlign Col.topXs ]
+                    [ Col.topXs ]
                     [ text "One of three columns" ]
                 , Grid.col
-                    [ Col.verticalAlign Col.middleXs ]
+                    [ Col.middleXs ]
                     [ text "One of three columns" ]
                 , Grid.col
-                    [ Col.verticalAlign Col.bottomXs ]
+                    [ Col.bottomXs ]
                     [ text "One of three columns" ]
                 ]
             ]
@@ -439,13 +439,13 @@ myGrid : Html msg
 myGrid =
     Grid.container []
         [ Grid.row
-            [ Row.verticalAlign Row.topXs ]
+            [ Row.topXs ]
             threeSimpleCols
         , Grid.row
-            [ Row.verticalAlign Row.middleXs ]
+            [ Row.middleXs ]
             threeSimpleCols
         , Grid.row
-            [ Row.verticalAlign Row.bottomXs ]
+            [ Row.bottomXs ]
             threeSimpleCols
         ]
 
@@ -462,13 +462,13 @@ verticalAlignColCode =
 Grid.container []
     [ Grid.row []
         [ Grid.col
-            [ Col.verticalAlign Col.topXs ]
+            [ Col.topXs ]
             [ text "One of three columns" ]
         , Grid.col
-            [ Col.verticalAlign Col.middleXs ]
+            [ Col.middleXs ]
             [ text "One of three columns" ]
         , Grid.col
-            [ Col.verticalAlign Col.bottomXs ]
+            [ Col.bottomXs ]
             [ text "One of three columns" ]
         ]
     ]
@@ -481,19 +481,19 @@ horizontalAlign =
     , exampleOneRow
         [ Grid.container []
             [ Grid.row
-                [ Row.horizontalAlign Row.leftXs ]
+                [ Row.leftXs ]
                 twoSimpleCols
             , Grid.row
-                [ Row.horizontalAlign Row.centerXs ]
+                [ Row.centerXs ]
                 twoSimpleCols
             , Grid.row
-                [ Row.horizontalAlign Row.rightXs ]
+                [ Row.rightXs ]
                 twoSimpleCols
             , Grid.row
-                [ Row.horizontalAlign Row.aroundXs ]
+                [ Row.aroundXs ]
                 twoSimpleCols
             , Grid.row
-                [ Row.horizontalAlign Row.betweenXs ]
+                [ Row.betweenXs ]
                 twoSimpleCols
             ]
         ]
@@ -503,7 +503,7 @@ horizontalAlign =
 twoSimpleCols : List (Grid.Column msg)
 twoSimpleCols =
     List.repeat 2 <|
-        Grid.col [ Col.width Col.xs4 ] [ text "One of two columns" ]
+        Grid.col [ Col.xs4 ] [ text "One of two columns" ]
 
 
 horizontalAlignCode : Html msg
@@ -514,26 +514,26 @@ myGrid : Html msg
 myGrid =
     Grid.container []
         [ Grid.row
-            [ Row.horizontalAlign Row.leftXs ]
+            [ Row.leftXs ]
             twoSimpleCols
         , Grid.row
-            [ Row.horizontalAlign Row.centerXs ]
+            [ Row.centerXs ]
             twoSimpleCols
         , Grid.row
-            [ Row.horizontalAlign Row.rightXs ]
+            [ Row.rightXs ]
             twoSimpleCols
         , Grid.row
-            [ Row.horizontalAlign Row.aroundXs ]
+            [ Row.aroundXs ]
             twoSimpleCols
         , Grid.row
-            [ Row.horizontalAlign Row.betweenXs ]
+            [ Row.betweenXs ]
             twoSimpleCols
         ]
 
 twoSimpleCols : List (Grid.Column msg)
 twoSimpleCols =
     List.repeat 2 <|
-        Grid.col [ Col.width Col.xs4 ] [ text "One of two columns" ]
+        Grid.col [ Col.xs4 ] [ text "One of two columns" ]
 """
 
 offsets : List (Html msg)
@@ -544,22 +544,22 @@ offsets =
     , exampleOneRow
         [ Grid.container []
             [ Grid.row []
-                [ Grid.col [ Col.width Col.md4 ] [ text "col-md-4" ]
+                [ Grid.col [ Col.md4 ] [ text "col-md-4" ]
                 , Grid.col
-                    [ Col.width Col.md4, Col.offset Col.offsetMd4 ]
+                    [ Col.md4, Col.offsetMd4 ]
                     [ text "col-md-4 offset-md-4" ]
                 ]
             , Grid.row []
                 [ Grid.col
-                    [ Col.width Col.md3, Col.offset Col.offsetMd3 ]
+                    [ Col.md3, Col.offsetMd3 ]
                     [ text "col-md-3 offset-md-3" ]
                 , Grid.col
-                    [ Col.width Col.md3, Col.offset Col.offsetMd3 ]
+                    [ Col.md3, Col.offsetMd3 ]
                     [ text "col-md-3 offset-md-3" ]
                 ]
             , Grid.row []
                 [ Grid.col
-                    [ Col.width Col.md6, Col.offset Col.offsetMd3 ]
+                    [ Col.md6, Col.offsetMd3 ]
                     [ text "col-md-6 offset-md-3" ]
                 ]
             ]
@@ -573,22 +573,22 @@ offsetsCode =
     Util.toMarkdownElm """
 Grid.container []
     [ Grid.row []
-        [ Grid.col [ Col.width Col.md4 ] [ text "col-md-4" ]
+        [ Grid.col [ Col.md4 ] [ text "col-md-4" ]
         , Grid.col
-            [ Col.width Col.md4, Col.offset Col.offsetMd4 ]
+            [ Col.md4, Col.offsetMd4 ]
             [ text "col-md-4 offset-md-4" ]
         ]
     , Grid.row []
         [ Grid.col
-            [ Col.width Col.md3, Col.offset Col.offsetMd3 ]
+            [ Col.md3, Col.offsetMd3 ]
             [ text "col-md-3 offset-md-3" ]
         , Grid.col
-            [ Col.width Col.md3, Col.offset Col.offsetMd3 ]
+            [ Col.md3, Col.offsetMd3 ]
             [ text "col-md-3 offset-md-3" ]
         ]
     , Grid.row []
         [ Grid.col
-            [ Col.width Col.md6, Col.offset Col.offsetMd3 ]
+            [ Col.md6, Col.offsetMd3 ]
             [ text "col-md-6 offset-md-3" ]
         ]
     ]
@@ -603,10 +603,10 @@ pushPull =
         [ Grid.container []
             [ Grid.row []
                 [ Grid.col
-                    [ Col.width Col.md9, Col.push Col.pushMd3 ]
+                    [ Col.md9, Col.pushMd3 ]
                     [ text "col-md-9 push-md-3"]
                 , Grid.col
-                    [ Col.width Col.md3, Col.pull Col.pullMd9 ]
+                    [ Col.md3, Col.pullMd9 ]
                     [ text "col-md-3 pull-md-9" ]
                 ]
             ]
@@ -621,10 +621,10 @@ pushPullCode =
 Grid.container []
     [ Grid.row []
         [ Grid.col
-            [ Col.width Col.md9, Col.push Col.pushMd3 ]
+            [ Col.md9, Col.pushMd3 ]
             [ text "col-md-9 push-md-3"]
         , Grid.col
-            [ Col.width Col.md3, Col.pull Col.pullMd9 ]
+            [ Col.md3, Col.pullMd9 ]
             [ text "col-md-3 pull-md-9" ]
         ]
     ]

@@ -267,8 +267,10 @@ custom =
         [ ListGroup.custom
             [ ListGroup.anchor
                 [ ListGroup.active
-                , ListGroup.attrs [ href "#" ]
-                , ListGroup.attrs [ class "flex-column align-items-start" ]
+                , ListGroup.attrs
+                    [ href "#"
+                    , class "flex-column align-items-start"
+                    ]
                 ]
                 [ div [ class "d-flex w-100 justify-content-between" ]
                     [ h5 [ class "mb-1" ] [ text "List group heading" ]
@@ -278,8 +280,10 @@ custom =
                 , small [] [ text "Oh yea that's neat" ]
                 ]
             , ListGroup.anchor
-                [ ListGroup.attrs [ href "#" ]
-                , ListGroup.attrs [ class "flex-column align-items-start" ]
+                [ ListGroup.attrs
+                    [ href "#"
+                    , class "flex-column align-items-start"
+                    ]
                 ]
                 [ div [ class "d-flex w-100 justify-content-between" ]
                     [ h5 [ class "mb-1" ] [ text "List group heading" ]
@@ -289,8 +293,10 @@ custom =
                 , small [] [ text "Oh yea that's neat" ]
                 ]
             , ListGroup.anchor
-                [ ListGroup.attrs [ href "#" ]
-                , ListGroup.attrs [ class "flex-column align-items-start" ]
+                [ ListGroup.attrs
+                    [ href "#"
+                    , class "flex-column align-items-start"
+                    ]
                 ]
                 [ div [ class "d-flex w-100 justify-content-between" ]
                     [ h5 [ class "mb-1" ] [ text "List group heading" ]
@@ -311,8 +317,10 @@ customCode =
 ListGroup.custom
     [ ListGroup.anchor
         [ ListGroup.active
-        , ListGroup.attrs [ href "#" ]
-        , ListGroup.attrs [ class "flex-column align-items-start" ]
+        , ListGroup.attrs
+            [ href "#"
+            , class "flex-column align-items-start"
+            ]
         ]
         [ div [ class "d-flex w-100 justify-content-between" ]
             [ h5 [ class "mb-1" ] [ text "List group heading" ]
@@ -322,8 +330,10 @@ ListGroup.custom
         , small [] [ text "Oh yea that's neat" ]
         ]
     , ListGroup.anchor
-        [ ListGroup.attrs [ href "#" ]
-        , ListGroup.attrs [ class "flex-column align-items-start" ]
+        [ ListGroup.attrs
+            [ href "#"
+            , class "flex-column align-items-start"
+            ]
         ]
         [ div [ class "d-flex w-100 justify-content-between" ]
             [ h5 [ class "mb-1" ] [ text "List group heading" ]
@@ -333,8 +343,10 @@ ListGroup.custom
         , small [] [ text "Oh yea that's neat" ]
         ]
     , ListGroup.anchor
-        [ ListGroup.attrs [ href "#" ]
-        , ListGroup.attrs [ class "flex-column align-items-start" ]
+        [ ListGroup.attrs
+            [ href "#"
+            , class "flex-column align-items-start"
+            ]
         ]
         [ div [ class "d-flex w-100 justify-content-between" ]
             [ h5 [ class "mb-1" ] [ text "List group heading" ]

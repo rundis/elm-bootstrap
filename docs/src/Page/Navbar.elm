@@ -10,7 +10,7 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 
 import Bootstrap.Navbar as Navbar
-import Bootstrap.TextInput as Input
+import Bootstrap.Form.Input as Input
 import Bootstrap.Button as Button
 import Bootstrap.Grid as Grid
 import Util
@@ -199,7 +199,7 @@ custom state toMsg =
                 ]
             |> Navbar.customItems
                 [ Navbar.formItem []
-                    [ Input.text [ Input.attr <| placeholder "enter" ]
+                    [ Input.text [ Input.attrs [placeholder "enter" ]]
                     , Button.button
                         [ Button.success
                         , Button.attrs [ class "ml-sm-2"]

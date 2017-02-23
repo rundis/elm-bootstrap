@@ -160,15 +160,15 @@ grid state toMsg =
                 [ Grid.containerFluid [ class "bd-example-row" ]
                     [ Grid.row [ ]
                         [ Grid.col
-                            [ Col.width Col.sm4 ] [ text "Col sm4" ]
+                            [ Col.sm4 ] [ text "Col sm4" ]
                         , Grid.col
-                            [ Col.width Col.sm8 ] [ text "Col sm8" ]
+                            [ Col.sm8 ] [ text "Col sm8" ]
                         ]
                     , Grid.row [ ]
                         [ Grid.col
-                            [ Col.width Col.md4 ] [ text "Col md4" ]
+                            [ Col.md4 ] [ text "Col md4" ]
                         , Grid.col
-                            [ Col.width Col.md8 ] [ text "Col md8" ]
+                            [ Col.md8 ] [ text "Col md8" ]
                         ]
                     ]
                 ]
@@ -210,15 +210,15 @@ div []
                 [ Grid.containerFluid [ ]
                     [ Grid.row [ ]
                         [ Grid.col
-                            [ Col.width Col.sm4 ] [ text "Col sm4" ]
+                            [ Col.sm4 ] [ text "Col sm4" ]
                         , Grid.col
-                            [ Col.width Col.sm8 ] [ text "Col sm8" ]
+                            [ Col.sm8 ] [ text "Col sm8" ]
                         ]
                     , Grid.row [ ]
                         [ Grid.col
-                            [ Col.width Col.md4 ] [ text "Col md4" ]
+                            [ Col.md4 ] [ text "Col md4" ]
                         , Grid.col
-                            [ Col.width Col.md8 ] [ text "Col md8" ]
+                            [ Col.md8 ] [ text "Col md8" ]
                         ]
                     ]
                 ]

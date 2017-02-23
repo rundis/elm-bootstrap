@@ -7,6 +7,7 @@ import Bootstrap.ButtonGroup as ButtonGroup
 import Util
 
 
+view : List (Html msg)
 view =
     [ Util.simplePageHeader
         "Button"
@@ -23,6 +24,7 @@ view =
     ]
 
 
+examples : List (Html msg)
 examples =
     [ h2 [] [ text "Examples" ]
     , p [] [ text "Bootstrap includes six predefined button styles, each serving its own semantic purpose." ]
@@ -39,6 +41,7 @@ examples =
     ]
 
 
+examplesCode : Html msg
 examplesCode =
     Util.toMarkdownElm """
 div []
@@ -53,6 +56,7 @@ div []
 """
 
 
+linkButtons : List (Html msg)
 linkButtons =
     [ h2 [] [ text "Link buttons" ]
     , p [] [ text """You can also make links look like buttons using the linkButton function.
@@ -62,12 +66,14 @@ linkButtons =
     , Util.code linkButtonsCode
     ]
 
+linkButtonsCode : Html msg
 linkButtonsCode =
     Util.toMarkdownElm """
 Button.linkButton [ Button.primary, Button.attrs [ href "#"] ] [ text "Link button" ]
 """
 
 
+outlines : List (Html msg)
 outlines =
     [ h2 [] [ text "Examples" ]
     , p [] [ text "In need of a button, but not the hefty background colors they bring? Use the outline* functions to remove all background images and colors on any button." ]
@@ -83,6 +89,7 @@ outlines =
     ]
 
 
+outlinesCode : Html msg
 outlinesCode =
     Util.toMarkdownElm """
 div []
@@ -96,6 +103,7 @@ div []
 """
 
 
+sizes : List (Html msg)
 sizes =
     [ h2 [] [ text "Sizes" ]
     , p [] [ text "Fancy larger or smaller buttons? Use the large or small options."]
@@ -117,6 +125,7 @@ sizes =
     ]
 
 
+sizesCode : Html msg
 sizesCode =
     Util.toMarkdownElm """
 div []
@@ -128,6 +137,7 @@ div []
     ]
 """
 
+blockCode : Html msg
 blockCode =
     Util.toMarkdownElm """
 Button.button
@@ -135,6 +145,7 @@ Button.button
     [ text "Block level button" ]
 """
 
+disableds : List (Html msg)
 disableds =
     [ h2 [] [ text "Disabled state"]
     , p [] [ text "Make buttons look inactive by using the disable option." ]
@@ -157,6 +168,7 @@ disableds =
                         So to be safe, add a tabindex="-1" attribute on these links (to prevent them from receiving keyboard focus) and use custom JavaScript to disable their functionality. """]]
     ]
 
+disabledsCode : Html msg
 disabledsCode =
     Util.toMarkdownElm """
 div []
@@ -174,6 +186,7 @@ div []
 """
 
 
+composing : List (Html msg)
 composing =
     [ h2 [] [ text "Composing buttons"]
     , p [] [ text "Group a series of buttons together on a single line with the button group, or nest even further to create a button toolbar." ]
@@ -221,6 +234,7 @@ bunchOfButtons =
     ]
 
 
+groupBasicCode : Html msg
 groupBasicCode =
     Util.toMarkdownElm """
 ButtonGroup.group []
@@ -230,6 +244,7 @@ ButtonGroup.group []
     ]
 """
 
+groupSizingCode : Html msg
 groupSizingCode =
     Util.toMarkdownElm """
 div []
@@ -247,11 +262,13 @@ bunchOfButtons =
     ]
 """
 
+verticalGroupCode : Html msg
 verticalGroupCode =
     Util.toMarkdownElm """
 ButtonGroup.group [ ButtonGroup.vertical ] bunchOfButtons
 """
 
+toolbarCode : Html msg
 toolbarCode =
     Util.toMarkdownElm """
 ButtonGroup.toolbar []

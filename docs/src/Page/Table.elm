@@ -1,12 +1,10 @@
 module Page.Table exposing (view, State, initialState)
 
 import Html exposing (..)
-import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
 import Bootstrap.Table as Table
 import Bootstrap.Accordion as Accordion
 import Util
-import Bootstrap.Checkbox as Checkbox
+import Bootstrap.Form.Checkbox as Checkbox
 import Bootstrap.Card as Card
 
 
@@ -211,7 +209,7 @@ tableOptions state =
 optionChecks : State -> (State -> msg) -> Html msg
 optionChecks state toMsg =
     let
-        toggleOpt opt =
+        toggleOpt opt _ =
             if (List.any ((==) opt) state.tableOptions) then
                 toMsg { state | tableOptions = List.filter ((/=) opt) state.tableOptions }
             else
@@ -223,8 +221,8 @@ optionChecks state toMsg =
                 (\opt ->
                     Checkbox.checkbox
                         [ Checkbox.inline
-                        , Checkbox.attr <| checked (List.any ((==) opt) state.tableOptions)
-                        , Checkbox.attr <| onClick (toggleOpt opt)
+                        , Checkbox.checked (List.any ((==) opt) state.tableOptions)
+                        , Checkbox.onCheck (toggleOpt opt)
                         ]
                         (toString opt)
                 )

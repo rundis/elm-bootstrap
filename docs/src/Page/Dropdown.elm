@@ -8,10 +8,11 @@ module Page.Dropdown
 
 import Html exposing (..)
 import Html.Attributes exposing (..)
-import Html.Events exposing (onClick)
 import Bootstrap.Dropdown as Dropdown
 import Bootstrap.Button as Button
 import Bootstrap.Form as Form
+import Bootstrap.Form.Radio as Radio
+import Bootstrap.Form.Checkbox as Chk
 import Util
 
 
@@ -199,90 +200,81 @@ customized state toMsg =
                 ]
             }
         ]
-            ++ customizeForm state toMsg
+            ++ [customizeForm state toMsg]
     ]
 
 
-customizeForm : State -> (State -> msg) -> List (Html msg)
+customizeForm : State -> (State -> msg) -> Html msg
 customizeForm ({ options } as state) toMsg =
     let
-        coloringAttrs opt =
-            [ Form.radioAttr <| checked <| opt == options.coloring
-            , Form.radioAttr <| onClick <| toMsg { state | options = { options | coloring = opt } }
+        coloringAttrs opt rName =
+            [ Radio.checked <| opt == options.coloring
+            , Radio.name rName
+            , Radio.onClick <| toMsg { state | options = { options | coloring = opt } }
             ]
 
         sizeAttrs opt =
-            [ Form.radioInline
-            , Form.radioAttr <| checked <| opt == options.size
-            , Form.radioAttr <| onClick <| toMsg { state | options = { options | size = opt } }
+            [ Radio.inline
+            , Radio.name "sizes"
+            , Radio.checked <| opt == options.size
+            , Radio.onClick <| toMsg { state | options = { options | size = opt } }
             ]
     in
-        [ h4 [ class "mt-3" ] [ text "Dropdown customization" ]
-        , Form.form []
-            [ Form.checkbox
-                [ Form.checkInline
-                , Form.checkAttr <| checked options.dropUp
-                , Form.checkAttr <| onClick <| toMsg { state | options = { options | dropUp = not options.dropUp } }
-                ]
-                "Dropdown.dropUp"
-              -- TODO: Not working currently
-              {- , Form.checkbox
-                 [ Form.checkInline
-                 , Form.checkAttr <| checked options.menuRight
-                 , Form.checkAttr <| onClick <| toMsg { state | options = { options | menuRight = not options.menuRight }}
-                 ]
-                 "Dropdown.alignMenuRight"
-              -}
-            ]
-        , div [ class "row" ]
-            [ div [ class "col" ]
-                [ Form.form []
-                    [ Form.radioGroup
-                        { label =
-                            Form.label
-                                [ Form.labelAttr <| style [ ( "font-weight", "bold" ) ] ]
-                                [ text "Button coloring" ]
-                        , name = "coloring"
-                        , radios =
-                            [ Form.radio (coloringAttrs Primary) "Button.primary"
-                            , Form.radio (coloringAttrs Secondary) "Button.secondary"
-                            , Form.radio (coloringAttrs Info) "Button.info"
-                            , Form.radio (coloringAttrs Warning) "Button.warning"
-                            , Form.radio (coloringAttrs Danger) "Button.danger"
-                            ]
-                        }
+        Form.form [ class "container mt-3" ]
+            [ h4 [] [ text "Dropdown customization" ]
+            , Form.row []
+                [ Form.col []
+                    [ Chk.custom
+                        [ Chk.inline
+                        , Chk.checked options.dropUp
+                        , Chk.onCheck
+                            (\b -> toMsg { state | options = { options | dropUp = b } })
+                        ]
+                        "Dropdown.dropUp"
                     ]
                 ]
-            , div [ class "col" ]
-                [ Form.form []
-                    [ Form.radioGroup
-                        { label = Form.label [] [ text "" ]
-                        , name = "coloringoutl"
-                        , radios =
-                            [ Form.radio (coloringAttrs OutlinePrimary) "Button.outlinePrimary"
-                            , Form.radio (coloringAttrs OutlineSecondary) "Button.outlineSecondary"
-                            , Form.radio (coloringAttrs OutlineInfo) "Button.outlineInfo"
-                            , Form.radio (coloringAttrs OutlineWarning) "Button.outlineWarning"
-                            , Form.radio (coloringAttrs OutlineDanger) "Button.outlineDanger"
+            , Form.row []
+                [ Form.col []
+                    [ Form.group []
+                        [ Form.label
+                            [ style [ ( "font-weight", "bold" ) ] ]
+                            [ text "Button Coloring" ]
+                        , div []
+                            [ Radio.custom (coloringAttrs Primary "coloring") "Button.primary"
+                            , Radio.custom (coloringAttrs Secondary "coloring") "Button.secondary"
+                            , Radio.custom (coloringAttrs Info "coloring") "Button.info"
+                            , Radio.custom (coloringAttrs Warning "coloring") "Button.warning"
+                            , Radio.custom (coloringAttrs Danger "coloring") "Button.danger"
                             ]
-                        }
+                        ]
+                    ]
+                , Form.col []
+                    [ Form.group []
+                        [ Form.label
+                            [ ]
+                            [ text "" ]
+                        , div []
+                            [ Radio.custom (coloringAttrs OutlinePrimary "outlcoloring") "Button.outlinePrimary"
+                            , Radio.custom (coloringAttrs OutlineSecondary "outlcoloring") "Button.outlineSecondary"
+                            , Radio.custom (coloringAttrs OutlineInfo "outlcoloring") "Button.outlineInfo"
+                            , Radio.custom (coloringAttrs OutlineWarning "outlcoloring") "Button.outlineWarning"
+                            , Radio.custom (coloringAttrs OutlineDanger "outlcoloring") "Button.outlineDanger"
+                            ]
+                        ]
                     ]
                 ]
-            ]
-        , Form.form []
-            [ Form.radioGroup
-                { label =
-                    Form.label
-                        [ Form.labelAttr <| style [ ( "font-weight", "bold" ) ] ]
+            , Form.row []
+                [ Form.col []
+                    [ Form.label
+                        [ style [ ( "font-weight", "bold" ) ]]
                         [ text "Button sizes" ]
-                , name = "size"
-                , radios =
-                    [ Form.radio (sizeAttrs Small) "Button.small"
-                    , Form.radio (sizeAttrs Medium) "Default"
-                    , Form.radio (sizeAttrs Large) "Button.large"
+                    , div []
+                        [ Radio.custom (sizeAttrs Small) "Button.small"
+                        , Radio.custom (sizeAttrs Medium) "Default"
+                        , Radio.custom (sizeAttrs Large) "Button.large"
+                        ]
                     ]
-                }
-            ]
+                ]
         ]
 
 
