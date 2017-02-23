@@ -253,6 +253,7 @@ toAttributes options =
             "form-check-input"
     , Attributes.type_ "radio"
     , Attributes.disabled options.disabled
+    , Attributes.checked options.checked
     ]
         ++ ([ Maybe.map Events.onClick options.onClick
             , Maybe.map Attributes.name options.name
