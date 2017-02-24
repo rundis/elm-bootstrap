@@ -48,7 +48,7 @@ type Option msg
     | Inline
     | OnChecked (Bool -> msg)
     | Custom
-    | Disabled
+    | Disabled Bool
     | Validation FormInternal.Validation
     | Attrs (List (Html.Attribute msg))
 
@@ -96,14 +96,12 @@ custom options =
     view << create (Custom :: options)
 
 
-
 create : List (Option msg) -> String -> Checkbox msg
 create options label =
     Checkbox
         { options = options
         , label = label
         }
-
 
 
 view : Checkbox msg -> Html.Html msg
@@ -142,12 +140,14 @@ view (Checkbox chk) =
                 ]
         else
             Html.div
-                [ Attributes.classList
+                ([ Attributes.classList
                     [ ( "form-check", True )
                     , ( "form-check-inline", opts.inline )
                     , ( "disabled", opts.disabled )
                     ]
-                ]
+                 ]
+                    ++ validationAttrs
+                )
                 [ Html.label
                     [ Attributes.class "form-check-label" ]
                     [ Html.input (toAttributes opts) []
@@ -187,9 +187,9 @@ indeterminate =
 
 {-| Option to disable the checkbox
 -}
-disabled : Option msg
-disabled =
-    Disabled
+disabled : Bool -> Option msg
+disabled disabled =
+    Disabled disabled
 
 
 {-| Use this option to display checkboxes inline.
@@ -242,8 +242,8 @@ applyModifier modifier options =
         Custom ->
             { options | custom = True }
 
-        Disabled ->
-            { options | disabled = True }
+        Disabled val ->
+            { options | disabled = val }
 
         Validation validation ->
             { options | validation = Just validation }

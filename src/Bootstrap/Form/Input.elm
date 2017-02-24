@@ -70,7 +70,7 @@ type Option msg
     = Size GridInternal.ScreenSize
     | Id String
     | Type InputType
-    | Disabled
+    | Disabled Bool
     | Value String
     | DefaultValue String
     | OnInput (String -> msg)
@@ -210,6 +210,7 @@ input tipe options =
    create tipe options |> view
 
 
+create : InputType -> List (Option msg) -> Input msg
 create tipe options =
     Input { options = (Type tipe) :: options }
 
@@ -269,9 +270,9 @@ onInput toMsg =
 
 {-| Shorthand for setting the disabled attribute of an input
 -}
-disabled : Option msg
-disabled =
-    Disabled
+disabled : Bool -> Option msg
+disabled disabled =
+    Disabled disabled
 
 {-| Option to add a success marker icon for your input.
 
@@ -348,8 +349,8 @@ applyModifier modifier options =
         Type tipe ->
             { options | tipe = tipe }
 
-        Disabled  ->
-            { options | disabled = True }
+        Disabled val  ->
+            { options | disabled = val }
 
         Value value ->
             { options | value = Just value}

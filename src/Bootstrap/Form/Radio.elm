@@ -4,6 +4,7 @@ module Bootstrap.Form.Radio
         , custom
         , radioList
         , create
+        , createCustom
         , checked
         , name
         , inline
@@ -25,7 +26,7 @@ module Bootstrap.Form.Radio
 
 
 # Composing
-@docs radioList, create, Radio
+@docs radioList, create, createCustom, Radio
 
 -}
 
@@ -52,7 +53,7 @@ type Option msg
     | Name String
     | OnClick msg
     | Custom
-    | Disabled
+    | Disabled Bool
     | Validation FormInternal.Validation
     | Attrs (List (Html.Attribute msg))
 
@@ -221,9 +222,9 @@ checked isCheck =
 
 {-| Option to disable the radio
 -}
-disabled : Option msg
-disabled =
-    Disabled
+disabled : Bool -> Option msg
+disabled disabled =
+    Disabled disabled
 
 
 {-| Use this option to display radios inline.
@@ -289,8 +290,8 @@ applyModifier modifier options =
         Custom ->
             { options | custom = True }
 
-        Disabled ->
-            { options | disabled = True }
+        Disabled val ->
+            { options | disabled = val }
 
         Validation validation ->
             { options | validation = Just validation }

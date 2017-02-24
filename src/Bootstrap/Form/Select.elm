@@ -51,7 +51,7 @@ type Option msg
     = Size GridInternal.ScreenSize
     | Id String
     | Custom
-    | Disabled
+    | Disabled Bool
     | OnInput (String -> msg)
     | Attrs (List (Html.Attribute msg))
 
@@ -151,9 +151,9 @@ onInput toMsg =
 
 {-| Shorthand for setting the disabled attribute of a select
 -}
-disabled : Option msg
-disabled =
-    Disabled
+disabled : Bool -> Option msg
+disabled disabled =
+    Disabled disabled
 
 
 toAttributes : List (Option msg) -> List (Html.Attribute msg)
@@ -200,8 +200,8 @@ applyModifier modifier options =
         Custom ->
             { options | custom = True }
 
-        Disabled ->
-            { options | disabled = True }
+        Disabled val ->
+            { options | disabled = val }
 
         OnInput onInput ->
             { options | onInput = Just onInput }

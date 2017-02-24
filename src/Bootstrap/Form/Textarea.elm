@@ -166,7 +166,7 @@ danger =
 
 view : Textarea msg -> Html.Html msg
 view (Textarea { options }) =
-    Html.input
+    Html.textarea
         (toAttributes options)
         []
 

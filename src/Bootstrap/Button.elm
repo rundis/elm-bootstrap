@@ -223,6 +223,6 @@ block =
 
 {-| Option to disable a button.
 -}
-disabled : Option msg
-disabled =
-    ButtonInternal.Disabled
+disabled : Bool -> Option msg
+disabled disabled =
+    ButtonInternal.Disabled disabled

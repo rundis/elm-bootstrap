@@ -16,7 +16,7 @@ type Option msg
     = Size GridInternal.ScreenSize
     | Coloring RoledButton
     | Block
-    | Disabled
+    | Disabled Bool
     | Attrs (List (Html.Attribute msg))
 
 
@@ -102,8 +102,8 @@ applyModifier modifier options =
         Block ->
             { options | block = True }
 
-        Disabled ->
-            { options | disabled = True }
+        Disabled val ->
+            { options | disabled = val }
 
         Attrs attrs ->
             { options | attributes = options.attributes ++ attrs }
