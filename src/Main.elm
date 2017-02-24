@@ -16,6 +16,7 @@ import Bootstrap.Form.Checkbox as Chk
 import Bootstrap.Form.Radio as Radio
 import Bootstrap.Form.Input as Input
 import Bootstrap.Form.Select as Select
+import Bootstrap.Form.Fieldset as Fieldset
 import Bootstrap.Card as Card
 import Bootstrap.Table as Table
 import Bootstrap.Progress as Progress
@@ -176,7 +177,7 @@ mainContent model =
                 , text " Col 1 Row 1"
                 , div [ class "form-inline"]
                     [ Chk.checkbox [ Chk.inline ] "Chk"
-                    , Chk.checkbox [ Chk.inline, Chk.disabled ] "Chk"
+                    , Chk.checkbox [ Chk.inline, Chk.disabled True ] "Chk"
                     , Chk.checkbox [ ] "Stacked"
                     ]
                 ]
@@ -201,7 +202,19 @@ mainContent model =
                 , Col.middleXs
                 , Col.attrs [colStyle]
                 ]
-                [ text "Col 3 Row 1" ]
+                [ text "Col 3 Row 1"
+                , Fieldset.config
+                    |> Fieldset.asGroup
+                    |> Fieldset.disabled True
+                    |> Fieldset.legend [] [ text "My radios"]
+                    |> Fieldset.children
+                        ( Radio.radioList "myradiogroup"
+                            [ Radio.create [] "Radio 1"
+                            , Radio.create [] "Radio 2"
+                            ]
+                        )
+                    |> Fieldset.view
+                ]
             , Grid.col
                 [ Col.attrs [colStyle] ]
                 [ text "Col 4 Row 1" ]
@@ -357,7 +370,7 @@ simpleForm =
             , div [ class "form-inline"]
                 [ Radio.radio [ Radio.inline, Radio.name "myradios"] "Radio 1"
                 , Radio.radio [ Radio.inline, Radio.name "myradios"] "Radio 2"
-                , Radio.radio [ Radio.inline, Radio.disabled, Radio.name "myradios"] "Radio 3"
+                , Radio.radio [ Radio.inline, Radio.disabled True, Radio.name "myradios"] "Radio 3"
                 ]
             ]
         ]

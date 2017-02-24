@@ -1,7 +1,7 @@
 {
     "version": "1.0.0",
     "summary": "Elm Bootstrap User Documentation",
-    "repository": "https://github.com/rundis/elm-bootstrap.git",
+    "repository": "https://github.com/rundis/elm-bootstrap-docs.git",
     "license": "BSD3",
     "source-directories": [
         "src/",

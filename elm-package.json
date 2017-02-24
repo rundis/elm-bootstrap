@@ -1,7 +1,7 @@
 {
     "version": "1.0.0",
-    "summary": "helpful summary of your project, less than 80 characters",
-    "repository": "https://github.com/rundis/bootstrap-for-elm.git",
+    "summary": "Elm Bootstrap is a comprehensive library for working with Twitter Bootstrap 4",
+    "repository": "https://github.com/rundis/elm-bootstrap.git",
     "license": "BSD3",
     "source-directories": [
         "src/"
@@ -30,8 +30,7 @@
         "Bootstrap.Progress",
         "Bootstrap.Tab",
         "Bootstrap.Table",
-        "Bootstrap.Text",
-        "Bootstrap.TextInput"
+        "Bootstrap.Text"
     ],
     "dependencies": {
         "debois/elm-dom": "1.0.0 <= v < 2.0.0",

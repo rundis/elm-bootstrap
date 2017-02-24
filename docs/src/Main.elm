@@ -19,6 +19,7 @@ import Page.Dropdown as Dropdown
 import Page.Accordion as Accordion
 import Page.Modal as Modal
 import Page.Navbar as PageNav
+import Page.Form as Form
 
 
 type alias Model =
@@ -156,6 +157,7 @@ viewMenu model =
         |> Navbar.brand [ href "#" ] [ text "Elm Bootstrap" ]
         |> Navbar.items
             [ Navbar.itemLink [ href "#grid" ] [ text "Grid" ]
+            , Navbar.itemLink [ href "#form"] [ text "Form" ]
             , Navbar.itemLink [ href "#card" ] [ text "Card" ]
             , Navbar.itemLink [ href "#table" ] [ text "Table" ]
             , Navbar.itemLink [ href "#button" ] [ text "Button" ]
@@ -216,6 +218,9 @@ viewPage model =
 
         Route.Navbar ->
             PageNav.view model.pageNavState PageNavMsg
+
+        Route.Form ->
+            Form.view
 
         Route.NotFound ->
             viewNotFound model

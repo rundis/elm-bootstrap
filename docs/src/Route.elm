@@ -20,6 +20,7 @@ type Route
     | Accordion
     | Modal
     | Navbar
+    | Form
     | NotFound
 
 
@@ -40,6 +41,7 @@ routeParser =
         , UrlParser.map Accordion (s "accordion")
         , UrlParser.map Modal (s "modal")
         , UrlParser.map Navbar (s "navbar")
+        , UrlParser.map Form (s "form")
         ]
 
 decode : Location -> Maybe Route
