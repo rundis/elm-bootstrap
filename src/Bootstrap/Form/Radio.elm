@@ -2,6 +2,8 @@ module Bootstrap.Form.Radio
     exposing
         ( radio
         , custom
+        , radioList
+        , create
         , checked
         , name
         , inline
@@ -21,6 +23,9 @@ module Bootstrap.Form.Radio
 # Options
 @docs checked, name, inline, onClick, disabled, attrs, Option
 
+
+# Composing
+@docs radioList, create, Radio
 
 -}
 
@@ -64,7 +69,7 @@ type alias Options msg =
     }
 
 
-{-| Create a composable radio
+{-| Create a single radio input.
 
     Radio.radio
         [ Radio.checked True
@@ -77,7 +82,7 @@ radio options label =
     create options label |> view
 
 
-{-| Create a composable Bootstrap custom styled radio
+{-| Create a single radio input with customized Bootstrap styling.
 
     Radio.custom
         [ Radio.checked True
@@ -86,16 +91,66 @@ radio options label =
 
 -}
 custom : List (Option msg) -> String -> Html.Html msg
-custom options =
-    view << create (Custom :: options)
+custom options label =
+    createCustom options label |> view
 
 
+{-| In most cases you would probably create multiple radios as a group.
+This function is a convenient helper to create a list of radios
+
+    -- You might have defined a single message for all your radios like this
+    type Msg
+        = MyRadioMsg MyRadio Bool
+
+    type MyRadio
+        = Radio1
+        | Radio2
+        | Radio3
+
+
+    -- In some view function your could create a radio list as follows
+
+    Radio.radioList "myradios"
+        [ Radio.create [ Radio.onCheck (MyRadioMsg MyRadio1) ] "Radio 1"
+        , Radio.create [ Radio.onCheck (MyRadioMsg MyRadio2) ] "Radio 2"
+        , Radio.create [ Radio.onCheck (MyRadioMsg MyRadio3) ] "Radio 3"
+        ]
+
+
+* `groupName` - Name of the radios, all radios will get the same name
+* `radios` - List of radios.
+-}
+radioList :
+    String
+    -> List (Radio msg)
+    -> List (Html.Html msg)
+radioList groupName radios =
+    List.map
+        ( view << (addOption <| name groupName ))
+        radios
+
+
+{-| Create a composable radio for use in a [´radioList`](#radioList)
+-}
 create : List (Option msg) -> String -> Radio msg
 create options label =
     Radio
         { options = options
         , label = label
         }
+
+{-| Create a composable custom radio for use in a [´radioList`](#radioList)
+-}
+createCustom : List (Option msg) -> String -> Radio msg
+createCustom options =
+    create (Custom :: options)
+
+
+
+
+addOption : Option msg -> Radio msg -> Radio msg
+addOption opt (Radio ({options} as radio) ) =
+    Radio { radio | options = opt :: options }
 
 
 
