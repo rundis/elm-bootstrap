@@ -24,7 +24,6 @@ module Bootstrap.Form.Input exposing
     , danger
     , warning
     , Option
-    , Input
     )
 
 
@@ -32,13 +31,13 @@ module Bootstrap.Form.Input exposing
 
 
 # Input types
-@docs text, password, datetimeLocal, date, month, time, week, number, email, url, search, tel, color, Input
+@docs text, password, datetimeLocal, date, month, time, week, number, email, url, search, tel, color
 
 
 
 
 # Options
-@docs id, small, large, id, value, defaultValue, disabled, onInput, attrs, Option
+@docs id, small, large, value, defaultValue, disabled, onInput, attrs, Option
 
 # Validation
 These options really only makes sense when you used in conjuction with the form module.

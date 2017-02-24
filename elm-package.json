@@ -20,6 +20,7 @@
         "Bootstrap.Form.Input",
         "Bootstrap.Form.Radio",
         "Bootstrap.Form.Select",
+        "Bootstrap.Form.Textarea",
         "Bootstrap.Grid",
         "Bootstrap.Grid.Col",
         "Bootstrap.Grid.Row",
