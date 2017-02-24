@@ -663,7 +663,7 @@ customControls =
     , Util.code customControlsCode
     , Util.calloutInfo
         [ p [] [ text """In Elm Bootstrap custom controls are block level by default as opposed to in Twitter Bootstrap 4, where they are inline.
-                         By making the block level by default, they behave just like their non custom counterparts, which is hopefully less confusing !""" ]
+                         By making them block level by default, they behave just like their non custom counterparts, which is hopefully less confusing !""" ]
         ]
     ]
 
