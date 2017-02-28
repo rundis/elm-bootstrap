@@ -80,6 +80,7 @@ li options children =
 
 
 {-| Create a custom List group
+
     ListGroup.custom
         [ ListGroup.button
             [ ListGroup.attr <| onClick "MyItem1Msg"

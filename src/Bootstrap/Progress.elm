@@ -15,7 +15,8 @@ module Bootstrap.Progress exposing
     , Option
     )
 
-{-| You can use the custom progress elment for displaying simple or complex progress bars. It doesn't use the HTML5 <progress> element, ensuring you can stack progress bars, animate them, and place text labels over them.
+{-| You can use the custom progress elment for displaying simple or complex progress bars.
+It doesn't use the HTML5 `<progress>` element, ensuring you can stack progress bars, animate them, and place text labels over them.
 
 
 # Progress bar

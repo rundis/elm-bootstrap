@@ -238,6 +238,7 @@ subscriptions (State cardStates) toMsg =
 
 
 {-| Create an interactive accordion element
+
     Accordion.accordion
         model.accordionState
         { toMsg = AccordionMsg
@@ -384,7 +385,16 @@ headerPrivate elemFn attributes toggle =
         }
 
 
-{-| -}
+{-| Create a block element for use in an accordion card.
+
+
+    Accordion.block []
+        [ Card.text [] [ text "Just some text"] ]
+
+* `blockOptions` List of block options
+* `blockItems` List of block items
+
+-}
 block :
     List (Card.BlockOption msg)
     -> List (Card.BlockItem msg)
@@ -393,7 +403,16 @@ block =
     CardInternal.block
 
 
-{-| -}
+{-| Create a List Group element for use in an accordion.
+List groups are block elements just like [`block`](#block)
+
+    Accordion.listGroup []
+        [ ListGroup.li [] [ text "Item 1" ]
+        , ListGroup.li [] [ text "Item 2" ]
+        ]
+
+* `items` List of List group items
+-}
 listGroup :
     List (ListGroup.Item msg)
     -> CardBlock msg

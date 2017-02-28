@@ -126,7 +126,7 @@ type alias BlockOption msg = CardInternal.BlockOption msg
 {-| Opaque type representing the view configuration of a card
 
 You may use the following functions to expand/change a configuration:
-* [`header`](#header) or headerH1, headerh2 etc
+* [`header`](#header) or [`headerH1`](#headerH1), [`headerH2`](#headerH2) etc
 * [`footer`](#footer)
 * [`block`](#block)
 * [`imgTop`](#imgTop)
@@ -519,7 +519,7 @@ headerPrivate elemFn attributes children (Config config) =
 
 {-| Option to specify horizontal alignment of a card block item
 
-    Card.blockAlign TextXsCenter
+    Card.blockAlign Text.xs
 
 -}
 blockAlign : Text.HAlign -> BlockOption msg

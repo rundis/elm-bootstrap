@@ -13,22 +13,22 @@ module Bootstrap.Grid
 
     Grid.container
         [ Grid.row
-            [ Row.verticalAlign Row.topXs ]
+            [ Row.topXs ]
             [ Grid.col
-                [ Col.width Col.xs4 ]
+                [ Col.xs4 ]
                 [ text "col1-row1"]
 
             , Grid.col
-                [ Col.width Col.xs8 ]
+                [ Col.xs8 ]
                 [ text "col2-row1"]
             ]
         , Grid.simpleRow
             [ Grid.col
-                [ Col.width Col.xs4 ]
+                [ Col.xs4 ]
                 [ text "col1-row1"]
 
             , Grid.col
-                [ Col.width Col.xs6 ]
+                [ Col.xs6 ]
                 [ text "col2-row1"]
 
             ]

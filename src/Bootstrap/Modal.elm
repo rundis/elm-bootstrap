@@ -81,7 +81,7 @@ module Bootstrap.Modal
             ]
 
 
-**NOTE:** Don't to open several modals at the same time. It probably won't end well.
+**NOTE:** Don't try to open several modals at the same time. It probably won't end well.
 
 
 
