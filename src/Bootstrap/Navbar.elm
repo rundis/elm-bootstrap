@@ -63,19 +63,19 @@ The navbar is designed to be responsive by default and made interactive with a t
 
     -- The navbar needs to know the initial window size, so the inital state for a navbar requires a command to be run by the Elm runtime
 
-    initialState : (Model, Cmd Msg)
-    initialState toMsg =
+    initialState : ( Model, Cmd Msg )
+    initialState =
         let
-            (navbarState, navbarCmd)
-                = Navbar.initialState NavbarMsg
+            ( navbarState, navbarCmd ) =
+                Navbar.initialState NavbarMsg
         in
-            ({ navbarState = navbarState }, navBarCmd )
+            ( { navbarState = navbarState }, navbarCmd )
 
 
     -- Define a message for the navbar
 
     type Msg
-        = NavbarMsg
+        = NavbarMsg Navbar.State
 
 
     -- You need to handle navbar messages in your update function to step the navbar state forward
@@ -96,7 +96,7 @@ The navbar is designed to be responsive by default and made interactive with a t
                 [ Navbar.itemLink [href "#"] [ text "Item 1"]
                 , Navbar.itemLink [href "#"] [ text "Item 2"]
                 ]
-            |> Navbar.view state.basicState
+            |> Navbar.view model.navbarState
 
     -- If you use animations as above or you use dropdowns in your navbar you need to configure subscriptions too
 
@@ -407,6 +407,7 @@ dropdownSubscriptions ((State { dropdowns }) as state) toMsg =
                 Sub.none
             ]
 
+
 {-| Creates a default navbar view configuration. Providing a starting point
 to set up your navbar how you'd like.
 -}
@@ -434,8 +435,9 @@ updateConfig mapper (Config config) =
 
 
 updateOptions : (Options msg -> Options msg) -> Config msg -> Config msg
-updateOptions mapper (Config config)  =
+updateOptions mapper (Config config) =
     Config { config | options = mapper config.options }
+
 
 {-| The main view function for displaying a navbar.
 
@@ -448,7 +450,7 @@ updateOptions mapper (Config config)  =
             ]
         |> Navbar.customItems
             [ Navbar.textItem [] [ text "Some text" ] ]
-        |> Navbar.view state.navbarState
+        |> Navbar.view model.navbarState
 
 * `state` Required view state the navbar uses to support interactive behavior
 * `config` The view [`configuration`](#Configuration) that determines to look and feel of the navbar
@@ -483,14 +485,13 @@ view state ((Config { options, brand, items, customItems }) as config) =
         )
 
 
-
 {-| Use a slide up/down animation for toggling the navbar menu when collapsed.
 
 **NOTE: ** Do remember to set up the subscriptions function when using this option.
 -}
 withAnimation : Config msg -> Config msg
 withAnimation config =
-    updateConfig (\conf -> { conf | withAnimation = True } ) config
+    updateConfig (\conf -> { conf | withAnimation = True }) config
 
 
 {-| Option to fix the menu to the top of the viewport
@@ -499,22 +500,25 @@ withAnimation config =
 -}
 fixTop : Config msg -> Config msg
 fixTop config =
-    updateOptions (\opts -> {opts | fix = Just Top}) config
-    --NavbarFix Top
+    updateOptions (\opts -> { opts | fix = Just Top }) config
+
+
+
+--NavbarFix Top
 
 
 {-| Option to fix the menu to the bottom of the viewport
 -}
 fixBottom : Config msg -> Config msg
 fixBottom config =
-    updateOptions (\opts -> {opts | fix = Just Bottom} ) config
+    updateOptions (\opts -> { opts | fix = Just Bottom }) config
 
 
 {-| Use this option when you want a fixed width menu (typically because you're main content is also confgirued to be fixed width)
 -}
 container : Config msg -> Config msg
 container config =
-    updateOptions (\opts -> {opts | isContainer = True } ) config
+    updateOptions (\opts -> { opts | isContainer = True }) config
 
 
 {-| Inverse the colors of your menu. Dark background and light text
@@ -594,7 +598,6 @@ lightCustomClass classString =
     scheme Light <| Class classString
 
 
-
 scheme : LinkModifier -> BackgroundColor -> Config msg -> Config msg
 scheme modifier bgColor config =
     updateOptions
@@ -608,10 +611,6 @@ scheme modifier bgColor config =
             }
         )
         config
-
-
-
-
 
 
 {-| Collapse the menu at the small media breakpoint
@@ -642,17 +641,16 @@ collapseExtraLarge =
     toggleAt GridInternal.XL
 
 
-
 toggleAt : GridInternal.ScreenSize -> Config msg -> Config msg
 toggleAt size config =
-    updateOptions (\opt -> {opt | toggleAt = size }) config
+    updateOptions (\opt -> { opt | toggleAt = size }) config
 
 
 {-| Add a custom Html.Attribute to the navbar element using this function
 -}
 attrs : List (Html.Attribute msg) -> Config msg -> Config msg
 attrs attrs config =
-    updateOptions (\opt -> {opt | attributes = opt.attributes ++ attrs }) config
+    updateOptions (\opt -> { opt | attributes = opt.attributes ++ attrs }) config
 
 
 {-| Create a brand element for your navbar
@@ -666,8 +664,8 @@ attrs attrs config =
 * `children` List of children
 * `config` Navbar config record to add/modify brand for
 -}
-brand
-    : List (Html.Attribute msg)
+brand :
+    List (Html.Attribute msg)
     -> List (Html.Html msg)
     -> Config msg
     -> Config msg
@@ -685,14 +683,14 @@ brand attributes children config =
         )
         config
 
+
 {-| Configure your navbar with a list of navigation links and/or dropdowns.
 
 **NOTE** If you call this function several times, last time "wins".
 -}
 items : List (Item msg) -> Config msg -> Config msg
 items items config =
-    updateConfig (\conf -> { conf | items = items}) config
-
+    updateConfig (\conf -> { conf | items = items }) config
 
 
 {-| You can add custom items to a navbar too. These are placed after any navigation items.
@@ -701,8 +699,7 @@ items items config =
 -}
 customItems : List (CustomItem msg) -> Config msg -> Config msg
 customItems items config =
-    updateConfig (\conf -> { conf | customItems = items}) config
-
+    updateConfig (\conf -> { conf | customItems = items }) config
 
 
 {-| Create a menu item (as an `a` element)
@@ -955,7 +952,6 @@ shouldHideMenu (State { windowSize }) (Config { options }) =
 
                 Nothing ->
                     GridInternal.XS
-
     in
         sizeToComparable winMedia > sizeToComparable options.toggleAt
 
@@ -977,7 +973,6 @@ sizeToComparable size =
 
         GridInternal.XL ->
             5
-
 
 
 toScreenSize : Window.Size -> GridInternal.ScreenSize
@@ -1036,7 +1031,6 @@ mapState mapper (State state) =
     State <| mapper state
 
 
-
 maybeBrand : Maybe (Brand msg) -> List (Html.Html msg)
 maybeBrand brand =
     case brand of
@@ -1085,7 +1079,6 @@ renderItemLink { attributes, children } =
 renderCustom : List (CustomItem msg) -> List (Html.Html msg)
 renderCustom items =
     List.map (\(CustomItem item) -> item) items
-
 
 
 
