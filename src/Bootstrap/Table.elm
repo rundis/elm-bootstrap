@@ -216,7 +216,7 @@ reflow =
 {-| Allows you to create a simple default table
 
 
-* (´thead`, `tbody`) - A tuple of a thead item and a tbody item
+* (`thead`, `tbody`) - A tuple of a thead item and a tbody item
 
 -}
 simpleTable : (THead msg,  TBody msg) -> Html.Html msg
@@ -227,7 +227,7 @@ simpleTable (thead, tbody) =
         , tbody = tbody
         }
 
-{-| When you need to customize the table element with std Html.Attribute, use this function to create it as a [`TableOption`](#TableOption)
+{-| When you need to customize the table element with standard Html.Attribute, use this function to create it as a [`TableOption`](#TableOption)
 -}
 attr : Html.Attribute msg -> TableOption msg
 attr attr =
@@ -357,7 +357,7 @@ defaultHead =
     DefaultHead
 
 
-{-| When you need to customize the thead element with std Html.Attribute, use this function to create a [`TableHeadOption`](#TableHeadOption)
+{-| When you need to customize the thead element with standard Html.Attribute, use this function to create a [`TableHeadOption`](#TableHeadOption)
 -}
 headAttr : Html.Attribute msg -> TableHeadOption msg
 headAttr attr =
@@ -486,7 +486,7 @@ rowInfo =
     RoledRow Info
 
 
-{-| When you need to customize a tr element with std Html.Attribute attributes, use this function
+{-| When you need to customize a tr element with standard Html.Attribute attributes, use this function
 -}
 rowAttr : Html.Attribute msg -> RowOption msg
 rowAttr attr =
@@ -521,7 +521,7 @@ tr options cells  =
         , cells = cells
         }
 
-{-| When you need to customize a td or th with std Html.Attribute attributes, use this function
+{-| When you need to customize a td or th with standard Html.Attribute attributes, use this function
 -}
 cellAttr : Html.Attribute msg -> CellOption msg
 cellAttr attr =

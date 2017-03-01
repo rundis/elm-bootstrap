@@ -84,7 +84,7 @@ group options items =
         |> renderGroup
 
 
-{-| Create a button group that can be composed in a [`buttonToolbar`](#buttonToolbar)
+{-| Create a button group that can be composed in a [`toolbar`](#toolbar)
 
 The parameters are identical as for [`group`](#group)
 -}
@@ -101,7 +101,7 @@ groupItem options items =
 
 {-| Create a toolbar of buttons by composing button groups. Separate groups by margins on the button groups.
 
-    ButtonGroup.buttonToolbar []
+    ButtonGroup.toolbar []
         [ ButtonGroup.groupItem []
             [] -- should contain a list of button items
 

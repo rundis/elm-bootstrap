@@ -177,7 +177,7 @@ type Pane msg
         }
 
 
-{-| When using animations you **must** remember to wire up this function to you main subscriptions
+{-| When using animations you **must** remember to wire up this function to your main subscriptions
 
     subscriptions : Model -> Sub Msg
     subscriptions model =

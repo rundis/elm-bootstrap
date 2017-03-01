@@ -23,7 +23,7 @@ module Bootstrap.Modal
         , Config
         )
 
-{-| Modals are streamlined, but flexible dialog prompts. They support a number of use cases from user notification to completely custom content and feature a handful of helpful subcomponents, sizes, and more.
+{-| Modals are streamlined, but flexible dialog prompts. They support a number of use cases from user notifications to completely custom content and feature a handful of helpful subcomponents, sizes, and more.
 
 
 
@@ -116,7 +116,7 @@ import Html.Events as Events
 import Bootstrap.Grid.Internal as GridInternal exposing (ScreenSize(..))
 
 
-{-| Opaque type representing view config for a model. Use the [`config`](#config) function to create an inital config.
+{-| Opaque type representing the view config for a model. Use the [`config`](#config) function to create an inital config.
 -}
 type Config msg
     = Config
@@ -195,7 +195,7 @@ visibleState =
 
 {-| Create a modal for your application
 
-* `state` The vurrent view state of the modal. You need to keep track of this state in your model
+* `state` The current view state of the modal. You need to keep track of this state in your model
 * `config` View configuration
 
 -}
@@ -241,7 +241,7 @@ config toMsg =
 
 
 
-{-| Create a header for a modal, typically for titles, but you can me imaginative
+{-| Create a header for a modal, typically for titles, but you can be imaginative
 
 * `attributes` List of attributes
 * `children` List of child elements
@@ -309,7 +309,7 @@ h3 =
     titledHeader Html.h3
 
 
-{-| Creates a modal header with a h3 title child element
+{-| Creates a modal header with a h4 title child element
 
 * `attributes` List of attributes
 * `children` List of child elements
@@ -324,7 +324,7 @@ h4 =
     titledHeader Html.h4
 
 
-{-| Creates a modal header with a h3 title child element
+{-| Creates a modal header with a h5 title child element
 
 * `attributes` List of attributes
 * `children` List of child elements

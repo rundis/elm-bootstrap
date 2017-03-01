@@ -68,14 +68,14 @@ type Column msg
     | ColBreak (Html.Html msg)
 
 
-{-| Responsive fixed width container, which changes it's maz-width at breakpoint
+{-| Responsive fixed width container, which changes it's max-width at breakpoint
 -}
 container : List (Attribute msg) -> List (Html msg) -> Html msg
 container attributes children =
     div ([ class "container" ] ++ attributes) children
 
 
-{-| Full width contaienr spanning the entire viewport
+{-| Full width container spanning the entire viewport
 -}
 containerFluid : List (Attribute msg) -> List (Html msg) -> Html msg
 containerFluid attributes children =

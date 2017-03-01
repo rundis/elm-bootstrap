@@ -101,7 +101,7 @@ formInline attributes =
 
 {-| Use the group function to create a grouping of related form elements.
 It just creates a div container with a `form-group` Bootstrap class.
-Typically you use this for vertically layed out forms.
+Typically you use this for vertically laid out forms.
 
 * `options` List of [`options`](#Option) for customizing the group
 * `children` List of children
@@ -148,7 +148,7 @@ groupDanger =
     Validation FormInternal.Danger
 
 
-{-| Creates a block level text element, suitable for providing context related help texts in form groups.
+{-| Creates a block level text element, suitable for providing context related help text in form groups.
 -}
 help : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
 help attributes children =
@@ -157,7 +157,7 @@ help attributes children =
         children
 
 
-{-| Creates an inline text element, suitable for providing context related help texts for inputs.
+{-| Creates an inline text element, suitable for providing context related help text for inputs.
 -}
 helpInline : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
 helpInline attributes children =
@@ -260,7 +260,7 @@ colLabel options children =
         }
 
 
-{-| Create a shorter (height) [`colLabel](#colLabel)
+{-| Create a shorter (height) [`colLabel`](#colLabel)
 -}
 colLabelSm :
     List (GridInternal.ColOption msg)
@@ -270,7 +270,7 @@ colLabelSm options =
     colLabel (Col.attrs [ Attributes.class "col-form-label-sm" ] :: options)
 
 
-{-| Create a taller  [`colLabel](#colLabel)
+{-| Create a taller  [`colLabel`](#colLabel)
 -}
 colLabelLg :
     List (GridInternal.ColOption msg)

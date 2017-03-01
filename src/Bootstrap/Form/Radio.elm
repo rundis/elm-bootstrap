@@ -131,7 +131,7 @@ radioList groupName radios =
         radios
 
 
-{-| Create a composable radio for use in a [´radioList`](#radioList)
+{-| Create a composable radio for use in a [`radioList`](#radioList)
 -}
 create : List (Option msg) -> String -> Radio msg
 create options label =
@@ -140,7 +140,7 @@ create options label =
         , label = label
         }
 
-{-| Create a composable custom radio for use in a [´radioList`](#radioList)
+{-| Create a composable custom radio for use in a [`radioList`](#radioList)
 -}
 createCustom : List (Option msg) -> String -> Radio msg
 createCustom options =
@@ -236,7 +236,7 @@ inline =
 
 {-| Option to set the name of a radio.
 
-A single radio doesn't make much sense typically you would have several. To automatically
+A single radio doesn't make much sense, typically you would have several. To automatically
 unselect one radio, when selecting another you need to have the same name for each radio in a group.
 -}
 name : String -> Option msg
@@ -244,7 +244,7 @@ name name =
     Name name
 
 
-{-| Use this function to handle any Html.Attribute option you wish for your select
+{-| Use this function to handle any Html.Attribute option you wish for your radio
 -}
 attrs : List (Html.Attribute msg) -> Option msg
 attrs attrs =
