@@ -1,7 +1,5 @@
 # Elm Bootstrap
 
-**NOT RELEASED YET**
-
 
 Elm Bootstrap is a comprehensive library package for that aims to make it pleasant and reasonably type safe to use the upcoming [Twitter Bootstrap 4](https://v4-alpha.getbootstrap.com/) CSS Framework in your Elm applications.
 
@@ -20,10 +18,12 @@ Version 4 is fully embracing flexbox, which will provide much better control and
 
 
 ## Documentation
-WORK IN PROGRESS
+For user documentation, do check out the [Docs Site](http://elm-bootstrap.info/)
 
-In the mean time you will have to settle for the package documentation.
-You will also benefit greatly from reading through the relevant [Bootstrap documentation](#https://v4-alpha.getbootstrap.com/getting-started/introduction/)
+The latest api documentation is up on [Elm Package](http://package.elm-lang.org/packages/rundis/elm-bootstrap/latest).
+
+
+You will also benefit greatly from reading through the relevant [Twitter Bootstrap documentation](#https://v4-alpha.getbootstrap.com/getting-started/introduction/)
 
 
 
@@ -98,18 +98,17 @@ There's a bunch of work left to do, especially when it comes to documentation an
 
 
 ## Stuff TODO
-* Documentation Site (maybe utilizing runelm.io ?)
-* Ensure responsive support is fully supported
+* Ensure responsive behavior is fully supported
 * Encourage or automate screen reader support
 * Tooltips
 * Popovers
-* Provide nice API for all the utility classes
+* Provide a nice API for all the utility classes
 * etc...
 
 
 
 ## Release history
-NOT OUT QUITE YET !
+* 1.0.0 - Initial release with most of TWBS core components covered
 
 
 ## License
