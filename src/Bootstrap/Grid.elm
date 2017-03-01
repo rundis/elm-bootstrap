@@ -25,11 +25,11 @@ module Bootstrap.Grid
         , Grid.simpleRow
             [ Grid.col
                 [ Col.xs4 ]
-                [ text "col1-row1"]
+                [ text "col1-row2"]
 
             , Grid.col
                 [ Col.xs6 ]
-                [ text "col2-row1"]
+                [ text "col2-row2"]
 
             ]
 
