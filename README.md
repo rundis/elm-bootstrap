@@ -86,9 +86,9 @@ been a great source of inspiration for elm-bootstrap.
 
 
 ## Source of inspiration
-* [`elm-mdl`](#https://github.com/debois/elm-mdl)
-* [`elm-sortable-table`](#https://github.com/evancz/elm-sortable-table)
-* [`elm-dialog`](#https://github.com/krisajenkins/elm-dialog)
+* [`elm-mdl`](https://github.com/debois/elm-mdl)
+* [`elm-sortable-table`](https://github.com/evancz/elm-sortable-table)
+* [`elm-dialog`](https://github.com/krisajenkins/elm-dialog)
 
 
 ## Contributing / Collaborating
