@@ -192,7 +192,7 @@ type SplitDropdownToggle msg
 
 
 {-| Initializes the view state for a dropdown. Typically you would call this from
-you main init function
+your main init function
 -}
 initialState : State
 initialState =
@@ -431,7 +431,7 @@ divider =
         |> DropdownItem
 
 
-{-| Creates an header element appropriate for use in dropdowns
+{-| Creates an header element appropriate for use in dropdowns.
 Handy when you want to provide a heading for a group of menu items in a dropdown menu
 
 * `attributes` List of attributes

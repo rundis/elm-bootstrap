@@ -26,7 +26,7 @@ module Bootstrap.Form.Textarea
 
 # Validation
 These options really only makes sense when you used in conjuction with the form module.
-To use standalone remember to wrap your textarea in a containing element and provide it one of the following classes:
+To use standalone, remember to wrap your textarea in a containing element and provide it one of the following classes:
 
 * `has-success`
 * `has-warning`
@@ -88,7 +88,7 @@ textarea =
     view << create
 
 
-{-| Options/shorthand for setting the id of an textarea
+{-| Options/shorthand for setting the id of a textarea
 -}
 id : String -> Option msg
 id id =
@@ -109,28 +109,28 @@ attrs attrs =
     Attrs attrs
 
 
-{-| Shorthand for setting the value attribute of an textarea
+{-| Shorthand for setting the value attribute of a textarea
 -}
 value : String -> Option msg
 value value =
     Value value
 
 
-{-| Shorthand for setting the defaultValue attribute of an textarea
+{-| Shorthand for setting the defaultValue attribute of a textarea
 -}
 defaultValue : String -> Option msg
 defaultValue value =
     DefaultValue value
 
 
-{-| Shorthand for assigning an onInput handler for an textarea
+{-| Shorthand for assigning an onInput handler for a textarea
 -}
 onInput : (String -> msg) -> Option msg
 onInput toMsg =
     OnInput toMsg
 
 
-{-| Shorthand for setting the disabled attribute of an textarea
+{-| Shorthand for setting the disabled attribute of a textarea
 -}
 disabled : Option msg
 disabled =

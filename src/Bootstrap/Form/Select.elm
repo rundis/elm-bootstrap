@@ -121,14 +121,14 @@ small =
     Size GridInternal.SM
 
 
-{-| Option to make a select taller
+{-| Option to make a select taller (height)
 -}
 large : Option msg
 large =
     Size GridInternal.LG
 
 
-{-| Options/shorthand for setting the id of an select
+{-| Options/shorthand for setting the id of a select
 -}
 id : String -> Option msg
 id id =

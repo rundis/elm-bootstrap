@@ -686,7 +686,7 @@ brand attributes children config =
 
 {-| Configure your navbar with a list of navigation links and/or dropdowns.
 
-**NOTE** If you call this function several times, last time "wins".
+**NOTE** If you call this function several times, the last time "wins".
 -}
 items : List (Item msg) -> Config msg -> Config msg
 items items config =
@@ -695,7 +695,7 @@ items items config =
 
 {-| You can add custom items to a navbar too. These are placed after any navigation items.
 
-**NOTE** If you call this function several times, last time "wins".
+**NOTE** If you call this function several times, the last time "wins".
 -}
 customItems : List (CustomItem msg) -> Config msg -> Config msg
 customItems items config =
@@ -767,7 +767,7 @@ formItem attributes children =
         |> CustomItem
 
 
-{-| Create a completely custom, which will float to the right when the menu isn't collapsed. You should ensure that you create inline elements or else your menu will break in unfortunate ways !
+{-| Create a completely custom item, which will float to the right when the menu isn't collapsed. You should ensure that you create inline elements or else your menu will break in unfortunate ways !
 
 * `attributes` List of attributes
 * `children` List of children
@@ -1224,7 +1224,7 @@ visibilityTransition withAnimation visibility =
 
 * `config` A record with the following properties
     * `id` A unique id for your dropdown. It's important, because it's used to keep track of the state of the dropdown !
-    * `toggle` The main item/[`toggle`](#dropdownToggle) that toggles the dropdown menu up or down
+    * `toggle` The main item ([`toggle`](#dropdownToggle)) that toggles the dropdown menu up or down
 -}
 dropdown :
     { id : String
@@ -1263,7 +1263,7 @@ dropdownItem attributes children =
         |> DropdownItem
 
 
-{-| Creates divider element appropriate for use in dropdowns.
+{-| Creates a divider element appropriate for use in dropdowns.
 Handy when you want to visually separate groups of menu items in a dropdown menu
 
 * `attributes` List of attributes
@@ -1275,7 +1275,7 @@ dropdownDivider =
         |> DropdownItem
 
 
-{-| Creates an header element appropriate for use in dropdowns
+{-| Creates an header element appropriate for use in dropdowns.
 Handy when you want to provide a heading for a group of menu items in a dropdown menu
 
 * `attributes` List of attributes

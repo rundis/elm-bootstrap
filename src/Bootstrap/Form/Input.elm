@@ -40,8 +40,8 @@ module Bootstrap.Form.Input exposing
 @docs id, small, large, value, defaultValue, disabled, onInput, attrs, Option
 
 # Validation
-These options really only makes sense when you used in conjuction with the form module.
-To use standalone remember to wrap your inputs in a containing element and provide it one of the following classes:
+These options really only makes sense when used in conjunction with the form module.
+To use standalone, remember to wrap your inputs in a containing element and provide it one of the following classes:
 
 * `has-success`
 * `has-warning`
@@ -230,7 +230,7 @@ small =
     Size GridInternal.SM
 
 
-{-| Option to make an input taller
+{-| Option to make an input taller (in height)
 -}
 large : Option msg
 large =

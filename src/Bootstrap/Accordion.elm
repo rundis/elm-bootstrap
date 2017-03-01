@@ -115,7 +115,7 @@ import Bootstrap.ListGroup as ListGroup
 
 {-| Configuration information that defines the view of your accordion
 
-* `toMsg` A message construnctor functions that is used to step the view state forward
+* `toMsg` A message constructor functions that is used to step the view state forward
 * `cards` List of cards to displayed
 * `withAnimation` Determine whether you wish the slide up/down of the card contents to be animated
 
@@ -196,7 +196,7 @@ type Header msg
         }
 
 
-{-| When using animations you must remember to call this function for you main subscriptions function
+{-| When using animations you must remember to call this function for your main subscriptions function
 
     subscriptions : Model -> Sub Msg
     subscriptions model =
@@ -356,14 +356,14 @@ headerH6 =
     headerPrivate Html.h6
 
 
-{-| Add elements before the toggle elemeent in a accordion card header
+{-| Add elements before the toggle element in a accordion card header
 -}
 prependHeader : List (Html.Html msg) -> Header msg -> Header msg
 prependHeader elements (Header header) =
     Header { header | childrenPreToggle = elements ++ header.childrenPreToggle }
 
 
-{-| Add elements after the toggle elemeent in a accordion card header
+{-| Add elements after the toggle element in a accordion card header
 -}
 appendHeader : List (Html.Html msg) -> Header msg -> Header msg
 appendHeader elements (Header header) =

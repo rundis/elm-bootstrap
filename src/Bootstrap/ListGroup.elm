@@ -54,7 +54,7 @@ type alias Item msg = Internal.Item msg
 type alias CustomItem msg = Internal.CustomItem msg
 
 
-{-| A simple list group based on an ul element
+{-| A simple list group based on a ul element
 
     ListGroup.ul
         [ ListGroup.li [ ListGroup.active ] [ text "Item 1"]
@@ -68,7 +68,7 @@ ul items =
         (List.map Internal.renderItem items)
 
 
-{-| Composable li element for an ul based list group
+{-| Composable li element for a ul based list group
 -}
 li : List (ItemOption msg) -> List (Html.Html msg) -> Item msg
 li options children =

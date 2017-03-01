@@ -61,7 +61,7 @@ module Bootstrap.Card
 
 
 ## Header
-@docs header, headerH1, headerH2, headerH2, headerH3, headerH4, headerH5, headerH6, CardHeader
+@docs header, headerH1, headerH2, headerH3, headerH4, headerH5, headerH6, CardHeader
 
 ## Footer
 @docs CardFooter, footer
@@ -267,7 +267,7 @@ inverted color =
     CardInternal.Coloring <| CardInternal.Inverted color
 
 
-{-| When you need to customize a card item with std Html.Attribute attributes use this function
+{-| When you need to customize a card item with standard Html.Attribute attributes use this function
 -}
 attrs : List (Html.Attribute msg) -> CardOption msg
 attrs attrs =
@@ -325,7 +325,7 @@ view (Config { options, header, footer, imgTop, imgBottom, blocks }) =
         )
 
 
-{-| Create a img element to be shown at the top of a card
+{-| Create a <img> element to be shown at the top of a card
 
 * `attributes` List of attributes
 * `children` List of child elements
@@ -347,7 +347,7 @@ imgTop attributes children (Config config) =
         }
 
 
-{-| Create a img element to be shown at the bottom of a card
+{-| Create a <img> element to be shown at the bottom of a card
 
 * `attributes` List of attributes
 * `children` List of child elements
@@ -527,7 +527,7 @@ blockAlign align =
     CardInternal.AlignedBlock align
 
 
-{-| When you need to customize a block item with std Html.Attribute attributes use this function
+{-| When you need to customize a block item with standard Html.Attribute attributes use this function
 -}
 blockAttrs : List (Html.Attribute msg) -> BlockOption msg
 blockAttrs attrs =
