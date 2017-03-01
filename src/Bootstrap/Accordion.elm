@@ -1,6 +1,8 @@
 module Bootstrap.Accordion
     exposing
-        ( accordion
+        ( view
+        , cards
+        , withAnimation
         , toggle
         , block
         , listGroup
@@ -16,6 +18,7 @@ module Bootstrap.Accordion
         , appendHeader
         , subscriptions
         , initialState
+        , config
         , State
         , Config
         , Card
@@ -51,11 +54,9 @@ module Bootstrap.Accordion
 
     view : Model -> Html Msg
     view model =
-        Accordion.accordion
-            model.accordionState
-            { toMsg = AccordionMsg
-            , withAnimation = True
-            , cards =
+        Accordion.config
+            |> Accordion.withAnimation
+            |> Accordion.cards
                 [ Accordion.card
                     { id = "card1"
                     , options = []
@@ -77,7 +78,7 @@ module Bootstrap.Accordion
                         ]
                     }
                 ]
-            }
+            |> Accordion.view model.accordionState
 
 
     -- You need to do this wiring when you use animations !
@@ -89,7 +90,7 @@ module Bootstrap.Accordion
 
 
 ## Accordion
-@docs accordion, Config, initialState, State
+@docs view, config, cards, withAnimation,  Config, initialState, State
 
 ## Contents
 @docs card, block, listGroup, header, toggle, headerH1, headerH2, headerH3, headerH4, headerH5, headerH6, appendHeader, prependHeader, Card, CardBlock, Header, Toggle
@@ -113,21 +114,18 @@ import Bootstrap.Internal.Card as CardInternal
 import Bootstrap.ListGroup as ListGroup
 
 
-{-| Configuration information that defines the view of your accordion
+{-| Opaque type that defines the view configuration information of your accordion
 
-* `toMsg` A message constructor functions that is used to step the view state forward
-* `cards` List of cards to displayed
-* `withAnimation` Determine whether you wish the slide up/down of the card contents to be animated
-
-
-**Note: ** When you use animations you must also remember to wire up the [`subscriptions`](#subscriptions) function
-
+* You create an inition configuration by calling the [`config`](#config) function
+* The [`withAnimtion`](#withAnimation) function allows you to define that the contents of cards should animate up/down
+* The [`cards`](#cards) function defines the  List of cards to be displayed
 -}
-type alias Config msg =
-    { toMsg : State -> msg
-    , withAnimation : Bool
-    , cards : List (Card msg)
-    }
+type Config msg =
+    Config
+        { toMsg : State -> msg
+        , withAnimation : Bool
+        , cards : List (Card msg)
+        }
 
 
 {-| Opaque representation of the view state for the accordion
@@ -196,6 +194,8 @@ type Header msg
         }
 
 
+
+
 {-| When using animations you must remember to call this function for your main subscriptions function
 
     subscriptions : Model -> Sub Msg
@@ -236,31 +236,61 @@ subscriptions (State cardStates) toMsg =
         else
             Sub.none
 
+{-| Creates an initial/default view configuration for an accordion.
+
+-}
+config : (State -> msg) -> Config msg
+config toMsg =
+    Config
+        { toMsg = toMsg
+        , withAnimation = False
+        , cards = []
+        }
+
+{-| Set option for using animations for sliding card contents up/down.
+
+*Note*: You must remember to hook up the [`subscriptions`](#subscriptions) function
+when using this option.
+-}
+withAnimation : Config msg -> Config msg
+withAnimation (Config config) =
+    Config
+        { config | withAnimation = True }
+
+
 
 {-| Create an interactive accordion element
 
-    Accordion.accordion
-        model.accordionState
-        { toMsg = AccordionMsg
-        , withAnimation = True
-        , cards
+    Accordion.config AccordionMsg
+        |> Accordion.withAnimation
+        |> Accordion.cards
             [ cardOne model -- view function to create a card
             , cardTwo model
             ]
-        }
+        |> Accordion.view model.accordionState
+
 
 
 * `state` The current view state
 * `config` The configuration for the display of the accordion
 -}
-accordion :
+view :
     State
     -> Config msg
     -> Html.Html msg
-accordion state ({ cards } as config) =
+view state (Config { cards } as config) =
     Html.div
         []
         (List.map (renderCard state config) cards)
+
+
+{-| Define the cards that your accordion should consist of
+-}
+cards : List (Card msg) -> Config msg -> Config msg
+cards cards (Config config) =
+    Config
+        { config | cards = cards }
+
 
 
 {-| Creates a card item for use in an accordion
@@ -485,7 +515,7 @@ clickHandler :
     -> Json.Decoder Float
     -> Card msg
     -> Json.Decoder msg
-clickHandler state { toMsg, withAnimation } decoder (Card { id }) =
+clickHandler state (Config { toMsg, withAnimation }) decoder (Card { id }) =
     let
         updState h =
             mapCardState
@@ -602,7 +632,7 @@ transitionHandler :
     -> Config msg
     -> Card msg
     -> Json.Decoder msg
-transitionHandler state { toMsg, withAnimation } (Card { id }) =
+transitionHandler state (Config { toMsg, withAnimation }) (Card { id }) =
     mapCardState id
         (\cardState ->
             { cardState

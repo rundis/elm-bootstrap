@@ -460,12 +460,11 @@ tabs : Model -> Html Msg
 tabs model =
     div []
         [ h1 [] [ text "Tabs" ]
-        , Tab.pills
-            model.tabState
-            { toMsg = TabMsg
-            , options = [ Tab.center ]
-            , withAnimation = True
-            , items =
+        , Tab.config TabMsg
+            |> Tab.withAnimation
+            |> Tab.center
+            |> Tab.pills
+            |> Tab.items
                 [ Tab.item
                     { link = Tab.link [] [ text "Tab1" ]
                     , pane = Tab.pane [] [ listGroup ]
@@ -475,7 +474,7 @@ tabs model =
                     , pane = Tab.pane [] [ listGroup2 ]
                     }
                 ]
-            }
+            |> Tab.view model.tabState
         ]
 
 
@@ -545,12 +544,10 @@ accordion : Model -> Html Msg
 accordion { accordionState } =
     div []
         [ h1 [] [ text "Accordion" ]
-        , Accordion.accordion
-            accordionState
-            { toMsg = AccordionMsg
-            , withAnimation = True
-            , cards = [ cardOne, cardTwo ]
-            }
+        , Accordion.config AccordionMsg
+            |> Accordion.withAnimation
+            |> Accordion.cards [ cardOne, cardTwo ]
+            |> Accordion.view accordionState
         ]
 
 

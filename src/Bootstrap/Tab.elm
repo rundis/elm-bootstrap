@@ -1,6 +1,9 @@
 module Bootstrap.Tab
     exposing
-        ( tabs
+        ( view
+        , config
+        , items
+        , withAnimation
         , pills
         , item
         , link
@@ -48,12 +51,10 @@ module Bootstrap.Tab
 
     view : Model -> Html msg
     view model =
-        Tab.tabs
-            model.tabState
-            { toMsg = TabMsg
-            , options = [ Tab.right ]
-            , withAnimation = True -- Note requires subscriptions to work correctly
-            , items =
+        Tab.config TabMsg
+            |> Tab.withAnimation -- remember to wire up subscriptions when using this option
+            |> Tab.right
+            |> Tab.items
                 [ Tab.item
                     { link = Tab.link [] [ text "Tab 1" ]
                     , pane = Tab.pane [] [ text "Tab 1 Content" ]
@@ -63,7 +64,7 @@ module Bootstrap.Tab
                     , pane = Tab.pane [] [ text "Tab 2 Content" ]
                     }
                 ]
-            }
+            |> Tab.view model.tabState
 
 
     subscriptions : Model -> Sub Msg
@@ -73,11 +74,11 @@ module Bootstrap.Tab
 
 
 
-# Tabs or pills
-@docs tabs, pills, initialState, customInitialState, Config, State
+# Tabs
+@docs view, config, items, initialState, customInitialState, Config, State
 
 # Options
-@docs justified, fill, center, right, attrs, Option
+@docs pills, withAnimation, justified, fill, center, right, attrs, Option
 
 # Tab items
 @docs item, link, pane, Item, Link, Pane
@@ -128,6 +129,7 @@ type Visibility
 
 type alias Options msg =
     { layout : Maybe TabLayout
+    , isPill : Bool
     , attributes : List (Html.Attribute msg)
     }
 
@@ -142,12 +144,15 @@ type alias Options msg =
 **NOTE** When using animations you must also remember to set up [`subscriptions`](#subscriptions)
 
 -}
-type alias Config msg =
-    { toMsg : State -> msg
-    , items : List (Item msg)
-    , withAnimation : Bool
-    , options : List (Option msg)
-    }
+type Config msg =
+    Config
+        { toMsg : State -> msg
+        , items : List (Item msg)
+        , withAnimation : Bool
+        , layout : Maybe TabLayout
+        , isPill : Bool
+        , attributes : List (Html.Attribute msg)
+        }
 
 
 {-| Opaque type representing a tab item
@@ -215,50 +220,94 @@ customInitialState idx =
         , visibility = Showing
         }
 
+{-| Create an initial/default view configuration for a Tab.
+-}
+config : (State -> msg) -> Config msg
+config toMsg =
+    Config
+    { toMsg = toMsg
+    , items = []
+    , isPill = False
+    , withAnimation = False
+    , layout = Nothing
+    , attributes = []
+    }
+
+{-| Define the tab items for a Tab.
+-}
+items : List (Item msg) -> Config msg -> Config msg
+items  items (Config config) =
+    Config
+        { config | items = items }
+
+
 
 {-| Space out tab menu items evenly accross the the whole tabs control width
 -}
-justified : Option msg
-justified =
-    Layout Justified
+justified : Config msg -> Config msg
+justified  =
+    layout Justified
 
 
 {-| Space out tab menu items to use the entire tabs control width, as opposed to [`justified`](#justified) items will not get equal widths
 -}
-fill : Option msg
+fill : Config msg -> Config msg
 fill =
-    Layout Fill
+    layout Fill
 
 
 {-| Option to center the tab menu items
 -}
-center : Option msg
+center : Config msg -> Config msg
 center =
-    Layout Center
+    layout Center
 
 
 {-| Option to place tab menu items to the right
 -}
-right : Option msg
+right : Config msg -> Config msg
 right =
-    Layout Right
+    layout Right
 
+
+layout : TabLayout -> Config msg -> Config msg
+layout layout (Config config) =
+    Config
+        { config | layout = Just layout }
+
+
+{-| Option to make the tab menu items display with a pilled/buttonish look
+-}
+pills : Config msg -> Config msg
+pills (Config config) =
+    Config
+        { config | isPill = True }
+
+
+{-| Option to add a fade in/out animation effect when switching tabs
+-}
+withAnimation : Config msg -> Config msg
+withAnimation (Config config) =
+    Config
+        { config | withAnimation = True }
 
 {-| Use this function when you need additional customization with Html.Attribute attributes for the tabs control
 -}
-attrs : List (Html.Attribute msg) -> Option msg
-attrs attrs =
-    Attrs attrs
+attrs : List (Html.Attribute msg) -> Config msg -> Config msg
+attrs attrs (Config config) =
+    Config
+        { config | attributes = config.attributes ++ attrs }
+
+
+
 
 
 {-| Creates a tab control which keeps track of the selected tab item and displays the corresponding tab pane for you
 
-    Tab.tabs
-        model.tabState
-        { toMsg = TabMsg
-        , options = [ Tab.right ]
-        , withAnimation = False
-        , items =
+    Tab.config TabMsg
+        |> Tab.withAnimation -- remember to wire up subscriptions when using this option
+        |> Tab.right
+        |> Tab.items
             [ Tab.item
                 { link = Tab.link [] [ text "Tab 1" ]
                 , pane = Tab.pane [] [ text "Tab 1 Content" ]
@@ -268,47 +317,25 @@ attrs attrs =
                 , pane = Tab.pane [] [ text "Tab 2 Content" ]
                 }
             ]
-        }
-
-* `state` The view state for the tabs control
-* `config` A record with [`Configuration`](#Configuration) settings to display the control
+        |> Tab.view model.tabState
 -}
-tabs : State -> Config msg -> Html.Html msg
-tabs state config =
-    renderTab
-        state
-        { config | options = Attrs [ class "nav-tabs" ] :: config.options }
-
-
-{-| Pills are similar to [`tabs`](#tabs), but the menu items are displays with a pilled/buttonish look
-
-* `state` The view state for the tabs control
-* `config` A record with [`Configuration`](#Configuration) settings to display the control
--}
-pills : State -> Config msg -> Html.Html msg
-pills state config =
-    renderTab
-        state
-        { config | options = Attrs [ class "nav-pills" ] :: config.options }
-
-
-renderTab : State -> Config msg -> Html.Html msg
-renderTab ((State { activeTab }) as state) ({ options } as config) =
+view : State -> Config msg -> Html.Html msg
+view ((State { activeTab }) as state) (Config {items} as config) =
     let
         activeIdx =
-            if activeTab > List.length config.items then
+            if activeTab > List.length items then
                 0
             else
                 max activeTab 0
     in
         Html.div []
             [ Html.ul
-                (tabAttributes options)
+                (tabAttributes config)
                 (List.indexedMap
                     (\idx (Item { link }) ->
                         renderLink idx (idx == activeIdx) config link
                     )
-                    config.items
+                    items
                 )
             , Html.div
                 [ class "tab-content" ]
@@ -316,7 +343,7 @@ renderTab ((State { activeTab }) as state) ({ options } as config) =
                     (\idx (Item { pane }) ->
                         renderTabPane (idx == activeIdx) pane state config
                     )
-                    config.items
+                    items
                 )
             ]
 
@@ -327,7 +354,7 @@ renderLink :
     -> Config msg
     -> Link msg
     -> Html.Html msg
-renderLink idx active { toMsg, withAnimation } (Link { attributes, children }) =
+renderLink idx active (Config { toMsg, withAnimation }) (Link { attributes, children }) =
     Html.li
         [ class "nav-item" ]
         [ Html.a
@@ -378,7 +405,7 @@ activeTabAttributes :
     State
     -> Config msg
     -> List (Html.Attribute msg)
-activeTabAttributes (State { visibility }) { toMsg, withAnimation } =
+activeTabAttributes (State { visibility })  (Config { toMsg, withAnimation }) =
     case visibility of
         Hidden ->
             [ style [ ( "display", "none" ) ] ]
@@ -423,14 +450,16 @@ transitionStyle opacity =
         ]
 
 
-tabAttributes : List (Option msg) -> List (Html.Attribute msg)
-tabAttributes modifiers =
-    let
-        options =
-            List.foldl applyModifier defaultOptions modifiers
-    in
-        [ class "nav" ]
-            ++ (case options.layout of
+tabAttributes : Config msg -> List (Html.Attribute msg)
+tabAttributes (Config config) =
+
+        [ classList
+            [ ("nav", True)
+            , ("nav-tabs", not config.isPill)
+            , ("nav-pills", config.isPill)
+            ]
+        ]
+            ++ (case config.layout of
                     Just Justified ->
                         [ class "nav-justified" ]
 
@@ -446,14 +475,9 @@ tabAttributes modifiers =
                     Nothing ->
                         []
                )
-            ++ options.attributes
+            ++ config.attributes
 
 
-defaultOptions : Options msg
-defaultOptions =
-    { layout = Nothing
-    , attributes = []
-    }
 
 
 applyModifier : Option msg -> Options msg -> Options msg
@@ -467,18 +491,7 @@ applyModifier option options =
 
 
 
-{- alignAttribute : HAlign -> Html.Attribute msg
-alignAttribute align =
-    "justify-content-"
-        ++ (case align of
-                Center ->
-                    "center"
 
-                Right ->
-                    "end"
-           )
-        |> class
- -}
 
 {-| Create a composable tab item
 
