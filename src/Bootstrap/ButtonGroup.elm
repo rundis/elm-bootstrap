@@ -66,7 +66,7 @@ type ButtonItem msg
 {-| Create a group of related buttons
 
     ButtonGroup.group
-        [ Button.small ]
+        [ ButtonGroup.small ]
         [ ButtonGroup.button [ Button.primary ] [ text "Primary" ]
         , ButtonGroup.button [ Button.secondary ] [ text "Secondary" ]
         ]
