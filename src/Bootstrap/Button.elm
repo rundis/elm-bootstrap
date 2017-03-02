@@ -5,6 +5,7 @@ module Bootstrap.Button
         , radioButton
         , checkboxButton
         , attrs
+        , onClick
         , small
         , large
         , primary
@@ -34,7 +35,7 @@ You can also group a series of buttons together on a single line with the button
 
 # Button options
 
-@docs attrs, disabled, Option
+@docs attrs, onClick, disabled, Option
 
 ## Roled
 @docs primary, secondary, success, info, warning, danger, roleLink
@@ -160,6 +161,18 @@ checkboxButton checked options children =
 attrs : List (Html.Attribute msg) -> Option msg
 attrs attrs =
     ButtonInternal.Attrs attrs
+
+
+{-| Option to fire a message when the button is clicked
+-}
+onClick : msg -> Option msg
+onClick message =
+    let
+        defaultOptions =
+            Events.defaultOptions
+    in
+        -- prevent default is needed for checkboxButton and radioButton. If False, the click event will fire twice
+        attrs [ Events.onWithOptions "click" { defaultOptions | preventDefault = True } (Decode.succeed message) ]
 
 
 {-| Option to make a button small
