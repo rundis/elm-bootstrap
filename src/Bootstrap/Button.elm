@@ -2,6 +2,8 @@ module Bootstrap.Button
     exposing
         ( button
         , linkButton
+        , radioButton
+        , checkboxButton
         , attrs
         , small
         , large
@@ -28,7 +30,7 @@ You can also group a series of buttons together on a single line with the button
 
 
 # Buttons
-@docs button, linkButton
+@docs button, linkButton, radioButton, checkboxButton
 
 # Button options
 
@@ -51,6 +53,8 @@ You can also group a series of buttons together on a single line with the button
 
 import Html
 import Html.Attributes as Attributes exposing (class, classList)
+import Html.Events as Events
+import Json.Decode as Decode
 import Bootstrap.Internal.Button as ButtonInternal
 import Bootstrap.Grid.Internal as GridInternal
 
@@ -100,6 +104,55 @@ linkButton options children =
             :: ButtonInternal.buttonAttributes options
         )
         children
+
+
+{-| Create a radio input that appears as a button
+
+    Button.radioButton True [ Button.primary ] [ text "Primary" ]
+
+
+* `checked` Default value
+* `options` List of styling options
+* `children` List of child elements
+
+-}
+radioButton :
+    Bool
+    -> List (Option msg)
+    -> List (Html.Html msg)
+    -> Html.Html msg
+radioButton checked options children =
+    let
+        hideRadio =
+            -- hides the radio input element, only showing the bootstrap button
+            Attributes.attribute "data-toggle" "button"
+    in
+        Html.label
+            (classList [ ( "active", checked ) ]
+                :: hideRadio
+                :: ButtonInternal.buttonAttributes options
+            )
+            (Html.input [ Attributes.type_ "radio", Attributes.checked checked, Attributes.autocomplete False ] [] :: children)
+
+
+{-| Create a checkbox input that appears as a button
+
+    Button.checkboxButton True [ Button.primary ] [ text "Primary" ]
+
+
+* `checked` Default value
+* `options` List of styling options
+* `children` List of child elements
+
+-}
+checkboxButton :
+    Bool
+    -> List (Option msg)
+    -> List (Html.Html msg)
+    -> Html.Html msg
+checkboxButton checked options children =
+    Html.label (classList [ ( "active", checked ) ] :: ButtonInternal.buttonAttributes options)
+        (Html.input [ Attributes.type_ "checkbox", Attributes.checked checked, Attributes.autocomplete False ] [] :: children)
 
 
 {-| When you need to customize a button element with standard Html.Attribute use this function to create it as a button option

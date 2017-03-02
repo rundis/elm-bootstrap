@@ -4,6 +4,8 @@ module Bootstrap.ButtonGroup
         , groupItem
         , button
         , linkButton
+        , radioButton
+        , checkboxButton
         , toolbar
         , small
         , large
@@ -18,7 +20,7 @@ module Bootstrap.ButtonGroup
 
 # Button group
 
-@docs group, button, linkButton, ButtonItem
+@docs group, button, linkButton, radioButton, checkboxButton, ButtonItem
 
 ## Group options
 @docs small, large, vertical, attrs, Option
@@ -145,6 +147,20 @@ linkButton options children =
     Button.linkButton options children |> ButtonItem
 
 
+{-| Create a radioButton that can be composed in a button group
+-}
+radioButton : Bool -> List (Button.Option msg) -> List (Html.Html msg) -> ButtonItem msg
+radioButton checked options children =
+    Button.radioButton checked options children |> ButtonItem
+
+
+{-| Create a checkboxButton that can be composed in a button group
+-}
+checkboxButton : Bool -> List (Button.Option msg) -> List (Html.Html msg) -> ButtonItem msg
+checkboxButton checked options children =
+    Button.checkboxButton checked options children |> ButtonItem
+
+
 {-| Option to make all buttons in the given group small
 -}
 small : Option msg
@@ -184,6 +200,8 @@ groupAttributes modifiers =
             [ ( "btn-group", True )
             , ( "btn-group-vertical", options.vertical )
             ]
+          -- data-toggle is needed to display radio buttons correctly (by hiding the acutal radio input)
+        , attribute "data-toggle" "buttons"
         ]
             ++ (case (options.size |> Maybe.andThen GridInternal.screenSizeOption) of
                     Just s ->
