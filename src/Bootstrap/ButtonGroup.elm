@@ -200,7 +200,7 @@ groupAttributes modifiers =
             [ ( "btn-group", True )
             , ( "btn-group-vertical", options.vertical )
             ]
-          -- data-toggle is needed to display radio buttons correctly (by hiding the acutal radio input)
+          -- data-toggle is needed to display radio buttons correctly (by hiding the actual radio input)
         , attribute "data-toggle" "buttons"
         ]
             ++ (case (options.size |> Maybe.andThen GridInternal.screenSizeOption) of

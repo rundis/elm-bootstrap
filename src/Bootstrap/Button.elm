@@ -163,7 +163,7 @@ attrs attrs =
     ButtonInternal.Attrs attrs
 
 
-{-| Option to fire a message when the button is clicked
+{-| Option to fire a message when a button is clicked
 -}
 onClick : msg -> Option msg
 onClick message =
