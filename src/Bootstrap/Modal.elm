@@ -33,7 +33,7 @@ module Bootstrap.Modal
 
     init : ( Model, Cmd Msg )
     init =
-        ( { modalState : Modal.initalState}, Cmd.none )
+        ( { modalState : Modal.initalState }, Cmd.none )
 
 
     type Msg
@@ -60,12 +60,12 @@ module Bootstrap.Modal
                 |> Modal.h5 [] [ text "Modal header" ]
                 |> Modal.body []
                     [ Grid.containerFluid []
-                        [ Grid.simpleRow
+                        [ Grid.row
                             [ Grid.col
-                                [ Grid.colWidth Grid.colXsSix ]
+                                [ Col.xs6 ]
                                 [ text "Col 1" ]
                             , Grid.col
-                                [ Grid.colWidth Grid.colXsSix ]
+                                [ Col.xs6 ]
                                 [ text "Col 2" ]
                             ]
                         ]
@@ -73,7 +73,7 @@ module Bootstrap.Modal
                 |> Modal.footer []
                     [ Button.button
                         [ Button.outlinePrimary
-                        , Button.attr <| onClick <| ModalMsg Modal.hiddenState
+                        , Button.attrs [ onClick <| ModalMsg Modal.hiddenState ]
                         ]
                         [ text "Close" ]
                     ]
