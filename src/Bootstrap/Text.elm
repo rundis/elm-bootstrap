@@ -12,13 +12,16 @@ module Bootstrap.Text
         , alignLgLeft
         , alignLgCenter
         , alignLgRight
+        , alignXlLeft
+        , alignXlCenter
+        , alignXlRight
         , HAlign
         )
 
 {-| Utilities for text options. Currently only exposing helpers used by Bootstrap.Card for horizontal alignment
 
 
-@docs alignXsLeft, alignXsCenter, alignXsRight, alignSmLeft, alignSmCenter, alignSmRight, alignMdLeft, alignMdCenter, alignMdRight, alignLgLeft, alignLgCenter, alignLgRight, HAlign
+@docs alignXsLeft, alignXsCenter, alignXsRight, alignSmLeft, alignSmCenter, alignSmRight, alignMdLeft, alignMdCenter, alignMdRight, alignLgLeft, alignLgCenter, alignLgRight, alignXlLeft, alignXlCenter, alignXlRight, HAlign
 
 -}
 
