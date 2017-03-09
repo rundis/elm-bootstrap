@@ -33,8 +33,6 @@ install:
       make && make install;
       cd ..;
     fi
-before_script:
-  - $TRAVIS_BUILD_DIR/sysconfcpus/bin/sysconfcpus -n 2 elm-make ./tests/Main.elm
 
 script:
-  - elm-test ./tests/Main.elm
+  - $TRAVIS_BUILD_DIR/sysconfcpus/bin/sysconfcpus -n 2 elm-test
