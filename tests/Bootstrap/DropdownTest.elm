@@ -35,7 +35,7 @@ dropDown =
                 { options = [ Dropdown.alignMenuRight ]
                 , toggleMsg = ToggleMsg
                 , toggleButton =
-                    Dropdown.toggle [ Button.roleWarning ] [ Html.text "MyDropdown1" ]
+                    Dropdown.toggle [ Button.warning ] [ Html.text "MyDropdown1" ]
                 , items =
                     [ Dropdown.buttonItem [ ] [ Html.text "Item 1" ]
                     , Dropdown.buttonItem [ ] [ Html.text "Item 2" ]
@@ -111,8 +111,8 @@ splitDropDown =
                 , toggleMsg = ToggleMsg
                 , toggleButton =
                     Dropdown.splitToggle
-                        { options = [ Button.roleInfo ]
-                        , togglerOptions = [ Button.roleInfo ]
+                        { options = [ Button.info ]
+                        , togglerOptions = [ Button.info ]
                         , children = [ Html.text "Split"]
                         }
                 , items =
