@@ -1,4 +1,5 @@
-# Elm Bootstrap
+# Elm Bootstrap [![Travis build Status](https://travis-ci.org/rundis/elm-bootstrap.svg?branch=master)]
+
 
 
 Elm Bootstrap is a comprehensive library package for that aims to make it pleasant and reasonably type safe to use the upcoming [Twitter Bootstrap 4](https://v4-alpha.getbootstrap.com/) CSS Framework in your Elm applications.
