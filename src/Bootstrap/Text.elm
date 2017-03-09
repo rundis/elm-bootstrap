@@ -59,7 +59,7 @@ alignXsRight =
 alignXs : TextAlignDir -> HAlign
 alignXs dir =
     { dir = dir
-    , size = GridInternal.SM
+    , size = GridInternal.XS
     }
 
 
