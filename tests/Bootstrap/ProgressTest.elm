@@ -51,19 +51,11 @@ vanillaProgress =
                     Progress.progress [ Progress.value progressValue ]
                         |> Query.fromHtml
                         |> Query.find [ tag "div", class "progress-bar" ]
-                        |> Query.has
-                            [ attribute "aria-value-now" (toString progressValue)
-                              {- doesn't work, see https://github.com/eeue56/elm-html-test/issues/3
-                                 , attribute "style"
-                                     ("width: "
-                                         ++ toString progressValue
-                                         ++ "%;"
-                                     )
-                              -}
-                            ]
+                        |> Query.has [ attribute "aria-value-now" (toString progressValue) ]
             ]
 
 
+progressMulti : Test
 progressMulti =
     let
         html =
@@ -83,20 +75,14 @@ progressMulti =
             ]
 
 
+options : Test
 options =
-    describe "The option values for Progress"
+    describe "Progress option values"
         [ fuzz (Fuzz.intRange 0 100) "expect the progress value" <|
             \progressValue ->
                 Progress.progress [ Progress.value progressValue ]
                     |> Query.fromHtml
                     |> Query.has [ attribute "aria-value-now" (toString progressValue) ]
-          {- doesn't work because of a bug in elm-test-html
-             , fuzz (Fuzz.intRange 0 1024) "expect the height value" <|
-                 \height ->
-                     Progress.progress [ Progress.height height ]
-                         |> Query.fromHtml
-                         |> Query.has [ attribute "height" (toString height) ]
-          -}
         , fuzz Fuzz.string "expect a label" <|
             \label ->
                 Progress.progress [ Progress.value 42, Progress.label label ]
@@ -106,15 +92,17 @@ options =
             \label ->
                 Progress.progress [ Progress.label label ]
                     |> Query.fromHtml
-                    |> Query.hasNot [ text (toString label) ]
-          -- hack to say `Query.hasNot`, see https://github.com/eeue56/elm-html-test/issues/8
-          -- |> Expect.getFailure
-          -- |> Expect.notEqual Nothing
+                    |> Query.has [ text (toString label) ]
+                    -- hack to say `Query.hasNot`, see https://github.com/eeue56/elm-html-test/issues/8
+                    -- |> Query.hasNot [ text (toString label) ]
+                    |>
+                        Expect.getFailure
+                    |> Expect.notEqual Nothing
         , test "expect a custom label" <|
             \() ->
                 Progress.progress [ Progress.customLabel [ Html.div [ Attr.class "custom-label" ] [] ] ]
                     |> Query.fromHtml
-                    |> Query.hasNot [ tag "div", class "custom-label" ]
+                    |> Query.has [ tag "div", class "custom-label" ]
         , test "expect bg-success class" <|
             \() ->
                 Progress.progress [ Progress.success ]
@@ -135,12 +123,12 @@ options =
                 Progress.progress [ Progress.danger ]
                     |> Query.fromHtml
                     |> Query.has [ tag "div", class "progress-bar", class "bg-danger" ]
-        , test "expect bg-animated and bg-striped class" <|
+        , test "expect progress-bar-animated and progress-bar-striped class" <|
             \() ->
                 Progress.progress [ Progress.animated ]
                     |> Query.fromHtml
                     |> Query.has [ tag "div", class "progress-bar", class "progress-bar-animated", class "progress-bar-striped" ]
-        , test "expect bg-striped class" <|
+        , test "expect progress-bar-striped class" <|
             \() ->
                 Progress.progress [ Progress.striped ]
                     |> Query.fromHtml
