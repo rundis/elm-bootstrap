@@ -27,6 +27,7 @@
         "Bootstrap.ListGroup",
         "Bootstrap.Modal",
         "Bootstrap.Navbar",
+        "Bootstrap.Popover",
         "Bootstrap.Progress",
         "Bootstrap.Tab",
         "Bootstrap.Table",

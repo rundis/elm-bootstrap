@@ -20,6 +20,7 @@ import Bootstrap.Form.Fieldset as Fieldset
 import Bootstrap.Card as Card
 import Bootstrap.Table as Table
 import Bootstrap.Progress as Progress
+import Bootstrap.Popover as Popover
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -52,6 +53,10 @@ type alias Model =
     , accordionState : Accordion.State
     , navbarState : Navbar.State
     , navMsgCounter : Int
+    , popoverStateLeft : Popover.State
+    , popoverStateRight : Popover.State
+    , popoverStateTop : Popover.State
+    , popoverStateBottom : Popover.State
     }
 
 
@@ -69,6 +74,10 @@ init =
           , accordionState = Accordion.initialState
           , navbarState = navbarState
           , navMsgCounter = 0
+          , popoverStateLeft = Popover.initialState
+          , popoverStateRight = Popover.initialState
+          , popoverStateBottom = Popover.initialState
+          , popoverStateTop = Popover.initialState
           }
         , navbarCmd
         )
@@ -87,6 +96,10 @@ type Msg
     | TabMsg Tab.State
     | AccordionMsg Accordion.State
     | NavbarMsg Navbar.State
+    | TogglePopoverLeftMsg Popover.State
+    | TogglePopoverRightMsg Popover.State
+    | TogglePopoverBottomMsg Popover.State
+    | TogglePopoverTopMsg Popover.State
 
 
 update : Msg -> Model -> ( Model, Cmd msg )
@@ -140,6 +153,26 @@ update msg ({ accordionState } as model) =
             , Cmd.none
             )
 
+        TogglePopoverLeftMsg state ->
+            ( { model | popoverStateLeft = state }
+            , Cmd.none
+            )
+
+        TogglePopoverRightMsg state ->
+            ( { model | popoverStateRight = state }
+            , Cmd.none
+            )
+
+        TogglePopoverBottomMsg state ->
+            ( { model | popoverStateBottom = state }
+            , Cmd.none
+            )
+
+        TogglePopoverTopMsg state ->
+            ( { model | popoverStateTop = state }
+            , Cmd.none
+            )
+
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
@@ -161,54 +194,91 @@ view model =
         ]
 
 
+
+popoverContent : Popover.Config Msg -> Popover.Config Msg
+popoverContent config =
+    Popover.titleH4 [] [ text "Popover title" ] config
+        |> Popover.content []
+                    [ text "Some concent to display. There is even more."
+                    , p [] [ text "There is even a paragraph here too." ]
+                    , h6 [] [ text "A header even" ]
+                    ]
+
+
+popoverButton : Popover.State -> (Popover.State -> msg) -> Html msg
+popoverButton state msg =
+    Button.button
+        [ Button.attrs <|
+            Popover.onHover state msg
+        ]
+        [ text "Toggle tooltip" ]
+
+
 mainContent : Model -> Html Msg
 mainContent model =
     div [ style [ ( "margin-top", "60px" ) ] ]
         [ navbar model
         , simpleForm
         , gridForm
+        , div []
+            [ span [ ]  [ text "Tooltip buttons: " ]
+            , Popover.config
+                (popoverButton model.popoverStateTop TogglePopoverTopMsg)
+                |> Popover.top
+                |> popoverContent
+                |> Popover.view model.popoverStateTop
+            , Popover.config
+                (popoverButton model.popoverStateBottom TogglePopoverBottomMsg)
+                |> Popover.bottom
+                |> popoverContent
+                |> Popover.view model.popoverStateBottom
+
+            , Button.button [ ]
+                [ Popover.config
+                    (span (class "fa fa-car" :: Popover.onHover model.popoverStateLeft TogglePopoverLeftMsg ) [])
+                    |> Popover.left
+                    |> popoverContent
+                    |> Popover.view model.popoverStateLeft
+                , text " Icon hover"
+                ]
+
+            , Popover.config
+                (div (Popover.onHover model.popoverStateRight TogglePopoverRightMsg ) [ text "A Div"])
+                |> Popover.right
+                |> popoverContent
+                |> Popover.view model.popoverStateRight
+            ]
         , Grid.row
-            [ Row.bottomXs, Row.attrs [rowStyle] ]
+            [ Row.bottomXs, Row.attrs [ rowStyle ] ]
             [ Grid.col
                 [ Col.xs2
-                , Col.attrs [ colStyle]
+                , Col.attrs [ colStyle ]
                 ]
                 [ span [ class "fa fa-car" ] []
                 , text " Col 1 Row 1"
-                , div [ class "form-inline"]
+                , div [ class "form-inline" ]
                     [ Chk.checkbox [ Chk.inline ] "Chk"
                     , Chk.checkbox [ Chk.inline, Chk.disabled True ] "Chk"
-                    , Chk.checkbox [ ] "Stacked"
+                    , Chk.checkbox [] "Stacked"
                     ]
                 ]
             , Grid.col
                 [ Col.topXs
-                , Col.attrs [colStyle]
+                , Col.attrs [ colStyle ]
                 ]
-                [ text "Col 2 Row 1"
-                , div [ class "form-inline"]
-                    [ Chk.custom [ Chk.inline ] "Chk"
-                    , Chk.custom [ Chk.inline ] "Chk"
-                    ]
-                , hr [] []
-                , div []
-                    [ Chk.custom [ Chk.inline ] "Chk"
-                    , Chk.custom [ Chk.inline ] "Chk"
-                    ]
-
-                ]
+                []
             , Grid.col
                 [ Col.xs5
                 , Col.middleXs
-                , Col.attrs [colStyle]
+                , Col.attrs [ colStyle ]
                 ]
                 [ text "Col 3 Row 1"
                 , Fieldset.config
                     |> Fieldset.asGroup
                     |> Fieldset.disabled True
-                    |> Fieldset.legend [] [ text "My radios"]
+                    |> Fieldset.legend [] [ text "My radios" ]
                     |> Fieldset.children
-                        ( Radio.radioList "myradiogroup"
+                        (Radio.radioList "myradiogroup"
                             [ Radio.create [] "Radio 1"
                             , Radio.create [] "Radio 2"
                             ]
@@ -216,11 +286,11 @@ mainContent model =
                     |> Fieldset.view
                 ]
             , Grid.col
-                [ Col.attrs [colStyle] ]
+                [ Col.attrs [ colStyle ] ]
                 [ text "Col 4 Row 1" ]
             ]
         , Grid.row
-            [ Row.middleXs, Row.attrs [rowStyle] ]
+            [ Row.middleXs, Row.attrs [ rowStyle ] ]
             [ Grid.col
                 [ Col.xs5 ]
                 [ Button.linkButton
@@ -233,9 +303,9 @@ mainContent model =
                 ]
             ]
         , Grid.row
-            [ Row.topXs, Row.attrs [rowStyle] ]
+            [ Row.topXs, Row.attrs [ rowStyle ] ]
             [ Grid.col
-                [ Col.xs5, Col.attrs [colStyle] ]
+                [ Col.xs5, Col.attrs [ colStyle ] ]
                 [ Dropdown.dropdown
                     model.dropdownState
                     { options = [ Dropdown.alignMenuRight ]
@@ -261,7 +331,7 @@ mainContent model =
                     }
                 ]
             , Grid.col
-                [ Col.xs5, Col.attrs [colStyle] ]
+                [ Col.xs5, Col.attrs [ colStyle ] ]
                 [ Dropdown.splitDropdown
                     model.splitDropState
                     { options = [ Dropdown.dropUp, Dropdown.alignMenuRight ]
@@ -289,7 +359,7 @@ mainContent model =
                     }
                 ]
             , Grid.col
-                [ Col.attrs [colStyle] ]
+                [ Col.attrs [ colStyle ] ]
                 [ text model.dummy ]
             ]
         , accordion model
