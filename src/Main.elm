@@ -15,6 +15,7 @@ import Bootstrap.Form as Form
 import Bootstrap.Form.Checkbox as Chk
 import Bootstrap.Form.Radio as Radio
 import Bootstrap.Form.Input as Input
+import Bootstrap.Form.InputGroup as InputGrp
 import Bootstrap.Form.Select as Select
 import Bootstrap.Form.Fieldset as Fieldset
 import Bootstrap.Card as Card
@@ -442,6 +443,18 @@ simpleForm =
                 , Radio.radio [ Radio.inline, Radio.name "myradios"] "Radio 2"
                 , Radio.radio [ Radio.inline, Radio.disabled True, Radio.name "myradios"] "Radio 3"
                 ]
+            ]
+        , Form.group []
+            [ Form.label [] [ text "A group of sorts"]
+            , InputGrp.config
+                (InputGrp.password [])
+                |> InputGrp.small
+                |> InputGrp.predecessors
+                    [ InputGrp.span [] [ text "@"] ]
+                |> InputGrp.successors
+                    [ InputGrp.button [ Button.outlinePrimary ] [ text "Do it!"]
+                    ]
+                |> InputGrp.view
             ]
         ]
 

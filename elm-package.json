@@ -18,6 +18,7 @@
         "Bootstrap.Form",
         "Bootstrap.Form.Checkbox",
         "Bootstrap.Form.Input",
+        "Bootstrap.Form.InputGroup",
         "Bootstrap.Form.Radio",
         "Bootstrap.Form.Select",
         "Bootstrap.Form.Textarea",
