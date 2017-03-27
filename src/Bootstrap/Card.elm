@@ -42,6 +42,9 @@ module Bootstrap.Card
         , group
         , deck
         , columns
+        , keyedGroup
+        , keyedDeck
+        , keyedColumns
         , Config
         , CardOption
         , BlockOption
@@ -98,12 +101,13 @@ Cards can be composed into
 * [`decks`](#deck)
 * [`columns`](#columns)
 
-@docs group, deck, columns
+@docs group, deck, columns, keyedGroup, keyedDeck, keyedColumns
 
 -}
 
 import Html
 import Html.Attributes exposing (class)
+import Html.Keyed as Keyed
 import Color
 import Bootstrap.Text as Text
 import Bootstrap.ListGroup as ListGroup
@@ -704,6 +708,7 @@ group cards =
         (List.map view cards)
 
 
+
 {-| Need a set of equal width and height cards that aren’t attached to one another? Use card decks
 
 * `cards` List of [`card configs`](#Config)
@@ -713,6 +718,8 @@ deck cards =
     Html.div
         [ class "card-deck" ]
         (List.map view cards)
+
+
 
 
 {-| Cards can be organized into Masonry-like columns with just CSS by wrapping them in .card-columns. Cards are built with CSS column properties instead of flexbox for easier alignment. Cards are ordered from top to bottom and left to right.
@@ -727,7 +734,30 @@ columns cards =
         (List.map view cards)
 
 
+{-| Create a card group with keyed cards.
+-}
+keyedGroup : List (String, Config msg) -> Html.Html msg
+keyedGroup =
+    keyedMulti "card-group"
 
--- PRIVATE Helpers etc
+
+{-| Create a card deck with keyed cards.
+-}
+keyedDeck : List (String, Config msg) -> Html.Html msg
+keyedDeck =
+    keyedMulti "card-deck"
 
 
+{-| Create card columns with keyed cards.
+-}
+keyedColumns : List (String, Config msg) -> Html.Html msg
+keyedColumns =
+    keyedMulti "card-columns"
+
+
+
+keyedMulti : String -> List (String, Config msg) -> Html.Html msg
+keyedMulti clazz keyedCards =
+    Keyed.node "div"
+        [ class clazz ]
+        (List.map (\( key, card ) -> ( key, view card )) keyedCards)

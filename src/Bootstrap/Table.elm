@@ -3,7 +3,9 @@ module Bootstrap.Table
         ( table
         , thead
         , tbody
+        , keyedTBody
         , tr
+        , keyedTr
         , td
         , th
         , simpleTable
@@ -59,11 +61,11 @@ module Bootstrap.Table
 
 
 # Table body
-@docs tbody, TBody
+@docs tbody, keyedTBody, TBody
 
 
 # Rows
-@docs tr, Row
+@docs tr, keyedTr, Row
 
 ## Row options
 @docs rowActive, rowInfo, rowSuccess, rowWarning, rowDanger, rowAttr, RowOption
@@ -78,6 +80,7 @@ module Bootstrap.Table
 -}
 import Html
 import Html.Attributes exposing (class)
+import Html.Keyed as Keyed
 
 
 {-| Opaque type representing possible styling options for a table
@@ -128,6 +131,10 @@ type Role
 -}
 type Row msg
     = Row (RowConfig msg)
+    | KeyedRow
+        { options : List (RowOption msg)
+        , cells : List (String, Cell msg)
+        }
 
 
 type alias RowConfig msg =
@@ -163,7 +170,10 @@ type TBody msg
         { attributes : List (Html.Attribute msg)
         , rows : List (Row msg)
         }
-
+    | KeyedTBody
+        { attributes : List (Html.Attribute msg)
+        , rows : List (String, Row msg)
+        }
 
 {-| Option to give a table an inversed color scheme (dark backround, light text)
 -}
@@ -282,19 +292,29 @@ maybeMapInversedTHead isTableInversed (THead thead) =
 
 
 maybeMapInversedTBody : Bool -> TBody msg -> TBody msg
-maybeMapInversedTBody isTableInversed (TBody tbody) =
-    (if isTableInversed then
+maybeMapInversedTBody isTableInversed tbody =
+    case (isTableInversed, tbody) of
+        (False, _) ->
+            tbody
+
+        (True, (TBody body)) ->
+            TBody { body | rows = List.map mapInversedRow body.rows }
+
+        (True, (KeyedTBody keyedBody)) ->
+            KeyedTBody { keyedBody | rows = List.map (\(key, row) -> (key,  mapInversedRow row) ) keyedBody.rows }
+
+{-     (if isTableInversed then
         { tbody | rows = List.map mapInversedRow tbody.rows }
      else
         tbody
     )
-        |> TBody
+        |> TBody -}
 
 
 mapInversedRow : Row msg -> Row msg
-mapInversedRow ((Row { options, cells }) as row) =
+mapInversedRow row =
     let
-        inversedOptions =
+        inversedOptions options =
             List.map
                 (\opt ->
                     case opt of
@@ -306,10 +326,20 @@ mapInversedRow ((Row { options, cells }) as row) =
                 )
                 options
     in
-        Row
-            { options = inversedOptions
-            , cells = List.map mapInversedCell cells
-            }
+        case row of
+            Row {options, cells} ->
+                Row
+                    { options = inversedOptions options
+                    , cells = List.map mapInversedCell cells
+                    }
+
+            KeyedRow {options, cells} ->
+                KeyedRow
+                    { options = inversedOptions options
+                    , cells = List.map (\(key, cell) -> (key, mapInversedCell cell)) cells
+                    }
+
+
 
 
 mapInversedCell : Cell msg -> Cell msg
@@ -419,24 +449,63 @@ tbody attributes rows =
         }
 
 
+{-| Create a tbody element where each row is keyed
+
+* `attributes` List of standard Elm html attributes
+* `rows` List of key table row elements (tr) tuples
+
+-}
+keyedTBody :
+    List (Html.Attribute msg)
+    -> List (String, Row msg)
+    -> TBody msg
+keyedTBody attributes rows =
+    KeyedTBody
+        { attributes = attributes
+        , rows = rows
+        }
+
+
 renderTBody : TBody msg -> Html.Html msg
-renderTBody (TBody { attributes, rows }) =
-    Html.tbody
-        attributes
-        (List.map (\row -> maybeAddScopeToFirstCell row |> renderRow) rows)
+renderTBody body =
+    case body of
+        TBody {attributes, rows} ->
+            Html.tbody
+                attributes
+                (List.map (\row -> maybeAddScopeToFirstCell row |> renderRow) rows)
+
+
+        KeyedTBody {attributes, rows} ->
+            Keyed.node "tbody"
+                attributes
+                (List.map (\(key, row) -> (key, maybeAddScopeToFirstCell row |> renderRow)) rows)
+
 
 
 maybeAddScopeToFirstCell : Row msg -> Row msg
-maybeAddScopeToFirstCell ((Row { options, cells }) as row) =
-    case cells of
-        [] ->
-            row
+maybeAddScopeToFirstCell row =
+    case row of
+        Row { options, cells } ->
+            case cells of
+                [] ->
+                    row
 
-        first :: rest ->
-            Row
-                { options = options
-                , cells = (addScopeIfTh first) :: rest
-                }
+                first :: rest ->
+                    Row
+                        { options = options
+                        , cells = (addScopeIfTh first) :: rest
+                        }
+
+        KeyedRow { options, cells } ->
+            case cells of
+                [] ->
+                    row
+
+                (firstKey, first) :: rest ->
+                    KeyedRow
+                        { options = options
+                        , cells = (firstKey, (addScopeIfTh first)) :: rest
+                        }
 
 
 addScopeIfTh : Cell msg -> Cell msg
@@ -521,6 +590,18 @@ tr options cells  =
         , cells = cells
         }
 
+{-| Create a table row with keyed td or th child elements.
+-}
+keyedTr :
+    List (RowOption msg)
+    -> List (String, Cell msg)
+    -> Row msg
+keyedTr options keyedCells  =
+    KeyedRow
+        { options = options
+        , cells = keyedCells
+        }
+
 {-| When you need to customize a td or th with standard Html.Attribute attributes, use this function
 -}
 cellAttr : Html.Attribute msg -> CellOption msg
@@ -600,10 +681,17 @@ th options children =
 
 
 renderRow : Row msg -> Html.Html msg
-renderRow (Row { options, cells }) =
-    Html.tr
-        (rowAttributes options )
-        (List.map renderCell cells)
+renderRow row =
+    case row of
+        Row {options, cells} ->
+            Html.tr
+                ( rowAttributes options )
+                (List.map renderCell cells)
+
+        KeyedRow {options, cells} ->
+            Keyed.node "tr"
+                ( rowAttributes options )
+                (List.map (\(key, cell) -> (key, renderCell cell) ) cells)
 
 
 renderCell : Cell msg -> Html.Html msg

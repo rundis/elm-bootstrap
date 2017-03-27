@@ -6,6 +6,8 @@ module Bootstrap.Grid
         , row
         , col
         , colBreak
+        , keyedCol
+        , keyedRow
         , Column
         )
 
@@ -39,17 +41,18 @@ module Bootstrap.Grid
 @docs container, containerFluid
 
 # Rows
-@docs row, simpleRow
+@docs row, simpleRow, keyedRow
 
 
 # Columns
-@docs col, colBreak, Column
+@docs col, colBreak, keyedCol, Column
 
 
 -}
 
 import Html exposing (Html, div, Attribute)
 import Html.Attributes exposing (class, classList)
+import Html.Keyed as Keyed
 import Bootstrap.Grid.Internal as GridInternal
 import Bootstrap.Grid.Col as Col
 import Bootstrap.Grid.Row as Row
@@ -66,6 +69,10 @@ type Column msg
         , children : List (Html msg)
         }
     | ColBreak (Html.Html msg)
+    | KeyedColumn
+        { options : List (GridInternal.ColOption msg)
+        , children : List (String, Html msg)
+        }
 
 
 {-| Responsive fixed width container, which changes it's max-width at breakpoint
@@ -101,10 +108,23 @@ row options cols =
         (List.map renderCol cols)
 
 
+
+{-| Create a row with keyed columns. Handy when you need to move columns around without getting big massiv rerenders.
+
+* `options` List of row options
+* `keydCols` List of key, column tuples
+-}
+keyedRow : List (Row.Option msg) -> List (String, Column msg) -> Html msg
+keyedRow options keyedCols =
+    Keyed.node "div"
+        (GridInternal.rowAttributes options)
+        (List.map (\(key, col) -> (key, renderCol col) ) keyedCols)
+
+
 {-| Create a column
 
 * `options` List of column options
-* `cols` List of child elments
+* `children` List of child elments
 -}
 col : List (Col.Option msg) -> List (Html msg) -> Column msg
 col options children =
@@ -112,6 +132,20 @@ col options children =
         { options = options
         , children = children
         }
+
+
+{-| Create a column with keyed children
+
+* `options` List of column options
+* `keyedChildren` List of key,element child element tuples
+-}
+keyedCol : List (Col.Option msg) -> List (String, Html msg) -> Column msg
+keyedCol options children =
+    KeyedColumn
+        { options = options
+        , children = children
+        }
+
 
 {-| Creates a full width column with no content. Handy for creating equal width multi-row columns.
 -}
@@ -122,15 +156,21 @@ colBreak attributes =
             ([class "w-100"] ++ attributes)
             []
 
+
 renderCol : Column msg -> Html msg
 renderCol column =
     case column of
-        (Column { options, children }) ->
+        Column { options, children } ->
             div
                 (GridInternal.colAttributes options)
                 children
-        (ColBreak e) ->
+
+        ColBreak e ->
             e
 
+        KeyedColumn {options, children} ->
+            Keyed.node "div"
+                (GridInternal.colAttributes options)
+                children
 
 

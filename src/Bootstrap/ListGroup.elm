@@ -1,8 +1,10 @@
 module Bootstrap.ListGroup
     exposing
         ( ul
+        , keyedUl
         , li
         , custom
+        , keyedCustom
         , anchor
         , button
         , success
@@ -20,11 +22,11 @@ module Bootstrap.ListGroup
 {-| List groups are a flexible and powerful component for displaying a series of content. List group items can be modified and extended to support just about any content within. They can also be used as navigation with the right modifier class
 
 # Simple lists
-@docs ul, li, Item
+@docs ul, li, keyedUl, Item
 
 
 # Custom lists
-@docs custom, anchor, button, CustomItem
+@docs custom, keyedCustom, anchor, button, CustomItem
 
 
 # Options
@@ -35,23 +37,26 @@ module Bootstrap.ListGroup
 
 import Html
 import Html.Attributes as Attr exposing (class, classList, type_)
+import Html.Keyed as Keyed
 import Bootstrap.Internal.ListGroup as Internal
 
 
 {-| Opaque type representing configuration options for a list item
 -}
-type alias ItemOption msg = Internal.ItemOption msg
-
+type alias ItemOption msg =
+    Internal.ItemOption msg
 
 
 {-| Opaque type representing a list item in a ul based list group
 -}
-type alias Item msg = Internal.Item msg
+type alias Item msg =
+    Internal.Item msg
 
 
 {-| Opaque type representing an item in a custom list group
 -}
-type alias CustomItem msg = Internal.CustomItem msg
+type alias CustomItem msg =
+    Internal.CustomItem msg
 
 
 {-| A simple list group based on a ul element
@@ -66,6 +71,15 @@ ul items =
     Html.ul
         [ class "list-group" ]
         (List.map Internal.renderItem items)
+
+
+{-| Create a ul list group with keyed children.
+-}
+keyedUl : List ( String, Item msg ) -> Html.Html msg
+keyedUl keyedItems =
+    Keyed.ul
+        [ class "list-group" ]
+        (List.map (\( key, item ) -> ( key, Internal.renderItem item )) keyedItems)
 
 
 {-| Composable li element for a ul based list group
@@ -102,6 +116,17 @@ custom items =
         (List.map Internal.renderCustomItem items)
 
 
+{-| Create a custom list group with keyed children.
+-}
+keyedCustom : List (String, CustomItem msg) -> Html.Html msg
+keyedCustom items =
+    Keyed.node "div"
+        [ class "list-group" ]
+        (List.map (\(key, item) -> (key, Internal.renderCustomItem item)) items)
+
+
+
+
 {-| Create a composable anchor list item for use in a custom list
 
 * `options` List of options to configure the list item
@@ -115,7 +140,7 @@ anchor options children =
     let
         updOptions =
             if List.any ((==) Internal.Disabled) options then
-                options ++ [ Internal.Attrs [Internal.preventClick] ]
+                options ++ [ Internal.Attrs [ Internal.preventClick ] ]
             else
                 options
     in
