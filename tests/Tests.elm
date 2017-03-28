@@ -6,9 +6,12 @@ import Bootstrap.ButtonTest as ButtonTest
 import Bootstrap.CardTest as CardTest
 import Bootstrap.DropdownTest as DropdownTest
 import Bootstrap.TableTest as TableTest
+import Bootstrap.ProgressTest as ProgressTest
 import Test exposing (..)
 
-{-| @ltignore -}
+
+{-| @ltignore
+-}
 all : Test
 all =
     Test.concat
@@ -18,4 +21,5 @@ all =
         , CardTest.all
         , DropdownTest.all
         , TableTest.all
+        , ProgressTest.all
         ]

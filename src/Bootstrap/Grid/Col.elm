@@ -1,6 +1,4 @@
-module Bootstrap.Grid.Col exposing
-    (..)
-
+module Bootstrap.Grid.Col exposing (..)
 
 {-| Functions for creating grid column options.
 
@@ -97,12 +95,15 @@ module Bootstrap.Grid.Col exposing
 @docs attrs, Option
 
 -}
+
 import Html
 import Bootstrap.Grid.Internal as Internal exposing (..)
 
+
 {-| Opaque type representing valid Column options
 -}
-type alias Option msg = Internal.ColOption msg
+type alias Option msg =
+    Internal.ColOption msg
 
 
 {-| Use this function when you need to provide custom Html attributes to the column container element.
@@ -115,75 +116,90 @@ attrs attrs =
 
 {- *********** Aligns ******************* -}
 
+
 {-| -}
 topXs : Option msg
 topXs =
     colVAlign XS Top
+
 
 {-| -}
 topSm : Option msg
 topSm =
     colVAlign SM Top
 
+
 {-| -}
 topMd : Option msg
 topMd =
     colVAlign MD Top
+
 
 {-| -}
 topLg : Option msg
 topLg =
     colVAlign LG Top
 
+
 {-| -}
 topXl : Option msg
 topXl =
     colVAlign XL Top
+
 
 {-| -}
 middleXs : Option msg
 middleXs =
     colVAlign XS Middle
 
+
 {-| -}
 middleSm : Option msg
 middleSm =
     colVAlign SM Middle
+
 
 {-| -}
 middleMd : Option msg
 middleMd =
     colVAlign MD Middle
 
+
 {-| -}
 middleLg : Option msg
 middleLg =
     colVAlign LG Middle
+
 
 {-| -}
 middleXl : Option msg
 middleXl =
     colVAlign XL Middle
 
+
 {-| -}
 bottomXs : Option msg
 bottomXs =
     colVAlign XS Bottom
+
 
 {-| -}
 bottomSm : Option msg
 bottomSm =
     colVAlign SM Bottom
 
+
 {-| -}
 bottomMd : Option msg
 bottomMd =
     colVAlign MD Bottom
 
+
 {-| -}
 bottomLg : Option msg
 bottomLg =
     colVAlign LG Bottom
+
 
 {-| -}
 bottomXl : Option msg
@@ -368,6 +384,7 @@ smAuto =
     width XS ColAuto
 
 
+
 -- MD widths
 
 
@@ -453,6 +470,7 @@ md12 =
 mdAuto : Option msg
 mdAuto =
     width MD ColAuto
+
 
 
 -- LG widths
@@ -542,6 +560,7 @@ lgAuto =
     width LG ColAuto
 
 
+
 -- XL widths
 
 
@@ -627,6 +646,7 @@ xl12 =
 xlAuto : Option msg
 xlAuto =
     width XL ColAuto
+
 
 
 {- *************** OFFSETS ******************** -}
@@ -784,6 +804,7 @@ offsetMd0 : Option msg
 offsetMd0 =
     offset MD Offset0
 
+
 {-| -}
 offsetMd1 : Option msg
 offsetMd1 =
@@ -852,6 +873,7 @@ offsetMd11 =
 
 
 -- LG Offsets
+
 
 {-| -}
 offsetLg0 : Option msg
@@ -927,6 +949,7 @@ offsetLg11 =
 
 
 -- XL Offsets
+
 
 {-| -}
 offsetXl0 : Option msg

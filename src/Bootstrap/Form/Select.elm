@@ -90,13 +90,13 @@ custom options =
     view << create (Custom :: options)
 
 
-
 create : List (Option msg) -> List (Item msg) -> Select msg
 create options items =
     Select
         { options = options
         , items = items
         }
+
 
 view : Select msg -> Html.Html msg
 view (Select { options, items }) =
@@ -110,8 +110,6 @@ view (Select { options, items }) =
 item : List (Html.Attribute msg) -> List (Html.Html msg) -> Item msg
 item attributes children =
     Html.option attributes children |> Item
-
-
 
 
 {-| Option to make a select shorter (height)

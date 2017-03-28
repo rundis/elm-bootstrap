@@ -28,14 +28,15 @@ all =
 emptySimpleCard : Test
 emptySimpleCard =
     let
-        html = Card.simpleCard [] []
+        html = Card.config []
+                |> Card.view
     in
         describe "Simple card no options"
-            [ test "expect card and block classes" <|
+            [ test "expect card class" <|
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.has  [ classes ["card", "card-block"] ]
+                        |> Query.has  [ classes ["card"] ]
 
             ]
 
@@ -44,22 +45,24 @@ notSoSimpleCard : Test
 notSoSimpleCard =
     let
         html =
-            Card.simpleCard
+            Card.config
                 [ Card.align Text.alignXsCenter
                 , Card.outlineInfo
                 ]
-                [ Card.titleH1 [] [ Html.text "titleh1" ]
-                , Card.text [] [ Html.text "cardtext" ]
-                , Card.link [] [ Html.text "link" ]
-                , Card.blockQuote [] [ Html.text "blockquote" ]
-                ]
+                |> Card.block []
+                    [ Card.titleH1 [] [ Html.text "titleh1" ]
+                    , Card.text [] [ Html.text "cardtext" ]
+                    , Card.link [] [ Html.text "link" ]
+                    , Card.blockQuote [] [ Html.text "blockquote" ]
+                    ]
+                |> Card.view
     in
         describe "Simple card with options and items"
             [ test "expect classes" <|
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.has [ classes [ "card", "card-block", "card-outline-info", "text-center" ] ]
+                        |> Query.has [ classes [ "card", "card-outline-info", "text-center" ] ]
             , test "expect title" <|
                 \() ->
                     html
@@ -91,14 +94,13 @@ cardFullMonty : Test
 cardFullMonty =
     let
         html =
-            Card.card
-                 { options = [ Card.outlineInfo ]
-                 , header = Just <| Card.headerH1 [] [ Html.text "Header" ]
-                 , footer = Just <| Card.footer [] [ Html.text "Footer" ]
-                 , imgTop = Just <| Card.imgTop [ Attr.src "/imgtop.jpg"] []
-                 , imgBottom = Just <| Card.imgBottom [ Attr.src "/imgbottom.jpg"] []
-                 , blocks = [ Card.block [] [ Card.text [] [ Html.text "cardblock" ] ] ]
-                }
+            Card.config [ Card.outlineInfo ]
+                |> Card.headerH1 [] [ Html.text "Header" ]
+                |> Card.footer [] [ Html.text "Footer" ]
+                |> Card.imgTop [ Attr.src "/imgtop.jpg"] []
+                |> Card.imgBottom [ Attr.src "/imgbottom.jpg"] []
+                |> Card.block [] [ Card.text [] [ Html.text "cardblock" ] ]
+                |> Card.view
     in
         describe "Card with everything in it"
             [ test "expect classes" <|
@@ -215,7 +217,7 @@ columns =
 
 
 
-cardList : Int -> List (Card.Card msg)
+cardList : Int -> List (Card.Config msg)
 cardList count =
     List.repeat count <|
-        Card.simpleCardItem [] []
+        Card.config []

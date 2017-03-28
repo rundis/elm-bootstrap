@@ -5,7 +5,6 @@ import Bootstrap.Button as Button
 import Html
 import Html.Attributes as Attr
 import Test exposing (Test, test, describe)
-import Expect
 import Test.Html.Query as Query
 import Test.Html.Selector exposing (text, tag, class, classes, attribute)
 
@@ -19,9 +18,6 @@ all =
         , linkButton
         , roledButtons
         , outlinedButtons
-        , buttonGroup
-        , buttonGroupWithOptions
-        , buttonToolbar
         ]
 
 
@@ -50,7 +46,7 @@ vanillaButton =
 linkButton : Test
 linkButton =
     let
-        html = Button.linkButton [Button.roleDanger] [ Html.text "Click"]
+        html = Button.linkButton [Button.danger] [ Html.text "Click"]
     in
         describe "Plain link button"
             [ test "expect a and text" <|
@@ -79,12 +75,12 @@ roledButtons =
     let
         html =
             Html.div []
-                [ Button.button [ Button.rolePrimary ] [ Html.text "primary" ]
-                , Button.button [ Button.roleSecondary ] [ Html.text "secondary" ]
-                , Button.button [ Button.roleSuccess ] [ Html.text "success" ]
-                , Button.button [ Button.roleInfo ] [ Html.text "info" ]
-                , Button.button [ Button.roleWarning ] [ Html.text "warning" ]
-                , Button.button [ Button.roleDanger ] [ Html.text "danger" ]
+                [ Button.button [ Button.primary ] [ Html.text "primary" ]
+                , Button.button [ Button.secondary ] [ Html.text "secondary" ]
+                , Button.button [ Button.success ] [ Html.text "success" ]
+                , Button.button [ Button.info ] [ Html.text "info" ]
+                , Button.button [ Button.warning ] [ Html.text "warning" ]
+                , Button.button [ Button.danger ] [ Html.text "danger" ]
                 , Button.button [ Button.roleLink ] [ Html.text "link" ]
                 ]
     in
@@ -201,8 +197,8 @@ fancyBlockButton =
         html = Button.linkButton
                  [Button.block
                  , Button.large
-                 , Button.roleDanger
-                 , Button.attr <| Attr.class "rounded"
+                 , Button.danger
+                 , Button.attrs [ Attr.class "rounded" ]
                  ]
                  [Html.text "Click"]
 
@@ -226,88 +222,6 @@ fancyBlockButton =
                         |> Query.fromHtml
                         |> Query.has  [ attribute "role" "button"]
 
-            ]
-
-
-buttonGroup : Test
-buttonGroup =
-    let
-        html =
-            Button.buttonGroup []
-                [ Button.buttonItem [] [ Html.text "Button1" ]
-                , Button.buttonItem [ Button.roleDanger ] [ Html.text "Button1" ]
-                ]
-    in
-        describe "Button Group "
-            [ test "expect div and btn-group class" <|
-                \() ->
-                    html
-                        |> Query.fromHtml
-                        |> Query.has [ tag "div", class "btn-group" ]
-            , test "expect role" <|
-                \() ->
-                    html
-                        |> Query.fromHtml
-                        |> Query.has [ attribute "role" "group" ]
-            , test "expect 2 button children" <|
-                \() ->
-                    html
-                        |> Query.fromHtml
-                        |> Query.findAll [ class "btn" ]
-                        |> Query.count (Expect.equal 2)
-            ]
-
-
-buttonGroupWithOptions : Test
-buttonGroupWithOptions =
-    let
-        html =
-            Html.div []
-                [ Button.buttonGroup [ Button.largeGroup] []
-                , Button.buttonGroup [ Button.verticalGroup] []
-                ]
-
-    in
-        describe "Button Group with options"
-            [ test "expect 1 vertical group" <|
-                \() ->
-                    html
-                        |> Query.fromHtml
-                        |> Query.findAll [ class "btn-group-vertical"]
-                        |> Query.count( Expect.equal 1)
-
-            , test "expect 1 large group" <|
-                \() ->
-                    html
-                        |> Query.fromHtml
-                        |> Query.findAll [ class "btn-group-lg"]
-                        |> Query.count( Expect.equal 1)
-            ]
-
-
-buttonToolbar : Test
-buttonToolbar =
-    let
-        html =
-            Button.buttonToolbar []
-                [ Button.buttonGroupItem [] []
-                , Button.buttonGroupItem [] []
-                ]
-
-    in
-        describe "Button toolbar"
-            [ test "expect div and btn-toolbar" <|
-                \() ->
-                    html
-                        |> Query.fromHtml
-                        |> Query.has [tag "div", class "btn-toolbar"]
-
-            , test "expect 2 button groups" <|
-                \() ->
-                    html
-                        |> Query.fromHtml
-                        |> Query.findAll [ class "btn-group"]
-                        |> Query.count( Expect.equal 2)
             ]
 
 

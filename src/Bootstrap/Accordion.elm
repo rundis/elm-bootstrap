@@ -120,8 +120,8 @@ import Bootstrap.ListGroup as ListGroup
 * The [`withAnimtion`](#withAnimation) function allows you to define that the contents of cards should animate up/down
 * The [`cards`](#cards) function defines the  List of cards to be displayed
 -}
-type Config msg =
-    Config
+type Config msg
+    = Config
         { toMsg : State -> msg
         , withAnimation : Bool
         , cards : List (Card msg)
@@ -161,7 +161,7 @@ type Visibility
 type Card msg
     = Card
         { id : String
-        , options : List ( Card.CardOption msg )
+        , options : List (Card.CardOption msg)
         , header : Header msg
         , blocks : List (CardBlock msg)
         }
@@ -192,8 +192,6 @@ type Header msg
         , childrenPreToggle : List (Html.Html msg)
         , childrenPostToggle : List (Html.Html msg)
         }
-
-
 
 
 {-| When using animations you must remember to call this function for your main subscriptions function
@@ -236,6 +234,7 @@ subscriptions (State cardStates) toMsg =
         else
             Sub.none
 
+
 {-| Creates an initial/default view configuration for an accordion.
 
 -}
@@ -247,6 +246,7 @@ config toMsg =
         , cards = []
         }
 
+
 {-| Set option for using animations for sliding card contents up/down.
 
 *Note*: You must remember to hook up the [`subscriptions`](#subscriptions) function
@@ -256,7 +256,6 @@ withAnimation : Config msg -> Config msg
 withAnimation (Config config) =
     Config
         { config | withAnimation = True }
-
 
 
 {-| Create an interactive accordion element
@@ -278,7 +277,7 @@ view :
     State
     -> Config msg
     -> Html.Html msg
-view state (Config { cards } as config) =
+view state ((Config { cards }) as config) =
     Html.div
         []
         (List.map (renderCard state config) cards)
@@ -290,7 +289,6 @@ cards : List (Card msg) -> Config msg -> Config msg
 cards cards (Config config) =
     Config
         { config | cards = cards }
-
 
 
 {-| Creates a card item for use in an accordion
@@ -455,9 +453,9 @@ renderCard :
     -> Config msg
     -> Card msg
     -> Html.Html msg
-renderCard state config (Card {options} as card) =
+renderCard state config ((Card { options }) as card) =
     Html.div
-        ( CardInternal.cardAttributes  options ++ [ class "card" ])
+        (CardInternal.cardAttributes options ++ [ class "card" ])
         [ renderCardHeader state config card
         , renderCardBlock state config card
         ]

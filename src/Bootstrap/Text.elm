@@ -41,6 +41,7 @@ alignXsLeft : HAlign
 alignXsLeft =
     alignXs Left
 
+
 {-| Align center at smallest responsive breakpoint
 -}
 alignXsCenter : HAlign
@@ -55,11 +56,10 @@ alignXsRight =
     alignXs Right
 
 
-
 alignXs : TextAlignDir -> HAlign
 alignXs dir =
     { dir = dir
-    , size = GridInternal.SM
+    , size = GridInternal.XS
     }
 
 
@@ -75,6 +75,7 @@ alignSmLeft =
 alignSmCenter : HAlign
 alignSmCenter =
     alignSm Center
+
 
 {-| Align right at small responsive breakpoint
 -}
@@ -96,6 +97,7 @@ alignMdLeft : HAlign
 alignMdLeft =
     alignMd Left
 
+
 {-| Align center at medium responsive breakpoint
 -}
 alignMdCenter : HAlign
@@ -115,6 +117,7 @@ alignMd dir =
     { dir = dir
     , size = GridInternal.MD
     }
+
 
 {-| Align left at large responsive breakpoint
 -}

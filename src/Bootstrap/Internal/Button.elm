@@ -1,15 +1,14 @@
-module Bootstrap.Internal.Button exposing
-    (buttonAttributes
-    , Option (..)
-    , Role (..)
-    , RoledButton (..)
-    )
-
+module Bootstrap.Internal.Button
+    exposing
+        ( buttonAttributes
+        , Option(..)
+        , Role(..)
+        , RoledButton(..)
+        )
 
 import Bootstrap.Grid.Internal as GridInternal
 import Html
 import Html.Attributes as Attributes exposing (class, classList)
-
 
 
 type Option msg
@@ -18,7 +17,6 @@ type Option msg
     | Block
     | Disabled Bool
     | Attrs (List (Html.Attribute msg))
-
 
 
 type RoledButton
@@ -36,7 +34,6 @@ type Role
     | Link
 
 
-
 type alias Options msg =
     { coloring : Maybe RoledButton
     , block : Bool
@@ -46,39 +43,37 @@ type alias Options msg =
     }
 
 
-buttonAttributes : List (Option msg)  -> List (Html.Attribute msg)
+buttonAttributes : List (Option msg) -> List (Html.Attribute msg)
 buttonAttributes modifiers =
     let
         options =
             List.foldl applyModifier defaultOptions modifiers
     in
         [ classList
-            [ ("btn", True)
-            , ("btn-block", options.block)
-            , ("disabled", options.disabled)
+            [ ( "btn", True )
+            , ( "btn-block", options.block )
+            , ( "disabled", options.disabled )
             ]
         , Attributes.disabled options.disabled
         ]
-        ++ ( case (options.size |> Maybe.andThen GridInternal.screenSizeOption) of
-                Just s ->
-                    [ class <| "btn-" ++ s ]
+            ++ (case (options.size |> Maybe.andThen GridInternal.screenSizeOption) of
+                    Just s ->
+                        [ class <| "btn-" ++ s ]
 
-                Nothing ->
-                    []
-          )
-        ++ ( case options.coloring of
-                Just (Roled role) ->
-                    [ class <| "btn-" ++ roleClass role ]
+                    Nothing ->
+                        []
+               )
+            ++ (case options.coloring of
+                    Just (Roled role) ->
+                        [ class <| "btn-" ++ roleClass role ]
 
-                Just (Outlined role) ->
-                    [ class <| "btn-outline-" ++ roleClass role ]
+                    Just (Outlined role) ->
+                        [ class <| "btn-outline-" ++ roleClass role ]
 
-                Nothing ->
-                    []
-            )
-
-
-        ++ options.attributes
+                    Nothing ->
+                        []
+               )
+            ++ options.attributes
 
 
 defaultOptions : Options msg
@@ -89,6 +84,7 @@ defaultOptions =
     , size = Nothing
     , attributes = []
     }
+
 
 applyModifier : Option msg -> Options msg -> Options msg
 applyModifier modifier options =

@@ -1,8 +1,8 @@
 module Bootstrap.Form.FormInternal exposing (..)
 
-
 import Html
 import Html.Attributes as Attributes
+
 
 type Validation
     = Success

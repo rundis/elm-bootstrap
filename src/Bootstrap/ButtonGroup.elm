@@ -1,16 +1,27 @@
 module Bootstrap.ButtonGroup
     exposing
-        ( group
-        , groupItem
+        ( buttonGroup
+        , linkButtonGroup
+        , radioButtonGroup
+        , checkboxButtonGroup
         , button
         , linkButton
+        , radioButton
+        , checkboxButton
+        , ButtonItem
+        , LinkButtonItem
+        , RadioButtonItem
+        , CheckboxButtonItem
+        , buttonGroupItem
+        , linkButtonGroupItem
+        , radioButtonGroupItem
+        , checkboxButtonGroupItem
         , toolbar
         , small
         , large
         , vertical
         , attrs
         , Option
-        , ButtonItem
         , GroupItem
         )
 
@@ -18,20 +29,24 @@ module Bootstrap.ButtonGroup
 
 # Button group
 
-@docs group, button, linkButton, ButtonItem
+@docs button, linkButton, radioButton, checkboxButton
+@docs buttonGroup, linkButtonGroup, radioButtonGroup, checkboxButtonGroup
+@docs ButtonItem, LinkButtonItem, RadioButtonItem, CheckboxButtonItem
+
 
 ## Group options
 @docs small, large, vertical, attrs, Option
 
 
 # Button toolbar
-@docs toolbar, groupItem, GroupItem
+@docs toolbar, buttonGroupItem, linkButtonGroupItem, radioButtonGroupItem
+@docs checkboxButtonGroupItem, GroupItem
 
 
 -}
 
 import Html
-import Html.Attributes exposing (class, classList, attribute)
+import Html.Attributes as Attributes exposing (class, classList, attribute)
 import Bootstrap.Button as Button
 import Bootstrap.Grid.Internal as GridInternal
 
@@ -57,10 +72,28 @@ type GroupItem msg
     = GroupItem (Html.Html msg)
 
 
-{-| Opaque type representing a button or link button, for composing button groups
+{-| Opaque type representing a button, for composing button groups
 -}
 type ButtonItem msg
     = ButtonItem (Html.Html msg)
+
+
+{-| Opaque type representing a link button, for composing button groups
+-}
+type LinkButtonItem msg
+    = LinkButtonItem (Html.Html msg)
+
+
+{-| Opaque type representing a radio button, for composing button groups
+-}
+type RadioButtonItem msg
+    = RadioButtonItem (Html.Html msg)
+
+
+{-| Opaque type representing a checkbox button, for composing button groups
+-}
+type CheckboxButtonItem msg
+    = CheckboxButtonItem (Html.Html msg)
 
 
 {-| Create a group of related buttons
@@ -75,27 +108,87 @@ type ButtonItem msg
   * `items` List of button items (ref [`buttonItem`](#buttonItem) and [`linkButtonItem`](#linkButtonItem))
 
 -}
-group :
-    List (Option msg)
-    -> List (ButtonItem msg)
-    -> Html.Html msg
-group options items =
-    groupItem options items
+buttonGroup : List (Option msg) -> List (ButtonItem msg) -> Html.Html msg
+buttonGroup options items =
+    buttonGroupItem options items
+        |> renderGroup
+
+
+{-| Create a group of related link buttons. Parameters are identical to [`buttonGroup`](#buttonGroup)
+-}
+linkButtonGroup : List (Option msg) -> List (LinkButtonItem msg) -> Html.Html msg
+linkButtonGroup options items =
+    linkButtonGroupItem options items
+        |> renderGroup
+
+
+{-| Create a group of mutually-exclusive radio buttons. Parameters are identical to [`buttonGroup`](#buttonGroup)
+
+    ButtonGroup.radioButtonGroup
+        [ ButtonGroup.small ]
+        [ ButtonGroup.radioButton True [ Button.primary ] [ text "On" ]
+        , ButtonGroup.radioButton False [ Button.primary ] [ text "Off" ]
+        ]
+-}
+radioButtonGroup : List (Option msg) -> List (RadioButtonItem msg) -> Html.Html msg
+radioButtonGroup options items =
+    radioButtonGroupItem options items
+        |> renderGroup
+
+
+{-| Create a group of related checkbox buttons. Parameters are identical to [`buttonGroup`](#buttonGroup)
+
+    ButtonGroup.checkboxButtonGroup
+        [ ButtonGroup.small ]
+        [ ButtonGroup.checkboxButton True [ Button.primary ] [ text "Bold" ]
+        , ButtonGroup.checkboxButton True [ Button.primary ] [ text "Italic" ]
+        ]
+-}
+checkboxButtonGroup : List (Option msg) -> List (CheckboxButtonItem msg) -> Html.Html msg
+checkboxButtonGroup options items =
+    checkboxButtonGroupItem options items
         |> renderGroup
 
 
 {-| Create a button group that can be composed in a [`toolbar`](#toolbar)
 
-The parameters are identical as for [`group`](#group)
+The parameters are identical as for [`buttonGroup`](#buttonGroup)
 -}
-groupItem :
-    List (Option msg)
-    -> List (ButtonItem msg)
-    -> GroupItem msg
-groupItem options items =
+buttonGroupItem : List (Option msg) -> List (ButtonItem msg) -> GroupItem msg
+buttonGroupItem options items =
     Html.div
         (groupAttributes options)
         (List.map (\(ButtonItem elem) -> elem) items)
+        |> GroupItem
+
+
+{-| The same as [`buttonGroupItem`](#buttonGroupItem), but for link buttons
+-}
+linkButtonGroupItem : List (Option msg) -> List (LinkButtonItem msg) -> GroupItem msg
+linkButtonGroupItem options items =
+    Html.div
+        (groupAttributes options)
+        (List.map (\(LinkButtonItem elem) -> elem) items)
+        |> GroupItem
+
+
+{-| The same as [`buttonGroupItem`](#buttonGroupItem), but for radio buttons
+-}
+radioButtonGroupItem : List (Option msg) -> List (RadioButtonItem msg) -> GroupItem msg
+radioButtonGroupItem options items =
+    Html.div
+        (groupAttributes options)
+        (List.map (\(RadioButtonItem elem) -> elem) items)
+        |> GroupItem
+
+
+{-| The same as [`buttonGroupItem`](#buttonGroupItem), but for checkbox buttons
+-}
+checkboxButtonGroupItem : List (Option msg) -> List (CheckboxButtonItem msg) -> GroupItem msg
+checkboxButtonGroupItem options items =
+    Html.div
+        (groupAttributes options)
+        (List.map (\(CheckboxButtonItem elem) -> elem) items)
         |> GroupItem
 
 
@@ -140,9 +233,23 @@ button options children =
 
 {-| Create a linkButton that can be composed in a button group
 -}
-linkButton : List (Button.Option msg) -> List (Html.Html msg) -> ButtonItem msg
+linkButton : List (Button.Option msg) -> List (Html.Html msg) -> LinkButtonItem msg
 linkButton options children =
-    Button.linkButton options children |> ButtonItem
+    Button.linkButton options children |> LinkButtonItem
+
+
+{-| Create a radioButton that can be composed in a button group
+-}
+radioButton : Bool -> List (Button.Option msg) -> List (Html.Html msg) -> RadioButtonItem msg
+radioButton checked options children =
+    Button.radioButton checked options children |> RadioButtonItem
+
+
+{-| Create a checkboxButton that can be composed in a button group
+-}
+checkboxButton : Bool -> List (Button.Option msg) -> List (Html.Html msg) -> CheckboxButtonItem msg
+checkboxButton checked options children =
+    Button.checkboxButton checked options children |> CheckboxButtonItem
 
 
 {-| Option to make all buttons in the given group small
@@ -184,6 +291,9 @@ groupAttributes modifiers =
             [ ( "btn-group", True )
             , ( "btn-group-vertical", options.vertical )
             ]
+
+        -- data-toggle is needed to display radio buttons correctly (by hiding the actual radio input)
+        , attribute "data-toggle" "buttons"
         ]
             ++ (case (options.size |> Maybe.andThen GridInternal.screenSizeOption) of
                     Just s ->

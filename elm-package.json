@@ -1,5 +1,5 @@
 {
-    "version": "1.0.0",
+    "version": "1.1.0",
     "summary": "Elm Bootstrap is a comprehensive library for working with Twitter Bootstrap 4",
     "repository": "https://github.com/rundis/elm-bootstrap.git",
     "license": "BSD3",
@@ -18,6 +18,7 @@
         "Bootstrap.Form",
         "Bootstrap.Form.Checkbox",
         "Bootstrap.Form.Input",
+        "Bootstrap.Form.InputGroup",
         "Bootstrap.Form.Radio",
         "Bootstrap.Form.Select",
         "Bootstrap.Form.Textarea",
@@ -27,6 +28,7 @@
         "Bootstrap.ListGroup",
         "Bootstrap.Modal",
         "Bootstrap.Navbar",
+        "Bootstrap.Popover",
         "Bootstrap.Progress",
         "Bootstrap.Tab",
         "Bootstrap.Table",

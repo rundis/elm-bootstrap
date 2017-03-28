@@ -113,8 +113,6 @@ group options children =
         children
 
 
-
-
 {-| Create a form control label. Suitable for use in form groups.
 
 * `attributes` List of attributes

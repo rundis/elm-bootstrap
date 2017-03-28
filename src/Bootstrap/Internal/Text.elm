@@ -24,8 +24,10 @@ type TextAlignDir
 
 textAlignClass : HAlign -> Html.Attribute msg
 textAlignClass { dir, size } =
-    "text-"
-        ++ (Maybe.withDefault "" <| GridInternal.screenSizeOption size)
+    "text"
+        ++ (Maybe.map (\s -> "-" ++ s ++ "-") (GridInternal.screenSizeOption size)
+                |> Maybe.withDefault "-"
+           )
         ++ textAlignDirOption dir
         |> Html.Attributes.class
 

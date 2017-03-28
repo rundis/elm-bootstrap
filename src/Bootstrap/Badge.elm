@@ -195,8 +195,6 @@ pillDanger =
     badgeInternal [ Roled Danger, Pill ]
 
 
-
-
 badgeInternal :
     List BadgeOption
     -> List (Html.Attribute msg)
@@ -206,7 +204,6 @@ badgeInternal options attributes children =
     Html.span
         (badgeAttributes options ++ attributes)
         children
-
 
 
 badgeAttributes : List BadgeOption -> List (Html.Attribute msg)

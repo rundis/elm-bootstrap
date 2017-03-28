@@ -48,6 +48,7 @@ type alias VAlign =
     , align : VerticalAlign
     }
 
+
 type alias HAlign =
     { screenSize : ScreenSize
     , align : HorizontalAlign
@@ -124,7 +125,6 @@ type HorizontalAlign
     | Between
 
 
-
 type alias ColOptions msg =
     { attributes : List (Html.Attribute msg)
     , widthXs : Maybe Width
@@ -170,10 +170,10 @@ type alias RowOptions msg =
     }
 
 
-
 width : ScreenSize -> ColumnCount -> ColOption msg
 width size count =
     ColWidth <| Width size count
+
 
 colVAlign : ScreenSize -> VerticalAlign -> ColOption msg
 colVAlign size align =
@@ -183,6 +183,7 @@ colVAlign size align =
 offset : ScreenSize -> OffsetCount -> ColOption msg
 offset size count =
     ColOffset <| Offset size count
+
 
 pull : ScreenSize -> MoveCount -> ColOption msg
 pull size count =
@@ -204,7 +205,6 @@ rowHAlign size align =
     RowHAlign <| HAlign size align
 
 
-
 colAttributes : List (ColOption msg) -> List (Html.Attribute msg)
 colAttributes modifiers =
     let
@@ -219,13 +219,15 @@ colAttributes modifiers =
                 , options.widthLg
                 , options.widthXl
                 ]
-                |> List.length) == 0
+                |> List.length
+            )
+                == 0
     in
         colWidthsToAttributes
             [ if shouldAddDefaultXs then
                 Just <| Width XS Col
               else
-                  options.widthXs
+                options.widthXs
             , options.widthSm
             , options.widthMd
             , options.widthLg
@@ -268,8 +270,8 @@ rowAttributes modifiers =
         options =
             List.foldl applyRowOption defaultRowOptions modifiers
     in
-        [ class "row"]
-        ++ vAlignsToAttributes "align-items-"
+        [ class "row" ]
+            ++ vAlignsToAttributes "align-items-"
                 [ options.vAlignXs
                 , options.vAlignSm
                 , options.vAlignMd
@@ -284,8 +286,6 @@ rowAttributes modifiers =
                 , options.hAlignXl
                 ]
             ++ options.attributes
-
-
 
 
 applyColOption : ColOption msg -> ColOptions msg -> ColOptions msg
@@ -416,7 +416,6 @@ applyRowOption modifier options =
 
         RowHAlign align ->
             applyRowHAlign align options
-
 
 
 applyRowVAlign : VAlign -> RowOptions msg -> RowOptions msg
@@ -571,26 +570,25 @@ pushesToAttributes pushes =
             |> List.filterMap identity
 
 
-vAlignsToAttributes : String ->List (Maybe VAlign) -> List (Html.Attribute msg)
+vAlignsToAttributes : String -> List (Maybe VAlign) -> List (Html.Attribute msg)
 vAlignsToAttributes prefix aligns =
     let
         align a =
             Maybe.map (vAlignClass prefix) a
-
     in
         List.map align aligns
             |> List.filterMap identity
 
 
 vAlignClass : String -> VAlign -> Html.Attribute msg
-vAlignClass prefix {align, screenSize} =
+vAlignClass prefix { align, screenSize } =
     class <|
         (prefix
-        ++ (Maybe.map (\v -> v ++ "-") (screenSizeOption screenSize)
-                |> Maybe.withDefault ""
-           )
-        ++ verticalAlignOption align)
-
+            ++ (Maybe.map (\v -> v ++ "-") (screenSizeOption screenSize)
+                    |> Maybe.withDefault ""
+               )
+            ++ verticalAlignOption align
+        )
 
 
 hAlignsToAttributes : List (Maybe HAlign) -> List (Html.Attribute msg)
@@ -598,20 +596,20 @@ hAlignsToAttributes aligns =
     let
         align a =
             Maybe.map hAlignClass a
-
     in
         List.map align aligns
             |> List.filterMap identity
 
 
 hAlignClass : HAlign -> Html.Attribute msg
-hAlignClass {align, screenSize} =
+hAlignClass { align, screenSize } =
     class <|
         ("justify-content-"
-        ++ (Maybe.map (\v -> v ++ "-") (screenSizeOption screenSize)
-                |> Maybe.withDefault ""
-           )
-        ++ horizontalAlignOption align)
+            ++ (Maybe.map (\v -> v ++ "-") (screenSizeOption screenSize)
+                    |> Maybe.withDefault ""
+               )
+            ++ horizontalAlignOption align
+        )
 
 
 screenSizeToPartialString : ScreenSize -> String
