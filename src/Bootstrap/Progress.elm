@@ -1,19 +1,20 @@
-module Bootstrap.Progress exposing
-    ( progress
-    , progressMulti
-    , value
-    , height
-    , label
-    , customLabel
-    , success
-    , info
-    , warning
-    , danger
-    , striped
-    , animated
-    , attr
-    , Option
-    )
+module Bootstrap.Progress
+    exposing
+        ( progress
+        , progressMulti
+        , value
+        , height
+        , label
+        , customLabel
+        , success
+        , info
+        , warning
+        , danger
+        , striped
+        , animated
+        , attr
+        , Option
+        )
 
 {-| You can use the custom progress elment for displaying simple or complex progress bars.
 It doesn't use the HTML5 `<progress>` element, ensuring you can stack progress bars, animate them, and place text labels over them.
@@ -66,6 +67,7 @@ type Options msg
         , attributes : List (Attribute msg)
         }
 
+
 {-| Create a progress bar with various customization options
 
     Progress.progress
@@ -83,6 +85,7 @@ progress modifiers =
         [ class "progress" ]
         [ renderBar modifiers ]
 
+
 {-| Create a progress containing multiple progress bars next to each other
 
     Progress.progressMulti
@@ -91,12 +94,11 @@ progress modifiers =
         ]
 
 -}
-progressMulti : List ( List (Option msg) ) -> Html msg
+progressMulti : List (List (Option msg)) -> Html msg
 progressMulti bars =
     Html.div
         [ class "progress" ]
-        ( List.map renderBar bars )
-
+        (List.map renderBar bars)
 
 
 renderBar : List (Option msg) -> Html msg
@@ -116,7 +118,9 @@ value : Int -> Option msg
 value val =
     Value val
 
-{-| Option to specify the height (in pixels) for the progress bar -}
+
+{-| Option to specify the height (in pixels) for the progress bar
+-}
 height : Int -> Option msg
 height height =
     Height <| Just height
@@ -151,6 +155,7 @@ info : Option msg
 info =
     Roled <| Just Info
 
+
 {-| Option to give a progress bar a warning background color
 -}
 warning : Option msg
@@ -173,6 +178,7 @@ animated : Option msg
 animated =
     Animated True
 
+
 {-| Option to make the progress bar background striped
 -}
 striped : Option msg
@@ -185,7 +191,6 @@ striped =
 attr : Attribute msg -> Option msg
 attr attr =
     Attr attr
-
 
 
 applyOption : Option msg -> Options msg -> Options msg
@@ -223,21 +228,21 @@ toAttributes (Options options) =
           , attribute "aria-valuemax" "100"
           , style [ ( "width", toString options.value ++ "%" ) ]
           , classList
-              [ ("progress-bar", True)
-              , ("progress-bar-striped", options.striped || options.animated)
-              , ("progress-bar-animated", options.animated)
-              ]
+                [ ( "progress-bar", True )
+                , ( "progress-bar-striped", options.striped || options.animated )
+                , ( "progress-bar-animated", options.animated )
+                ]
           ]
         , case options.height of
             Just height ->
-                [ style [ ("height", toString height ++ "px") ] ]
+                [ style [ ( "height", toString height ++ "px" ) ] ]
 
             Nothing ->
                 []
-
         , case options.role of
             Just role ->
                 [ roleClass role ]
+
             Nothing ->
                 []
         , options.attributes

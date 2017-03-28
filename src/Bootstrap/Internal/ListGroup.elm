@@ -1,6 +1,5 @@
 module Bootstrap.Internal.ListGroup exposing (..)
 
-
 import Html
 import Html.Attributes as Attr exposing (classList, class)
 
@@ -36,13 +35,13 @@ type Item msg
         , itemFn : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
         }
 
+
 type CustomItem msg
     = CustomItem
         { options : List (ItemOption msg)
         , children : List (Html.Html msg)
         , itemFn : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
         }
-
 
 
 renderItem : Item msg -> Html.Html msg
@@ -88,7 +87,8 @@ applyModifier modifier options =
             { options | attributes = options.attributes ++ attrs }
 
 
-{-| Nasty hack to prevent click handler on -}
+{-| Nasty hack to prevent click handler on
+-}
 preventClick : Html.Attribute a
 preventClick =
     Attr.attribute
@@ -127,4 +127,3 @@ roleClass role =
 
             Danger ->
                 "list-group-item-danger"
-

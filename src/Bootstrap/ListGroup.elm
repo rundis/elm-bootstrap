@@ -118,13 +118,11 @@ custom items =
 
 {-| Create a custom list group with keyed children.
 -}
-keyedCustom : List (String, CustomItem msg) -> Html.Html msg
+keyedCustom : List ( String, CustomItem msg ) -> Html.Html msg
 keyedCustom items =
     Keyed.node "div"
         [ class "list-group" ]
-        (List.map (\(key, item) -> (key, Internal.renderCustomItem item)) items)
-
-
+        (List.map (\( key, item ) -> ( key, Internal.renderCustomItem item )) items)
 
 
 {-| Create a composable anchor list item for use in a custom list

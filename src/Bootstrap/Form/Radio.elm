@@ -127,7 +127,7 @@ radioList :
     -> List (Html.Html msg)
 radioList groupName radios =
     List.map
-        ( view << (addOption <| name groupName ))
+        (view << (addOption <| name groupName))
         radios
 
 
@@ -140,6 +140,7 @@ create options label =
         , label = label
         }
 
+
 {-| Create a composable custom radio for use in a [`radioList`](#radioList)
 -}
 createCustom : List (Option msg) -> String -> Radio msg
@@ -147,12 +148,9 @@ createCustom options =
     create (Custom :: options)
 
 
-
-
 addOption : Option msg -> Radio msg -> Radio msg
-addOption opt (Radio ({options} as radio) ) =
+addOption opt (Radio ({ options } as radio)) =
     Radio { radio | options = opt :: options }
-
 
 
 view : Radio msg -> Html.Html msg
@@ -201,7 +199,8 @@ view (Radio radio) =
                     [ Attributes.class "form-check-label" ]
                     [ Html.input (toAttributes opts) []
                     , Html.text <| " " ++ radio.label
-                      -- ugly hack to provide left spacing
+
+                    -- ugly hack to provide left spacing
                     ]
                 ]
 

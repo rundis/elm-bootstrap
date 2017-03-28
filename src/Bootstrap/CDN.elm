@@ -1,7 +1,5 @@
 module Bootstrap.CDN exposing (stylesheet, fontAwesome)
 
-
-
 {-| Helper module for easily embedding css when you want to work with the library using the Elm Reactor
 
 

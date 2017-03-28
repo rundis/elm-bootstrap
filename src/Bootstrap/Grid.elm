@@ -58,9 +58,6 @@ import Bootstrap.Grid.Col as Col
 import Bootstrap.Grid.Row as Row
 
 
-
-
-
 {-| Opaque type represetning a column element
 -}
 type Column msg
@@ -71,7 +68,7 @@ type Column msg
     | ColBreak (Html.Html msg)
     | KeyedColumn
         { options : List (GridInternal.ColOption msg)
-        , children : List (String, Html msg)
+        , children : List ( String, Html msg )
         }
 
 
@@ -108,17 +105,16 @@ row options cols =
         (List.map renderCol cols)
 
 
-
 {-| Create a row with keyed columns. Handy when you need to move columns around without getting big massiv rerenders.
 
 * `options` List of row options
 * `keydCols` List of key, column tuples
 -}
-keyedRow : List (Row.Option msg) -> List (String, Column msg) -> Html msg
+keyedRow : List (Row.Option msg) -> List ( String, Column msg ) -> Html msg
 keyedRow options keyedCols =
     Keyed.node "div"
         (GridInternal.rowAttributes options)
-        (List.map (\(key, col) -> (key, renderCol col) ) keyedCols)
+        (List.map (\( key, col ) -> ( key, renderCol col )) keyedCols)
 
 
 {-| Create a column
@@ -139,7 +135,7 @@ col options children =
 * `options` List of column options
 * `keyedChildren` List of key,element child element tuples
 -}
-keyedCol : List (Col.Option msg) -> List (String, Html msg) -> Column msg
+keyedCol : List (Col.Option msg) -> List ( String, Html msg ) -> Column msg
 keyedCol options children =
     KeyedColumn
         { options = options
@@ -153,7 +149,7 @@ colBreak : List (Html.Attribute msg) -> Column msg
 colBreak attributes =
     ColBreak <|
         Html.div
-            ([class "w-100"] ++ attributes)
+            ([ class "w-100" ] ++ attributes)
             []
 
 
@@ -168,9 +164,7 @@ renderCol column =
         ColBreak e ->
             e
 
-        KeyedColumn {options, children} ->
+        KeyedColumn { options, children } ->
             Keyed.node "div"
                 (GridInternal.colAttributes options)
                 children
-
-

@@ -1,31 +1,31 @@
-module Bootstrap.Form.Input exposing
-    ( text
-    , password
-    , datetimeLocal
-    , date
-    , month
-    , time
-    , week
-    , number
-    , email
-    , url
-    , search
-    , tel
-    , color
-    , small
-    , large
-    , id
-    , value
-    , defaultValue
-    , onInput
-    , disabled
-    , attrs
-    , success
-    , danger
-    , warning
-    , Option
-    )
-
+module Bootstrap.Form.Input
+    exposing
+        ( text
+        , password
+        , datetimeLocal
+        , date
+        , month
+        , time
+        , week
+        , number
+        , email
+        , url
+        , search
+        , tel
+        , color
+        , small
+        , large
+        , id
+        , value
+        , defaultValue
+        , onInput
+        , disabled
+        , attrs
+        , success
+        , danger
+        , warning
+        , Option
+        )
 
 {-| This module allows you to create Bootstrap styled HTML 5 inputs.
 
@@ -65,7 +65,8 @@ type Input msg
     = Input { options : List (Option msg) }
 
 
-{-| Opaque type representing legal input configuration options -}
+{-| Opaque type representing legal input configuration options
+-}
 type Option msg
     = Size GridInternal.ScreenSize
     | Id String
@@ -92,7 +93,6 @@ type InputType
     | Search
     | Tel
     | Color
-
 
 
 type alias Options msg =
@@ -136,17 +136,20 @@ datetimeLocal : List (Option msg) -> Html.Html msg
 datetimeLocal =
     input DatetimeLocal
 
+
 {-| Create an input with type="date"
 -}
 date : List (Option msg) -> Html.Html msg
 date =
     input Date
 
+
 {-| Create an input with type="month"
 -}
 month : List (Option msg) -> Html.Html msg
 month =
     input Month
+
 
 {-| Create an input with type="time"
 -}
@@ -204,10 +207,9 @@ color =
     input Color
 
 
-
 input : InputType -> List (Option msg) -> Html.Html msg
 input tipe options =
-   create tipe options |> view
+    create tipe options |> view
 
 
 create : InputType -> List (Option msg) -> Input msg
@@ -215,9 +217,8 @@ create tipe options =
     Input { options = (Type tipe) :: options }
 
 
-
 view : Input msg -> Html.Html msg
-view (Input {options}) =
+view (Input { options }) =
     Html.input
         (toAttributes options)
         []
@@ -237,10 +238,12 @@ large =
     Size GridInternal.LG
 
 
-{-| Options/shorthand for setting the id of an input -}
+{-| Options/shorthand for setting the id of an input
+-}
 id : String -> Option msg
 id id =
     Id id
+
 
 {-| Use this function to handle any Html.Attribute option you wish for your input
 -}
@@ -262,17 +265,20 @@ defaultValue : String -> Option msg
 defaultValue value =
     DefaultValue value
 
+
 {-| Shorthand for assigning an onInput handler for an input
 -}
 onInput : (String -> msg) -> Option msg
 onInput toMsg =
     OnInput toMsg
 
+
 {-| Shorthand for setting the disabled attribute of an input
 -}
 disabled : Bool -> Option msg
 disabled disabled =
     Disabled disabled
+
 
 {-| Option to add a success marker icon for your input.
 
@@ -281,6 +287,7 @@ disabled disabled =
 success : Option msg
 success =
     Validation FormInternal.Success
+
 
 {-| Option to add a warning marker icon for your input.
 
@@ -298,7 +305,6 @@ warning =
 danger : Option msg
 danger =
     Validation FormInternal.Danger
-
 
 
 toAttributes : List (Option msg) -> List (Html.Attribute msg)
@@ -319,9 +325,8 @@ toAttributes modifiers =
                 , Maybe.map validationAttribute options.validation
                 ]
                     |> List.filterMap identity
-                )
+               )
             ++ options.attributes
-
 
 
 defaultOptions : Options msg
@@ -337,6 +342,7 @@ defaultOptions =
     , attributes = []
     }
 
+
 applyModifier : Option msg -> Options msg -> Options msg
 applyModifier modifier options =
     case modifier of
@@ -349,11 +355,11 @@ applyModifier modifier options =
         Type tipe ->
             { options | tipe = tipe }
 
-        Disabled val  ->
+        Disabled val ->
             { options | disabled = val }
 
         Value value ->
-            { options | value = Just value}
+            { options | value = Just value }
 
         DefaultValue value ->
             { options | defaultValue = Just value }
@@ -372,7 +378,7 @@ sizeAttribute : GridInternal.ScreenSize -> Maybe (Html.Attribute msg)
 sizeAttribute size =
     Maybe.map
         (\s -> Attributes.class <| "form-control-" ++ s)
-        ( GridInternal.screenSizeOption size )
+        (GridInternal.screenSizeOption size)
 
 
 typeAttribute : InputType -> Html.Attribute msg
@@ -422,4 +428,3 @@ typeAttribute inputType =
 validationAttribute : FormInternal.Validation -> Html.Attribute msg
 validationAttribute validation =
     Attributes.class <| "form-control-" ++ FormInternal.validationToString validation
-

@@ -26,13 +26,8 @@ import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Color
-
-
 import Bootstrap.Grid.Col as Col
 import Bootstrap.Grid.Row as Row
-
-
-
 
 
 main : Program Never Model Msg
@@ -195,15 +190,14 @@ view model =
         ]
 
 
-
 popoverContent : Popover.Config Msg -> Popover.Config Msg
 popoverContent config =
     Popover.titleH4 [] [ text "Popover title" ] config
         |> Popover.content []
-                    [ text "Some concent to display. There is even more."
-                    , p [] [ text "There is even a paragraph here too." ]
-                    , h6 [] [ text "A header even" ]
-                    ]
+            [ text "Some concent to display. There is even more."
+            , p [] [ text "There is even a paragraph here too." ]
+            , h6 [] [ text "A header even" ]
+            ]
 
 
 popoverButton : Popover.State -> (Popover.State -> msg) -> Html msg
@@ -222,7 +216,7 @@ mainContent model =
         , simpleForm
         , gridForm
         , div []
-            [ span [ ]  [ text "Tooltip buttons: " ]
+            [ span [] [ text "Tooltip buttons: " ]
             , Popover.config
                 (popoverButton model.popoverStateTop TogglePopoverTopMsg)
                 |> Popover.top
@@ -233,18 +227,16 @@ mainContent model =
                 |> Popover.bottom
                 |> popoverContent
                 |> Popover.view model.popoverStateBottom
-
-            , Button.button [ ]
+            , Button.button []
                 [ Popover.config
-                    (span (class "fa fa-car" :: Popover.onHover model.popoverStateLeft TogglePopoverLeftMsg ) [])
+                    (span (class "fa fa-car" :: Popover.onHover model.popoverStateLeft TogglePopoverLeftMsg) [])
                     |> Popover.left
                     |> popoverContent
                     |> Popover.view model.popoverStateLeft
                 , text " Icon hover"
                 ]
-
             , Popover.config
-                (div (Popover.onHover model.popoverStateRight TogglePopoverRightMsg ) [ text "A Div"])
+                (div (Popover.onHover model.popoverStateRight TogglePopoverRightMsg) [ text "A Div" ])
                 |> Popover.right
                 |> popoverContent
                 |> Popover.view model.popoverStateRight
@@ -396,7 +388,7 @@ navbar model =
                 }
             ]
         |> Navbar.customItems
-             [ Navbar.textItem [] [ text "Some text" ]
+            [ Navbar.textItem [] [ text "Some text" ]
             , Navbar.formItem [ class "ml-lg-2" ]
                 [ Input.text [ Input.small ]
                 , Button.button
@@ -407,63 +399,60 @@ navbar model =
         |> Navbar.view model.navbarState
 
 
-
 simpleForm : Html Msg
 simpleForm =
     Form.form
         []
-        [ h1 [] [ text "Vertical Form"]
+        [ h1 [] [ text "Vertical Form" ]
         , Form.group [ Form.groupSuccess ]
             [ Form.label [ for "simpleInput" ] [ text "SimpleInput" ]
             , Input.text [ Input.id "simpleInput", Input.success ]
             , Form.validationText [] [ text "This went well !" ]
             , Form.help [] [ text "Something really helpful" ]
             ]
-        , Form.group [ ]
+        , Form.group []
             [ Form.label [ for "simpleselect" ] [ text "Simple select" ]
             , Select.select [ Select.id "simpleselect" ]
                 [ Select.item [] [ text "Option 1" ]
-                , Select.item [] [ text "Option 2"]
+                , Select.item [] [ text "Option 2" ]
                 ]
             ]
-        , Form.group [ ]
+        , Form.group []
             [ Form.label [ for "customselect" ] [ text "Custom select" ]
             , Select.custom [ Select.id "customselect" ]
                 [ Select.item [] [ text "Option 1" ]
-                , Select.item [] [ text "Option 2"]
+                , Select.item [] [ text "Option 2" ]
                 ]
             ]
         , Chk.checkbox [] "Lonely checker"
         , Form.group []
-            [ Chk.custom [ Chk.attrs [ class "col-2" ] ] "Custom checker"]
+            [ Chk.custom [ Chk.attrs [ class "col-2" ] ] "Custom checker" ]
         , Form.group []
-            [ Form.label [] [ text "A couple of radios"]
-            , div [ class "form-inline"]
-                [ Radio.radio [ Radio.inline, Radio.name "myradios"] "Radio 1"
-                , Radio.radio [ Radio.inline, Radio.name "myradios"] "Radio 2"
-                , Radio.radio [ Radio.inline, Radio.disabled True, Radio.name "myradios"] "Radio 3"
+            [ Form.label [] [ text "A couple of radios" ]
+            , div [ class "form-inline" ]
+                [ Radio.radio [ Radio.inline, Radio.name "myradios" ] "Radio 1"
+                , Radio.radio [ Radio.inline, Radio.name "myradios" ] "Radio 2"
+                , Radio.radio [ Radio.inline, Radio.disabled True, Radio.name "myradios" ] "Radio 3"
                 ]
             ]
         , Form.group []
-            [ Form.label [] [ text "A group of sorts"]
+            [ Form.label [] [ text "A group of sorts" ]
             , InputGrp.config
                 (InputGrp.password [])
                 |> InputGrp.small
                 |> InputGrp.predecessors
-                    [ InputGrp.span [] [ text "@"] ]
+                    [ InputGrp.span [] [ text "@" ] ]
                 |> InputGrp.successors
-                    [ InputGrp.button [ Button.outlinePrimary ] [ text "Do it!"]
+                    [ InputGrp.button [ Button.outlinePrimary ] [ text "Do it!" ]
                     ]
                 |> InputGrp.view
             ]
         ]
 
 
-
-
 gridForm : Html Msg
 gridForm =
-    div [ ]
+    div []
         [ h1 [] [ text "Horizontal (grid) form" ]
         , Form.form [ class "container" ]
             [ h3 [] [ text "Header in form" ]
@@ -484,11 +473,11 @@ gridForm =
                     ]
                 , Form.col [ Col.xs4 ]
                     [ Input.text
-                        [ Input.small, Input.attrs [ placeholder "Place"]] ]
-
+                        [ Input.small, Input.attrs [ placeholder "Place" ] ]
+                    ]
                 ]
             , Form.row []
-                [ Form.col [ Col.offsetXs4, Col.xs8]
+                [ Form.col [ Col.offsetXs4, Col.xs8 ]
                     [ Chk.custom [] "Lonely checker" ]
                 ]
             , Form.row [ Form.rowWarning ]
@@ -496,14 +485,13 @@ gridForm =
                 , Form.col [ Col.xs8 ]
                     [ Select.custom [ Select.id "rowcustomselect" ]
                         [ Select.item [] [ text "Option 1" ]
-                        , Select.item [] [ text "Option 2"]
+                        , Select.item [] [ text "Option 2" ]
                         ]
-                    , Form.validationText [] [ text "Can't select option 1 (:"]
+                    , Form.validationText [] [ text "Can't select option 1 (:" ]
                     ]
                 ]
             ]
         ]
-
 
 
 modal : Modal.State -> Html Msg

@@ -116,15 +116,14 @@ import Bootstrap.Internal.Card as CardInternal
 
 {-| Opaque type representing options for customizing the styling of a card
 -}
-type alias CardOption msg = CardInternal.CardOption msg
-
+type alias CardOption msg =
+    CardInternal.CardOption msg
 
 
 {-| Opaque type representing options for styling a card block
 -}
-type alias BlockOption msg = CardInternal.BlockOption msg
-
-
+type alias BlockOption msg =
+    CardInternal.BlockOption msg
 
 
 {-| Opaque type representing the view configuration of a card
@@ -181,8 +180,8 @@ type CardBlock msg
 
 {-| Opaque type representing a legal card block child element
 -}
-type alias BlockItem msg = CardInternal.BlockItem msg
-
+type alias BlockItem msg =
+    CardInternal.BlockItem msg
 
 
 
@@ -265,7 +264,9 @@ outlineDanger : CardOption msg
 outlineDanger =
     CardInternal.Coloring <| CardInternal.Outlined CardInternal.Danger
 
-{-| Give cards a custom dark background color with light text -}
+
+{-| Give cards a custom dark background color with light text
+-}
 inverted : Color.Color -> CardOption msg
 inverted color =
     CardInternal.Coloring <| CardInternal.Inverted color
@@ -314,13 +315,13 @@ view :
     -> Html.Html msg
 view (Config { options, header, footer, imgTop, imgBottom, blocks }) =
     Html.div
-        (CardInternal.cardAttributes options )
+        (CardInternal.cardAttributes options)
         (List.filterMap
             identity
             [ Maybe.map (\(CardHeader e) -> e) header
             , Maybe.map (\(CardImageTop e) -> e) imgTop
             ]
-            ++ ( CardInternal.renderBlocks blocks )
+            ++ (CardInternal.renderBlocks blocks)
             ++ List.filterMap
                 identity
                 [ Maybe.map (\(CardFooter e) -> e) footer
@@ -555,7 +556,7 @@ block options items (Config config) =
         { config
             | blocks =
                 config.blocks
-                    ++ [ CardInternal.block options items]
+                    ++ [ CardInternal.block options items ]
         }
 
 
@@ -573,9 +574,6 @@ listGroup items (Config config) =
                 config.blocks
                     ++ [ CardInternal.listGroup items ]
         }
-
-
-
 
 
 {-| Create link elements that are placed next to each other in a block using this function
@@ -604,11 +602,12 @@ text attributes children =
         |> CardInternal.BlockItem
 
 
-{-|  Add a custom HTML element to be displayed in a Card block
+{-| Add a custom HTML element to be displayed in a Card block
 -}
 custom : Html.Html msg -> BlockItem msg
 custom element =
     CardInternal.BlockItem element
+
 
 {-| Create a block quote element
 
@@ -708,7 +707,6 @@ group cards =
         (List.map view cards)
 
 
-
 {-| Need a set of equal width and height cards that aren’t attached to one another? Use card decks
 
 * `cards` List of [`card configs`](#Config)
@@ -718,8 +716,6 @@ deck cards =
     Html.div
         [ class "card-deck" ]
         (List.map view cards)
-
-
 
 
 {-| Cards can be organized into Masonry-like columns with just CSS by wrapping them in .card-columns. Cards are built with CSS column properties instead of flexbox for easier alignment. Cards are ordered from top to bottom and left to right.
@@ -736,27 +732,26 @@ columns cards =
 
 {-| Create a card group with keyed cards.
 -}
-keyedGroup : List (String, Config msg) -> Html.Html msg
+keyedGroup : List ( String, Config msg ) -> Html.Html msg
 keyedGroup =
     keyedMulti "card-group"
 
 
 {-| Create a card deck with keyed cards.
 -}
-keyedDeck : List (String, Config msg) -> Html.Html msg
+keyedDeck : List ( String, Config msg ) -> Html.Html msg
 keyedDeck =
     keyedMulti "card-deck"
 
 
 {-| Create card columns with keyed cards.
 -}
-keyedColumns : List (String, Config msg) -> Html.Html msg
+keyedColumns : List ( String, Config msg ) -> Html.Html msg
 keyedColumns =
     keyedMulti "card-columns"
 
 
-
-keyedMulti : String -> List (String, Config msg) -> Html.Html msg
+keyedMulti : String -> List ( String, Config msg ) -> Html.Html msg
 keyedMulti clazz keyedCards =
     Keyed.node "div"
         [ class clazz ]

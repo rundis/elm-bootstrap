@@ -120,7 +120,6 @@ type TabLayout
     | Justified
 
 
-
 type Visibility
     = Hidden
     | Start
@@ -144,8 +143,8 @@ type alias Options msg =
 **NOTE** When using animations you must also remember to set up [`subscriptions`](#subscriptions)
 
 -}
-type Config msg =
-    Config
+type Config msg
+    = Config
         { toMsg : State -> msg
         , items : List (Item msg)
         , withAnimation : Bool
@@ -220,32 +219,33 @@ customInitialState idx =
         , visibility = Showing
         }
 
+
 {-| Create an initial/default view configuration for a Tab.
 -}
 config : (State -> msg) -> Config msg
 config toMsg =
     Config
-    { toMsg = toMsg
-    , items = []
-    , isPill = False
-    , withAnimation = False
-    , layout = Nothing
-    , attributes = []
-    }
+        { toMsg = toMsg
+        , items = []
+        , isPill = False
+        , withAnimation = False
+        , layout = Nothing
+        , attributes = []
+        }
+
 
 {-| Define the tab items for a Tab.
 -}
 items : List (Item msg) -> Config msg -> Config msg
-items  items (Config config) =
+items items (Config config) =
     Config
         { config | items = items }
-
 
 
 {-| Space out tab menu items evenly accross the the whole tabs control width
 -}
 justified : Config msg -> Config msg
-justified  =
+justified =
     layout Justified
 
 
@@ -291,15 +291,13 @@ withAnimation (Config config) =
     Config
         { config | withAnimation = True }
 
+
 {-| Use this function when you need additional customization with Html.Attribute attributes for the tabs control
 -}
 attrs : List (Html.Attribute msg) -> Config msg -> Config msg
 attrs attrs (Config config) =
     Config
         { config | attributes = config.attributes ++ attrs }
-
-
-
 
 
 {-| Creates a tab control which keeps track of the selected tab item and displays the corresponding tab pane for you
@@ -320,7 +318,7 @@ attrs attrs (Config config) =
         |> Tab.view model.tabState
 -}
 view : State -> Config msg -> Html.Html msg
-view ((State { activeTab }) as state) (Config {items} as config) =
+view ((State { activeTab }) as state) ((Config { items }) as config) =
     let
         activeIdx =
             if activeTab > List.length items then
@@ -405,7 +403,7 @@ activeTabAttributes :
     State
     -> Config msg
     -> List (Html.Attribute msg)
-activeTabAttributes (State { visibility })  (Config { toMsg, withAnimation }) =
+activeTabAttributes (State { visibility }) (Config { toMsg, withAnimation }) =
     case visibility of
         Hidden ->
             [ style [ ( "display", "none" ) ] ]
@@ -452,32 +450,29 @@ transitionStyle opacity =
 
 tabAttributes : Config msg -> List (Html.Attribute msg)
 tabAttributes (Config config) =
-
-        [ classList
-            [ ("nav", True)
-            , ("nav-tabs", not config.isPill)
-            , ("nav-pills", config.isPill)
-            ]
+    [ classList
+        [ ( "nav", True )
+        , ( "nav-tabs", not config.isPill )
+        , ( "nav-pills", config.isPill )
         ]
-            ++ (case config.layout of
-                    Just Justified ->
-                        [ class "nav-justified" ]
+    ]
+        ++ (case config.layout of
+                Just Justified ->
+                    [ class "nav-justified" ]
 
-                    Just Fill ->
-                        [ class "nav-fill" ]
+                Just Fill ->
+                    [ class "nav-fill" ]
 
-                    Just Center ->
-                        [ class "justify-content-center"]
+                Just Center ->
+                    [ class "justify-content-center" ]
 
-                    Just Right ->
-                        [ class "justify-content-end"]
+                Just Right ->
+                    [ class "justify-content-end" ]
 
-                    Nothing ->
-                        []
-               )
-            ++ config.attributes
-
-
+                Nothing ->
+                    []
+           )
+        ++ config.attributes
 
 
 applyModifier : Option msg -> Options msg -> Options msg
@@ -488,9 +483,6 @@ applyModifier option options =
 
         Layout layout ->
             { options | layout = Just layout }
-
-
-
 
 
 {-| Create a composable tab item

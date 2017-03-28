@@ -96,7 +96,7 @@ view (Config { options, legend, children }) =
          ]
             ++ options.attributes
         )
-        ( Maybe.map (\e -> [ e ]) legend
+        (Maybe.map (\e -> [ e ]) legend
             |> Maybe.withDefault []
             |> (flip List.append) children
         )

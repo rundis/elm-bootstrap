@@ -168,15 +168,14 @@ type alias Item msg =
 -}
 small : Config msg -> Config msg
 small (Config config) =
-    Config {config | options = config.options ++ [ ModalSize SM ] }
+    Config { config | options = config.options ++ [ ModalSize SM ] }
 
 
 {-| Option to make a modal larger than the default
 -}
 large : Config msg -> Config msg
 large (Config config) =
-    Config {config | options = config.options ++ [ ModalSize LG ] }
-
+    Config { config | options = config.options ++ [ ModalSize LG ] }
 
 
 {-| Ensures the modal is not displayed (it's still in the DOM though !)
@@ -237,8 +236,6 @@ config toMsg =
         , body = Nothing
         , footer = Nothing
         }
-
-
 
 
 {-| Create a header for a modal, typically for titles, but you can be imaginative

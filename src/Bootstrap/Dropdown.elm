@@ -239,11 +239,12 @@ It takes the current (view) state and a configuration record as parameters.
 -}
 dropdown :
     State
-    -> { toggleMsg : State -> msg
-       , toggleButton : DropdownToggle msg
-       , options : List DropdownOption
-       , items : List (DropdownItem msg)
-       }
+    ->
+        { toggleMsg : State -> msg
+        , toggleButton : DropdownToggle msg
+        , options : List DropdownOption
+        , items : List (DropdownItem msg)
+        }
     -> Html.Html msg
 dropdown ((State status) as state) { toggleMsg, toggleButton, items, options } =
     let
@@ -310,11 +311,12 @@ togglePrivate buttonOptions children toggleMsg state =
 -}
 splitDropdown :
     State
-    -> { toggleMsg : State -> msg
-       , toggleButton : SplitDropdownToggle msg
-       , options : List DropdownOption
-       , items : List (DropdownItem msg)
-       }
+    ->
+        { toggleMsg : State -> msg
+        , toggleButton : SplitDropdownToggle msg
+        , options : List DropdownOption
+        , items : List (DropdownItem msg)
+        }
     -> Html.Html msg
 splitDropdown ((State status) as state) { toggleMsg, toggleButton, items, options } =
     let

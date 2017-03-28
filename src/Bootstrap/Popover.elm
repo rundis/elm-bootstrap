@@ -85,6 +85,7 @@ cases where they don't work as you'd expect. So make sure you test your views wh
 
 
 -}
+
 import Html
 import Html.Attributes exposing (class, classList, style)
 import Html.Events
@@ -152,6 +153,7 @@ initialState =
             , offsetHeight = 0
             }
         }
+
 
 {-| This function creates the view representation for a Popover. Whether it's displayed or not
 is determined by it's view state.
@@ -234,6 +236,7 @@ positionClasses position =
             , ( "bs-tether-element-attached-top", True )
             ]
 
+
 {-| Creates a click handler that will toggle the visibility of
 a popover
 
@@ -288,6 +291,7 @@ config triggerElement =
         , content = Nothing
         }
 
+
 {-| Define the popover body content.
 -}
 content :
@@ -303,6 +307,7 @@ content attributes children (Config config) =
                     |> Content
                     |> Just
         }
+
 
 {-| Define a popover title.
 
@@ -416,6 +421,7 @@ titlePrivate elemFn attributes children (Config config) =
                     |> Title
                     |> Just
         }
+
 
 {-| Show popover to the right of the triggering element.
 -}

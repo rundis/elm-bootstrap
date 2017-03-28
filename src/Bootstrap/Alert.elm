@@ -41,6 +41,7 @@ type Role
     | Warning
     | Danger
 
+
 {-| Alert signaling success
 
 * `children` List of child elements
@@ -111,6 +112,7 @@ h1 : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
 h1 attributes children =
     heading Html.h1 attributes children
 
+
 {-| Alert h2 header with appropriate color styling
 
 * `attributes` List of attributes
@@ -144,7 +146,6 @@ h4 attributes children =
     heading Html.h4 attributes children
 
 
-
 {-| Alert h5 header with appropriate color styling
 
 * `attributes` List of attributes
@@ -165,7 +166,6 @@ h5 attributes children =
 h6 : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
 h6 attributes children =
     heading Html.h6 attributes children
-
 
 
 heading :
