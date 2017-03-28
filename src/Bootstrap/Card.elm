@@ -48,7 +48,6 @@ module Bootstrap.Card
         , Config
         , CardOption
         , BlockOption
-        , CardBlock
         , CardFooter
         , CardHeader
         , CardImageBottom
@@ -81,7 +80,7 @@ You can customize the look and feel of your cards using the following options
 
 
 # Blocks
-@docs block, listGroup, CardBlock, BlockItem
+@docs block, listGroup, BlockItem
 
 
 ## Block title
@@ -169,13 +168,6 @@ type CardImageTop msg
 -}
 type CardImageBottom msg
     = CardImageBottom (Html.Html msg)
-
-
-{-| Opaque type representing a card block element
--}
-type CardBlock msg
-    = CardBlock (Html.Html msg)
-    | ListGroup (Html.Html msg)
 
 
 {-| Opaque type representing a legal card block child element
