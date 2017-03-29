@@ -243,9 +243,12 @@ a popover
 * `state` - The current state of the popover to toggle
 * `toMsg` - Message tagger function to handle state changes to a popover
 -}
-onClick : State -> (State -> msg) -> Html.Attribute msg
+onClick : State -> (State -> msg) -> List (Html.Attribute msg)
 onClick state toMsg =
-    Html.Events.on "click" <| toggleState state toMsg
+    [ class "popover-trigger"
+    , Html.Events.on "click" <| toggleState state toMsg
+    ]
+
 
 
 {-| Creates a `mouseenter` and `mouseleave` message handler that will toggle the visibility of
@@ -256,10 +259,16 @@ a popover
 -}
 onHover : State -> (State -> msg) -> List (Html.Attribute msg)
 onHover state toMsg =
-    [ Html.Events.on "mouseenter" <| toggleState state toMsg
-    , Html.Events.on "mouseleave" <| toggleState state toMsg
+    [ class "popover-trigger"
+    , Html.Events.on "mouseenter" <| toggleState state toMsg
+    , Html.Events.on "mouseleave" <| forceClose state toMsg --toggleState state toMsg
     ]
 
+forceClose : State -> (State -> a) -> Json.Decoder a
+forceClose (State state) toMsg =
+    Json.succeed <|
+        toMsg <|
+            State { state | isActive = False }
 
 toggleState : State -> (State -> msg) -> Json.Decoder msg
 toggleState (State ({ isActive } as state)) toMsg =
@@ -456,10 +465,41 @@ bottom (Config config) =
 stateDecoder : Json.Decoder DOMState
 stateDecoder =
     Json.map3 DOMState
-        (DOM.target DOM.boundingClientRect)
+        --(DOM.target DOM.boundingClientRect)
+        (trigger ["target"])
         (sibling DOM.offsetWidth)
         (sibling DOM.offsetHeight)
 
+
+
+trigger : List String -> Json.Decoder DOM.Rectangle
+trigger path =
+    Json.oneOf
+        [ Json.at path isTrigger
+            |> Json.andThen
+                (\res ->
+                    if res then
+                        Json.at path DOM.boundingClientRect
+                    else
+                        Json.fail ""
+                )
+        , Json.at (path ++ ["parentElement"]) DOM.className
+            |> Json.andThen
+                (\_ -> trigger (path ++ ["parentElement"] ))
+        , Json.fail "No trigger found"
+        ]
+
+
+isTrigger : Json.Decoder Bool
+isTrigger =
+    DOM.className
+        |> Json.andThen
+            (\class ->
+                if String.contains "popover-trigger" class then
+                    Json.succeed True
+                else
+                    Json.succeed False
+            )
 
 {-| Tries and get the next sibling that is available and use the given decoder on it
 -}
