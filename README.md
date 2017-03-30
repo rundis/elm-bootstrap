@@ -109,6 +109,7 @@ There's a bunch of work left to do, especially when it comes to documentation an
 
 
 ## Release history
+* 1.1.0 - Doc fixes and a grid col class bug
 * 1.0.0 - Initial release with most of TWBS core components covered
 
 
