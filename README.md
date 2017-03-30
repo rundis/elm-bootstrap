@@ -101,14 +101,21 @@ There's a bunch of work left to do, especially when it comes to documentation an
 ## Stuff TODO
 * Ensure responsive behavior is fully supported
 * Encourage or automate screen reader support
-* Tooltips
-* Popovers
 * Provide a nice API for all the utility classes
+* Proper test coverage
 * etc...
 
 
 
 ## Release history
+* 2.0.0
+  * **New Feature**: Support for radio buttons and checkbox buttons (tx to [@folkertdev](https://github.com/folkertdev) )
+  * **New Feature**: Support for Input groups
+  * **New Feature**: Experimental support for Popovers (and tooltips)
+  * **Improvment**: Support for HTML.Keyed in Grid, Table and List groups
+  * **Minor improvement**: Button onClick shorthand, input placeholder shorthand
+  * Varios doc fixes and removal of unused CardBlock type. (Tx everyone that contributed !)
+  * Made some progress on adding regression tests
 * 1.1.0 - Doc fixes and a grid col class bug
 * 1.0.0 - Initial release with most of TWBS core components covered
 
