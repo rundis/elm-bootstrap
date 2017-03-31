@@ -294,7 +294,7 @@ and store the state in your main model.
     init =
         let
             (navbarState, navCmd) =
-                Navbar.initializeState NavbarMsg
+                Navbar.initialState NavbarMsg
         in
             ( { navbarState = navbarState }
             , navCmd
@@ -337,7 +337,7 @@ function in your main subscriptions function.
         Navbar.subscriptions model.navbarState NavbarMsg
 
 
-**Note: ** If you ar NOT using dropdowns in your navbar AND you are using a navbar without animation
+**Note: ** If you are NOT using dropdowns in your navbar AND you are using a navbar without animation
 you can skip this. But it's not that much work, so maybe you are better off doing it anyway.
 -}
 subscriptions : State -> (State -> msg) -> Sub msg
