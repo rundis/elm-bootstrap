@@ -243,9 +243,11 @@ a popover
 * `state` - The current state of the popover to toggle
 * `toMsg` - Message tagger function to handle state changes to a popover
 -}
-onClick : State -> (State -> msg) -> Html.Attribute msg
+onClick : State -> (State -> msg) -> List (Html.Attribute msg)
 onClick state toMsg =
-    Html.Events.on "click" <| toggleState state toMsg
+    [ class "popover-trigger"
+    , Html.Events.on "click" <| toggleState state toMsg
+    ]
 
 
 {-| Creates a `mouseenter` and `mouseleave` message handler that will toggle the visibility of
@@ -256,9 +258,17 @@ a popover
 -}
 onHover : State -> (State -> msg) -> List (Html.Attribute msg)
 onHover state toMsg =
-    [ Html.Events.on "mouseenter" <| toggleState state toMsg
-    , Html.Events.on "mouseleave" <| toggleState state toMsg
+    [ class "popover-trigger"
+    , Html.Events.on "mouseenter" <| toggleState state toMsg
+    , Html.Events.on "mouseleave" <| forceClose state toMsg
     ]
+
+
+forceClose : State -> (State -> a) -> Json.Decoder a
+forceClose (State state) toMsg =
+    Json.succeed <|
+        toMsg <|
+            State { state | isActive = False }
 
 
 toggleState : State -> (State -> msg) -> Json.Decoder msg
@@ -451,49 +461,66 @@ bottom (Config config) =
     Config { config | direction = Bottom }
 
 
-{-| Decodes a DOMState from a DOM event
--}
+
 stateDecoder : Json.Decoder DOMState
 stateDecoder =
     Json.map3 DOMState
-        (DOM.target DOM.boundingClientRect)
-        (sibling DOM.offsetWidth)
-        (sibling DOM.offsetHeight)
+        (trigger [ "target" ])
+        (popper [ "target" ] DOM.offsetWidth)
+        (popper [ "target" ] DOM.offsetHeight)
 
 
-{-| Tries and get the next sibling that is available and use the given decoder on it
--}
-sibling : Json.Decoder a -> Json.Decoder a
-sibling d =
-    let
-        createPath depth =
-            let
-                parents =
-                    List.repeat depth "parentElement"
-            in
-                ([ "target" ] ++ parents ++ [ "nextSibling" ])
-
-        paths =
-            List.map createPath <| List.range 0 4
-
-        valid path =
-            isPopover path
-                |> Json.andThen
-                    (\res ->
-                        if res then
-                            Json.at path d
-                        else
-                            Json.fail ""
-                    )
-    in
-        Json.oneOf (List.map valid paths)
+trigger : List String -> Json.Decoder DOM.Rectangle
+trigger path =
+    Json.oneOf
+        [ Json.at path isTrigger
+            |> Json.andThen
+                (\res ->
+                    if res then
+                        Json.at path DOM.boundingClientRect
+                    else
+                        Json.fail ""
+                )
+        , Json.at (path ++ [ "parentElement" ]) DOM.className
+            |> Json.andThen
+                (\_ -> trigger (path ++ [ "parentElement" ]))
+        , Json.fail "No trigger found"
+        ]
 
 
-{-| Checks if the target at path is an actual popover
--}
-isPopover : List String -> Json.Decoder Bool
-isPopover path =
-    (Json.at path DOM.className)
+isTrigger : Json.Decoder Bool
+isTrigger =
+    DOM.className
+        |> Json.andThen
+            (\class ->
+                if String.contains "popover-trigger" class then
+                    Json.succeed True
+                else
+                    Json.succeed False
+            )
+
+
+popper : List String -> Json.Decoder a -> Json.Decoder a
+popper path decoder =
+    Json.oneOf
+        [ Json.at (path ++ [ "nextSibling" ]) isPopover
+            |> Json.andThen
+                (\res ->
+                    if res then
+                        Json.at (path ++ [ "nextSibling" ]) decoder
+                    else
+                        Json.fail ""
+                )
+        , Json.at (path ++ [ "parentElement" ]) DOM.className
+            |> Json.andThen
+                (\_ -> popper (path ++ [ "parentElement" ]) decoder)
+        , Json.fail "No popover found"
+        ]
+
+
+isPopover : Json.Decoder Bool
+isPopover =
+    DOM.className
         |> Json.andThen
             (\class ->
                 if String.contains "popover" class then
@@ -503,9 +530,6 @@ isPopover path =
             )
 
 
-{-| Calculates the position of the tooltip based on the event
-and the requested position
--}
 calculatePos : Position -> DOMState -> Pos
 calculatePos pos { rect, offsetWidth, offsetHeight } =
     case pos of

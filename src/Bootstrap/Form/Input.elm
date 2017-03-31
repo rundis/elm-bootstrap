@@ -18,6 +18,7 @@ module Bootstrap.Form.Input
         , id
         , value
         , defaultValue
+        , placeholder
         , onInput
         , disabled
         , attrs
@@ -37,7 +38,7 @@ module Bootstrap.Form.Input
 
 
 # Options
-@docs id, small, large, value, defaultValue, disabled, onInput, attrs, Option
+@docs id, small, large, value, defaultValue, disabled, onInput, placeholder, attrs, Option
 
 # Validation
 These options really only makes sense when used in conjunction with the form module.
@@ -76,6 +77,7 @@ type Option msg
     | DefaultValue String
     | OnInput (String -> msg)
     | Validation FormInternal.Validation
+    | Placeholder String
     | Attrs (List (Html.Attribute msg))
 
 
@@ -102,6 +104,7 @@ type alias Options msg =
     , disabled : Bool
     , value : Maybe String
     , defaultValue : Maybe String
+    , placeholder : Maybe String
     , onInput : Maybe (String -> msg)
     , validation : Maybe FormInternal.Validation
     , attributes : List (Html.Attribute msg)
@@ -266,6 +269,12 @@ defaultValue value =
     DefaultValue value
 
 
+{-| Shorthand for setting the placeholder attribute of an input
+-}
+placeholder : String -> Option msg
+placeholder value =
+    Placeholder value
+
 {-| Shorthand for assigning an onInput handler for an input
 -}
 onInput : (String -> msg) -> Option msg
@@ -321,6 +330,7 @@ toAttributes modifiers =
                 , Maybe.andThen sizeAttribute options.size
                 , Maybe.map Attributes.value options.value
                 , Maybe.map Attributes.defaultValue options.defaultValue
+                , Maybe.map Attributes.placeholder options.placeholder
                 , Maybe.map Events.onInput options.onInput
                 , Maybe.map validationAttribute options.validation
                 ]
@@ -337,6 +347,7 @@ defaultOptions =
     , disabled = False
     , value = Nothing
     , defaultValue = Nothing
+    , placeholder = Nothing
     , onInput = Nothing
     , validation = Nothing
     , attributes = []
@@ -363,6 +374,9 @@ applyModifier modifier options =
 
         DefaultValue value ->
             { options | defaultValue = Just value }
+
+        Placeholder value ->
+            { options | placeholder = Just value }
 
         OnInput onInput ->
             { options | onInput = Just onInput }
