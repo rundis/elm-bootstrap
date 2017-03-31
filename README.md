@@ -24,7 +24,7 @@ For user documentation, do check out the [Docs Site](http://elm-bootstrap.info/)
 The latest api documentation is up on [Elm Package](http://package.elm-lang.org/packages/rundis/elm-bootstrap/latest).
 
 
-You will also benefit greatly from reading through the relevant [Twitter Bootstrap documentation](#https://v4-alpha.getbootstrap.com/getting-started/introduction/)
+You will also benefit greatly from reading through the relevant [Twitter Bootstrap documentation](https://v4-alpha.getbootstrap.com/getting-started/introduction/)
 
 
 
