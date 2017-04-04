@@ -13,7 +13,7 @@ import Html exposing (Html, node)
 import Html.Attributes exposing (rel, href)
 
 
-{-| Allows you to embed the bootstrap css as a node in your view
+{-| Allows you to embed the Bootstrap CSS as a node in your view.
 
     import Bootstrap.CDN
 
@@ -36,7 +36,7 @@ stylesheet =
         []
 
 
-{-| For your convenience you can also include font-awesome as an inline node. Worth knowing that this `Bootstrap for Elm` has no dependencies on font awesome
+{-| Font Awesome can also be conveniently included as an inline node. Font Awesome does not depend on `Bootstrap for Elm`.
 -}
 fontAwesome : Html msg
 fontAwesome =
