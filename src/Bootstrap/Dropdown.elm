@@ -11,6 +11,8 @@ module Bootstrap.Dropdown
         , buttonItem
         , divider
         , header
+        , attrs
+        , menuAttrs
         , subscriptions
         , State
         , DropdownItem
@@ -109,7 +111,7 @@ bit of wiring involved when using them in your Elm Application.
 
 
 ## Options
-@docs dropUp, alignMenuRight, DropdownOption
+@docs dropUp, alignMenuRight, attrs, menuAttrs, DropdownOption
 
 # Dropdown items
 @docs anchorItem, buttonItem, divider, header, DropdownItem
@@ -168,9 +170,19 @@ type alias SplitToggleConfig msg =
 
 {-| Opaque type representing configuration options for a Dropdown
 -}
-type DropdownOption
+type DropdownOption msg
     = Dropup
     | AlignMenuRight
+    | MenuAttrs (List (Html.Attribute msg))
+    | Attrs (List (Html.Attribute msg))
+
+
+type alias Options msg =
+    { isDropUp : Bool
+    , hasMenuRight : Bool
+    , attributes : List (Html.Attribute msg)
+    , menuAttrs : List (Html.Attribute msg)
+    }
 
 
 {-| Opaque type representing an item in the menu of a Dropdown
@@ -201,7 +213,7 @@ initialState =
 
 {-| Option to show the dropdown menu above the dropdown rather than the default which is below
 -}
-dropUp : DropdownOption
+dropUp : DropdownOption msg
 dropUp =
     Dropup
 
@@ -210,9 +222,24 @@ dropUp =
 
 **NOTE!** Dropdowns are positioned only with CSS and may need some additional styles for exact alignment.
 -}
-alignMenuRight : DropdownOption
+alignMenuRight : DropdownOption msg
 alignMenuRight =
     AlignMenuRight
+
+
+
+{-| Use this function when you need the customize the Dropdown root div with additional Html.Attribute (s).
+-}
+attrs : List (Html.Attribute msg) -> DropdownOption msg
+attrs attrs =
+    Attrs attrs
+
+
+{-| Use this function when you need the customize the Dropdown menu with additional Html.Attribute (s).
+-}
+menuAttrs : List (Html.Attribute msg) -> DropdownOption msg
+menuAttrs attrs =
+    MenuAttrs attrs
 
 
 {-| Creates a Dropdown button. You can think of this as the view function.
@@ -239,32 +266,38 @@ It takes the current (view) state and a configuration record as parameters.
 -}
 dropdown :
     State
-    ->
-        { toggleMsg : State -> msg
-        , toggleButton : DropdownToggle msg
-        , options : List DropdownOption
-        , items : List (DropdownItem msg)
-        }
+    -> { toggleMsg : State -> msg
+       , toggleButton : DropdownToggle msg
+       , options : List (DropdownOption msg)
+       , items : List (DropdownItem msg)
+       }
     -> Html.Html msg
 dropdown ((State status) as state) { toggleMsg, toggleButton, items, options } =
     let
         (DropdownToggle buttonFn) =
             toggleButton
+
+        config =
+            toConfig options
     in
         Html.div
-            [ classList
+            ([ classList
                 [ ( "btn-group", True )
                 , ( "show", status /= Closed )
-                , ( "dropup", isDropUp options )
+                , ( "dropup", config.isDropUp )
                 ]
-            ]
+             ]
+                ++ config.attributes
+            )
             [ buttonFn toggleMsg state
             , Html.div
-                [ classList
+                ([ classList
                     [ ( "dropdown-menu", True )
-                    , ( "dropdown-menu-right", hasMenuRight options )
+                    , ( "dropdown-menu-right", config.hasMenuRight )
                     ]
-                ]
+                 ]
+                    ++ config.menuAttrs
+                )
                 (List.map (\(DropdownItem x) -> x) items)
             ]
 
@@ -311,32 +344,38 @@ togglePrivate buttonOptions children toggleMsg state =
 -}
 splitDropdown :
     State
-    ->
-        { toggleMsg : State -> msg
-        , toggleButton : SplitDropdownToggle msg
-        , options : List DropdownOption
-        , items : List (DropdownItem msg)
-        }
+    -> { toggleMsg : State -> msg
+       , toggleButton : SplitDropdownToggle msg
+       , options : List (DropdownOption msg)
+       , items : List (DropdownItem msg)
+       }
     -> Html.Html msg
 splitDropdown ((State status) as state) { toggleMsg, toggleButton, items, options } =
     let
         (SplitDropdownToggle buttonsFn) =
             toggleButton
+
+        config =
+            toConfig options
     in
         Html.div
-            [ classList
+            ([ classList
                 [ ( "btn-group", True )
                 , ( "show", status /= Closed )
-                , ( "dropup", isDropUp options )
+                , ( "dropup", config.isDropUp )
                 ]
-            ]
+             ]
+                ++ config.attributes
+            )
             (buttonsFn toggleMsg state
                 ++ [ Html.div
-                        [ classList
+                        ([ classList
                             [ ( "dropdown-menu", True )
-                            , ( "dropdown-menu-right", hasMenuRight options )
+                            , ( "dropdown-menu-right", config.hasMenuRight )
                             ]
-                        ]
+                         ]
+                            ++ config.menuAttrs
+                        )
                         (List.map (\(DropdownItem x) -> x) items)
                    ]
             )
@@ -389,14 +428,34 @@ splitToggleButtonPrivate { options, togglerOptions, children } toggleMsg state =
     ]
 
 
-hasMenuRight : List DropdownOption -> Bool
-hasMenuRight options =
-    List.any (\opt -> opt == AlignMenuRight) options
+toConfig : List (DropdownOption msg) -> Options msg
+toConfig options =
+    List.foldl applyModifier defaultOptions options
 
 
-isDropUp : List DropdownOption -> Bool
-isDropUp options =
-    List.any (\opt -> opt == Dropup) options
+defaultOptions : Options msg
+defaultOptions =
+    { hasMenuRight = False
+    , isDropUp = False
+    , attributes = []
+    , menuAttrs = []
+    }
+
+
+applyModifier : DropdownOption msg -> Options msg -> Options msg
+applyModifier option options =
+    case option of
+        AlignMenuRight ->
+            { options | hasMenuRight = True }
+
+        Dropup ->
+            { options | isDropUp = True }
+
+        Attrs attrs ->
+            { options | attributes = attrs }
+
+        MenuAttrs attrs ->
+            { options | menuAttrs = attrs }
 
 
 {-| Creates an `a` element appropriate for use in dropdowns
