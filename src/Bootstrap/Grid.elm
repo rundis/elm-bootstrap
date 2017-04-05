@@ -58,7 +58,7 @@ import Bootstrap.Grid.Col as Col
 import Bootstrap.Grid.Row as Row
 
 
-{-| Opaque type represetning a column element
+{-| Opaque type representing a column element
 -}
 type Column msg
     = Column
@@ -72,7 +72,7 @@ type Column msg
         }
 
 
-{-| Responsive fixed width container, which changes it's max-width at breakpoint
+{-| Responsive fixed width container, which changes its max-width at breakpoint
 -}
 container : List (Attribute msg) -> List (Html msg) -> Html msg
 container attributes children =
@@ -105,7 +105,7 @@ row options cols =
         (List.map renderCol cols)
 
 
-{-| Create a row with keyed columns. Handy when you need to move columns around without getting big massiv rerenders.
+{-| Create a row with keyed columns. Handy when you need to move columns around without getting massive rerenders.
 
 * `options` List of row options
 * `keydCols` List of key, column tuples
