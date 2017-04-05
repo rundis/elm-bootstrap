@@ -33,7 +33,7 @@ module Bootstrap.Modal
 
     init : ( Model, Cmd Msg )
     init =
-        ( { modalState : Modal.initalState }, Cmd.none )
+        ( { modalState : Modal.hiddenState }, Cmd.none )
 
 
     type Msg
@@ -116,7 +116,7 @@ import Html.Events as Events
 import Bootstrap.Grid.Internal as GridInternal exposing (ScreenSize(..))
 
 
-{-| Opaque type representing the view config for a model. Use the [`config`](#config) function to create an inital config.
+{-| Opaque type representing the view config for a model. Use the [`config`](#config) function to create an initial config.
 -}
 type Config msg
     = Config
@@ -140,19 +140,19 @@ type Option
     = ModalSize GridInternal.ScreenSize
 
 
-{-| Opaque type represetning a modal header
+{-| Opaque type representing a modal header
 -}
 type Header msg
     = Header (Item msg)
 
 
-{-| Opaque type represetning a modal body
+{-| Opaque type representing a modal body
 -}
 type Body msg
     = Body (Item msg)
 
 
-{-| Opaque type represetning a modal body
+{-| Opaque type representing a modal body
 -}
 type Footer msg
     = Footer (Item msg)
