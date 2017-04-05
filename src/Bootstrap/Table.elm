@@ -43,7 +43,7 @@ module Bootstrap.Table
         , CellOption
         )
 
-{-| Create simple nice and customizable tables in a fairly type safe manner !
+{-| Create simple and customizable tables in a fairly type safe manner!
 
 # Table
 @docs simpleTable, table
@@ -244,7 +244,7 @@ simpleTable ( thead, tbody ) =
         }
 
 
-{-| When you need to customize the table element with standard Html.Attribute, use this function to create it as a [`TableOption`](#TableOption)
+{-| When you need to customize a table element with a standard Html.Attribute, use this function to create it as a [`TableOption`](#TableOption)
 -}
 attr : Html.Attribute msg -> TableOption msg
 attr attr =
@@ -398,7 +398,7 @@ defaultHead =
     DefaultHead
 
 
-{-| When you need to customize the thead element with standard Html.Attribute, use this function to create a [`TableHeadOption`](#TableHeadOption)
+{-| When you need to customize a thead element with a standard Html.Attribute, use this function to create a [`TableHeadOption`](#TableHeadOption)
 -}
 headAttr : Html.Attribute msg -> TableHeadOption msg
 headAttr attr =
@@ -528,35 +528,35 @@ addScopeIfTh cell =
             cell
 
 
-{-| Style table row with active color.
+{-| Style a table row with the active color.
 -}
 rowActive : RowOption msg
 rowActive =
     RoledRow Active
 
 
-{-| Style table row with success color.
+{-| Style a table row with the success color.
 -}
 rowSuccess : RowOption msg
 rowSuccess =
     RoledRow Success
 
 
-{-| Style table row with warning color.
+{-| Style a table row with the warning color.
 -}
 rowWarning : RowOption msg
 rowWarning =
     RoledRow Warning
 
 
-{-| Style table row with danger color.
+{-| Style a table row with the danger color.
 -}
 rowDanger : RowOption msg
 rowDanger =
     RoledRow Danger
 
 
-{-| Style table row with info color.
+{-| Style a table row with the info color.
 -}
 rowInfo : RowOption msg
 rowInfo =
@@ -618,35 +618,35 @@ cellAttr attr =
     CellAttr attr
 
 
-{-| Option to style an individual cell with active color
+{-| Option to style an individual cell with the active color
 -}
 cellActive : CellOption msg
 cellActive =
     RoledCell Active
 
 
-{-| Option to style an individual cell with success color
+{-| Option to style an individual cell with the success color
 -}
 cellSuccess : CellOption msg
 cellSuccess =
     RoledCell Success
 
 
-{-| Option to style an individual cell with warning color
+{-| Option to style an individual cell with the warning color
 -}
 cellWarning : CellOption msg
 cellWarning =
     RoledCell Warning
 
 
-{-| Option to style an individual cell with danger color
+{-| Option to style an individual cell with the danger color
 -}
 cellDanger : CellOption msg
 cellDanger =
     RoledCell Danger
 
 
-{-| Option to style an individual cell with info color
+{-| Option to style an individual cell with the info color
 -}
 cellInfo : CellOption msg
 cellInfo =
