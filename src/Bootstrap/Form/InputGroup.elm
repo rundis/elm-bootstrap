@@ -118,6 +118,7 @@ view (Config config) =
                 ++ ([ Maybe.andThen sizeAttribute config.size ]
                         |> List.filterMap identity
                    )
+                ++ config.attributes
             )
             (List.map (\(Addon e) -> e) config.predecessors
                 ++ [ input ]
