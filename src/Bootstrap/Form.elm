@@ -81,7 +81,7 @@ type alias Options msg =
     }
 
 
-{-| Create a Html form elment
+{-| Create an Html form element
 -}
 form : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
 form attributes children =
@@ -92,7 +92,7 @@ form attributes children =
 
 {-| Create an inline form for placing elements horizontally.
 
-**Note**: You should stick to inline elements to get the effect you are probably expecting !
+**Note**: You should stick to inline elements to get the effect you are probably expecting!
 -}
 formInline : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
 formInline attributes =
