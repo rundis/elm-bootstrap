@@ -1,6 +1,6 @@
 module Bootstrap.CDN exposing (stylesheet, fontAwesome)
 
-{-| Helper module for easily embedding css when you want to work with the library using the Elm Reactor
+{-| A helper module for easily embedding CSS when you want to work with the library using the Elm Reactor.
 
 
 @docs stylesheet, fontAwesome
@@ -36,7 +36,7 @@ stylesheet =
         []
 
 
-{-| Font Awesome can also be conveniently included as an inline node. Font Awesome does not depend on `Bootstrap for Elm`.
+{-| Font Awesome can also be conveniently included as an inline node. Font Awesome is not a dependency for `elm-bootstrap`.
 -}
 fontAwesome : Html msg
 fontAwesome =
