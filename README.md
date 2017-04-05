@@ -72,7 +72,7 @@ Twitter Bootstrap also consists of a few interactive elements. The interactivety
 
 
 
->To be completely honest, the main I created this was probably to learn Elm more deeply and to see what it would take to design a library and an API using it. You got to start somewhere right?
+>To be completely honest, the main reason I created this was probably to learn Elm more deeply and to see what it would take to design a library and an API using it. You got to start somewhere right?
 
 
 
