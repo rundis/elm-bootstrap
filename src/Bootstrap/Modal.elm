@@ -221,7 +221,7 @@ view state (Config { toMsg, header, body, footer, options }) =
                 ]
             ]
          ]
-            ++ backdrop state
+            ++ backdrop toMsg state
         )
 
 
@@ -411,7 +411,7 @@ footer attributes children (Config config) =
 display : State -> List (Html.Attribute msg)
 display (State open) =
     [ Attr.style
-        ([ ( "display", "block" ) ] ++ ifElse open [] [ ( "height", "0px" ) ])
+        ([ ( "display", "block" ) ] ++ ifElse open [ ( "pointer-events", "none" ) ] [ ( "height", "0px" ) ])
     , Attr.classList
         [ ( "modal", True )
         , ( "fade", True )
@@ -422,8 +422,10 @@ display (State open) =
 
 modalAttributes : List Option -> List (Html.Attribute msg)
 modalAttributes options =
-    Attr.class "modal-dialog"
-        :: (List.map modalClass options
+    [ Attr.class "modal-dialog"
+    , Attr.style [ ( "pointer-events", "auto" ) ]
+    ]
+        ++ (List.map modalClass options
                 |> List.filterMap identity
            )
 
@@ -486,11 +488,13 @@ closeButton toMsg =
         [ Html.text "x" ]
 
 
-backdrop : State -> List (Html.Html msg)
-backdrop (State open) =
+backdrop : (State -> msg) -> State -> List (Html.Html msg)
+backdrop toMsg (State open) =
     if open then
         [ Html.div
-            [ Attr.class "modal-backdrop fade show" ]
+            [ Attr.class "modal-backdrop fade show"
+            , Events.onClick <| toMsg hiddenState
+            ]
             []
         ]
     else
