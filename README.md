@@ -2,14 +2,14 @@
 
 
 
-Elm Bootstrap is a comprehensive library package for that aims to make it pleasant and reasonably type safe to use the upcoming [Twitter Bootstrap 4](https://v4-alpha.getbootstrap.com/) CSS Framework in your Elm applications.
+Elm Bootstrap is a comprehensive library package that aims to make it pleasant and reasonably type safe to use the upcoming [Twitter Bootstrap 4](https://v4-alpha.getbootstrap.com/) CSS Framework in Elm applications.
 
 
-Twitter Bootstrap is one of the most popular CSS (with some JS) frameworks for building responsive, mobile first web sites. At the time of writing version 4 is in alpha-6 and apparantly the plan is to move into beta fairly soon.
+Twitter Bootstrap is one of the most popular CSS (with some JS) frameworks for building responsive, mobile first web sites. At the time of writing, version 4 is in alpha-6 and apparently the plan is to move into beta soon.
 Version 4 is fully embracing flexbox, which will provide much better control and flexibility.
 
 
-### What's in it for me ?
+### What's in it for me?
 * A reasonably type safe API for using Bootstrap
 * Some boilerplate is being handled for you
 * Interactive elements like Navbar, Dropdowns, Accordion, Modal and Tabs
@@ -19,14 +19,10 @@ Version 4 is fully embracing flexbox, which will provide much better control and
 
 
 ## Documentation
-For user documentation, do check out the [Docs Site](http://elm-bootstrap.info/)
+For user documentation, check out the [Docs Site](http://elm-bootstrap.info/).  
+The latest API documentation is up on [Elm Package](http://package.elm-lang.org/packages/rundis/elm-bootstrap/latest).  
 
-The latest api documentation is up on [Elm Package](http://package.elm-lang.org/packages/rundis/elm-bootstrap/latest)
-
-
-You will also benefit greatly from reading through the relevant [Twitter Bootstrap documentation](https://v4-alpha.getbootstrap.com/getting-started/introduction/)
-
-
+It also helps to read through the relevant [Twitter Bootstrap documentation](https://v4-alpha.getbootstrap.com/getting-started/introduction/).
 
 
 ## Getting started
@@ -59,31 +55,31 @@ view model =
 
 
 ## Raison D'être
-Twitter Bootstrap is something that I have been using in non-Elm projects quite extensively. I did some research on what was out there for Elm, but couldn't really find anything that was quite as ambitious as I was looking for.
+Twitter Bootstrap is something that I have been using in non-Elm projects extensively.
+I researched what was out there for Elm, but couldn't find anything that was quite as ambitious as I was looking for.
 
-To a large extent Twitter Bootstrap is just a bunch of CSS classes you can apply to appropriate elements. You can easily do that by just using vanilla Elm Html.
-However it's very easy to get class strings wrong, or apply the wrong classes to the wrong elements, or even nest elements in ways that will break the styling.
-This package tries to alleviate some of that, by providing a higher degree of type safety.
+To a large extent, Twitter Bootstrap is just a bunch of CSS classes that can be applied to appropriate elements.
+Though Bootstrap can be used with just the vanilla Elm HTML library, it is very easy to get class strings wrong, apply the wrong classes to the wrong elements, or even nest elements in ways that will break the styling.
+This package aims to alleviate these issues by providing a higher degree of type safety.
 
-The API tries to balance the wish for type safety with factors like
+This API tries to balance the wish for type safety with factors like
 - usability
 - need for flexibility / escape hatches
-- limitations in the type system (and/or just my lack of experience/knowledge about it) ?
+- limitations in the type system (and/or just my lack of experience/knowledge about it)?
 
 
-Twitter Bootstrap also consists of a few interactive elements. The interactivety is provided through the use of JavaScript. Elm Bootstrap can't have any of that obviously so the package will provide similar interactivety through the use of pure Elm.
+Twitter Bootstrap also consists of a few interactive elements. The interactivety is provided through the use of JavaScript. Elm Bootstrap can't have any of that obviously so the package will provide similar interactivity through the use of pure Elm.
 
 
 
->To be completely honest with you the main reason is probably that I really wanted to learn Elm more deeply and what it would take to design a library and an API using it. That journey has just begun, but you got to start somewhere right?
+>To be completely honest, the main reason I created this was probably to learn Elm more deeply and to see what it would take to design a library and an API using it. You got to start somewhere right?
 
 
 
 ## Alternatives
 - [`elm-bootstrapify`](#http://package.elm-lang.org/packages/JeremyBellows/elm-bootstrapify/latest) - Supports Bootstrap 3, not as extensive but might suit your needs.
-- There are a few other bootstrap related libraries, but they haven't been updated to Elm 0.18.
-- [`elm-mdl`](https://github.com/debois/elm-mdl) is of course the most obvious alternative, if you aren't to fuzzed about Bootstrap. It's very impressive and has
-been a great source of inspiration for elm-bootstrap.
+- There are a few other Bootstrap related libraries, but they haven't been updated to Elm 0.18.
+- [`elm-mdl`](https://github.com/debois/elm-mdl) is of course the most obvious alternative, if you aren't fond of Bootstrap. It's very impressive and has been a great source of inspiration for elm-bootstrap.
 
 
 ## Source of inspiration
@@ -93,9 +89,9 @@ been a great source of inspiration for elm-bootstrap.
 
 
 ## Contributing / Collaborating
-This is still very much early days and I would greatly appreciate feedback on usability, design and features etc.
+This package is still in its early stages and I would greatly appreciate feedback on usability, design, features, etc.
 
-There's a bunch of work left to do, especially when it comes to documentation and examples. If anyone is interested in helping out, either by submitting pull requests or maybe even joining me in making this a top-notch and useful package don't hesitate to get in touch. (@mrundberget on the Elm slack btw)
+There's a bunch of work left to do, especially when it comes to documentation and examples. If anyone is interested in helping out, either by submitting pull requests or maybe even joining me in making this a top-notch and useful package, don't hesitate to get in touch. (@mrundberget on the Elm slack btw)
 
 
 ## Stuff TODO
