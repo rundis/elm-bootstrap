@@ -17,6 +17,7 @@
         "Bootstrap.Dropdown",
         "Bootstrap.Form",
         "Bootstrap.Form.Checkbox",
+        "Bootstrap.Form.Fieldset",
         "Bootstrap.Form.Input",
         "Bootstrap.Form.InputGroup",
         "Bootstrap.Form.Radio",
