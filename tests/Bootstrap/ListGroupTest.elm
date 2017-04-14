@@ -15,143 +15,134 @@ all : Test
 all =
     Test.concat
         [ vanillaListGroup
-        , keyedListGroup
         , contextualListGroup
         , customListGroup
         , contextualListGroup
         ]
 
 
-vanillaListGroup : Test
 vanillaListGroup =
     let
-        html =
-            ListGroup.ul
-                [ ListGroup.li [] [ text "List item 1" ]
-                ]
+        items =
+            [ ( "basic", ListGroup.li [] [ text "basic" ] )
+            , ( "active", ListGroup.li [ ListGroup.active ] [ text "active" ] )
+            , ( "disabled", ListGroup.li [ ListGroup.disabled ] [ text "disabled" ] )
+            ]
 
-        active =
-            ListGroup.ul
-                [ ListGroup.li [ ListGroup.active ] [ text "List item 1" ]
-                ]
+        vanilla =
+            ListGroup.ul (List.map Tuple.second items)
 
-        disabled =
-            ListGroup.ul
-                [ ListGroup.li [ ListGroup.disabled ] [ text "List item 1" ]
-                ]
-    in
-        describe "vanilla ListGroup"
+        keyed =
+            ListGroup.keyedUl items
+
+        tests html =
             [ test "expect ul with list-group class" <|
                 \() ->
                     html
                         |> Query.fromHtml
                         |> Query.has [ tag "ul", class "list-group" ]
-            , test "expect li with list-group-item class" <|
+            , test "expect three li's with list-group-item class" <|
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.has [ tag "li", class "list-group-item" ]
-            , test "expect li is not disabled" <|
-                \() ->
-                    html
-                        |> Query.fromHtml
-                        |> Query.has [ tag "li", Selector.disabled False ]
+                        |> Query.findAll [ tag "li", class "list-group-item" ]
+                        |> Query.count (Expect.equal 3)
             , test "expect li has content" <|
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.has [ tag "li", Selector.text "List item 1" ]
+                        |> Query.findAll [ tag "li" ]
+                        |> Query.index 0
+                        |> Query.has [ Selector.text "basic" ]
             , test "expect li with active class" <|
                 \() ->
-                    active
+                    html
                         |> Query.fromHtml
-                        |> Query.has [ tag "li", class "active" ]
+                        |> Query.findAll [ tag "li" ]
+                        |> Query.index 1
+                        |> Query.has [ class "active" ]
             , test "expect li with disabled class and attribute" <|
                 \() ->
-                    disabled
+                    html
                         |> Query.fromHtml
-                        |> Query.has [ tag "li", class "disabled", Selector.disabled True ]
+                        |> Query.findAll [ tag "li" ]
+                        |> Query.index 2
+                        |> Query.has [ class "disabled", Selector.disabled True ]
             ]
-
-
-{-| The fact that an element is keyed is not visible from the dom, so
-this just tests that the keyed versions produce the same html as the "vanilla" ones
--}
-keyedListGroup : Test
-keyedListGroup =
-    let
-        keyed =
-            ListGroup.keyedUl
-                [ ( "List item 1", ListGroup.li [] [ text "List item 1" ] )
-                ]
-
-        customKeyed =
-            ListGroup.keyedCustom
-                [ ( "List item 1", ListGroup.button [] [ text "List item 1" ] )
-                ]
     in
-        describe "keyed ListGroup"
-            [ test "expect ul with list-group class" <|
-                \() ->
-                    keyed
-                        |> Query.fromHtml
-                        |> Query.has [ tag "ul", class "list-group" ]
-            , test "expect li with list-group-item class" <|
-                \() ->
-                    keyed
-                        |> Query.fromHtml
-                        |> Query.has [ tag "li", class "list-group-item" ]
-            , test "expect div with list-group class" <|
-                \() ->
-                    customKeyed
-                        |> Query.fromHtml
-                        |> Query.has [ tag "div", class "list-group" ]
-            , test "expect button with list-group-item class" <|
-                \() ->
-                    customKeyed
-                        |> Query.fromHtml
-                        |> Query.has [ tag "button", class "list-group-item", class "list-group-item-action" ]
+        describe "basic ListGroup"
+            [ describe "vanilla ListGroup" (tests vanilla)
+            , describe "keyed ListGroup" (tests keyed)
             ]
 
 
 customListGroup : Test
 customListGroup =
     let
-        anchors =
-            ListGroup.custom
-                [ ListGroup.anchor [ ListGroup.active, ListGroup.attrs [ href "javascript:void();" ] ] [ text "List item 1" ]
-                , ListGroup.anchor [ ListGroup.attrs [ href "javascript:void();" ] ] [ text "List item 2" ]
-                , ListGroup.anchor [ ListGroup.disabled, ListGroup.attrs [ href "http://www.google.com" ] ] [ text "List item 3" ]
-                ]
+        anchorItems =
+            [ ( "item 1", ListGroup.anchor [ ListGroup.attrs [ href "javascript:void();" ] ] [ text "List item 1" ] )
+            , ( "item 2", ListGroup.anchor [ ListGroup.active, ListGroup.attrs [ href "javascript:void();" ] ] [ text "List item 2" ] )
+            , ( "item 3", ListGroup.anchor [ ListGroup.disabled, ListGroup.attrs [ href "http://www.google.com" ] ] [ text "List item 3" ] )
+            ]
 
-        buttons =
-            ListGroup.custom
-                [ ListGroup.button [ ListGroup.active ] [ text "List item 1" ]
-                , ListGroup.button [] [ text "List item 2" ]
-                , ListGroup.button [ ListGroup.disabled ] [ text "List item 3" ]
-                ]
-    in
-        describe "Custom ListGroup"
+        buttonItems =
+            [ ( "item 1", ListGroup.button [] [ text "List item 1" ] )
+            , ( "item 2", ListGroup.button [ ListGroup.active ] [ text "List item 2" ] )
+            , ( "item 3", ListGroup.button [ ListGroup.disabled ] [ text "List item 3" ] )
+            ]
+
+        tests itemTag html =
             [ test "expect div with list-group class" <|
                 \() ->
-                    anchors
+                    html
                         |> Query.fromHtml
                         |> Query.has [ tag "div", class "list-group" ]
-            , test "expect a with list-group-item class" <|
+            , test "expect three items with list-group-item class" <|
                 \() ->
-                    anchors
+                    html
                         |> Query.fromHtml
-                        |> Query.has [ tag "a", class "list-group-item", class "list-group-item-action" ]
-            , test "expect div with list-group class" <|
+                        |> Query.findAll [ tag itemTag, class "list-group-item", class "list-group-item-action" ]
+                        |> Query.count (Expect.equal 3)
+            , test "expect item has content" <|
                 \() ->
-                    buttons
+                    html
                         |> Query.fromHtml
-                        |> Query.has [ tag "div", class "list-group" ]
-            , test "expect button with list-group-item class" <|
+                        |> Query.findAll [ tag itemTag ]
+                        |> Query.index 0
+                        |> Query.has [ Selector.text "List item 1" ]
+            , test "expect item with active class" <|
                 \() ->
-                    buttons
+                    html
                         |> Query.fromHtml
-                        |> Query.has [ tag "button", class "list-group-item", class "list-group-item-action" ]
+                        |> Query.findAll [ tag itemTag ]
+                        |> Query.index 1
+                        |> Query.has [ class "active" ]
+            , test "expect item with disabled class and attribute" <|
+                \() ->
+                    html
+                        |> Query.fromHtml
+                        |> Query.findAll [ tag itemTag ]
+                        |> Query.index 2
+                        |> Query.has [ class "disabled", Selector.disabled True ]
+            ]
+
+        anchors =
+            ListGroup.custom (List.map Tuple.second anchorItems)
+
+        keyedAnchors =
+            ListGroup.keyedCustom anchorItems
+
+        buttons =
+            ListGroup.custom (List.map Tuple.second buttonItems)
+
+        keyedButtons =
+            ListGroup.keyedCustom buttonItems
+    in
+        describe "custom ListGroup"
+            [ describe "anchors" (tests "a" anchors)
+            , describe "keyed anchors" (tests "a" keyedAnchors)
+            , describe "buttons" (tests "button" buttons)
+            , describe "keyed buttons" (tests "button" keyedButtons)
             ]
 
 
