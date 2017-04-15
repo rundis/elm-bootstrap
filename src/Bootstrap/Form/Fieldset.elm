@@ -13,6 +13,12 @@ module Bootstrap.Form.Fieldset
 {-| Fieldset is a handy block level element you can use to group form elements.
 Fieldset comes with the added benefit of disabling all child controls when we set it's disabled attribute.
 
+# General
+@docs Config, view, config
+
+# Customization
+@docs asGroup, disabled, children, legend, attrs
+
 
 -}
 
@@ -20,6 +26,8 @@ import Html
 import Html.Attributes as Attributes exposing (classList)
 
 
+{-| Opaque representation of the view configuration for a fieldset.
+-}
 type Config msg
     = Config (ConfigRec msg)
 
@@ -53,21 +61,29 @@ config =
         }
 
 
+{-| Make the fieldset a field group
+-}
 asGroup : Config msg -> Config msg
 asGroup =
     mapOptions (\opts -> { opts | isGroup = True })
 
 
+{-| Disable a fieldset
+-}
 disabled : Bool -> Config msg -> Config msg
 disabled isDisabled =
     mapOptions (\opts -> { opts | disabled = isDisabled })
 
 
+{-| When you need to customize a fieldset with standard Html.Attribute attributes use this function
+-}
 attrs : List (Html.Attribute msg) -> Config msg -> Config msg
 attrs attrs =
     mapOptions (\opts -> { opts | attributes = opts.attributes ++ attrs })
 
 
+{-| Provide a legend for a set of fields
+-}
 legend :
     List (Html.Attribute msg)
     -> List (Html.Html msg)
@@ -80,6 +96,7 @@ legend attributes children =
         )
 
 
+{-| -}
 children :
     List (Html.Html msg)
     -> Config msg
@@ -88,6 +105,22 @@ children children =
     mapConfig (\conf -> { conf | children = children })
 
 
+{-| View a fieldset standalone. To create a fieldset you start off with a basic configuration which you can compose
+of several optional elements.
+
+    Fieldset.config
+        |> Fieldset.asGroup
+        |> Fieldset.legend [] [ text "Radio buttons" ]
+        |> Fieldset.children
+            ( Radio.radioList "myradios"
+                [ Radio.create [] "Option one"
+                , Radio.create [] "Option two"
+                , Radio.create [ Radio.disabled True] "I'm disabled"
+                ]
+            )
+        |> Fieldset.view
+* config - See [`Config`](#Config) for what items you may compose your cards with
+-}
 view : Config msg -> Html.Html msg
 view (Config { options, legend, children }) =
     Html.fieldset
