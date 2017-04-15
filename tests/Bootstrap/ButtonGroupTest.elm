@@ -2,13 +2,22 @@ module Bootstrap.ButtonGroupTest exposing (..)
 
 import Bootstrap.ButtonGroup as ButtonGroup
 import Bootstrap.Button as Button
-
-
 import Html
 import Test exposing (Test, test, describe)
 import Test.Html.Query as Query
 import Test.Html.Selector exposing (text, tag, class, classes, attribute, checked)
 
+
+all : Test
+all =
+    Test.concat
+        [ simpleGroup
+        , groupWithOptions
+        , linkGroup
+        , checkGroup
+        , radioGroup
+        , toolbar
+        ]
 
 
 simpleGroup : Test
@@ -16,8 +25,8 @@ simpleGroup =
     let
         html =
             ButtonGroup.buttonGroup []
-                [ ButtonGroup.button [] [ Html.text "First"]
-                , ButtonGroup.button [] [ Html.text "Second"]
+                [ ButtonGroup.button [] [ Html.text "First" ]
+                , ButtonGroup.button [] [ Html.text "Second" ]
                 ]
     in
         describe "Simple group"
@@ -25,16 +34,14 @@ simpleGroup =
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.has  [ tag "div", class "btn-group", attribute "role" "group" ]
-
+                        |> Query.has [ tag "div", class "btn-group", attribute "role" "group" ]
             , test "expect btn class" <|
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.findAll [ tag "button"]
+                        |> Query.findAll [ tag "button" ]
                         |> Query.each
-                            ( Query.has [ class "btn"] )
-
+                            (Query.has [ class "btn" ])
             ]
 
 
@@ -43,7 +50,7 @@ groupWithOptions =
     let
         html =
             ButtonGroup.buttonGroup [ ButtonGroup.small, ButtonGroup.vertical ]
-                [ ButtonGroup.button [ Button.primary ] [ Html.text "First"] ]
+                [ ButtonGroup.button [ Button.primary ] [ Html.text "First" ] ]
     in
         describe "Optioned group"
             [ test "expect classes" <|
@@ -69,12 +76,13 @@ groupWithOptions =
                             ]
             ]
 
+
 linkGroup : Test
 linkGroup =
     let
         html =
             ButtonGroup.linkButtonGroup []
-                [ ButtonGroup.linkButton [ Button.primary ] [ Html.text "First"] ]
+                [ ButtonGroup.linkButton [ Button.primary ] [ Html.text "First" ] ]
     in
         describe "Link group"
             [ test "Expect button classes" <|
@@ -91,13 +99,12 @@ linkGroup =
             ]
 
 
-
 checkGroup : Test
 checkGroup =
     let
         html =
             ButtonGroup.checkboxButtonGroup []
-                [ ButtonGroup.checkboxButton False [ Button.primary ] [ Html.text "First"] ]
+                [ ButtonGroup.checkboxButton False [ Button.primary ] [ Html.text "First" ] ]
     in
         describe "Checkbox group"
             [ test "Except label with classes" <|
@@ -126,12 +133,13 @@ checkGroup =
                             ]
             ]
 
+
 radioGroup : Test
 radioGroup =
     let
         html =
             ButtonGroup.radioButtonGroup []
-                [ ButtonGroup.radioButton False [ Button.primary ] [ Html.text "First"] ]
+                [ ButtonGroup.radioButton False [ Button.primary ] [ Html.text "First" ] ]
     in
         describe "Radio group"
             [ test "Except label with classes" <|
@@ -167,7 +175,7 @@ toolbar =
         html =
             ButtonGroup.toolbar []
                 [ ButtonGroup.buttonGroupItem []
-                    [ ButtonGroup.button [] [ Html.text "Button"] ]
+                    [ ButtonGroup.button [] [ Html.text "Button" ] ]
                 ]
     in
         describe "Toolbar"

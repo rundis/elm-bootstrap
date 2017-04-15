@@ -33,7 +33,7 @@ module Bootstrap.Modal
 
     init : ( Model, Cmd Msg )
     init =
-        ( { modalState : Modal.initalState }, Cmd.none )
+        ( { modalState : Modal.hiddenState }, Cmd.none )
 
 
     type Msg
@@ -116,7 +116,7 @@ import Html.Events as Events
 import Bootstrap.Grid.Internal as GridInternal exposing (ScreenSize(..))
 
 
-{-| Opaque type representing the view config for a model. Use the [`config`](#config) function to create an inital config.
+{-| Opaque type representing the view config for a model. Use the [`config`](#config) function to create an initial config.
 -}
 type Config msg
     = Config
@@ -140,19 +140,19 @@ type Option
     = ModalSize GridInternal.ScreenSize
 
 
-{-| Opaque type represetning a modal header
+{-| Opaque type representing a modal header
 -}
 type Header msg
     = Header (Item msg)
 
 
-{-| Opaque type represetning a modal body
+{-| Opaque type representing a modal body
 -}
 type Body msg
     = Body (Item msg)
 
 
-{-| Opaque type represetning a modal body
+{-| Opaque type representing a modal body
 -}
 type Footer msg
     = Footer (Item msg)
@@ -221,7 +221,7 @@ view state (Config { toMsg, header, body, footer, options }) =
                 ]
             ]
          ]
-            ++ backdrop state
+            ++ backdrop toMsg state
         )
 
 
@@ -411,7 +411,7 @@ footer attributes children (Config config) =
 display : State -> List (Html.Attribute msg)
 display (State open) =
     [ Attr.style
-        ([ ( "display", "block" ) ] ++ ifElse open [] [ ( "height", "0px" ) ])
+        ([ ( "display", "block" ) ] ++ ifElse open [ ( "pointer-events", "none" ) ] [ ( "height", "0px" ) ])
     , Attr.classList
         [ ( "modal", True )
         , ( "fade", True )
@@ -422,8 +422,10 @@ display (State open) =
 
 modalAttributes : List Option -> List (Html.Attribute msg)
 modalAttributes options =
-    Attr.class "modal-dialog"
-        :: (List.map modalClass options
+    [ Attr.class "modal-dialog"
+    , Attr.style [ ( "pointer-events", "auto" ) ]
+    ]
+        ++ (List.map modalClass options
                 |> List.filterMap identity
            )
 
@@ -486,11 +488,13 @@ closeButton toMsg =
         [ Html.text "x" ]
 
 
-backdrop : State -> List (Html.Html msg)
-backdrop (State open) =
+backdrop : (State -> msg) -> State -> List (Html.Html msg)
+backdrop toMsg (State open) =
     if open then
         [ Html.div
-            [ Attr.class "modal-backdrop fade show" ]
+            [ Attr.class "modal-backdrop fade show"
+            , Events.onClick <| toMsg hiddenState
+            ]
             []
         ]
     else

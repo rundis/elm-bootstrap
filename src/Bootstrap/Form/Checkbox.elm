@@ -32,7 +32,7 @@ import Html.Events as Events
 import Bootstrap.Form.FormInternal as FormInternal
 
 
-{-| Opaque composable type represetning a Checkbox.
+{-| Opaque composable type representing a Checkbox.
 -}
 type Checkbox msg
     = Checkbox

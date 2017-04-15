@@ -116,7 +116,7 @@ import Bootstrap.ListGroup as ListGroup
 
 {-| Opaque type that defines the view configuration information of your accordion
 
-* You create an inition configuration by calling the [`config`](#config) function
+* You create an initial configuration by calling the [`config`](#config) function
 * The [`withAnimtion`](#withAnimation) function allows you to define that the contents of cards should animate up/down
 * The [`cards`](#cards) function defines the  List of cards to be displayed
 -}
@@ -167,7 +167,7 @@ type Card msg
         }
 
 
-{-| Opaque representation of toggle element for initating slide up/down for a card
+{-| Opaque representation of toggle element for initiating slide up/down for a card
 -}
 type Toggle msg
     = Toggle
@@ -315,7 +315,7 @@ card { id, options, header, blocks } =
         }
 
 
-{-| Creates a card toggle element used for toggling the display of you cards main content
+{-| Creates a card toggle element used for toggling the display of the main content of your cards
 
 * `attributes` List of attributes
 * `children` List of child elements
