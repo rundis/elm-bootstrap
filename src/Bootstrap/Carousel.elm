@@ -69,6 +69,7 @@ type State
     = State (TransitionState Transition) StateSettings
 
 
+initialState : RunningState -> Int -> Maybe Int -> State
 initialState running interval mStartIndex =
     let
         startIndex =
@@ -97,48 +98,34 @@ subscriptions model toMsg =
 
 update : Msg -> State -> State
 update message ((State tstate ({ currentIndex, activity } as settings)) as model) =
-    case tstate of
-        NotAnimating ->
-            case message of
-                Pause ->
-                    State tstate { settings | activity = { activity | state = Paused } }
+    case message of
+        Pause ->
+            State tstate { settings | activity = { activity | state = Paused } }
 
-                Cycle ->
-                    State tstate { settings | activity = { activity | state = Active } }
+        Cycle ->
+            State tstate { settings | activity = { activity | state = Active } }
 
-                StartTransition transition ->
-                    State (Start transition) settings
+        StartTransition transition ->
+            State (Start transition) settings
 
-                SetAnimating ->
+        SetAnimating ->
+            case tstate of
+                NotAnimating ->
                     model
 
-                EndTransition ->
+                Start transition ->
+                    State (Animating transition) settings
+
+                Animating transition ->
+                    State (Animating transition) settings
+
+        EndTransition ->
+            case tstate of
+                NotAnimating ->
+                    -- should never happen
                     model
 
-        _ ->
-            case message of
-                Pause ->
-                    State tstate { settings | activity = { activity | state = Paused } }
-
-                Cycle ->
-                    State tstate { settings | activity = { activity | state = Active } }
-
-                StartTransition transition ->
-                    State (Start transition) settings
-
-                SetAnimating ->
-                    case tstate of
-                        Start transition ->
-                            State (Animating transition) settings
-
-                        Animating transition ->
-                            State (Animating transition) settings
-
-                        NotAnimating ->
-                            -- should never occur
-                            State NotAnimating settings
-
-                EndTransition ->
+                _ ->
                     State NotAnimating { settings | currentIndex = nextIndex tstate currentIndex }
 
 
