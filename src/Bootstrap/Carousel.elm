@@ -59,20 +59,14 @@ type alias StateSettings =
 type TransitionState a
     = Start a
     | Animating a
+    | NotAnimating
 
 
-unTransitionState ts =
-    case ts of
-        Start x ->
-            x
-
-        Animating x ->
-            x
-
-
+{-| State is indexed by the `TransitionState Transition` type,
+to easily pattern match on the states the model can be in.
+-}
 type State
-    = Static StateSettings
-    | Transitioning (TransitionState Transition) StateSettings
+    = State (TransitionState Transition) StateSettings
 
 
 initialState running interval mStartIndex =
@@ -80,44 +74,40 @@ initialState running interval mStartIndex =
         startIndex =
             Maybe.withDefault 0 mStartIndex
     in
-        Static { currentIndex = startIndex, activity = { state = running, interval = interval } }
+        State NotAnimating { currentIndex = startIndex, activity = { state = running, interval = interval } }
 
 
-getSettings model =
-    case model of
-        Static settings ->
-            settings
+{-| The subscriptions
 
-        Transitioning _ settings ->
-            settings
-
-
+currently only requests an animation frame when starting a transition. will
+also do interval-based transition to the next slide later.
+-}
 subscriptions : State -> (Msg -> msg) -> Sub msg
 subscriptions model toMsg =
     case model of
-        Static settings ->
+        State NotAnimating settings ->
             Sub.none
 
-        Transitioning (Start transition) settings ->
+        State (Start transition) settings ->
             AnimationFrame.times (\_ -> toMsg SetAnimating)
 
-        Transitioning (Animating transition) settings ->
+        State (Animating transition) settings ->
             Sub.none
 
 
 update : Msg -> State -> State
-update message model =
-    case model of
-        Static ({ currentIndex, activity } as settings) ->
+update message ((State tstate ({ currentIndex, activity } as settings)) as model) =
+    case tstate of
+        NotAnimating ->
             case message of
                 Pause ->
-                    Static { settings | activity = { activity | state = Paused } }
+                    State tstate { settings | activity = { activity | state = Paused } }
 
                 Cycle ->
-                    Static { settings | activity = { activity | state = Active } }
+                    State tstate { settings | activity = { activity | state = Active } }
 
                 StartTransition transition ->
-                    Transitioning (Start transition) settings
+                    State (Start transition) settings
 
                 SetAnimating ->
                     model
@@ -125,57 +115,63 @@ update message model =
                 EndTransition ->
                     model
 
-        Transitioning transition ({ currentIndex, activity } as settings) ->
+        _ ->
             case message of
                 Pause ->
-                    Transitioning transition { settings | activity = { activity | state = Paused } }
+                    State tstate { settings | activity = { activity | state = Paused } }
 
                 Cycle ->
-                    Transitioning transition { settings | activity = { activity | state = Active } }
+                    State tstate { settings | activity = { activity | state = Active } }
 
                 StartTransition transition ->
-                    Transitioning (Start transition) settings
+                    State (Start transition) settings
 
                 SetAnimating ->
-                    case transition of
-                        Start t ->
-                            Transitioning (Animating t) settings
+                    case tstate of
+                        Start transition ->
+                            State (Animating transition) settings
 
-                        Animating t ->
-                            Transitioning (Animating t) settings
+                        Animating transition ->
+                            State (Animating transition) settings
+
+                        NotAnimating ->
+                            -- should never occur
+                            State NotAnimating settings
 
                 EndTransition ->
-                    Static { settings | currentIndex = nextIndex (unTransitionState transition) currentIndex }
+                    State NotAnimating { settings | currentIndex = nextIndex tstate currentIndex }
 
 
-transitionToClassnames : Transition -> { directionalClassName : String, bidirectionalClassName : String, orderClassName : String }
-transitionToClassnames transition =
+{-| Calculate the next index based on the current state
+
+This is hardcoded to cycle between the first 3 slides for now
+-}
+nextIndex : TransitionState Transition -> Int -> Int
+nextIndex state currentIndex =
     let
-        base =
-            "carousel-item"
+        helper transition =
+            case transition of
+                Next ->
+                    (currentIndex + 1) % 3
+
+                Prev ->
+                    (currentIndex - 1) % 3
+
+                Number m ->
+                    m % 3
+
+                None ->
+                    currentIndex
     in
-        case transition of
-            Next ->
-                { directionalClassName = base ++ "-left", orderClassName = base ++ "-next", bidirectionalClassName = base ++ "-right" }
+        case state of
+            Start transition ->
+                helper transition
 
-            _ ->
-                { directionalClassName = base ++ "-right", orderClassName = base ++ "-prev", bidirectionalClassName = base ++ "-left" }
+            Animating transition ->
+                helper transition
 
-
-nextIndex : Transition -> Int -> Int
-nextIndex transition currentIndex =
-    case transition of
-        Next ->
-            (currentIndex + 1) % 3
-
-        Prev ->
-            (currentIndex - 1) % 3
-
-        Number m ->
-            m % 3
-
-        None ->
-            currentIndex
+            NotAnimating ->
+                currentIndex
 
 
 config : String -> (Msg -> msg) -> List (CarouselOption msg) -> Config msg
@@ -193,71 +189,18 @@ config id toMsg options =
 view : State -> Config msg -> Html.Html msg
 view model (Config settings) =
     let
-        { currentIndex, activity } =
-            getSettings model
+        (State tstate { currentIndex, activity }) =
+            model
 
         indicatorsHtml =
             if settings.indicators then
-                indicators settings.id (List.length settings.slides) currentIndex
+                indicators settings.id (List.length settings.slides) (nextIndex tstate currentIndex)
             else
                 text ""
 
         slidesHtml =
             div [ class "carousel-inner", attribute "role" "listbox" ]
-                (List.indexedMap
-                    (\i slide ->
-                        case model of
-                            Static _ ->
-                                if i == currentIndex then
-                                    slide
-                                        |> Slide.addActive
-                                        |> Slide.view
-                                else
-                                    slide
-                                        |> Slide.removeActive
-                                        |> Slide.view
-
-                            Transitioning (Start transition) _ ->
-                                let
-                                    names =
-                                        transitionToClassnames transition
-                                in
-                                    if i == currentIndex then
-                                        slide
-                                            |> Slide.addActive
-                                            |> Slide.view
-                                    else if i == nextIndex transition currentIndex then
-                                        slide
-                                            |> Slide.removeActive
-                                            |> Slide.addAttributes [ class names.orderClassName ]
-                                            |> Slide.view
-                                    else
-                                        slide
-                                            |> Slide.removeActive
-                                            |> Slide.view
-
-                            Transitioning (Animating transition) _ ->
-                                let
-                                    names =
-                                        transitionToClassnames transition
-                                in
-                                    if i == currentIndex then
-                                        slide
-                                            |> Slide.addActive
-                                            |> Slide.addAttributes [ class names.directionalClassName ]
-                                            |> Slide.view
-                                    else if i == nextIndex transition currentIndex then
-                                        slide
-                                            |> Slide.removeActive
-                                            |> Slide.addAttributes [ class names.directionalClassName, class names.orderClassName ]
-                                            |> Slide.view
-                                    else
-                                        slide
-                                            |> Slide.removeActive
-                                            |> Slide.view
-                    )
-                    settings.slides
-                )
+                (List.indexedMap (viewSlide model) settings.slides)
 
         controlsHtml =
             if settings.controls then
@@ -265,6 +208,7 @@ view model (Config settings) =
             else
                 []
 
+        {- catch the transitionend event, to end an ongoing transition -}
         defaultCarouselAttributes =
             [ Attributes.id settings.id
             , class "carousel slide"
@@ -273,6 +217,70 @@ view model (Config settings) =
     in
         div (List.concatMap carouselOptionToAttributes settings.options ++ defaultCarouselAttributes)
             (Html.map settings.toMsg indicatorsHtml :: slidesHtml :: (List.map (Html.map settings.toMsg) controlsHtml))
+
+
+{-| Sets the correct classes to the current and (potentially) next element.
+-}
+viewSlide : State -> Int -> Slide.Config msg -> Html.Html msg
+viewSlide ((State tstate { currentIndex }) as model) index slide =
+    let
+        newIndex =
+            nextIndex tstate currentIndex
+
+        classNames transition =
+            let
+                base =
+                    "carousel-item"
+            in
+                case transition of
+                    Next ->
+                        { directionalClassName = base ++ "-left", orderClassName = base ++ "-next" }
+
+                    _ ->
+                        { directionalClassName = base ++ "-right", orderClassName = base ++ "-prev" }
+
+        classes =
+            if index == currentIndex then
+                case tstate of
+                    NotAnimating ->
+                        [ ( "active", True ) ]
+
+                    Start transition ->
+                        [ ( "active", True )
+                        ]
+
+                    Animating transition ->
+                        let
+                            { directionalClassName } =
+                                classNames transition
+                        in
+                            [ ( "active", True )
+                            , ( directionalClassName, True )
+                            ]
+            else if index == newIndex then
+                case tstate of
+                    NotAnimating ->
+                        []
+
+                    Start transition ->
+                        [ ( .orderClassName (classNames transition), True )
+                        ]
+
+                    Animating transition ->
+                        let
+                            { directionalClassName, orderClassName } =
+                                classNames transition
+                        in
+                            [ ( directionalClassName, True )
+                            , ( orderClassName, True )
+                            ]
+            else
+                []
+    in
+        slide
+            |> Slide.removeActive
+            |> Slide.addAttributes [ classList classes ]
+            |> Slide.view
 
 
 slides : List (Slide.Config msg) -> Config msg -> Config msg
@@ -317,15 +325,6 @@ indicators id size activeIndex =
                 |> List.map item
     in
         Html.ol [ class "carousel-indicators" ] items
-
-
-
-{-
-   Carousel.config "myCarousel" [ Carousel.interval 5000 ]
-       |> Carousel.slides []
-       |> Carousel.withIndicators
-       |> Carousel.withControls
--}
 
 
 type AutoPlay
