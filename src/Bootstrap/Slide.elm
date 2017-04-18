@@ -1,4 +1,4 @@
-module Bootstrap.Slide exposing (Config, SlideOption, SlideContent, view, config, caption, customContent, image, active, addActive, removeActive)
+module Bootstrap.Slide exposing (Config, SlideOption, SlideContent, view, config, caption, customContent, image, active, addActive, removeActive, addAttributes)
 
 {-| helper module for slides
 -}
@@ -33,6 +33,10 @@ addActive (Config settings) =
 
 removeActive (Config settings) =
     Config { settings | options = List.filter (\option -> option /= Active) settings.options }
+
+
+addAttributes newAttributes (Config settings) =
+    Config { settings | options = settings.options ++ [ Attrs newAttributes ] }
 
 
 slideAttributes : List (SlideOption msg) -> List (Html.Attribute msg)

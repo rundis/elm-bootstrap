@@ -1,13 +1,17 @@
 module Bootstrap.Carousel exposing (..)
 
-{-| -}
+{-|
+item-left
+-}
 
 import Html exposing (div, text, span, a)
 import Html.Attributes as Attributes exposing (class, classList, attribute, href)
-import Html.Events exposing (onClick)
+import Html.Events exposing (onClick, on)
 import Html.Keyed as Keyed
+import Json.Decode as Decode
 import Bootstrap.Slide as Slide
 import Time
+import AnimationFrame
 
 
 {-| Opaque type that defines the view configuration of your carousel
@@ -23,12 +27,19 @@ type Config msg
         }
 
 
+type Transition
+    = Next
+    | Prev
+    | Number Int
+    | None
+
+
 type Msg
     = Cycle
     | Pause
-    | Number Int
-    | Prev
-    | Next
+    | StartTransition Transition
+    | SetAnimating
+    | EndTransition
 
 
 type RunningState
@@ -41,36 +52,130 @@ type alias Activity =
     { state : RunningState, interval : Int }
 
 
+type alias StateSettings =
+    { currentIndex : Int, activity : Activity }
+
+
+type TransitionState a
+    = Start a
+    | Animating a
+
+
+unTransitionState ts =
+    case ts of
+        Start x ->
+            x
+
+        Animating x ->
+            x
+
+
 type State
-    = State { currentIndex : Int, activity : Activity }
+    = Static StateSettings
+    | Transitioning (TransitionState Transition) StateSettings
 
 
-subscriptions (State { activity }) =
-    case activity.state of
-        Active ->
-            Time.every (toFloat activity.interval * Time.millisecond) (\_ -> Next)
+initialState running interval mStartIndex =
+    let
+        startIndex =
+            Maybe.withDefault 0 mStartIndex
+    in
+        Static { currentIndex = startIndex, activity = { state = running, interval = interval } }
 
-        _ ->
+
+getSettings model =
+    case model of
+        Static settings ->
+            settings
+
+        Transitioning _ settings ->
+            settings
+
+
+subscriptions : State -> (Msg -> msg) -> Sub msg
+subscriptions model toMsg =
+    case model of
+        Static settings ->
+            Sub.none
+
+        Transitioning (Start transition) settings ->
+            AnimationFrame.times (\_ -> toMsg SetAnimating)
+
+        Transitioning (Animating transition) settings ->
             Sub.none
 
 
 update : Msg -> State -> State
-update message (State ({ currentIndex, activity } as settings)) =
-    case message of
+update message model =
+    case model of
+        Static ({ currentIndex, activity } as settings) ->
+            case message of
+                Pause ->
+                    Static { settings | activity = { activity | state = Paused } }
+
+                Cycle ->
+                    Static { settings | activity = { activity | state = Active } }
+
+                StartTransition transition ->
+                    Transitioning (Start transition) settings
+
+                SetAnimating ->
+                    model
+
+                EndTransition ->
+                    model
+
+        Transitioning transition ({ currentIndex, activity } as settings) ->
+            case message of
+                Pause ->
+                    Transitioning transition { settings | activity = { activity | state = Paused } }
+
+                Cycle ->
+                    Transitioning transition { settings | activity = { activity | state = Active } }
+
+                StartTransition transition ->
+                    Transitioning (Start transition) settings
+
+                SetAnimating ->
+                    case transition of
+                        Start t ->
+                            Transitioning (Animating t) settings
+
+                        Animating t ->
+                            Transitioning (Animating t) settings
+
+                EndTransition ->
+                    Static { settings | currentIndex = nextIndex (unTransitionState transition) currentIndex }
+
+
+transitionToClassnames : Transition -> { directionalClassName : String, bidirectionalClassName : String, orderClassName : String }
+transitionToClassnames transition =
+    let
+        base =
+            "carousel-item"
+    in
+        case transition of
+            Next ->
+                { directionalClassName = base ++ "-left", orderClassName = base ++ "-next", bidirectionalClassName = base ++ "-right" }
+
+            _ ->
+                { directionalClassName = base ++ "-right", orderClassName = base ++ "-prev", bidirectionalClassName = base ++ "-left" }
+
+
+nextIndex : Transition -> Int -> Int
+nextIndex transition currentIndex =
+    case transition of
         Next ->
-            State { settings | currentIndex = (currentIndex + 1) % 2 }
+            (currentIndex + 1) % 3
 
         Prev ->
-            State { settings | currentIndex = currentIndex - 1 }
+            (currentIndex - 1) % 3
 
         Number m ->
-            State { settings | currentIndex = m }
+            m % 3
 
-        Pause ->
-            State { settings | activity = { activity | state = Paused } }
-
-        Cycle ->
-            State { settings | activity = { activity | state = Active } }
+        None ->
+            currentIndex
 
 
 config : String -> (Msg -> msg) -> List (CarouselOption msg) -> Config msg
@@ -85,9 +190,12 @@ config id toMsg options =
         }
 
 
-view : Config msg -> State -> Html.Html msg
-view (Config settings) (State { currentIndex, activity }) =
+view : State -> Config msg -> Html.Html msg
+view model (Config settings) =
     let
+        { currentIndex, activity } =
+            getSettings model
+
         indicatorsHtml =
             if settings.indicators then
                 indicators settings.id (List.length settings.slides) currentIndex
@@ -98,14 +206,55 @@ view (Config settings) (State { currentIndex, activity }) =
             div [ class "carousel-inner", attribute "role" "listbox" ]
                 (List.indexedMap
                     (\i slide ->
-                        if i == currentIndex then
-                            slide
-                                |> Slide.addActive
-                                |> Slide.view
-                        else
-                            slide
-                                |> Slide.removeActive
-                                |> Slide.view
+                        case model of
+                            Static _ ->
+                                if i == currentIndex then
+                                    slide
+                                        |> Slide.addActive
+                                        |> Slide.view
+                                else
+                                    slide
+                                        |> Slide.removeActive
+                                        |> Slide.view
+
+                            Transitioning (Start transition) _ ->
+                                let
+                                    names =
+                                        transitionToClassnames transition
+                                in
+                                    if i == currentIndex then
+                                        slide
+                                            |> Slide.addActive
+                                            |> Slide.view
+                                    else if i == nextIndex transition currentIndex then
+                                        slide
+                                            |> Slide.removeActive
+                                            |> Slide.addAttributes [ class names.orderClassName ]
+                                            |> Slide.view
+                                    else
+                                        slide
+                                            |> Slide.removeActive
+                                            |> Slide.view
+
+                            Transitioning (Animating transition) _ ->
+                                let
+                                    names =
+                                        transitionToClassnames transition
+                                in
+                                    if i == currentIndex then
+                                        slide
+                                            |> Slide.addActive
+                                            |> Slide.addAttributes [ class names.directionalClassName ]
+                                            |> Slide.view
+                                    else if i == nextIndex transition currentIndex then
+                                        slide
+                                            |> Slide.removeActive
+                                            |> Slide.addAttributes [ class names.directionalClassName, class names.orderClassName ]
+                                            |> Slide.view
+                                    else
+                                        slide
+                                            |> Slide.removeActive
+                                            |> Slide.view
                     )
                     settings.slides
                 )
@@ -115,8 +264,14 @@ view (Config settings) (State { currentIndex, activity }) =
                 [ controlPrev settings.id, controlNext settings.id ]
             else
                 []
+
+        defaultCarouselAttributes =
+            [ Attributes.id settings.id
+            , class "carousel slide"
+            , on "transitionend" (Decode.succeed (settings.toMsg EndTransition))
+            ]
     in
-        div (List.concatMap carouselOptionToAttributes settings.options ++ [ Attributes.id settings.id, class "carousel slide" ])
+        div (List.concatMap carouselOptionToAttributes settings.options ++ defaultCarouselAttributes)
             (Html.map settings.toMsg indicatorsHtml :: slidesHtml :: (List.map (Html.map settings.toMsg) controlsHtml))
 
 
@@ -137,7 +292,7 @@ withControls (Config settings) =
 
 controlPrev : String -> Html.Html Msg
 controlPrev id =
-    a [ class "carousel-control-prev", href ("#" ++ id), attribute "role" "button", attribute "data-slide" "prev", onClick Prev ]
+    a [ class "carousel-control-prev", href ("#" ++ id), attribute "role" "button", attribute "data-slide" "prev", onClick (StartTransition Prev) ]
         [ span [ class "carousel-control-prev-icon", attribute "aria-hidden" "true" ] []
         , span [ class "sr-only" ] [ text "Previous" ]
         ]
@@ -145,7 +300,7 @@ controlPrev id =
 
 controlNext : String -> Html.Html Msg
 controlNext id =
-    a [ class "carousel-control-next", href ("#" ++ id), attribute "role" "button", attribute "data-slide" "next", onClick Next ]
+    a [ class "carousel-control-next", href ("#" ++ id), attribute "role" "button", attribute "data-slide" "next", onClick (StartTransition Next) ]
         [ span [ class "carousel-control-next-icon", attribute "aria-hidden" "true" ] []
         , span [ class "sr-only" ] [ text "Next" ]
         ]
