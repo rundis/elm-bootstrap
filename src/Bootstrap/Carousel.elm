@@ -6,7 +6,7 @@ item-left
 
 import Html exposing (div, text, span, a)
 import Html.Attributes as Attributes exposing (class, classList, attribute, href)
-import Html.Events exposing (onClick, on)
+import Html.Events exposing (onClick, on, onMouseEnter, onMouseLeave)
 import Html.Keyed as Keyed
 import Json.Decode as Decode
 import Bootstrap.Slide as Slide
@@ -40,20 +40,17 @@ type Msg
     | StartTransition Transition
     | SetAnimating
     | EndTransition
-
-
-type RunningState
-    = Inactive
-    | Paused
-    | Active
-
-
-type alias Activity =
-    { state : RunningState, interval : Int }
+    | SetHover Bool
 
 
 type alias StateSettings =
-    { currentIndex : Int, activity : Activity }
+    { currentIndex : Int
+    , running : RunningState
+    , interval : Int
+    , hovered : Maybe Bool
+    , keyboard : Bool
+    , wrap : Bool
+    }
 
 
 type TransitionState a
@@ -69,44 +66,132 @@ type State
     = State (TransitionState Transition) StateSettings
 
 
-initialState : RunningState -> Int -> Maybe Int -> State
-initialState running interval mStartIndex =
-    let
-        startIndex =
-            Maybe.withDefault 0 mStartIndex
-    in
-        State NotAnimating { currentIndex = startIndex, activity = { state = running, interval = interval } }
+type alias StateOptions =
+    { interval : Maybe Int
+    , keyboard : Bool
+    , pauseOnHover : Bool
+    , ride : AutoPlay
+    , wrap : Bool
+    , startIndex : Int
+    }
+
+
+defaultStateOptions : StateOptions
+defaultStateOptions =
+    { interval = Just 5000
+    , keyboard = True
+    , pauseOnHover = True
+    , ride = OnLoad
+    , wrap = True
+    , startIndex = 0
+    }
+
+
+type AutoPlay
+    = AfterFirst
+    | OnLoad
+    | NoAutoPlay
+
+
+type RunningState
+    = Inactive
+    | Paused
+    | Active
+    | WaitForUser
+
+
+initialStateWithOptions : StateOptions -> State
+initialStateWithOptions options =
+    State NotAnimating
+        { currentIndex = options.startIndex
+        , interval = Maybe.withDefault 0 options.interval
+        , running =
+            case options.ride of
+                OnLoad ->
+                    Active
+
+                AfterFirst ->
+                    WaitForUser
+
+                NoAutoPlay ->
+                    Inactive
+        , hovered =
+            if options.pauseOnHover then
+                Just False
+            else
+                Nothing
+        , keyboard = options.keyboard
+        , wrap = options.wrap
+        }
+
+
+initialState : State
+initialState =
+    initialStateWithOptions defaultStateOptions
 
 
 {-| The subscriptions
 
-currently only requests an animation frame when starting a transition. will
-also do interval-based transition to the next slide later.
 -}
 subscriptions : State -> (Msg -> msg) -> Sub msg
 subscriptions model toMsg =
     case model of
         State NotAnimating settings ->
-            Sub.none
+            let
+                interval =
+                    settings.interval
+
+                active =
+                    settings.running == Active
+            in
+                if active && settings.hovered == Just False && interval /= 0 then
+                    Time.every (toFloat interval * Time.millisecond) (\_ -> toMsg <| StartTransition Next)
+                else
+                    Sub.none
 
         State (Start transition) settings ->
+            -- request an animation frame to trigger the start of css transitions
             AnimationFrame.times (\_ -> toMsg SetAnimating)
 
         State (Animating transition) settings ->
+            -- don't trigger new animations when animating
             Sub.none
 
 
 update : Msg -> State -> State
-update message ((State tstate ({ currentIndex, activity } as settings)) as model) =
+update message ((State tstate ({ currentIndex, hovered } as settings)) as model) =
     case message of
         Pause ->
-            State tstate { settings | activity = { activity | state = Paused } }
+            State tstate { settings | running = Paused }
 
         Cycle ->
-            State tstate { settings | activity = { activity | state = Active } }
+            State tstate { settings | running = Active }
+
+        SetHover isHovered ->
+            State tstate { settings | hovered = Maybe.map (\_ -> isHovered) hovered }
 
         StartTransition transition ->
-            State (Start transition) settings
+            let
+                newSettings =
+                    case settings.running of
+                        WaitForUser ->
+                            -- the user has clicked something, so we can now cycle
+                            { settings | running = Active }
+
+                        _ ->
+                            settings
+            in
+                case tstate of
+                    NotAnimating ->
+                        if nextIndex (Start transition) currentIndex /= currentIndex then
+                            State (Start transition) newSettings
+                        else
+                            -- don't do anything if animating to the current index
+                            State tstate newSettings
+
+                    _ ->
+                        -- don't start another animation when one is running
+                        State tstate newSettings
 
         SetAnimating ->
             case tstate of
@@ -161,23 +246,14 @@ nextIndex state currentIndex =
                 currentIndex
 
 
-config : String -> (Msg -> msg) -> List (CarouselOption msg) -> Config msg
-config id toMsg options =
-    Config
-        { id = id
-        , toMsg = toMsg
-        , options = options
-        , slides = []
-        , controls = False
-        , indicators = False
-        }
-
-
 view : State -> Config msg -> Html.Html msg
 view model (Config settings) =
     let
-        (State tstate { currentIndex, activity }) =
+        (State tstate { currentIndex, wrap }) =
             model
+
+        size =
+            List.length settings.slides
 
         indicatorsHtml =
             if settings.indicators then
@@ -191,7 +267,12 @@ view model (Config settings) =
 
         controlsHtml =
             if settings.controls then
-                [ controlPrev settings.id, controlNext settings.id ]
+                if wrap || (currentIndex /= 0 && currentIndex /= size - 1) then
+                    [ controlPrev settings.id, controlNext settings.id ]
+                else if currentIndex == 0 then
+                    [ controlNext settings.id ]
+                else
+                    [ controlPrev settings.id ]
             else
                 []
 
@@ -200,6 +281,8 @@ view model (Config settings) =
             [ Attributes.id settings.id
             , class "carousel slide"
             , on "transitionend" (Decode.succeed (settings.toMsg EndTransition))
+            , onMouseEnter (settings.toMsg <| SetHover True)
+            , onMouseLeave (settings.toMsg <| SetHover False)
             ]
     in
         div (List.concatMap carouselOptionToAttributes settings.options ++ defaultCarouselAttributes)
@@ -326,52 +409,20 @@ indicators id size activeIndex =
         Html.ol [ class "carousel-indicators" ] items
 
 
-type AutoPlay
-    = AfterFirst
-    | OnLoad
-
-
 type CarouselOption msg
-    = Interval Int
-    | Keyboard Bool
-    | PauseOnHover Bool
-    | AutoPlay AutoPlay
-    | Wrap Bool
-    | Attrs (List (Html.Attribute msg))
+    = Attrs (List (Html.Attribute msg))
 
 
-boolToJsString bool =
-    case bool of
-        True ->
-            "true"
-
-        False ->
-            "false"
-
-
-interval : Int -> CarouselOption msg
-interval =
-    Interval
-
-
-keyboard : Bool -> CarouselOption msg
-keyboard =
-    Keyboard
-
-
-pauseOnHover : Bool -> CarouselOption msg
-pauseOnHover =
-    PauseOnHover
-
-
-autoPlay : AutoPlay -> CarouselOption msg
-autoPlay =
-    AutoPlay
-
-
-wrap : Bool -> CarouselOption msg
-wrap =
-    Wrap
+config : String -> (Msg -> msg) -> List (CarouselOption msg) -> Config msg
+config id toMsg options =
+    Config
+        { id = id
+        , options = options
+        , toMsg = toMsg
+        , slides = []
+        , controls = False
+        , indicators = False
+        }
 
 
 attrs : List (Html.Attribute msg) -> CarouselOption msg
@@ -382,36 +433,5 @@ attrs =
 carouselOptionToAttributes : CarouselOption msg -> List (Html.Attribute msg)
 carouselOptionToAttributes option =
     case option of
-        Interval n ->
-            [ attribute "data-interval" (toString n) ]
-
-        Keyboard b ->
-            [ attribute "data-keyboard" (boolToJsString b) ]
-
-        PauseOnHover pause ->
-            let
-                value =
-                    if pause then
-                        "hover"
-                    else
-                        "null"
-            in
-                [ attribute "data-pause" value ]
-
-        AutoPlay setting ->
-            let
-                value =
-                    case setting of
-                        AfterFirst ->
-                            "false"
-
-                        OnLoad ->
-                            "carousel"
-            in
-                [ attribute "data-ride" value ]
-
-        Wrap b ->
-            [ attribute "data-wrap" (boolToJsString b) ]
-
         Attrs attrs ->
             attrs
