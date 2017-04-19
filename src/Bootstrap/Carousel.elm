@@ -223,6 +223,12 @@ viewSlide ((State tstate { currentIndex }) as model) index slide =
                     Next ->
                         { directionalClassName = base ++ "-left", orderClassName = base ++ "-next" }
 
+                    Number n ->
+                        if n > currentIndex then
+                            { directionalClassName = base ++ "-left", orderClassName = base ++ "-next" }
+                        else
+                            { directionalClassName = base ++ "-right", orderClassName = base ++ "-prev" }
+
                     _ ->
                         { directionalClassName = base ++ "-right", orderClassName = base ++ "-prev" }
 
@@ -301,11 +307,17 @@ controlNext id =
         ]
 
 
-indicators : String -> Int -> Int -> Html.Html msg
+indicators : String -> Int -> Int -> Html.Html Msg
 indicators id size activeIndex =
     let
         item n =
-            Html.li [ attribute "data-target" ("#" ++ id), attribute "data-slide-to" (toString n), classList [ ( "active", n == activeIndex ) ] ] []
+            Html.li
+                [ attribute "data-target" ("#" ++ id)
+                , attribute "data-slide-to" (toString n)
+                , classList [ ( "active", n == activeIndex ) ]
+                , onClick (StartTransition (Number n))
+                ]
+                []
 
         items =
             List.range 0 (size - 1)
