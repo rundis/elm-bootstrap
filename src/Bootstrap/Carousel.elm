@@ -19,7 +19,7 @@ module Bootstrap.Carousel
         , prev
         , toSlide
         , pause
-        , unpause
+        , cycle
         )
 
 {-| A carousel is a slideshow for cycling through a series of content.
@@ -28,7 +28,7 @@ module Bootstrap.Carousel
 @docs State, StateOptions, initialState, initialStateWithOptions, defaultStateOptions, Cycling
 
 # Update
-@docs update, Msg, next, prev, toSlide, pause, unpause
+@docs update, Msg, next, prev, toSlide, pause, cycle
 
 # View
 @docs Config, config, view, slides, withControls, withIndicators
@@ -91,14 +91,12 @@ type Transition
 
 {-| when to start automatically cycling the slides
 
-* `Inactive`: never start cycling
 * `Paused`: frozen on the current slide
 * `Active`: immediately start cycling
 * `WaitForUser`: Wait for the user to perform one transition, then cycle automatically
 -}
 type Cycling
-    = Inactive
-    | Paused
+    = Paused
     | Active
     | WaitForUser
 
@@ -344,8 +342,8 @@ pause =
 
 {-| (Re)start automatically cycling.
 -}
-unpause : State -> State
-unpause =
+cycle : State -> State
+cycle =
     update Cycle
 
 
