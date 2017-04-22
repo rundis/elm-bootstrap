@@ -590,7 +590,7 @@ menuItem ((State stateRec) as state) ({ itemFn, idFn } as config) isActive idx i
                         , ( "active", isActive )
                         ]
                    , href "#"
-                   , Events.on "mouseenter" <| Json.succeed <| SetActiveItem 0
+                   , Events.on "mouseenter" <| Json.succeed <| SetActiveItem idx
                    , Events.onWithOptions "click"
                         { preventDefault = True
                         , stopPropagation = False
@@ -623,6 +623,14 @@ getActiveItem (State { activeId }) { availableItems } { idFn } =
     List.indexedMap (,) availableItems
         |> List.filter (\x -> Tuple.first x == activeId)
         |> List.map Tuple.second
+        |> List.head
+
+
+indexOf : (data -> String) -> data -> List data -> Maybe Int
+indexOf idFn item items =
+    List.indexedMap (,) items
+        |> List.filter (\( _, item_ ) -> idFn item_ == idFn item)
+        |> List.map Tuple.first
         |> List.head
 
 
