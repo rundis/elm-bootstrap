@@ -40,6 +40,7 @@ module Bootstrap.Carousel
 import Html exposing (div, text, span, a)
 import Html.Attributes as Attributes exposing (class, classList, attribute, href)
 import Html.Events exposing (onClick, on, onMouseEnter, onMouseLeave)
+import Html.Keyed as Keyed
 import Json.Decode as Decode
 import Bootstrap.Carousel.Slide as Slide
 import Bootstrap.Carousel.SlideInternal as SlideInternal
@@ -219,7 +220,6 @@ type Msg
     | SetAnimating
     | EndTransition Int
     | SetHover Bool
-    | SetSize Int
 
 
 {-| Update the carousel
@@ -246,23 +246,6 @@ update message ((State tstage ({ currentIndex, hovered, size } as settings)) as 
 
         SetHover isHovered ->
             State tstage { settings | hovered = Maybe.map (\_ -> isHovered) hovered }
-
-        SetSize size ->
-            case tstage of
-                NotAnimating ->
-                    State NotAnimating { settings | size = size }
-
-                Start transition ->
-                    if nextIndex tstage currentIndex size >= size then
-                        State NotAnimating { settings | size = size }
-                    else
-                        State (Start transition) { settings | size = size }
-
-                Animating transition ->
-                    if nextIndex tstage currentIndex size >= size then
-                        State NotAnimating { settings | size = size }
-                    else
-                        State (Animating transition) { settings | size = size }
 
         StartTransition transition ->
             let
@@ -301,8 +284,8 @@ update message ((State tstage ({ currentIndex, hovered, size } as settings)) as 
         EndTransition size ->
             case tstage of
                 NotAnimating ->
-                    -- should never happen
-                    model
+                    -- happens once on pageload to get the number of slides into the State
+                    State NotAnimating { settings | size = size }
 
                 _ ->
                     State NotAnimating { settings | currentIndex = nextIndex tstage currentIndex size, size = size }
@@ -504,12 +487,18 @@ view ((State tstage { currentIndex, wrap }) as model) (Config settings) =
 -}
 dirtyHack : Int -> Html.Html Msg
 dirtyHack size =
-    Html.img
-        [ on "load" (Decode.succeed (SetSize size))
-        , Attributes.src "http://package.elm-lang.org/assets/favicon.ico"
-        , Attributes.style [ ( "display", "none" ) ]
-        ]
+    -- use keyed to ensure this element is drawn only once
+    Keyed.node "div"
         []
+        [ ( "dirtyHack"
+          , Html.img
+                [ on "load" (Decode.succeed (EndTransition size))
+                , Attributes.src "http://package.elm-lang.org/assets/favicon.ico"
+                , Attributes.style [ ( "display", "none" ) ]
+                ]
+                []
+          )
+        ]
 
 
 {-| Sets the correct classes to the current and (potentially) next element.
