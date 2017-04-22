@@ -130,7 +130,7 @@ updateConfig config =
     UpdateConfig
         { toMsg = config.toMsg
         , onInput = config.onInput
-        , onSelect = config.onRemoveSelected
+        , onSelect = config.onSelect
         , onRemoveSelected = config.onRemoveSelected
         , onRemoveAllSelected = config.onRemoveAllSelected
         }
@@ -568,8 +568,8 @@ menuIdStr (InputId id) =
 
 
 toMenuId : InputId -> MenuId
-toMenuId (InputId id) =
-    MenuId <| id ++ "menu"
+toMenuId inputId =
+    MenuId <| menuIdStr inputId
 
 
 menuItem : State -> ViewConfigRec data msg -> Bool -> Int -> data -> ( String, Html.Html Msg )

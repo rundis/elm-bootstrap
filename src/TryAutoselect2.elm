@@ -58,7 +58,7 @@ autoUpdateConfig =
 
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
-    case msg of
+    case (Debug.log "Msg: " msg) of
         AutoMsg subMsg ->
             let
                 ( autoState, autoMsg, autoCmd ) =
@@ -91,7 +91,8 @@ update msg model =
 
         Select id ->
             ( { model
-                | selectedArtists =
+                | query = ""
+                , selectedArtists =
                     model.selectedArtists ++ (List.filter (\a -> toString a.id == id) artists)
               }
             , Cmd.none
