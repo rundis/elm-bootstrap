@@ -21,11 +21,14 @@ import Task
 
 
 type State
-    = State
-        { containerWidth : Maybe Float
-        , showMenu : Bool
-        , activeId : Int
-        }
+    = State StateRec
+
+
+type alias StateRec =
+    { containerWidth : Maybe Float
+    , showMenu : Bool
+    , activeId : Int
+    }
 
 
 type alias MenuItem msg =
@@ -76,16 +79,18 @@ view ((State { showMenu }) as state) viewData config =
         [ wrapperStyles ]
         ([ Html.div
             [ containerStyles
-              -- TODO : This is not pretty !
+
+            -- TODO : This is not pretty !
             , Events.onClick
                 (config.onScrollDown <| requestFocus state config)
             ]
             ([ searchView state viewData config ]
                 ++ (if List.length viewData.selectedItems > 0 then
-                    [ clearView state viewData config ]
-                   else
-                    [])
-                ++ [toggleView]
+                        [ clearView state viewData config ]
+                    else
+                        []
+                   )
+                ++ [ toggleView ]
             )
          ]
             ++ if showMenu then
@@ -103,48 +108,54 @@ searchView state viewData config =
             ++ [ searchInput state viewData config ]
         )
 
+
 clearView : State -> ViewData data -> Config data msg -> Html.Html msg
 clearView state viewData config =
     Html.div
         [ style
-            [ ("flex-grow", "0")
-            , ("flex-shrink", "0")
-            , ("display", "flex")
-            , ("align-items", "center")
-            , ("justify-content", "center")
-            , ("height", "30px")
+            [ ( "flex-grow", "0" )
+            , ( "flex-shrink", "0" )
+            , ( "display", "flex" )
+            , ( "align-items", "center" )
+            , ( "justify-content", "center" )
+            , ( "height", "30px" )
             ]
-        , Events.onClick (config.onRemoveSelected (viewData.selectedItems, Cmd.none) )
+        , Events.onClick (config.onRemoveSelected ( viewData.selectedItems, Cmd.none ))
         ]
         [ Html.button
             [ class "btn btn-sm btn-secondary"
-            , style [("border", "none")]
+            , style [ ( "border", "none" ) ]
             ]
-            [ Html.text "×"]
+            [ Html.text "×" ]
         ]
-        --[ Html.span [ style [("padding", "2px")]] [ Html.text "×"] ]
+
+
+
+--[ Html.span [ style [("padding", "2px")]] [ Html.text "×"] ]
+
 
 toggleView =
     Html.div
         [ style
-            [ ("flex-grow", "0")
-            , ("flex-shrink", "0")
-            , ("display", "flex")
-            , ("align-items", "center")
-            , ("justify-content", "center")
-            , ("height", "30px")
+            [ ( "flex-grow", "0" )
+            , ( "flex-shrink", "0" )
+            , ( "display", "flex" )
+            , ( "align-items", "center" )
+            , ( "justify-content", "center" )
+            , ( "height", "30px" )
             ]
         ]
         [ Html.img
             [ Html.Attributes.src "data:image/svg+xml;charset=utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 4 5'%3E%3Cpath fill='%23333' d='M2 0L0 2h4zm0 5L0 3h4z'/%3E%3C/svg%3E"
-            , style [("width", "8px")]
-{-             style
-                [("background", """#fff  no-repeat right 0.25rem top""")
-            , ("background-size", "8px 10px")] -}
+            , style [ ( "width", "8px" ) ]
+
+            {- style
+                   [("background", """#fff  no-repeat right 0.25rem top""")
+               , ("background-size", "8px 10px")]
+            -}
             ]
             []
         ]
-
 
 
 selectedValues : ViewData data -> Config data msg -> List (Html.Html msg)
@@ -169,17 +180,15 @@ selectValue { attributes, children } =
             )
             [ Html.button
                 [ class "btn btn-sm btn-outline-info"
-                , style [("border", "0px"), ("margin-top", "-4px")]
+                , style [ ( "border", "0px" ), ( "margin-top", "-4px" ) ]
                 ]
                 [ Html.text "×" ]
-
             , Html.span
                 [ style
                     [ ( "padding", "2px 4px 2px 2px" )
-                    , ( "font-family", "sans-serif")
+                    , ( "font-family", "sans-serif" )
                     ]
                 ]
-
                 children
             ]
         ]
@@ -213,7 +222,8 @@ searchInput ((State { containerWidth }) as state) ({ query } as viewData) config
             , onInput state config
             , onFocus state config.toMsg
             , onKeyDown state viewData config
-              --, Events.onBlur <| toMsg (State { stateRec | showMenu = False, activeId = Nothing }, requestFocus state config)
+
+            --, Events.onBlur <| toMsg (State { stateRec | showMenu = False, activeId = Nothing }, requestFocus state config)
             ]
             []
 
@@ -258,7 +268,7 @@ onKeyDown ((State stateRec) as state) viewData config =
                         Just item ->
                             let
                                 newState =
-                                    State { stateRec | activeId = 0 }
+                                    setActiveIdx 0 state
                             in
                                 Json.succeed <|
                                     config.onSelect
@@ -280,44 +290,39 @@ onKeyDown ((State stateRec) as state) viewData config =
                                     config.onScrollDown <|
                                         requestScrollDown
                                             (offsetHeight + offsetTop - info.menuHeight)
-                                            (State { stateRec | activeId = getNextIndex state viewData })
+                                            (setActiveIdx (getNextIndex state viewData) state)
                                             config
                             else
                                 Json.succeed <|
                                     config.toMsg <|
-                                        State { stateRec | activeId = getNextIndex state viewData }
+                                        (setActiveIdx (getNextIndex state viewData) state)
 
                         Nothing ->
                             Json.succeed <|
                                 config.onScrollDown <|
                                     requestScrollUp
                                         0
-                                        (State { stateRec | activeId = getNextIndex state viewData })
+                                        (setActiveIdx (getNextIndex state viewData) state)
                                         config
 
                 38 ->
                     case info.previousItem of
                         Just { offsetHeight, offsetTop } ->
                             Json.succeed <|
-                                    config.onScrollDown <|
-                                        requestScrollUp
-                                            offsetTop
-                                            (State { stateRec | activeId = getPreviousIndex state viewData })
-                                            config
-
+                                config.onScrollDown <|
+                                    requestScrollUp
+                                        offsetTop
+                                        (setActiveIdx (getPreviousIndex state viewData) state)
+                                        config
 
                         _ ->
                             Json.succeed <|
                                 config.onScrollDown <|
                                     requestScrollDown
                                         info.menuHeight
-                                        (State { stateRec | activeId = getPreviousIndex state viewData })
+                                        (setActiveIdx (getPreviousIndex state viewData) state)
                                         config
 
-                {- Json.succeed <|
-                   config.toMsg <|
-                       State { stateRec | activeId = getPreviousIndex state viewData }
-                -}
                 27 ->
                     Json.succeed <|
                         config.toMsg <|
@@ -329,7 +334,7 @@ onKeyDown ((State stateRec) as state) viewData config =
                             |> List.head
                             |> Maybe.map
                                 (\lastItem ->
-                                    Json.succeed (config.onRemoveSelected ( [lastItem], requestFocus state config ))
+                                    Json.succeed (config.onRemoveSelected ( [ lastItem ], requestFocus state config ))
                                 )
                             |> Maybe.withDefault (Json.fail "Whatever")
                     else
@@ -352,14 +357,13 @@ onKeyDown ((State stateRec) as state) viewData config =
             )
 
 
-
 type alias ScrollInfo =
     { keyCode : Int
     , menuHeight : Float
-    , currItem : Maybe ItemInfo
     , nextItem : Maybe ItemInfo
     , previousItem : Maybe ItemInfo
     }
+
 
 type alias ItemInfo =
     { offsetHeight : Float
@@ -369,17 +373,20 @@ type alias ItemInfo =
 
 keyDownDecoder : Int -> Json.Decoder ScrollInfo
 keyDownDecoder idx =
-    let menuPath =
-        [ "target", "parentElement", "parentElement", "parentElement", "childNodes", "1"]
+    let
+        menuPath =
+            [ "target", "parentElement", "parentElement", "parentElement", "childNodes", "1" ]
     in
-        Json.map5 ScrollInfo
+        Json.map4 ScrollInfo
             Events.keyCode
-            (Json.at (menuPath ++ ["offsetHeight"]) Json.float)
-            (Json.maybe <| Json.at (menuPath ++ ["childNodes", toString idx]) itemDecoder)
-            (Json.maybe <| Json.at (menuPath ++ ["childNodes", toString <| idx + 1]) itemDecoder)
-            (Json.maybe <| Json.at (menuPath ++ ["childNodes", toString <| idx - 1]) itemDecoder)
-            --(Json.at (menuPath ++ ["childNodes", toString <| idx + 1, "offsetHeight"]) Json.float)
-            --(Json.at (menuPath ++ ["childNodes", toString <| idx + 1, "offsetTop"]) Json.float)
+            (Json.at (menuPath ++ [ "offsetHeight" ]) Json.float)
+            (Json.maybe <| Json.at (menuPath ++ [ "childNodes", toString <| idx + 1 ]) itemDecoder)
+            (Json.maybe <| Json.at (menuPath ++ [ "childNodes", toString <| idx - 1 ]) itemDecoder)
+
+
+
+--(Json.at (menuPath ++ ["childNodes", toString <| idx + 1, "offsetHeight"]) Json.float)
+--(Json.at (menuPath ++ ["childNodes", toString <| idx + 1, "offsetTop"]) Json.float)
 
 
 itemDecoder : Json.Decoder ItemInfo
@@ -387,9 +394,6 @@ itemDecoder =
     Json.map2 ItemInfo
         (Json.field "offsetHeight" Json.float)
         (Json.field "offsetTop" Json.float)
-
-
-
 
 
 inputDecoder : Json.Decoder (Maybe Float)
@@ -404,7 +408,7 @@ menuView ((State { activeId }) as state) { availableItems } config =
         [ style
             [ ( "position", "absolute" )
             , ( "width", "100%" )
-            , ( "box-shadow", "3px 3px 3px #ccc")
+            , ( "box-shadow", "3px 3px 3px #ccc" )
             , ( "z-index", "2" )
             , ( "max-height", "400px" )
             , ( "display", "block" )
@@ -438,9 +442,9 @@ menuItem ((State stateRec) as state) ({ toMsg, onSelect, itemFn, idFn } as confi
                         ]
                    , href "#"
                    , Events.on "mouseenter" <|
-                             Json.succeed <|
-                                 toMsg <|
-                                     State { stateRec | activeId = idx }
+                        toMsgSuccess
+                            toMsg
+                            (setActiveIdx 0 state)
                    , Events.onWithOptions "click"
                         { preventDefault = True
                         , stopPropagation = False
@@ -450,6 +454,21 @@ menuItem ((State stateRec) as state) ({ toMsg, onSelect, itemFn, idFn } as confi
             )
             itemDetails.children
         )
+
+
+setActiveIdx : Int -> State -> State
+setActiveIdx idx (State state) =
+    State { state | activeId = idx }
+
+
+setShowMenu : Bool -> State -> State
+setShowMenu show (State state) =
+    State { state | showMenu = show }
+
+
+toMsgSuccess : (State -> msg) -> State -> Json.Decoder msg
+toMsgSuccess toMsg state =
+    toMsg state |> Json.succeed
 
 
 getActiveItem : State -> ViewData data -> Config data msg -> Maybe data
@@ -490,8 +509,10 @@ requestFocus state config =
 
 
 requestScrollDown : Float -> State -> Config data msg -> Cmd msg
-requestScrollDown scrollBy  state config =
-    let id = (config.id ++ "-menu")
+requestScrollDown scrollBy state config =
+    let
+        id =
+            (config.id ++ "-menu")
     in
         Scroll.y id
             |> Task.andThen
@@ -500,13 +521,15 @@ requestScrollDown scrollBy  state config =
                         Scroll.toY (config.id ++ "-menu") scrollBy
                     else
                         Task.succeed ()
-                    )
+                )
             |> Task.attempt (\_ -> config.toMsg state)
 
 
 requestScrollUp : Float -> State -> Config data msg -> Cmd msg
-requestScrollUp scrollBy  state config =
-    let id = (config.id ++ "-menu")
+requestScrollUp scrollBy state config =
+    let
+        id =
+            (config.id ++ "-menu")
     in
         Scroll.y id
             |> Task.andThen
@@ -515,7 +538,7 @@ requestScrollUp scrollBy  state config =
                         Scroll.toY (config.id ++ "-menu") scrollBy
                     else
                         Task.succeed ()
-                    )
+                )
             |> Task.attempt (\_ -> config.toMsg state)
 
 
@@ -566,7 +589,8 @@ inputStyles =
     , ( "border", "none" )
     , ( "outline", "none" )
     , ( "margin-left", "2px" )
-      --, ("padding", "4px 0")
+
+    --, ("padding", "4px 0")
     , ( "vertical-align", "middle" )
     , ( "box-sizing", "border-box" )
     , ( "min-width", "16px" )

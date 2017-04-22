@@ -210,7 +210,7 @@ update msg ({ accordionState } as model) =
             ( { model
                 | selectedArtists =
                     List.filter
-                        (\artist -> not <| List.member artist artists )
+                        (\artist -> not <| List.member artist artists)
                         model.selectedArtists
               }
             , cmd
@@ -298,19 +298,20 @@ mainContent : Model -> Html Msg
 mainContent model =
     div [ style [ ( "margin-top", "60px" ) ] ]
         [ navbar model
-          --div []
-          {- [ Autocomplete.view
-                 model.autocompleteState
-                 { toMsg = AutocompleteMsg
-                 , idFn = (\artist -> toString artist.id)
-                 , itemFn = (\artist -> {attributes = [], children = [ text artist.name ] })
-                 }
-                 artists
 
-             ]
-          -}
-        , h3 [ style [("padding-top", "20px")]] [ text "Artist multiselect" ]
-        , div [ style [ ( "width", "350px" ), ("margin-bottom", "100px") ] ]
+        --div []
+        {- [ Autocomplete.view
+               model.autocompleteState
+               { toMsg = AutocompleteMsg
+               , idFn = (\artist -> toString artist.id)
+               , itemFn = (\artist -> {attributes = [], children = [ text artist.name ] })
+               }
+               artists
+
+           ]
+        -}
+        , h3 [ style [ ( "padding-top", "20px" ) ] ] [ text "Artist multiselect" ]
+        , div [ style [ ( "width", "350px" ), ( "margin-bottom", "100px" ) ] ]
             [ Autoselect.view
                 model.autoselectState
                 { query = model.artistQuery
