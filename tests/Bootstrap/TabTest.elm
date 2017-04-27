@@ -48,7 +48,7 @@ simpleTabs =
         nav =
             html
                 |> Query.fromHtml
-                |> Query.find [ class "nav" ]
+                |> Query.find [ class "nav", class "nav-tabs" ]
 
         content =
             html
