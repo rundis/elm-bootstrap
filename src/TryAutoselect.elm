@@ -1,10 +1,10 @@
 module TryAutoselect2 exposing (main)
 
 import Html exposing (..)
+import Html.Attributes exposing (..)
 import Bootstrap.CDN
 import Bootstrap.Grid as Grid
-import Bootstrap.Grid.Col as Col
-import Bootstrap.Form.Autoselect2 as Autoselect
+import Bootstrap.Form.Autoselect as Autoselect
 
 
 type alias Model =
@@ -26,7 +26,7 @@ main =
         { init = init
         , update = update
         , view = view
-        , subscriptions = \_ -> Sub.none
+        , subscriptions = subscriptions
         }
 
 
@@ -46,13 +46,17 @@ init =
     )
 
 
+subscriptions model =
+    Autoselect.subscriptions model.autoState AutoMsg
+
+
 autoUpdateConfig =
     Autoselect.updateConfig
         { toMsg = AutoMsg
-        , onInput = \q -> Just <| SetQuery q
-        , onSelect = \id -> Just <| Select id
-        , onRemoveSelected = \id -> Just <| RemoveSelected id
-        , onRemoveAllSelected = Just RemoveAllSelected
+        , onInput = \q -> SetQuery q
+        , onSelect = \id -> Select id
+        , onRemoveSelected = \id -> RemoveSelected id
+        , onRemoveAllSelected = RemoveAllSelected
         }
 
 
@@ -61,13 +65,13 @@ update msg model =
     case (Debug.log "Msg: " msg) of
         AutoMsg subMsg ->
             let
-                ( autoState, autoMsg, autoCmd ) =
+                ( autoState, selfMsg, autoCmd ) =
                     Autoselect.update subMsg model.autoState autoUpdateConfig
 
                 newModel =
                     { model | autoState = autoState }
             in
-                case autoMsg of
+                case selfMsg of
                     Just updateMsg ->
                         let
                             ( updModel, updCmd ) =
@@ -99,24 +103,29 @@ update msg model =
             )
 
 
+
+
 view : Model -> Html Msg
 view model =
     Grid.container []
         [ Bootstrap.CDN.stylesheet
         , h1 [] [ text "Artist autocomplete" ]
-        , Autoselect.viewConfig
-            { toMsg = AutoMsg
-            , inputId = "artist-query"
-            , idFn = (\artist -> toString artist.id)
-            , itemFn = (\artist -> { attributes = [], children = [ Html.text artist.name ] })
-            , selectedFn = (\artist -> { attributes = [], children = [ Html.text artist.name ] })
-            }
-            |> Autoselect.view
-                model.autoState
-                { query = model.query
-                , selectedItems = model.selectedArtists
-                , availableItems = filterArtists model
+        , div [ style [("width", "300px")]]
+            [ Autoselect.viewConfig
+                { toMsg = AutoMsg
+                , inputId = "artist-query"
+                , idFn = (\artist -> toString artist.id)
+                , itemFn = (\artist -> { attributes = [], children = [ Html.text artist.name ] })
+                , selectedFn = (\artist -> { attributes = [], children = [ Html.text artist.name ] })
                 }
+                |> Autoselect.view
+                    model.autoState
+                    { query = model.query
+                    , selectedItems = model.selectedArtists
+                    , availableItems = filterArtists model
+                    }
+            ]
+        , p [] [ text "Some other content"]
         ]
 
 

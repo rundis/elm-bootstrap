@@ -28,8 +28,6 @@ import Html.Events exposing (..)
 import Color
 import Bootstrap.Grid.Col as Col
 import Bootstrap.Grid.Row as Row
-import Bootstrap.Form.Autocomplete as Autocomplete
-import Bootstrap.Form.Autoselect as Autoselect
 
 
 main : Program Never Model Msg
@@ -55,10 +53,7 @@ type alias Model =
     , popoverStateRight : Popover.State
     , popoverStateTop : Popover.State
     , popoverStateBottom : Popover.State
-    , autocompleteState : Autocomplete.State
-    , autoselectState : Autoselect.State
-    , artistQuery : String
-    , selectedArtists : List Artist
+
     }
 
 
@@ -80,10 +75,6 @@ init =
           , popoverStateRight = Popover.initialState
           , popoverStateBottom = Popover.initialState
           , popoverStateTop = Popover.initialState
-          , autocompleteState = Autocomplete.initialState
-          , autoselectState = Autoselect.initialState
-          , artistQuery = ""
-          , selectedArtists = List.filter (\{ id } -> id == 1 || id == 5) artists
           }
         , navbarCmd
         )
@@ -106,13 +97,6 @@ type Msg
     | TogglePopoverRightMsg Popover.State
     | TogglePopoverBottomMsg Popover.State
     | TogglePopoverTopMsg Popover.State
-    | AutocompleteMsg Autocomplete.State
-    | AutoselectMsg Autoselect.State
-    | SetArtistQuery ( String, Cmd Msg )
-    | SelectArtist ( Artist, Cmd Msg )
-    | RemoveSelectedArtists ( List Artist, Cmd Msg )
-    | ScrollArtistsDown (Cmd Msg)
-    | ScrollArtistsUp (Cmd Msg)
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -186,41 +170,6 @@ update msg ({ accordionState } as model) =
             , Cmd.none
             )
 
-        AutocompleteMsg state ->
-            ( { model | autocompleteState = state }
-            , Cmd.none
-            )
-
-        AutoselectMsg state ->
-            ( { model | autoselectState = state }
-            , Cmd.none
-            )
-
-        SetArtistQuery ( query, cmd ) ->
-            ( { model | artistQuery = query }
-            , cmd
-            )
-
-        SelectArtist ( artist, cmd ) ->
-            ( { model | selectedArtists = model.selectedArtists ++ [ artist ], artistQuery = "" }
-            , cmd
-            )
-
-        RemoveSelectedArtists ( artists, cmd ) ->
-            ( { model
-                | selectedArtists =
-                    List.filter
-                        (\artist -> not <| List.member artist artists)
-                        model.selectedArtists
-              }
-            , cmd
-            )
-
-        ScrollArtistsDown cmd ->
-            ( model, cmd )
-
-        ScrollArtistsUp cmd ->
-            ( model, cmd )
 
 
 subscriptions : Model -> Sub Msg
@@ -268,68 +217,12 @@ type alias Artist =
     }
 
 
-artists =
-    [ Artist 1 "Machinehead"
-    , Artist 2 "Metallica"
-    , Artist 3 "Megadeth"
-    , Artist 4 "Sepultura"
-    , Artist 5 "ZZ Top"
-    , Artist 6 "Lamb of God"
-    , Artist 7 "Pantera"
-    , Artist 8 "Crowbar"
-    , Artist 9 "Katatonia"
-    , Artist 10 "Opeth"
-    , Artist 11 "Slayer"
-    , Artist 12 "Soundgarden"
-    , Artist 13 "Nirvana"
-    , Artist 14 "Anathema"
-    , Artist 15 "Rush"
-    ]
-
-
-filterArtists : Model -> List Artist
-filterArtists { artistQuery, selectedArtists } =
-    List.filter (\a -> not <| List.member a.id (List.map .id selectedArtists)) artists
-        |> List.filter (\a -> String.contains (String.toLower artistQuery) (String.toLower a.name))
-        |> List.sortBy .name
 
 
 mainContent : Model -> Html Msg
 mainContent model =
     div [ style [ ( "margin-top", "60px" ) ] ]
         [ navbar model
-
-        --div []
-        {- [ Autocomplete.view
-               model.autocompleteState
-               { toMsg = AutocompleteMsg
-               , idFn = (\artist -> toString artist.id)
-               , itemFn = (\artist -> {attributes = [], children = [ text artist.name ] })
-               }
-               artists
-
-           ]
-        -}
-        , h3 [ style [ ( "padding-top", "20px" ) ] ] [ text "Artist multiselect" ]
-        , div [ style [ ( "width", "350px" ), ( "margin-bottom", "100px" ) ] ]
-            [ Autoselect.view
-                model.autoselectState
-                { query = model.artistQuery
-                , availableItems = filterArtists model
-                , selectedItems = model.selectedArtists
-                }
-                { id = "artist-autoselect"
-                , toMsg = AutoselectMsg
-                , onInput = SetArtistQuery
-                , onSelect = SelectArtist
-                , onRemoveSelected = RemoveSelectedArtists
-                , onFocused = NoOp
-                , onScrollDown = ScrollArtistsDown
-                , idFn = (\artist -> toString artist.id)
-                , itemFn = (\artist -> { attributes = [], children = [ text artist.name ] })
-                , selectedFn = (\artist -> { attributes = [], children = [ text artist.name ] })
-                }
-            ]
         , simpleForm
         , gridForm
         , div []
