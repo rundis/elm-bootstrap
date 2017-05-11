@@ -7,6 +7,7 @@ import Bootstrap.ButtonGroupTest as ButtonGroupTest
 import Bootstrap.CardTest as CardTest
 import Bootstrap.DropdownTest as DropdownTest
 import Bootstrap.ListGroupTest as ListGroupTest
+import Bootstrap.TabTest as TabTest
 import Bootstrap.TableTest as TableTest
 import Bootstrap.ProgressTest as ProgressTest
 import Test exposing (..)
@@ -24,6 +25,7 @@ all =
         , CardTest.all
         , DropdownTest.all
         , ListGroupTest.all
+        , TabTest.all
         , TableTest.all
         , ProgressTest.all
         ]
