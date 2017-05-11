@@ -70,7 +70,6 @@ type alias Options msg =
 
     Select.select
         [ Select.id "myselect"
-        , Select.value "1"
         , Select.onInput MySelectMsg
         ]
         [ Select.item [ id "1"] [ text "Item 1" ]
