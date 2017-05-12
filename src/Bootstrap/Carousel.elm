@@ -10,7 +10,7 @@ module Bootstrap.Carousel
         , update
         , view
         , subscriptions
-        , Cycling(..)
+        , Cycling
         , config
         , slides
         , withControls
