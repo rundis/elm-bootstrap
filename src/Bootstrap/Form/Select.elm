@@ -7,7 +7,7 @@ module Bootstrap.Form.Select
         , small
         , large
         , disabled
-        , onInput
+        , onChange
         , attrs
         , Option
         , Item
@@ -20,13 +20,14 @@ module Bootstrap.Form.Select
 @docs select, custom, item, Item
 
 # Options
-@docs id, small, large, id, disabled, onInput, attrs, Option
+@docs id, small, large, id, disabled, onChange, attrs, Option
 
 -}
 
 import Html
 import Html.Attributes as Attributes
 import Html.Events as Events
+import Json.Decode as Json
 import Bootstrap.Grid.Internal as GridInternal
 
 
@@ -52,7 +53,7 @@ type Option msg
     | Id String
     | Custom
     | Disabled Bool
-    | OnInput (String -> msg)
+    | OnChange (String -> msg)
     | Attrs (List (Html.Attribute msg))
 
 
@@ -61,7 +62,7 @@ type alias Options msg =
     , size : Maybe GridInternal.ScreenSize
     , disabled : Bool
     , custom : Bool
-    , onInput : Maybe (String -> msg)
+    , onChange : Maybe (String -> msg)
     , attributes : List (Html.Attribute msg)
     }
 
@@ -70,7 +71,7 @@ type alias Options msg =
 
     Select.select
         [ Select.id "myselect"
-        , Select.onInput MySelectMsg
+        , Select.onChange MySelectMsg
         ]
         [ Select.item [ id "1"] [ text "Item 1" ]
         , Select.item [ id "2"] [ text "Item 2" ]
@@ -139,11 +140,15 @@ attrs attrs =
     Attrs attrs
 
 
-{-| Shorthand for assigning an onInput handler for a select
+{-| Shorthand for assigning an onChange handler for a select
 -}
-onInput : (String -> msg) -> Option msg
-onInput toMsg =
-    OnInput toMsg
+onChange : (String -> msg) -> Option msg
+onChange toMsg =
+    OnChange toMsg
+
+customEventOnChange : (String -> msg) -> Html.Attribute msg
+customEventOnChange tagger =
+  Events.on "change" (Json.map tagger Events.targetValue)
 
 
 {-| Shorthand for setting the disabled attribute of a select
@@ -167,7 +172,7 @@ toAttributes modifiers =
         ]
             ++ ([ Maybe.map Attributes.id options.id
                 , Maybe.andThen sizeAttribute options.size
-                , Maybe.map Events.onInput options.onInput
+                , Maybe.map customEventOnChange options.onChange
                 ]
                     |> List.filterMap identity
                )
@@ -180,7 +185,7 @@ defaultOptions =
     , size = Nothing
     , custom = False
     , disabled = False
-    , onInput = Nothing
+    , onChange = Nothing
     , attributes = []
     }
 
@@ -200,8 +205,8 @@ applyModifier modifier options =
         Disabled val ->
             { options | disabled = val }
 
-        OnInput onInput ->
-            { options | onInput = Just onInput }
+        OnChange onChange ->
+            { options | onChange = Just onChange }
 
         Attrs attrs ->
             { options | attributes = options.attributes ++ attrs }
