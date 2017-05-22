@@ -73,8 +73,8 @@ type alias Options msg =
         [ Select.id "myselect"
         , Select.onChange MySelectMsg
         ]
-        [ Select.item [ id "1"] [ text "Item 1" ]
-        , Select.item [ id "2"] [ text "Item 2" ]
+        [ Select.item [ value "1"] [ text "Item 1" ]
+        , Select.item [ value "2"] [ text "Item 2" ]
         ]
 
 -}
