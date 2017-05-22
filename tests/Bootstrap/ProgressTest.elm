@@ -46,7 +46,7 @@ vanillaProgress =
                             [ attribute "aria-valuemin" "0"
                             , attribute "aria-valuemax" "100"
                             ]
-            , fuzz (Fuzz.intRange 0 100) "expect the progress value is present" <|
+            , fuzz (Fuzz.floatRange 0 100) "expect the progress value is present" <|
                 \progressValue ->
                     Progress.progress [ Progress.value progressValue ]
                         |> Query.fromHtml
@@ -78,7 +78,7 @@ progressMulti =
 options : Test
 options =
     describe "Progress option values"
-        [ fuzz (Fuzz.intRange 0 100) "expect the progress value" <|
+        [ fuzz (Fuzz.floatRange 0 100) "expect the progress value" <|
             \progressValue ->
                 Progress.progress [ Progress.value progressValue ]
                     |> Query.fromHtml

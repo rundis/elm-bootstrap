@@ -40,7 +40,7 @@ import Html.Attributes as Attributes exposing (class, classList, style, attribut
 {-| Opaque type representing available display options for the progress bar
 -}
 type Option msg
-    = Value Int
+    = Value Float
     | Height (Maybe Int)
     | Label (List (Html.Html msg))
     | Roled (Maybe Role)
@@ -58,7 +58,7 @@ type Role
 
 type Options msg
     = Options
-        { value : Int
+        { value : Float
         , height : Maybe Int
         , label : List (Html msg)
         , role : Maybe Role
@@ -114,7 +114,7 @@ renderBar modifiers =
 
 {-| Option to specify the progress amount for a bar in percent. Should be a value between 0 and 100
 -}
-value : Int -> Option msg
+value : Float -> Option msg
 value val =
     Value val
 
