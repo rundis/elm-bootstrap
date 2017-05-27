@@ -12,10 +12,6 @@ import Test.Html.Selector exposing (text, tag, class, classes, attribute)
 import Expect
 
 
-{-| @ltignore -}
-all : Test
-all =
-    Test.concat [ dropDown, splitDropDown ]
 
 
 state : Dropdown.State

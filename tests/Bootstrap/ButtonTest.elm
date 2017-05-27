@@ -10,17 +10,6 @@ import Test.Html.Selector exposing (text, tag, class, classes, attribute)
 
 
 
-{-| @ltignore -}
-all : Test
-all =
-    Test.concat
-        [ vanillaButton
-        , linkButton
-        , roledButtons
-        , outlinedButtons
-        ]
-
-
 
 vanillaButton : Test
 vanillaButton =

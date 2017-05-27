@@ -8,17 +8,6 @@ import Test.Html.Query as Query
 import Test.Html.Selector exposing (text, tag, class, classes, attribute, checked)
 
 
-all : Test
-all =
-    Test.concat
-        [ simpleGroup
-        , groupWithOptions
-        , linkGroup
-        , checkGroup
-        , radioGroup
-        , toolbar
-        ]
-
 
 simpleGroup : Test
 simpleGroup =

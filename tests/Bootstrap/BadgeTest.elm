@@ -9,10 +9,6 @@ import Test.Html.Query as Query
 import Test.Html.Selector exposing (text, tag, classes)
 
 
-{-| @ltignore -}
-all : Test
-all =
-    Test.concat [simpleBadge, simplePill, badgeWithOptions, pillWithOptions]
 
 
 simpleBadge : Test

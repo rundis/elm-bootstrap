@@ -10,11 +10,6 @@ import Test.Html.Query as Query
 import Test.Html.Selector exposing (text, tag, class, classes)
 
 
-{-| @ltignore -}
-all : Test
-all =
-    Test.concat [simpleAlerts, alertWithLink, alertWithHeaders]
-
 
 
 simpleAlerts : Test

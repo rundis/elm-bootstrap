@@ -12,19 +12,6 @@ import Test.Html.Selector exposing (text, tag, class, classes, attribute)
 
 
 
-{-| @ltignore -}
-all : Test
-all =
-    Test.concat
-        [ emptySimpleCard
-        , notSoSimpleCard
-        , cardFullMonty
-        , group
-        , deck
-        , columns
-        ]
-
-
 emptySimpleCard : Test
 emptySimpleCard =
     let
@@ -200,7 +187,7 @@ columns =
         html =
             Card.columns <| cardList 3
     in
-        describe "Card with everything in it"
+        describe "Card columns with everything in it"
             [ test "expect classes" <|
                 \() ->
                     html

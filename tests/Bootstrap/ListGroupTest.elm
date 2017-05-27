@@ -9,18 +9,8 @@ import Test.Html.Query as Query
 import Test.Html.Selector as Selector exposing (tag, class, classes, attribute, disabled)
 
 
-{-| @ltignore
--}
-all : Test
-all =
-    Test.concat
-        [ vanillaListGroup
-        , contextualListGroup
-        , customListGroup
-        , contextualListGroup
-        ]
 
-
+vanillaListGroup : Test
 vanillaListGroup =
     let
         items =

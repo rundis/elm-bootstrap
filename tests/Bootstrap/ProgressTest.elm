@@ -10,16 +10,6 @@ import Test.Html.Query as Query
 import Test.Html.Selector exposing (text, tag, class, classes, attribute)
 
 
-{-| @ltignore
--}
-all : Test
-all =
-    Test.concat
-        [ vanillaProgress
-        , progressMulti
-        , options
-        ]
-
 
 vanillaProgress : Test
 vanillaProgress =
@@ -92,12 +82,9 @@ options =
             \label ->
                 Progress.progress [ Progress.label label ]
                     |> Query.fromHtml
-                    |> Query.has [ text (toString label) ]
-                    -- hack to say `Query.hasNot`, see https://github.com/eeue56/elm-html-test/issues/8
-                    -- |> Query.hasNot [ text (toString label) ]
-                    |>
-                        Expect.getFailure
-                    |> Expect.notEqual Nothing
+                    --|> Query.has [ text (toString label) ]
+                    |> Query.hasNot [ text (toString label) ]
+
         , test "expect a custom label" <|
             \() ->
                 Progress.progress [ Progress.customLabel [ Html.div [ Attr.class "custom-label" ] [] ] ]

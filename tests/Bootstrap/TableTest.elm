@@ -10,19 +10,6 @@ import Test.Html.Query as Query
 import Test.Html.Selector exposing (text, tag, class, classes, attribute)
 
 
-{-| @ltignore
--}
-all : Test
-all =
-    Test.concat
-        [ superSimple
-        , styledTable
-        , reflowedTable
-        , styledThead
-        , styledTdOrRowInBody
-        , styledThOrRowInHead
-        ]
-
 
 
 superSimple : Test
@@ -187,7 +174,7 @@ styledTdOrRowInBody =
                         ]
                 }
     in
-        describe "Styled cell "
+        describe "Styled cell in body "
             [ test "expect td active class and custom attribute" <|
                 \() ->
                     html []
@@ -242,7 +229,7 @@ styledThOrRowInHead =
                         [ Table.tr [] [ Table.td [] [] ] ]
                 }
     in
-        describe "Styled cell "
+        describe "Styled cell in head"
             [ test "expect th active class" <|
                 \() ->
                     html [] []
