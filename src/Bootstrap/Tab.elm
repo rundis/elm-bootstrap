@@ -56,11 +56,13 @@ module Bootstrap.Tab
             |> Tab.right
             |> Tab.items
                 [ Tab.item
-                    { link = Tab.link [] [ text "Tab 1" ]
+                    { id = "tabItem1"
+                    , link = Tab.link [] [ text "Tab 1" ]
                     , pane = Tab.pane [] [ text "Tab 1 Content" ]
                     }
                 , Tab.item
-                    { link = Tab.link [] [ text "Tab 2" ]
+                    { id = "tabItem2"
+                    , link = Tab.link [] [ text "Tab 2" ]
                     , pane = Tab.pane [] [ text "Tab 2 Content" ]
                     }
                 ]
@@ -92,7 +94,7 @@ module Bootstrap.Tab
 
 import AnimationFrame as AnimationFrame
 import Html
-import Html.Attributes exposing (class, classList, href, style)
+import Html.Attributes as Attributes exposing (class, classList, href, style)
 import Html.Events exposing (onWithOptions, on)
 import Json.Decode as Json
 
@@ -101,7 +103,7 @@ import Json.Decode as Json
 -}
 type State
     = State
-        { activeTab : Int
+        { activeTab : Maybe String
         , visibility : Visibility
         }
 
@@ -158,7 +160,8 @@ type Config msg
 -}
 type Item msg
     = Item
-        { link : Link msg
+        { id : String
+        , link : Link msg
         , pane : Pane msg
         }
 
@@ -205,17 +208,20 @@ subscriptions (State state) toMsg =
 -}
 initialState : State
 initialState =
-    customInitialState 0
+    State
+        { activeTab = Nothing
+        , visibility = Showing
+        }
 
 
 {-| Use this function if you want to initialize your tabs control with a specific tab selected.
 
-**NOTE: ** Should you specify an index out of range, the first tab item will be displayd by default
+**NOTE: ** Should you specify an id not found, the first tab item will be displayd by default
 -}
-customInitialState : Int -> State
-customInitialState idx =
+customInitialState : String -> State
+customInitialState id =
     State
-        { activeTab = idx
+        { activeTab = Just id
         , visibility = Showing
         }
 
@@ -307,52 +313,72 @@ attrs attrs (Config config) =
         |> Tab.right
         |> Tab.items
             [ Tab.item
-                { link = Tab.link [] [ text "Tab 1" ]
+                { id = "tabItem1"
+                , link = Tab.link [] [ text "Tab 1" ]
                 , pane = Tab.pane [] [ text "Tab 1 Content" ]
                 }
             , Tab.item
-                { link = Tab.link [] [ text "Tab 2" ]
+                { id = "tabItem2"
+                , link = Tab.link [] [ text "Tab 2" ]
                 , pane = Tab.pane [] [ text "Tab 2 Content" ]
                 }
             ]
         |> Tab.view model.tabState
 -}
 view : State -> Config msg -> Html.Html msg
-view ((State { activeTab }) as state) ((Config { items }) as config) =
-    let
-        activeIdx =
-            if activeTab > List.length items then
-                0
-            else
-                max activeTab 0
-    in
-        Html.div []
-            [ Html.ul
-                (tabAttributes config)
-                (List.indexedMap
-                    (\idx (Item { link }) ->
-                        renderLink idx (idx == activeIdx) config link
+view state ((Config { items }) as config) =
+    case (getActiveItem state config) of
+        Nothing ->
+            Html.div []
+                [ Html.ul (tabAttributes config) []
+                , Html.div [ class "tab-content" ] []
+                ]
+
+        Just (Item currentItem) ->
+            Html.div []
+                [ Html.ul
+                    (tabAttributes config)
+                    (List.map
+                        (\(Item { id, link }) -> renderLink id (id == currentItem.id) link config)
+                        items
                     )
-                    items
-                )
-            , Html.div
-                [ class "tab-content" ]
-                (List.indexedMap
-                    (\idx (Item { pane }) ->
-                        renderTabPane (idx == activeIdx) pane state config
+                , Html.div
+                    [ class "tab-content" ]
+                    (List.map
+                        (\(Item { id, pane }) ->
+                            renderTabPane id (id == currentItem.id) pane state config
+                        )
+                        items
                     )
-                    items
-                )
-            ]
+                ]
+
+
+getActiveItem : State -> Config msg -> Maybe (Item msg)
+getActiveItem (State { activeTab }) (Config { items }) =
+    case activeTab of
+        Nothing ->
+            List.head items
+
+        Just id ->
+            List.filter (\(Item item) -> item.id == id) items
+                |> List.head
+                |> (\found ->
+                        case found of
+                            Just f ->
+                                Just f
+
+                            Nothing ->
+                                List.head items
+                   )
 
 
 renderLink :
-    Int
+    String
     -> Bool
-    -> Config msg
     -> Link msg
+    -> Config msg
     -> Html.Html msg
-renderLink idx active (Config { toMsg, withAnimation }) (Link { attributes, children }) =
+renderLink id active (Link { attributes, children }) (Config { toMsg, withAnimation }) =
     Html.li
         [ class "nav-item" ]
         [ Html.a
@@ -360,17 +386,17 @@ renderLink idx active (Config { toMsg, withAnimation }) (Link { attributes, chil
                 [ ( "nav-link", True )
                 , ( "active", active )
                 ]
-             , href "#"
+             , href <| "#" ++ id
              , onWithOptions
                 "click"
                 { stopPropagation = False
-                , preventDefault = True
+                , preventDefault = active
                 }
                <|
                 Json.succeed <|
                     toMsg <|
                         State
-                            { activeTab = idx
+                            { activeTab = Just id
                             , visibility = visibilityTransition (withAnimation && not active) Hidden
                             }
              ]
@@ -381,12 +407,13 @@ renderLink idx active (Config { toMsg, withAnimation }) (Link { attributes, chil
 
 
 renderTabPane :
-    Bool
+    String
+    -> Bool
     -> Pane msg
     -> State
     -> Config msg
     -> Html.Html msg
-renderTabPane active (Pane { attributes, children }) state config =
+renderTabPane id active (Pane { attributes, children }) state config =
     let
         displayAttrs =
             if active then
@@ -395,7 +422,7 @@ renderTabPane active (Pane { attributes, children }) state config =
                 [ style [ ( "display", "none" ) ] ]
     in
         Html.div
-            ([ class "tab-pane" ] ++ displayAttrs ++ attributes)
+            ([ Attributes.id id, class "tab-pane" ] ++ displayAttrs ++ attributes)
             children
 
 
@@ -487,17 +514,20 @@ applyModifier option options =
 
 {-| Create a composable tab item
 
+* `id` A unique id for the tab item
 * `link` The link/menu for the tab item
 * `pane` The content part of a tab item
 -}
 item :
-    { link : Link msg
+    { id : String
+    , link : Link msg
     , pane : Pane msg
     }
     -> Item msg
-item { link, pane } =
+item { id, link, pane } =
     Item
-        { link = link
+        { id = id
+        , link = link
         , pane = pane
         }
 

@@ -27,7 +27,8 @@ simpleTabs =
             Tab.config (\_ -> ())
                 |> Tab.items
                     [ Tab.item
-                        { link = Tab.link [] [ text "Tab 1" ]
+                        { id = "tabItem1"
+                        , link = Tab.link [] [ text "Tab 1" ]
                         , pane =
                             Tab.pane [ Attributes.class "mt-3" ]
                                 [ h4 [] [ text "Tab 1 Heading" ]
@@ -35,7 +36,8 @@ simpleTabs =
                                 ]
                         }
                     , Tab.item
-                        { link = Tab.link [] [ text "Tab 2" ]
+                        { id = "tabItem2"
+                        , link = Tab.link [] [ text "Tab 2" ]
                         , pane =
                             Tab.pane [ Attributes.class "mt-3" ]
                                 [ h4 [] [ text "Tab 2 Heading" ]
@@ -48,7 +50,7 @@ simpleTabs =
         nav =
             html
                 |> Query.fromHtml
-                |> Query.find [ class "nav", class "nav-tabs" ]
+                |> Query.find [ classes ["nav", "nav-tabs"] ]
 
         content =
             html
@@ -62,11 +64,12 @@ simpleTabs =
                         nav
                             |> Query.findAll [ class "nav-item" ]
                             |> Query.count (Expect.equal 2)
-                , test "Expect links to have href='#'" <|
+                , test "Expect item1 to have href='#tabItem1'" <|
                     \() ->
                         nav
                             |> Query.findAll [ tag "a" ]
-                            |> Query.each (Query.has [ attribute "href" "#" ])
+                            |> Query.index 0
+                            |> Query.has [ attribute "href" "#tabItem1" ]
                 , test "Expect links to have children" <|
                     \() ->
                         nav
@@ -92,10 +95,18 @@ simpleTabs =
                             |> Query.index 0
                             |> Query.find [ tag "h4" ]
                             |> Query.has [ Selector.text "Tab 1 Heading" ]
+
+                {-, test "Expect pane to have id attribute" <|
+                    \() ->
+                        content
+                            |> Query.findAll [ class "tab-pane" ]
+                            |> Query.index 0
+                            |> Query.has [attribute "id" "tabItem1"] -}
                 ]
             ]
 
 
+pillsAndAttributes : Test
 pillsAndAttributes =
     let
         html =
@@ -120,6 +131,7 @@ pillsAndAttributes =
             ]
 
 
+horizontalAlignment : Test
 horizontalAlignment =
     let
         html alignment =
