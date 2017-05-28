@@ -62,7 +62,7 @@ type alias StateSettings =
     { currentIndex : Int
     , cycling : Cycling
     , interval : Int
-    , hovered : Maybe Bool
+    , hovering : Hovering
     , keyboard : Bool
     , wrap : Bool
     , size : Int
@@ -99,6 +99,12 @@ type Cycling
     = Paused
     | Active
     | WaitForUser
+
+
+type Hovering
+    = Hovered
+    | NotHovered
+    | IgnoreHover
 
 
 
@@ -146,11 +152,11 @@ initialStateWithOptions options =
         { currentIndex = options.startIndex
         , interval = Maybe.withDefault 0 options.interval
         , cycling = options.cycling
-        , hovered =
+        , hovering =
             if options.pauseOnHover then
-                Just False
+                NotHovered
             else
-                Nothing
+                IgnoreHover
         , keyboard = options.keyboard
         , wrap = options.wrap
         , size = 2
@@ -176,31 +182,22 @@ initialState =
 subscriptions : State -> (Msg -> msg) -> Sub msg
 subscriptions model toMsg =
     case model of
-        State NotAnimating settings ->
+        State NotAnimating {interval, cycling, wrap, currentIndex, hovering, size} ->
             -- when conditions are satisfied, automatically cycle to the next slide
             let
-                interval =
-                    settings.interval
-
-                active =
-                    settings.cycling == Active
-
                 atEnd =
-                    not settings.wrap && settings.currentIndex == settings.size - 1
-
-                notHovered =
-                    settings.hovered == Just False
+                    not wrap && currentIndex == size - 1
             in
-                if active && notHovered && interval /= 0 && not atEnd then
+                if cycling == Active && hovering /= Hovered && interval /= 0 && not atEnd then
                     Time.every (toFloat interval * Time.millisecond) (\_ -> toMsg <| StartTransition Next)
                 else
                     Sub.none
 
-        State (Start transition) settings ->
+        State (Start transition) _ ->
             -- request an animation frame to trigger the start of css transitions
             AnimationFrame.times (\_ -> toMsg SetAnimating)
 
-        State (Animating transition) settings ->
+        State (Animating transition) _ ->
             -- don't trigger new animations when already animating
             Sub.none
 
@@ -217,7 +214,7 @@ type Msg
     | StartTransition Transition
     | SetAnimating
     | EndTransition Int
-    | SetHover Bool
+    | SetHover Hovering
 
 
 {-| Update the carousel
@@ -234,7 +231,7 @@ Typically called from your main update function
 
 -}
 update : Msg -> State -> State
-update message ((State tstage ({ currentIndex, hovered, size } as settings)) as model) =
+update message ((State tstage ({ currentIndex, size } as settings)) as model) =
     case message of
         Pause ->
             State tstage { settings | cycling = Paused }
@@ -242,8 +239,8 @@ update message ((State tstage ({ currentIndex, hovered, size } as settings)) as 
         Cycle ->
             State tstage { settings | cycling = Active }
 
-        SetHover isHovered ->
-            State tstage { settings | hovered = Maybe.map (\_ -> isHovered) hovered }
+        SetHover hovering ->
+            State tstage { settings | hovering = hovering }
 
         StartTransition transition ->
             let
@@ -438,7 +435,7 @@ withControls (Config settings) =
 * `config` The configuration for the display of the carousel
 -}
 view : State -> Config msg -> Html.Html msg
-view ((State tstage { currentIndex, wrap }) as model) (Config settings) =
+view ((State tstage { hovering, currentIndex, wrap }) as model) (Config settings) =
     let
         size =
             List.length settings.slides
@@ -468,10 +465,14 @@ view ((State tstage { currentIndex, wrap }) as model) (Config settings) =
             [ class "carousel slide"
               -- catch the transitionend event, to end an ongoing transition
             , on "transitionend" (Decode.succeed (settings.toMsg (EndTransition size)))
-              -- catch mouse events, to pause on hover
-            , onMouseEnter (settings.toMsg <| SetHover True)
-            , onMouseLeave (settings.toMsg <| SetHover False)
             ]
+                ++ (if hovering /= IgnoreHover then
+                        [ onMouseEnter (settings.toMsg <| SetHover Hovered)
+                        , onMouseLeave (settings.toMsg <| SetHover NotHovered)
+                        ]
+                    else
+                        []
+                   )
     in
         div (settings.attributes ++ defaultCarouselAttributes)
             (slidesHtml
