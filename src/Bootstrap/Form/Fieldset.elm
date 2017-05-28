@@ -119,7 +119,6 @@ of several optional elements.
                 ]
             )
         |> Fieldset.view
-* config - See [`Config`](#Config) for what items you may compose your cards with
 -}
 view : Config msg -> Html.Html msg
 view (Config { options, legend, children }) =
