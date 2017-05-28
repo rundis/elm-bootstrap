@@ -227,7 +227,6 @@ alignMenuRight =
     AlignMenuRight
 
 
-
 {-| Use this function when you need the customize the Dropdown root div with additional Html.Attribute (s).
 -}
 attrs : List (Html.Attribute msg) -> DropdownOption msg

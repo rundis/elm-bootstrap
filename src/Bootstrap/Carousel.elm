@@ -182,7 +182,7 @@ initialState =
 subscriptions : State -> (Msg -> msg) -> Sub msg
 subscriptions model toMsg =
     case model of
-        State NotAnimating {interval, cycling, wrap, currentIndex, hovering, size} ->
+        State NotAnimating { interval, cycling, wrap, currentIndex, hovering, size } ->
             -- when conditions are satisfied, automatically cycle to the next slide
             let
                 atEnd =

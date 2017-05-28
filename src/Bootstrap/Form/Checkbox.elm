@@ -152,8 +152,7 @@ view (Checkbox chk) =
                     [ Attributes.class "form-check-label" ]
                     [ Html.input (toAttributes opts) []
                     , Html.text <| " " ++ chk.label
-
-                    -- ugly hack to provide left spacing
+                      -- ugly hack to provide left spacing
                     ]
                 ]
 

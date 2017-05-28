@@ -146,9 +146,10 @@ onChange : (String -> msg) -> Option msg
 onChange toMsg =
     OnChange toMsg
 
+
 customEventOnChange : (String -> msg) -> Html.Attribute msg
 customEventOnChange tagger =
-  Events.on "change" (Json.map tagger Events.targetValue)
+    Events.on "change" (Json.map tagger Events.targetValue)
 
 
 {-| Shorthand for setting the disabled attribute of a select

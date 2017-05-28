@@ -469,8 +469,7 @@ view state ((Config { options, brand, items, customItems }) as config) =
                     ++ (Maybe.map (\_ -> " navbar-toggler-right") brand
                             |> Maybe.withDefault ""
                        )
-
-            -- navbar-toggler-right"
+              -- navbar-toggler-right"
             , type_ "button"
             , toggleHandler state config
             ]

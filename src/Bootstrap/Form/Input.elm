@@ -275,6 +275,7 @@ placeholder : String -> Option msg
 placeholder value =
     Placeholder value
 
+
 {-| Shorthand for assigning an onInput handler for an input
 -}
 onInput : (String -> msg) -> Option msg

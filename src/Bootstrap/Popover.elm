@@ -461,7 +461,6 @@ bottom (Config config) =
     Config { config | direction = Bottom }
 
 
-
 stateDecoder : Json.Decoder DOMState
 stateDecoder =
     Json.map3 DOMState
