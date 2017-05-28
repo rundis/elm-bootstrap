@@ -12,7 +12,8 @@ module Bootstrap.Progress
         , danger
         , striped
         , animated
-        , attr
+        , attrs
+        , wrapperAttrs
         , Option
         )
 
@@ -25,7 +26,7 @@ It doesn't use the HTML5 `<progress>` element, ensuring you can stack progress b
 
 
 ## Options
-@docs value, height, label, customLabel, success, info, warning, danger, striped, animated, attr, Option
+@docs value, height, label, customLabel, success, info, warning, danger, striped, animated, attrs, wrapperAttrs, Option
 
 
 # Stacking multiple
@@ -46,7 +47,8 @@ type Option msg
     | Roled (Maybe Role)
     | Striped Bool
     | Animated Bool
-    | Attr (Attribute msg)
+    | Attrs (List (Attribute msg))
+    | WrapperAttrs (List (Attribute msg))
 
 
 type Role
@@ -65,6 +67,7 @@ type Options msg
         , striped : Bool
         , animated : Bool
         , attributes : List (Attribute msg)
+        , wrapperAttributes : List (Attribute msg)
         }
 
 
@@ -81,9 +84,13 @@ type Options msg
 -}
 progress : List (Option msg) -> Html msg
 progress modifiers =
-    Html.div
-        [ class "progress" ]
-        [ renderBar modifiers ]
+    let
+        (Options options) =
+            List.foldl applyOption defaultOptions modifiers
+    in
+        Html.div
+            ( class "progress" :: options.wrapperAttributes)
+            [ renderBar modifiers ]
 
 
 {-| Create a progress containing multiple progress bars next to each other
@@ -186,11 +193,20 @@ striped =
     Striped True
 
 
-{-| Option to specify a custom Html.Attribute for the progress bar
+{-| Option to specify one ore more custom Html.Attribute for the progress bar
 -}
-attr : Attribute msg -> Option msg
-attr attr =
-    Attr attr
+attrs : List (Attribute msg) -> Option msg
+attrs attrs =
+    Attrs attrs
+
+
+{-| Option to specify one ore more custom Html.Attribute for the progress bar wrapper/container
+(say you need to add a on click handler or something like that)
+-}
+wrapperAttrs : List (Attribute msg) -> Option msg
+wrapperAttrs attrs =
+    WrapperAttrs attrs
+
 
 
 applyOption : Option msg -> Options msg -> Options msg
@@ -215,8 +231,11 @@ applyOption modifier (Options options) =
             Animated animated ->
                 { options | animated = animated }
 
-            Attr attr ->
-                { options | attributes = attr :: options.attributes }
+            Attrs attrs ->
+                { options | attributes = attrs }
+
+            WrapperAttrs attrs ->
+                { options | wrapperAttributes = attrs }
 
 
 toAttributes : Options msg -> List (Attribute msg)
@@ -259,6 +278,7 @@ defaultOptions =
         , striped = False
         , animated = False
         , attributes = []
+        , wrapperAttributes = []
         }
 
 
