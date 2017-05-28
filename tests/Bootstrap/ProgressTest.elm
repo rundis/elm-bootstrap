@@ -10,7 +10,6 @@ import Test.Html.Query as Query
 import Test.Html.Selector exposing (text, tag, class, classes, attribute)
 
 
-
 vanillaProgress : Test
 vanillaProgress =
     let
@@ -83,8 +82,8 @@ options =
                 Progress.progress [ Progress.label label ]
                     |> Query.fromHtml
                     --|> Query.has [ text (toString label) ]
-                    |> Query.hasNot [ text (toString label) ]
-
+                    |>
+                        Query.hasNot [ text (toString label) ]
         , test "expect a custom label" <|
             \() ->
                 Progress.progress [ Progress.customLabel [ Html.div [ Attr.class "custom-label" ] [] ] ]

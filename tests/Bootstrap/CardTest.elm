@@ -2,7 +2,6 @@ module Bootstrap.CardTest exposing (..)
 
 import Bootstrap.Card as Card
 import Bootstrap.Text as Text
-
 import Html
 import Html.Attributes as Attr
 import Test exposing (Test, test, describe)
@@ -11,11 +10,11 @@ import Test.Html.Query as Query
 import Test.Html.Selector exposing (text, tag, class, classes, attribute)
 
 
-
 emptySimpleCard : Test
 emptySimpleCard =
     let
-        html = Card.config []
+        html =
+            Card.config []
                 |> Card.view
     in
         describe "Simple card no options"
@@ -23,8 +22,7 @@ emptySimpleCard =
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.has  [ classes ["card"] ]
-
+                        |> Query.has [ classes [ "card" ] ]
             ]
 
 
@@ -84,8 +82,8 @@ cardFullMonty =
             Card.config [ Card.outlineInfo ]
                 |> Card.headerH1 [] [ Html.text "Header" ]
                 |> Card.footer [] [ Html.text "Footer" ]
-                |> Card.imgTop [ Attr.src "/imgtop.jpg"] []
-                |> Card.imgBottom [ Attr.src "/imgbottom.jpg"] []
+                |> Card.imgTop [ Attr.src "/imgtop.jpg" ] []
+                |> Card.imgBottom [ Attr.src "/imgbottom.jpg" ] []
                 |> Card.block [] [ Card.text [] [ Html.text "cardblock" ] ]
                 |> Card.view
     in
@@ -94,47 +92,38 @@ cardFullMonty =
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.has  [ classes ["card", "card-outline-info"] ]
-
+                        |> Query.has [ classes [ "card", "card-outline-info" ] ]
             , test "expect card header" <|
                 \() ->
                     html
                         |> Query.fromHtml
                         |> Query.find [ class "card-header" ]
-                        |> Query.has [ tag "h1",  text "Header" ]
-
+                        |> Query.has [ tag "h1", text "Header" ]
             , test "expect card footer" <|
                 \() ->
                     html
                         |> Query.fromHtml
                         |> Query.find [ class "card-footer" ]
                         |> Query.has [ text "Footer" ]
-
             , test "expect card image top" <|
                 \() ->
                     html
                         |> Query.fromHtml
                         |> Query.find [ class "card-img-top" ]
                         |> Query.has [ attribute "src" "/imgtop.jpg" ]
-
             , test "expect card image bottom" <|
                 \() ->
                     html
                         |> Query.fromHtml
                         |> Query.find [ class "card-img-bottom" ]
                         |> Query.has [ attribute "src" "/imgbottom.jpg" ]
-
             , test "expect card block" <|
                 \() ->
                     html
                         |> Query.fromHtml
                         |> Query.find [ class "card-block" ]
-                        |> Query.has [  text "cardblock" ]
-
+                        |> Query.has [ text "cardblock" ]
             ]
-
-
-
 
 
 group : Test
@@ -148,8 +137,7 @@ group =
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.has  [ class "card-group"]
-
+                        |> Query.has [ class "card-group" ]
             , test "expect 3 cards" <|
                 \() ->
                     html
@@ -170,8 +158,7 @@ deck =
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.has  [ class "card-deck"]
-
+                        |> Query.has [ class "card-deck" ]
             , test "expect 3 cards" <|
                 \() ->
                     html
@@ -192,8 +179,7 @@ columns =
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.has  [ class "card-columns"]
-
+                        |> Query.has [ class "card-columns" ]
             , test "expect 3 cards" <|
                 \() ->
                     html
@@ -201,7 +187,6 @@ columns =
                         |> Query.findAll [ class "card" ]
                         |> Query.count (Expect.equal 3)
             ]
-
 
 
 cardList : Int -> List (Card.Config msg)

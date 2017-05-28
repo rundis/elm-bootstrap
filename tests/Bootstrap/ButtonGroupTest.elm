@@ -8,7 +8,6 @@ import Test.Html.Query as Query
 import Test.Html.Selector exposing (text, tag, class, classes, attribute, checked)
 
 
-
 simpleGroup : Test
 simpleGroup =
     let

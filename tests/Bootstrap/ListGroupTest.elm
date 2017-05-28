@@ -9,7 +9,6 @@ import Test.Html.Query as Query
 import Test.Html.Selector as Selector exposing (tag, class, classes, attribute, disabled)
 
 
-
 vanillaListGroup : Test
 vanillaListGroup =
     let

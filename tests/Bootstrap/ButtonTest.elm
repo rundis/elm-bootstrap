@@ -1,7 +1,6 @@
 module Bootstrap.ButtonTest exposing (..)
 
 import Bootstrap.Button as Button
-
 import Html
 import Html.Attributes as Attr
 import Test exposing (Test, test, describe)
@@ -9,53 +8,48 @@ import Test.Html.Query as Query
 import Test.Html.Selector exposing (text, tag, class, classes, attribute)
 
 
-
-
 vanillaButton : Test
 vanillaButton =
     let
-        html = Button.button [] [Html.text "Click"]
+        html =
+            Button.button [] [ Html.text "Click" ]
     in
         describe "Plain button"
             [ test "expect button and text" <|
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.has  [ tag "button", text "Click"]
-
+                        |> Query.has [ tag "button", text "Click" ]
             , test "expect btn class" <|
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.has  [ class "btn"]
-
+                        |> Query.has [ class "btn" ]
             ]
 
 
 linkButton : Test
 linkButton =
     let
-        html = Button.linkButton [Button.danger] [ Html.text "Click"]
+        html =
+            Button.linkButton [ Button.danger ] [ Html.text "Click" ]
     in
         describe "Plain link button"
             [ test "expect a and text" <|
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.has  [ tag "a", text "Click"]
-
+                        |> Query.has [ tag "a", text "Click" ]
             , test "expect btn class" <|
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.has  [ classes ["btn", "btn-danger"]]
-
+                        |> Query.has [ classes [ "btn", "btn-danger" ] ]
             , test "expect role attr" <|
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.has  [ attribute "role" "button"]
-
+                        |> Query.has [ attribute "role" "button" ]
             ]
 
 
@@ -119,99 +113,85 @@ roledButtons =
             ]
 
 
-
 outlinedButtons : Test
 outlinedButtons =
     let
         html =
             Html.div []
-                [ Button.button [Button.outlinePrimary]  [Html.text "primary"]
-                , Button.button [Button.outlineSecondary]  [Html.text "secondary"]
-                , Button.button [Button.outlineSuccess]  [Html.text "success"]
-                , Button.button [Button.outlineInfo]  [Html.text "info"]
-                , Button.button [Button.outlineWarning]  [Html.text "warning"]
-                , Button.button [Button.outlineDanger]  [Html.text "danger"]
+                [ Button.button [ Button.outlinePrimary ] [ Html.text "primary" ]
+                , Button.button [ Button.outlineSecondary ] [ Html.text "secondary" ]
+                , Button.button [ Button.outlineSuccess ] [ Html.text "success" ]
+                , Button.button [ Button.outlineInfo ] [ Html.text "info" ]
+                , Button.button [ Button.outlineWarning ] [ Html.text "warning" ]
+                , Button.button [ Button.outlineDanger ] [ Html.text "danger" ]
                 ]
-
     in
         describe "Outlined buttons"
             [ test "expect primary" <|
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.find [ class "btn-outline-primary"]
-                        |> Query.has  [ text "primary"]
-
+                        |> Query.find [ class "btn-outline-primary" ]
+                        |> Query.has [ text "primary" ]
             , test "expect secondary" <|
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.find [ class "btn-outline-secondary"]
-                        |> Query.has  [ text "secondary"]
-
+                        |> Query.find [ class "btn-outline-secondary" ]
+                        |> Query.has [ text "secondary" ]
             , test "expect success" <|
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.find [ class "btn-outline-success"]
-                        |> Query.has  [ text "success"]
-
+                        |> Query.find [ class "btn-outline-success" ]
+                        |> Query.has [ text "success" ]
             , test "expect info" <|
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.find [ class "btn-outline-info"]
-                        |> Query.has  [ text "info"]
-
+                        |> Query.find [ class "btn-outline-info" ]
+                        |> Query.has [ text "info" ]
             , test "expect warning" <|
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.find [ class "btn-outline-warning"]
-                        |> Query.has  [ text "warning"]
-
+                        |> Query.find [ class "btn-outline-warning" ]
+                        |> Query.has [ text "warning" ]
             , test "expect danger" <|
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.find [ class "btn-outline-danger"]
-                        |> Query.has  [ text "danger"]
-
+                        |> Query.find [ class "btn-outline-danger" ]
+                        |> Query.has [ text "danger" ]
             ]
 
 
 fancyBlockButton : Test
 fancyBlockButton =
     let
-        html = Button.linkButton
-                 [Button.block
-                 , Button.large
-                 , Button.danger
-                 , Button.attrs [ Attr.class "rounded" ]
-                 ]
-                 [Html.text "Click"]
-
+        html =
+            Button.linkButton
+                [ Button.block
+                , Button.large
+                , Button.danger
+                , Button.attrs [ Attr.class "rounded" ]
+                ]
+                [ Html.text "Click" ]
     in
         describe "Fancy Block Button"
             [ test "expect a and text" <|
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.has  [ tag "a", text "Click"]
-
+                        |> Query.has [ tag "a", text "Click" ]
             , test "expect btn class" <|
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.has  [ classes ["btn", "btn-danger", "btn-block", "rounded", "btn-lg"]]
-
+                        |> Query.has [ classes [ "btn", "btn-danger", "btn-block", "rounded", "btn-lg" ] ]
             , test "expect role attr" <|
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.has  [ attribute "role" "button"]
-
+                        |> Query.has [ attribute "role" "button" ]
             ]
-
-
-

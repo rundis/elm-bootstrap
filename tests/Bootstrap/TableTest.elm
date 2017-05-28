@@ -1,7 +1,6 @@
 module Bootstrap.TableTest exposing (..)
 
 import Bootstrap.Table as Table
-
 import Html
 import Html.Attributes as Attr
 import Test exposing (Test, test, describe)
@@ -10,25 +9,23 @@ import Test.Html.Query as Query
 import Test.Html.Selector exposing (text, tag, class, classes, attribute)
 
 
-
-
 superSimple : Test
 superSimple =
     let
         html =
             Table.simpleTable
                 ( Table.simpleThead
-                    [ Table.th [] [ Html.text "col1"]
-                    , Table.th [] [ Html.text "col2"]
+                    [ Table.th [] [ Html.text "col1" ]
+                    , Table.th [] [ Html.text "col2" ]
                     ]
                 , Table.tbody []
                     [ Table.tr []
-                        [ Table.td [] [Html.text "col1row1"]
-                        , Table.td [] [Html.text "col2row1"]
+                        [ Table.td [] [ Html.text "col1row1" ]
+                        , Table.td [] [ Html.text "col2row1" ]
                         ]
                     , Table.tr []
-                        [ Table.td [] [Html.text "col1row2"]
-                        , Table.td [] [Html.text "col2row2"]
+                        [ Table.td [] [ Html.text "col1row2" ]
+                        , Table.td [] [ Html.text "col2row2" ]
                         ]
                     ]
                 )
@@ -38,44 +35,38 @@ superSimple =
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.has  [ class "table"]
-
+                        |> Query.has [ class "table" ]
             , test "expect thead" <|
                 \() ->
                     html
                         |> Query.fromHtml
                         |> Query.children []
                         |> Query.first
-                        |> Query.has [ tag "thead"]
-
+                        |> Query.has [ tag "thead" ]
             , test "expect ths" <|
                 \() ->
                     html
                         |> Query.fromHtml
                         |> Query.find [ tag "thead" ]
-                        |> Query.children [ tag "tr"]
+                        |> Query.children [ tag "tr" ]
                         |> Query.first
                         |> Query.children []
-                        |> Query.each (Query.has [tag "th"])
-
+                        |> Query.each (Query.has [ tag "th" ])
             , test "expect tbody" <|
                 \() ->
                     html
                         |> Query.fromHtml
                         |> Query.children []
                         |> Query.index 1
-                        |> Query.has [ tag "tbody"]
-
+                        |> Query.has [ tag "tbody" ]
             , test "expect tds" <|
                 \() ->
                     html
                         |> Query.fromHtml
                         |> Query.find [ tag "tbody" ]
-                        |> Query.findAll [ tag "td"]
+                        |> Query.findAll [ tag "td" ]
                         |> Query.count (Expect.equal 4)
-
             ]
-
 
 
 styledTable : Test
@@ -98,30 +89,27 @@ styledTable =
                             [ classes
                                 [ "table", "table-bordered", "table-hover", "table-sm", "table-inverse" ]
                             ]
-
             , test "expect wrapped in div when responsive" <|
                 \() ->
                     defaultTable [ Table.responsive ]
                         |> Query.fromHtml
-                        |> Query.has [ class "table-responsive", tag "div"]
+                        |> Query.has [ class "table-responsive", tag "div" ]
             ]
+
 
 reflowedTable : Test
 reflowedTable =
     let
         html =
             defaultTable [ Table.reflow ]
-
     in
         describe "Reflowed table"
             [ test "expect class" <|
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.has [ class "table-reflow"]
-
+                        |> Query.has [ class "table-reflow" ]
             ]
-
 
 
 styledThead : Test
@@ -133,22 +121,20 @@ styledThead =
                 , thead = defaultThead [ option ]
                 , tbody = defaultTbody
                 }
-
     in
         describe "Styled thead "
             [ test "expect inversed" <|
                 \() ->
                     tblHtml Table.inversedHead
                         |> Query.fromHtml
-                        |> Query.find [ tag "thead"]
-                        |> Query.has [ class "thead-inverse"]
-
+                        |> Query.find [ tag "thead" ]
+                        |> Query.has [ class "thead-inverse" ]
             , test "expect default" <|
                 \() ->
                     tblHtml Table.defaultHead
                         |> Query.fromHtml
-                        |> Query.find [ tag "thead"]
-                        |> Query.has [ class "thead-default"]
+                        |> Query.find [ tag "thead" ]
+                        |> Query.has [ class "thead-default" ]
             ]
 
 
@@ -181,28 +167,25 @@ styledTdOrRowInBody =
                         |> Query.fromHtml
                         |> Query.find [ tag "td" ]
                         |> Query.has [ class "table-active", attribute "align" "left" ]
-
-             , test "expect td active bg class when table inversed" <|
+            , test "expect td active bg class when table inversed" <|
                 \() ->
                     html [ Table.inversed ]
                         |> Query.fromHtml
                         |> Query.find [ tag "td" ]
-                        |> Query.has [ class "bg-active"]
-
+                        |> Query.has [ class "bg-active" ]
             , test "expect tr success class and custom attribute" <|
                 \() ->
                     html []
                         |> Query.fromHtml
-                        |> Query.find [ tag "tbody"]
+                        |> Query.find [ tag "tbody" ]
                         |> Query.children []
                         |> Query.first
                         |> Query.has [ class "table-success", attribute "align" "left" ]
-
             , test "expect tr success bg class when table inversed" <|
                 \() ->
                     html [ Table.inversed ]
                         |> Query.fromHtml
-                        |> Query.find [ tag "tbody"]
+                        |> Query.find [ tag "tbody" ]
                         |> Query.children []
                         |> Query.first
                         |> Query.has [ class "bg-success" ]
@@ -215,15 +198,16 @@ styledThOrRowInHead =
         html tableOptions headOptions =
             Table.table
                 { options = tableOptions
-                , thead = Table.thead
-                            headOptions
-                            [ Table.tr
-                                [ Table.rowInfo ]
-                                [ Table.th
-                                    [ Table.cellActive ]
-                                    [ Html.text "col" ]
-                                ]
+                , thead =
+                    Table.thead
+                        headOptions
+                        [ Table.tr
+                            [ Table.rowInfo ]
+                            [ Table.th
+                                [ Table.cellActive ]
+                                [ Html.text "col" ]
                             ]
+                        ]
                 , tbody =
                     Table.tbody []
                         [ Table.tr [] [ Table.td [] [] ] ]
@@ -236,40 +220,35 @@ styledThOrRowInHead =
                         |> Query.fromHtml
                         |> Query.find [ tag "th" ]
                         |> Query.has [ class "table-active" ]
-
-             , test "expect th active bg class when table inversed" <|
+            , test "expect th active bg class when table inversed" <|
                 \() ->
                     html [ Table.inversed ] []
                         |> Query.fromHtml
                         |> Query.find [ tag "th" ]
-                        |> Query.has [ class "bg-active"]
-
+                        |> Query.has [ class "bg-active" ]
             , test "expect th active bg class when thead inversed" <|
                 \() ->
-                    html [ ] [ Table.inversedHead ]
+                    html [] [ Table.inversedHead ]
                         |> Query.fromHtml
                         |> Query.find [ tag "th" ]
-                        |> Query.has [ class "bg-active"]
-
+                        |> Query.has [ class "bg-active" ]
             , test "expect tr info class" <|
                 \() ->
                     html [] []
                         |> Query.fromHtml
-                        |> Query.find [ tag "thead"]
+                        |> Query.find [ tag "thead" ]
                         |> Query.children []
                         |> Query.first
                         |> Query.has [ class "table-info" ]
-
             , test "expect tr info bg class when table inversed" <|
                 \() ->
-                    html [ ] [ Table.inversedHead ]
+                    html [] [ Table.inversedHead ]
                         |> Query.fromHtml
-                        |> Query.find [ tag "thead"]
+                        |> Query.find [ tag "thead" ]
                         |> Query.children []
                         |> Query.first
                         |> Query.has [ class "bg-info" ]
             ]
-
 
 
 defaultTable : List (Table.TableOption msg) -> Html.Html msg

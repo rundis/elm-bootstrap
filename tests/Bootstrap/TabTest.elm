@@ -9,8 +9,6 @@ import Test.Html.Query as Query
 import Test.Html.Selector as Selector exposing (tag, class, classes, attribute)
 
 
-
-
 simpleTabs : Test
 simpleTabs =
     let
@@ -41,7 +39,7 @@ simpleTabs =
         nav =
             html
                 |> Query.fromHtml
-                |> Query.find [ classes ["nav", "nav-tabs"] ]
+                |> Query.find [ classes [ "nav", "nav-tabs" ] ]
 
         content =
             html
@@ -86,13 +84,12 @@ simpleTabs =
                             |> Query.index 0
                             |> Query.find [ tag "h4" ]
                             |> Query.has [ Selector.text "Tab 1 Heading" ]
-
                 , test "Expect pane to have id attribute" <|
                     \() ->
                         content
                             |> Query.findAll [ class "tab-pane" ]
                             |> Query.index 0
-                            |> Query.has [attribute "id" "tabItem1"]
+                            |> Query.has [ attribute "id" "tabItem1" ]
                 ]
             ]
 
