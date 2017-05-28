@@ -12,15 +12,15 @@ Version 4 is fully embracing flexbox, which will provide much better control and
 ### What's in it for me?
 * A reasonably type safe API for using Bootstrap
 * Some boilerplate is being handled for you
-* Interactive elements like Navbar, Dropdowns, Accordion, Modal and Tabs
+* Interactive elements like Navbar, Dropdowns, Accordion, Modal, Tabs and Carousel
 * Horizontally AND vertically center stuff without tearing your hair out
 
 
 
 
 ## Documentation
-For user documentation, check out the [Docs Site](http://elm-bootstrap.info/).  
-The latest API documentation is up on [Elm Package](http://package.elm-lang.org/packages/rundis/elm-bootstrap/latest).  
+For user documentation, check out the [Docs Site](http://elm-bootstrap.info/).
+The latest API documentation is up on [Elm Package](http://package.elm-lang.org/packages/rundis/elm-bootstrap/latest).
 
 It also helps to read through the relevant [Twitter Bootstrap documentation](https://v4-alpha.getbootstrap.com/getting-started/introduction/).
 
@@ -104,6 +104,18 @@ There's a bunch of work left to do, especially when it comes to documentation an
 
 
 ## Release history
+* 3.0.0
+  * **New Feature**: Support for bootstrap carousels (great job by [@folkertdev])
+  * **Fix**: Expose fieldset module
+  * **Breaking change**: To better support deep linking, the tab module requires ids' for tab items. This will allow automatic url hash change when clicking tabs and you may specify active tab using `customInitialState` providing the tabitem id/hash. Checkout the Tabs module page in https://github.com/rundis/elm-bootstrap.info
+  * **Breaking change**: Form selects exposes onChange rather than onInput. (api doc example fixed too)
+  * **Breaking change**: Progress bar take float rather than int for progress value
+  * **Breaking change**: Progress `attr` removed in favor of `attrs` function
+  * **Minor improvement**: Possible to customize progress container with `wrapperAttrs` function
+  * **Minor improvement**: Possible to customize dropdown menu with attributes
+  * **Minor improvement**: Modal closes when you click on the backdrop (tx to [@farmio])
+  * **Fix**: Apply custom attributes for inputgroup (tx to [@CallumJHays])
+  * **Api doc fixes**: A long range of grammar/spelling fixes to api docs (tx to [@branjwong])
 * 2.0.0
   * **New Feature**: Support for radio buttons and checkbox buttons (tx to [@folkertdev](https://github.com/folkertdev) )
   * **New Feature**: Support for Input groups
