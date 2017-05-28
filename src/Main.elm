@@ -537,11 +537,13 @@ tabs model =
             |> Tab.pills
             |> Tab.items
                 [ Tab.item
-                    { link = Tab.link [] [ text "Tab1" ]
+                    { id = "tabItem1"
+                    , link = Tab.link [] [ text "Tab1" ]
                     , pane = Tab.pane [] [ listGroup ]
                     }
                 , Tab.item
-                    { link = Tab.link [] [ text "Tab2" ]
+                    { id = "tabItem2"
+                    , link = Tab.link [] [ text "Tab2" ]
                     , pane = Tab.pane [] [ listGroup2 ]
                     }
                 ]
