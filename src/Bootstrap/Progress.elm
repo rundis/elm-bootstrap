@@ -1,6 +1,7 @@
 module Bootstrap.Progress
     exposing
         ( progress
+        , progressWithAttrs
         , progressMulti
         , value
         , height
@@ -91,6 +92,13 @@ progress modifiers =
         Html.div
             ( class "progress" :: options.wrapperAttributes)
             [ renderBar modifiers ]
+
+
+progressWithAttrs : List (Attribute msg) -> List (Option msg) -> Html msg
+progressWithAttrs attrs mods =
+    Html.div
+        ([ class "progress" ] ++ attrs)
+        [ renderBar mods ]
 
 
 {-| Create a progress containing multiple progress bars next to each other
