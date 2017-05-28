@@ -16,6 +16,7 @@ module Bootstrap.Tab
         , right
         , center
         , attrs
+        , useHash
         , Config
         , State
         , Item
@@ -80,7 +81,7 @@ module Bootstrap.Tab
 @docs view, config, items, initialState, customInitialState, Config, State
 
 # Options
-@docs pills, withAnimation, justified, fill, center, right, attrs, Option
+@docs pills, withAnimation, justified, fill, center, right, attrs, useHash, Option
 
 # Tab items
 @docs item, link, pane, Item, Link, Pane
@@ -153,6 +154,7 @@ type Config msg
         , layout : Maybe TabLayout
         , isPill : Bool
         , attributes : List (Html.Attribute msg)
+        , useHash : Bool
         }
 
 
@@ -237,6 +239,7 @@ config toMsg =
         , withAnimation = False
         , layout = Nothing
         , attributes = []
+        , useHash = False
         }
 
 
@@ -304,6 +307,17 @@ attrs : List (Html.Attribute msg) -> Config msg -> Config msg
 attrs attrs (Config config) =
     Config
         { config | attributes = config.attributes ++ attrs }
+
+
+{-| By default the click handler for tabs has preventDefault true. If however you want the url hash
+to be updated with the tab item id, you may use this function to ensure the url is changed when users
+click on a tab item. This is handy if you use "real"" paths for your SPA pages but also want to be able to "deep-link" to a particular
+tab item.
+-}
+useHash : Bool -> Config msg -> Config msg
+useHash use (Config config) =
+    Config
+        { config | useHash = use }
 
 
 {-| Creates a tab control which keeps track of the selected tab item and displays the corresponding tab pane for you
@@ -378,7 +392,7 @@ renderLink :
     -> Link msg
     -> Config msg
     -> Html.Html msg
-renderLink id active (Link { attributes, children }) (Config { toMsg, withAnimation }) =
+renderLink id active (Link { attributes, children }) (Config { toMsg, withAnimation, useHash }) =
     Html.li
         [ class "nav-item" ]
         [ Html.a
@@ -390,7 +404,7 @@ renderLink id active (Link { attributes, children }) (Config { toMsg, withAnimat
              , onWithOptions
                 "click"
                 { stopPropagation = False
-                , preventDefault = active
+                , preventDefault = active || not useHash
                 }
                <|
                 Json.succeed <|
