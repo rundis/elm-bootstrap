@@ -10,6 +10,7 @@ module Bootstrap.Popover
         , right
         , top
         , bottom
+        , customStyles
         , title
         , titleH1
         , titleH2
@@ -20,6 +21,7 @@ module Bootstrap.Popover
         , Config
         , State
         )
+
 
 {-| Add small overlay content, like those found in iOS, to any element for housing secondary information.
 
@@ -101,6 +103,7 @@ type Config msg
         , direction : Position
         , title : Maybe (Title msg)
         , content : Maybe (Content msg)
+        , customStyles : List (String,String)
         }
 
 
@@ -195,6 +198,8 @@ popoverView (State { isActive, domState }) (Config config) =
                 [ ( "left", "-5000px" )
                 , ( "top", "-5000px" )
                 ]
+        customStyleAttrNames = List.map Tuple.first config.customStyles
+        styles2 = List.filter (\(k,v) -> not (List.member k customStyleAttrNames)) styles
     in
         Html.div
             [ classList
@@ -204,7 +209,7 @@ popoverView (State { isActive, domState }) (Config config) =
                  ]
                     ++ positionClasses config.direction
                 )
-            , style styles
+            , style (styles2 ++ config.customStyles)
             ]
             ([ Maybe.map (\(Title t) -> t) config.title
              , Maybe.map (\(Content c) -> c) config.content
@@ -299,6 +304,7 @@ config triggerElement =
         , direction = Top
         , title = Nothing
         , content = Nothing
+        , customStyles = []
         }
 
 
@@ -459,6 +465,14 @@ top (Config config) =
 bottom : Config msg -> Config msg
 bottom (Config config) =
     Config { config | direction = Bottom }
+
+{-| Add custom style attributes to popover, e.g.
+    |> Popover.titleH4 [] [ text "My title" ]
+    |> Popover.customStyles [("width","600px"), ("max-width","600px")]
+    ...
+-}
+customStyles : List (String,String) -> Config msg ->  Config msg
+customStyles styles (Config config) = Config {config | customStyles = styles }
 
 
 stateDecoder : Json.Decoder DOMState
