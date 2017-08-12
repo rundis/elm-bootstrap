@@ -1,9 +1,13 @@
 module Bootstrap.Alert
     exposing
-        ( success
+        ( primary
+        , secondary
+        , success
         , info
         , warning
         , danger
+        , light
+        , dark
         , link
         , h1
         , h2
@@ -23,7 +27,7 @@ module Bootstrap.Alert
         ]
 
 # Contextual alerts
-@docs success, info, warning, danger
+@docs primary, secondary, success, info, warning, danger, light, dark
 
 
 ## Styled content
@@ -36,10 +40,35 @@ import Html.Attributes exposing (class)
 
 
 type Role
-    = Success
+    = Primary
+    | Secondary
+    | Success
     | Info
     | Warning
     | Danger
+    | Light
+    | Dark
+
+
+
+{-| Alert using primary colors
+
+* `children` List of child elements
+
+-}
+primary : List (Html.Html msg) -> Html.Html msg
+primary children =
+    alertCustom Primary children
+
+
+{-| Alert using secondary colors
+
+* `children` List of child elements
+
+-}
+secondary : List (Html.Html msg) -> Html.Html msg
+secondary children =
+    alertCustom Secondary children
 
 
 {-| Alert signaling success
@@ -82,10 +111,35 @@ danger children =
     alertCustom Danger children
 
 
+{-| Create a light alert
+
+* `children` List of child elements
+
+-}
+light : List (Html.Html msg) -> Html.Html msg
+light children =
+    alertCustom Light children
+
+
+{-| Create a dark alert
+
+
+* `children` List of child elements
+
+-}
+dark : List (Html.Html msg) -> Html.Html msg
+dark children =
+    alertCustom Dark children
+
+
+
+
 alertCustom : Role -> List (Html.Html msg) -> Html.Html msg
 alertCustom role children =
     Html.div
-        [ class <| "alert " ++ roleClass role ]
+        [ class <| "alert " ++ roleClass role
+        , Html.Attributes.attribute "role" "alert"
+        ]
         children
 
 
@@ -182,6 +236,12 @@ heading elemFn attributes children =
 roleClass : Role -> String
 roleClass role =
     case role of
+        Primary ->
+            "alert-primary"
+
+        Secondary ->
+            "alert-secondary"
+
         Success ->
             "alert-success"
 
@@ -193,3 +253,10 @@ roleClass role =
 
         Danger ->
             "alert-danger"
+
+        Light ->
+            "alert-light"
+
+        Dark ->
+            "alert-dark"
+
