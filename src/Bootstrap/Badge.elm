@@ -30,7 +30,7 @@ import Html.Attributes exposing (class)
 
 
 type Role
-    = Default
+    = Secondary
     | Primary
     | Success
     | Info
@@ -53,7 +53,7 @@ type BadgeOption
 -}
 badge : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
 badge =
-    badgeInternal [ Roled Default ]
+    badgeInternal [ Roled Secondary ]
 
 
 {-| Create a badge with primary colors
@@ -128,7 +128,7 @@ badgeDanger =
 -}
 pill : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
 pill =
-    badgeInternal [ Roled Default, Pill ]
+    badgeInternal [ Roled Secondary, Pill ]
 
 
 {-| Create a pill with primary colors
@@ -225,8 +225,8 @@ badgeClass option =
 roleOption : Role -> String
 roleOption role =
     case role of
-        Default ->
-            "badge-default"
+        Secondary ->
+            "badge-secondary"
 
         Primary ->
             "badge-primary"
