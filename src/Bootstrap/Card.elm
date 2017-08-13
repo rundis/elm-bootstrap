@@ -3,23 +3,24 @@ module Bootstrap.Card
         ( view
         , config
         , attrs
-        , blockAttrs
         , align
         , danger
         , info
         , primary
+        , secondary
         , success
         , warning
+        , light
+        , dark
         , outlineDanger
         , outlineInfo
         , outlinePrimary
+        , outlineSecondary
         , outlineSuccess
         , outlineWarning
-        , inverted
-        , link
-        , text
-        , blockQuote
-        , custom
+        , outlineLight
+        , outlineDark
+        , textColor
         , imgTop
         , imgBottom
         , header
@@ -31,14 +32,7 @@ module Bootstrap.Card
         , headerH5
         , headerH6
         , block
-        , blockAlign
         , listGroup
-        , titleH1
-        , titleH2
-        , titleH3
-        , titleH4
-        , titleH5
-        , titleH6
         , group
         , deck
         , columns
@@ -46,13 +40,11 @@ module Bootstrap.Card
         , keyedDeck
         , keyedColumns
         , Config
-        , CardOption
-        , BlockOption
-        , CardFooter
-        , CardHeader
-        , CardImageBottom
-        , CardImageTop
-        , BlockItem
+        , Option
+        , Footer
+        , Header
+        , ImageBottom
+        , ImageTop
         )
 
 {-| A card is a flexible and extensible content container. It includes options for headers and footers, a wide variety of content, contextual background colors, and powerful display options.
@@ -63,35 +55,24 @@ module Bootstrap.Card
 
 
 ## Header
-@docs header, headerH1, headerH2, headerH3, headerH4, headerH5, headerH6, CardHeader
+@docs header, headerH1, headerH2, headerH3, headerH4, headerH5, headerH6, Header
 
 ## Footer
-@docs CardFooter, footer
+@docs Footer, footer
 
 
 ## Images
-@docs imgTop, imgBottom, CardImageTop, CardImageBottom
+@docs imgTop, imgBottom, ImageTop, ImageBottom
 
 
 ## Options
 You can customize the look and feel of your cards using the following options
 
-@docs config, align, primary, success, info, warning, danger, outlinePrimary, outlineSuccess, outlineInfo, outlineWarning, outlineDanger, inverted, attrs, CardOption
+@docs config, align, primary, secondary, success, info, warning, danger, light, dark, outlinePrimary, outlineSecondary, outlineSuccess, outlineInfo, outlineWarning, outlineDanger, outlineLight, outlineDark, textColor, attrs, Option
 
 
 # Blocks
-@docs block, listGroup, BlockItem
-
-
-## Block title
-@docs titleH1, titleH2, titleH3, titleH4, titleH5, titleH6
-
-
-## Misc
-@docs link, text, blockQuote, custom
-
-## Block options
-@docs blockAlign, blockAttrs, BlockOption
+@docs block, listGroup
 
 
 # Composing cards
@@ -107,22 +88,19 @@ Cards can be composed into
 import Html
 import Html.Attributes exposing (class)
 import Html.Keyed as Keyed
-import Color
 import Bootstrap.Text as Text
 import Bootstrap.ListGroup as ListGroup
-import Bootstrap.Internal.Card as CardInternal
+import Bootstrap.Card.Block as Block
+import Bootstrap.Card.Internal as Internal
+import Bootstrap.Internal.Role as Role
 
 
 {-| Opaque type representing options for customizing the styling of a card
 -}
-type alias CardOption msg =
-    CardInternal.CardOption msg
+type alias Option msg =
+    Internal.CardOption msg
 
 
-{-| Opaque type representing options for styling a card block
--}
-type alias BlockOption msg =
-    CardInternal.BlockOption msg
 
 
 {-| Opaque type representing the view configuration of a card
@@ -137,43 +115,39 @@ You may use the following functions to expand/change a configuration:
 -}
 type Config msg
     = Config
-        { options : List (CardOption msg)
-        , header : Maybe (CardHeader msg)
-        , footer : Maybe (CardFooter msg)
-        , imgTop : Maybe (CardImageTop msg)
-        , imgBottom : Maybe (CardImageBottom msg)
-        , blocks : List (CardInternal.CardBlock msg)
+        { options : List (Option msg)
+        , header : Maybe (Header msg)
+        , footer : Maybe (Footer msg)
+        , imgTop : Maybe (ImageTop msg)
+        , imgBottom : Maybe (ImageBottom msg)
+        , blocks : List (Internal.CardBlock msg)
         }
 
 
 {-| Opaque type representing a card header element
 -}
-type CardHeader msg
-    = CardHeader (Html.Html msg)
+type Header msg
+    = Header (Html.Html msg)
 
 
 {-| Opaque type representing a card footer element
 -}
-type CardFooter msg
-    = CardFooter (Html.Html msg)
+type Footer msg
+    = Footer (Html.Html msg)
 
 
 {-| Opaque type representing a card image placed at the top
 -}
-type CardImageTop msg
-    = CardImageTop (Html.Html msg)
+type ImageTop msg
+    = ImageTop (Html.Html msg)
 
 
 {-| Opaque type representing a card image placed at the bottom
 -}
-type CardImageBottom msg
-    = CardImageBottom (Html.Html msg)
+type ImageBottom msg
+    = ImageBottom (Html.Html msg)
 
 
-{-| Opaque type representing a legal card block child element
--}
-type alias BlockItem msg =
-    CardInternal.BlockItem msg
 
 
 
@@ -182,100 +156,140 @@ type alias BlockItem msg =
 
 {-| Option to specify horizonal alignment of card contents
 -}
-align : Text.HAlign -> CardOption msg
+align : Text.HAlign -> Option msg
 align align =
-    CardInternal.Aligned align
+    Internal.Aligned align
 
 
-{-| Give cards a primary background color and appropriate foreground color
+{-| Give cards a primary background color
 -}
-primary : CardOption msg
+primary : Option msg
 primary =
-    CardInternal.Coloring <| CardInternal.Roled CardInternal.Primary
+    Internal.Coloring <| Internal.Roled Role.Primary
 
 
-{-| Give cards a success background color and appropriate foreground color
+{-| Give cards a secondary background color
 -}
-success : CardOption msg
+secondary : Option msg
+secondary =
+    Internal.Coloring <| Internal.Roled Role.Secondary
+
+
+{-| Give cards a success background color
+-}
+success : Option msg
 success =
-    CardInternal.Coloring <| CardInternal.Roled CardInternal.Success
+    Internal.Coloring <| Internal.Roled Role.Success
 
 
-{-| Give cards a info background color and appropriate foreground color
+{-| Give cards a info background color
 -}
-info : CardOption msg
+info : Option msg
 info =
-    CardInternal.Coloring <| CardInternal.Roled CardInternal.Info
+    Internal.Coloring <| Internal.Roled Role.Info
 
 
-{-| Give cards a warning background color and appropriate foreground color
+{-| Give cards a warning background color
 -}
-warning : CardOption msg
+warning : Option msg
 warning =
-    CardInternal.Coloring <| CardInternal.Roled CardInternal.Warning
+    Internal.Coloring <| Internal.Roled Role.Warning
 
 
-{-| Give cards a danger background color and appropriate foreground color
+{-| Give cards a danger background color
 -}
-danger : CardOption msg
+danger : Option msg
 danger =
-    CardInternal.Coloring <| CardInternal.Roled CardInternal.Danger
+    Internal.Coloring <| Internal.Roled Role.Danger
+
+{-| Give cards a light background color
+-}
+light : Option msg
+light =
+    Internal.Coloring <| Internal.Roled Role.Light
+
+
+{-| Give cards a dark background color
+-}
+dark : Option msg
+dark =
+    Internal.Coloring <| Internal.Roled Role.Dark
 
 
 {-| Give cards a primary colored outline
 -}
-outlinePrimary : CardOption msg
+outlinePrimary : Option msg
 outlinePrimary =
-    CardInternal.Coloring <| CardInternal.Outlined CardInternal.Primary
+    Internal.Coloring <| Internal.Outlined Role.Primary
 
+
+{-| Give cards a secondary colored outline
+-}
+outlineSecondary : Option msg
+outlineSecondary =
+    Internal.Coloring <| Internal.Outlined Role.Secondary
 
 {-| Give cards a success colored outline
 -}
-outlineSuccess : CardOption msg
+outlineSuccess : Option msg
 outlineSuccess =
-    CardInternal.Coloring <| CardInternal.Outlined CardInternal.Success
+    Internal.Coloring <| Internal.Outlined Role.Success
 
 
 {-| Give cards a info colored outline
 -}
-outlineInfo : CardOption msg
+outlineInfo : Option msg
 outlineInfo =
-    CardInternal.Coloring <| CardInternal.Outlined CardInternal.Info
+    Internal.Coloring <| Internal.Outlined Role.Info
 
 
 {-| Give cards a warning colored outline
 -}
-outlineWarning : CardOption msg
+outlineWarning : Option msg
 outlineWarning =
-    CardInternal.Coloring <| CardInternal.Outlined CardInternal.Warning
+    Internal.Coloring <| Internal.Outlined Role.Warning
 
 
 {-| Give cards a danger colored outline
 -}
-outlineDanger : CardOption msg
+outlineDanger : Option msg
 outlineDanger =
-    CardInternal.Coloring <| CardInternal.Outlined CardInternal.Danger
+    Internal.Coloring <| Internal.Outlined Role.Danger
 
 
-{-| Give cards a custom dark background color with light text
+
+{-| Give cards a light colored outline
 -}
-inverted : Color.Color -> CardOption msg
-inverted color =
-    CardInternal.Coloring <| CardInternal.Inverted color
+outlineLight : Option msg
+outlineLight =
+    Internal.Coloring <| Internal.Outlined Role.Light
+
+
+{-| Give cards a dark colored outline
+-}
+outlineDark : Option msg
+outlineDark =
+    Internal.Coloring <| Internal.Outlined Role.Dark
+
+
+{-| Set the text color used within a card. |-}
+textColor : Text.Color -> Option msg
+textColor color =
+    Internal.TextColoring color
 
 
 {-| When you need to customize a card item with standard Html.Attribute attributes use this function
 -}
-attrs : List (Html.Attribute msg) -> CardOption msg
+attrs : List (Html.Attribute msg) -> Option msg
 attrs attrs =
-    CardInternal.Attrs attrs
+    Internal.Attrs attrs
 
 
 {-| Template/default config which you use as a starting point to compose your cards.
 
 * options - List of card wide styling options
 -}
-config : List (CardOption msg) -> Config msg
+config : List (Option msg) -> Config msg
 config options =
     Config
         { options = options
@@ -294,9 +308,9 @@ of several optional elements.
         |> Card.headerH1 [] [ text "My Card Info" ]
         |> Card.footer [] [ text "Some footer" ]
         |> Card.block []
-            [ Card.titleH1 [] [ text "Block title" ]
-            , Card.text [] [ text "Some block content" ]
-            , Card.link [ href "#" ] [ text "MyLink"]
+            [ Block.titleH1 [] [ text "Block title" ]
+            , Block.text [] [ text "Some block content" ]
+            , Block.link [ href "#" ] [ text "MyLink"]
             ]
         |> Card.view
 
@@ -307,17 +321,17 @@ view :
     -> Html.Html msg
 view (Config { options, header, footer, imgTop, imgBottom, blocks }) =
     Html.div
-        (CardInternal.cardAttributes options)
+        (Internal.cardAttributes options)
         (List.filterMap
             identity
-            [ Maybe.map (\(CardHeader e) -> e) header
-            , Maybe.map (\(CardImageTop e) -> e) imgTop
+            [ Maybe.map (\(Header e) -> e) header
+            , Maybe.map (\(ImageTop e) -> e) imgTop
             ]
-            ++ (CardInternal.renderBlocks blocks)
+            ++ (Internal.renderBlocks blocks)
             ++ List.filterMap
                 identity
-                [ Maybe.map (\(CardFooter e) -> e) footer
-                , Maybe.map (\(CardImageBottom e) -> e) imgBottom
+                [ Maybe.map (\(Footer e) -> e) footer
+                , Maybe.map (\(ImageBottom e) -> e) imgBottom
                 ]
         )
 
@@ -339,7 +353,7 @@ imgTop attributes children (Config config) =
                 Html.img
                     ([ class "card-img-top" ] ++ attributes)
                     children
-                    |> CardImageTop
+                    |> ImageTop
                     |> Just
         }
 
@@ -361,7 +375,7 @@ imgBottom attributes children (Config config) =
                 Html.img
                     ([ class "card-img-bottom" ] ++ attributes)
                     children
-                    |> CardImageBottom
+                    |> ImageBottom
                     |> Just
         }
 
@@ -399,7 +413,7 @@ footer attributes children (Config config) =
                 Html.div
                     (class "card-footer" :: attributes)
                     children
-                    |> CardFooter
+                    |> Footer
                     |> Just
         }
 
@@ -505,51 +519,12 @@ headerPrivate elemFn attributes children (Config config) =
         { config
             | header =
                 elemFn (class "card-header" :: attributes) children
-                    |> CardHeader
+                    |> Header
                     |> Just
         }
 
 
 
--- Block level stuff
-
-
-{-| Option to specify horizontal alignment of a card block item
-
-    Card.blockAlign Text.xs
-
--}
-blockAlign : Text.HAlign -> BlockOption msg
-blockAlign align =
-    CardInternal.AlignedBlock align
-
-
-{-| When you need to customize a block item with standard Html.Attribute attributes use this function
--}
-blockAttrs : List (Html.Attribute msg) -> BlockOption msg
-blockAttrs attrs =
-    CardInternal.BlockAttrs attrs
-
-
-{-| The building block of a card is the card block. Use it whenever you need a padded section within a card.
-You may have multiple blocks in a card, this function will add blocks to your Cards.
-
-* blockOptions - List of [`block options`](#BlockOption) to configure block level styling
-* item - List of [`block items`](#BlockItem)
-* `config` A card [`Config`](#Config) that you wish to add a block element to
--}
-block :
-    List (BlockOption msg)
-    -> List (BlockItem msg)
-    -> Config msg
-    -> Config msg
-block options items (Config config) =
-    Config
-        { config
-            | blocks =
-                config.blocks
-                    ++ [ CardInternal.block options items ]
-        }
 
 
 {-| You may add list groups, just like you can add card blocks to a Card.
@@ -564,124 +539,32 @@ listGroup items (Config config) =
         { config
             | blocks =
                 config.blocks
-                    ++ [ CardInternal.listGroup items ]
+                    ++ [ Internal.listGroup items ]
         }
 
 
-{-| Create link elements that are placed next to each other in a block using this function
 
-* `attributes` List of attributes
-* `children` List of child elements
+
+
+{-| The building block of a card is the card block. Use it whenever you need a padded section within a card.
+You may have multiple blocks in a card, this function will add blocks to your Cards.
+
+* blockOptions - List of Block options to configure block level styling
+* item - List of Block Items
+* `config` A card [`Config`](#Config) that you wish to add a block element to
 -}
-link : List (Html.Attribute msg) -> List (Html.Html msg) -> BlockItem msg
-link attributes children =
-    Html.a
-        ([ class "card-link" ] ++ attributes)
-        children
-        |> CardInternal.BlockItem
-
-
-{-| Create a card text element
-
-* `attributes` List of attributes
-* `children` List of child elements
--}
-text : List (Html.Attribute msg) -> List (Html.Html msg) -> BlockItem msg
-text attributes children =
-    Html.p
-        ([ class "card-text" ] ++ attributes)
-        children
-        |> CardInternal.BlockItem
-
-
-{-| Add a custom HTML element to be displayed in a Card block
--}
-custom : Html.Html msg -> BlockItem msg
-custom element =
-    CardInternal.BlockItem element
-
-
-{-| Create a block quote element
-
-* `attributes` List of attributes
-* `children` List of child elements
--}
-blockQuote : List (Html.Attribute msg) -> List (Html.Html msg) -> BlockItem msg
-blockQuote attributes children =
-    Html.blockquote
-        ([ class "card-blockquote" ] ++ attributes)
-        children
-        |> CardInternal.BlockItem
-
-
-{-| Create a block h1 title
-
-* `attributes` List of attributes
-* `children` List of child elements
--}
-titleH1 : List (Html.Attribute msg) -> List (Html.Html msg) -> BlockItem msg
-titleH1 =
-    title Html.h1
-
-
-{-| Create a block h2 title
-
-* `attributes` List of attributes
-* `children` List of child elements
--}
-titleH2 : List (Html.Attribute msg) -> List (Html.Html msg) -> BlockItem msg
-titleH2 =
-    title Html.h2
-
-
-{-| Create a block h3 title
-
-* `attributes` List of attributes
-* `children` List of child elements
--}
-titleH3 : List (Html.Attribute msg) -> List (Html.Html msg) -> BlockItem msg
-titleH3 =
-    title Html.h3
-
-
-{-| Create a block h4 title
-
-* `attributes` List of attributes
-* `children` List of child elements
--}
-titleH4 : List (Html.Attribute msg) -> List (Html.Html msg) -> BlockItem msg
-titleH4 =
-    title Html.h4
-
-
-{-| Create a block h5 title
-
-* `attributes` List of attributes
-* `children` List of child elements
--}
-titleH5 : List (Html.Attribute msg) -> List (Html.Html msg) -> BlockItem msg
-titleH5 =
-    title Html.h5
-
-
-{-| Create a block h6 title
-
-* `attributes` List of attributes
-* `children` List of child elements
--}
-titleH6 : List (Html.Attribute msg) -> List (Html.Html msg) -> BlockItem msg
-titleH6 =
-    title Html.h6
-
-
-title :
-    (List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg)
-    -> List (Html.Attribute msg)
-    -> List (Html.Html msg)
-    -> BlockItem msg
-title elemFn attributes children =
-    elemFn (class "card-title" :: attributes) children
-        |> CardInternal.BlockItem
+block :
+    List (Block.Option msg)
+    -> List (Block.Item msg)
+    -> Config msg
+    -> Config msg
+block options items (Config config) =
+    Config
+        { config
+            | blocks =
+                config.blocks
+                    ++ [ Internal.block options items ]
+        }
 
 
 

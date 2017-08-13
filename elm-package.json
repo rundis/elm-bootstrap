@@ -13,6 +13,7 @@
         "Bootstrap.Button",
         "Bootstrap.ButtonGroup",
         "Bootstrap.Card",
+        "Bootstrap.Card.Block",
         "Bootstrap.Carousel",
         "Bootstrap.Carousel.Slide",
         "Bootstrap.CDN",

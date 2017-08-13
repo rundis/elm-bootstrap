@@ -110,7 +110,8 @@ import DOM
 import Dict exposing (Dict)
 import AnimationFrame
 import Bootstrap.Card as Card
-import Bootstrap.Internal.Card as CardInternal
+import Bootstrap.Card.Block as Block
+import Bootstrap.Card.Internal as CardInternal
 import Bootstrap.ListGroup as ListGroup
 
 
@@ -161,7 +162,7 @@ type Visibility
 type Card msg
     = Card
         { id : String
-        , options : List (Card.CardOption msg)
+        , options : List (Card.Option msg)
         , header : Header msg
         , blocks : List (CardBlock msg)
         }
@@ -301,7 +302,7 @@ cards cards (Config config) =
 -}
 card :
     { id : String
-    , options : List (Card.CardOption msg)
+    , options : List (Card.Option msg)
     , blocks : List (CardBlock msg)
     , header : Header msg
     }
@@ -417,15 +418,15 @@ headerPrivate elemFn attributes toggle =
 
 
     Accordion.block []
-        [ Card.text [] [ text "Just some text"] ]
+        [ Block.text [] [ text "Just some text"] ]
 
 * `blockOptions` List of block options
 * `blockItems` List of block items
 
 -}
 block :
-    List (Card.BlockOption msg)
-    -> List (Card.BlockItem msg)
+    List (Block.Option msg)
+    -> List (Block.Item msg)
     -> CardBlock msg
 block =
     CardInternal.block

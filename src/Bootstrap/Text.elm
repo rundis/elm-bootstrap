@@ -15,24 +15,44 @@ module Bootstrap.Text
         , alignXlLeft
         , alignXlCenter
         , alignXlRight
+        , white
+        , primary
+        , secondary
+        , success
+        , info
+        , warning
+        , danger
+        , light
+        , dark
         , HAlign
+        , Color
         )
 
-{-| Utilities for text options. Currently only exposing helpers used by Bootstrap.Card for horizontal alignment
+{-| Utilities for text options. Currently only exposing helpers used by Bootstrap.Card for horizontal alignment and text coloring
 
-
+# Aligment
 @docs alignXsLeft, alignXsCenter, alignXsRight, alignSmLeft, alignSmCenter, alignSmRight, alignMdLeft, alignMdCenter, alignMdRight, alignLgLeft, alignLgCenter, alignLgRight, alignXlLeft, alignXlCenter, alignXlRight, HAlign
+
+# Text coloring
+@docs white, primary, secondary, success, info, warning, danger, light, dark, Color
 
 -}
 
 import Bootstrap.Grid.Internal as GridInternal
 import Bootstrap.Internal.Text as TextInternal exposing (TextAlignDir(..))
+import Bootstrap.Internal.Role as Role
 
 
 {-| Opaque type representing a horizontal alignment option
 -}
 type alias HAlign =
     TextInternal.HAlign
+
+{-| Opaque type representing a text color option
+|-}
+type alias Color =
+    TextInternal.Color
+
 
 
 {-| Align left at smallest responsive breakpoint
@@ -173,3 +193,56 @@ alignXl dir =
     { dir = dir
     , size = GridInternal.XL
     }
+
+{-| White text color option. |-}
+white : Color
+white =
+    TextInternal.White
+
+
+{-| Primary color text option. |-}
+primary : Color
+primary =
+    TextInternal.Role Role.Primary
+
+
+{-| Secondary color text option. |-}
+secondary : Color
+secondary =
+    TextInternal.Role Role.Secondary
+
+{-| Success color text option. |-}
+success : Color
+success =
+    TextInternal.Role Role.Success
+
+
+{-| Info color text option. |-}
+info : Color
+info =
+    TextInternal.Role Role.Info
+
+
+{-| Warning color text option. |-}
+warning : Color
+warning =
+    TextInternal.Role Role.Warning
+
+
+{-| Danger color text option. |-}
+danger : Color
+danger =
+    TextInternal.Role Role.Danger
+
+
+{-| Light color text option. |-}
+light : Color
+light =
+    TextInternal.Role Role.Light
+
+{-| Dark color text option. |-}
+dark : Color
+dark =
+    TextInternal.Role Role.Dark
+
+

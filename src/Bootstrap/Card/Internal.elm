@@ -1,46 +1,46 @@
-module Bootstrap.Internal.Card exposing (..)
+module Bootstrap.Card.Internal exposing (..)
 
 import Html
 import Html.Attributes exposing (class)
-import Color
 import Bootstrap.Internal.Text as Text
 import Bootstrap.Internal.ListGroup as ListGroup
+import Bootstrap.Internal.Role as Role
+
 
 
 type CardOption msg
     = Aligned Text.HAlign
     | Coloring RoleOption
+    | TextColoring Text.Color
     | Attrs (List (Html.Attribute msg))
 
 
 type RoleOption
-    = Roled Role
-    | Outlined Role
-    | Inverted Color.Color
+    = Roled Role.Role
+    | Outlined Role.Role
 
 
-type Role
-    = Primary
-    | Success
-    | Info
-    | Warning
-    | Danger
 
 
 type alias CardOptions msg =
     { aligned : Maybe Text.HAlign
     , coloring : Maybe RoleOption
+    , textColoring : Maybe Text.Color
     , attributes : List (Html.Attribute msg)
     }
 
 
 type BlockOption msg
     = AlignedBlock Text.HAlign
+    | BlockColoring Role.Role
+    | BlockTextColoring Text.Color
     | BlockAttrs (List (Html.Attribute msg))
 
 
 type alias BlockOptions msg =
     { aligned : Maybe Text.HAlign
+    , coloring : Maybe Role.Role
+    , textColoring : Maybe Text.Color
     , attributes : List (Html.Attribute msg)
     }
 
@@ -103,10 +103,24 @@ blockAttributes modifiers =
         options =
             List.foldl applyBlockModifier defaultBlockOptions modifiers
     in
-        [ class "card-block" ]
+        [ class "card-body" ]
             ++ (case options.aligned of
                     Just align ->
                         [ Text.textAlignClass align ]
+
+                    Nothing ->
+                        []
+               )
+            ++ (case options.coloring of
+                    Just role ->
+                        [ Role.toClass "bg" role ]
+
+                    Nothing ->
+                        []
+               )
+            ++ (case options.textColoring of
+                    Just color ->
+                        [ Text.textColorClass color ]
 
                     Nothing ->
                         []
@@ -117,6 +131,8 @@ blockAttributes modifiers =
 defaultBlockOptions : BlockOptions msg
 defaultBlockOptions =
     { aligned = Nothing
+    , coloring = Nothing
+    , textColoring = Nothing
     , attributes = []
     }
 
@@ -126,6 +142,12 @@ applyBlockModifier option options =
     case option of
         AlignedBlock align ->
             { options | aligned = Just align }
+
+        BlockColoring role ->
+            { options | coloring = Just role }
+
+        BlockTextColoring color ->
+            { options | textColoring = Just color }
 
         BlockAttrs attrs ->
             { options | attributes = options.attributes ++ attrs }
@@ -140,15 +162,17 @@ cardAttributes modifiers =
         [ class "card" ]
             ++ (case options.coloring of
                     Just (Roled role) ->
-                        [ class <| "card-inverse card-" ++ roleOption role ]
+                        [ Role.toClass "bg" role ]
 
                     Just (Outlined role) ->
-                        [ class <| "card-outline-" ++ roleOption role ]
+                        [ Role.toClass "border" role ]
 
-                    Just (Inverted color) ->
-                        [ class "card-inverse"
-                        , Html.Attributes.style [ ( "background-color", toRGBString color ), ( "border-color", toRGBString color ) ]
-                        ]
+                    Nothing ->
+                        []
+               )
+            ++ (case options.textColoring of
+                    Just color ->
+                        [ Text.textColorClass color ]
 
                     Nothing ->
                         []
@@ -167,6 +191,7 @@ defaultOptions : CardOptions msg
 defaultOptions =
     { aligned = Nothing
     , coloring = Nothing
+    , textColoring = Nothing
     , attributes = []
     }
 
@@ -180,33 +205,8 @@ applyModifier option options =
         Coloring coloring ->
             { options | coloring = Just coloring }
 
+        TextColoring coloring ->
+            { options | textColoring = Just coloring }
+
         Attrs attrs ->
             { options | attributes = options.attributes ++ attrs }
-
-
-roleOption : Role -> String
-roleOption role =
-    case role of
-        Primary ->
-            "primary"
-
-        Success ->
-            "success"
-
-        Info ->
-            "info"
-
-        Warning ->
-            "warning"
-
-        Danger ->
-            "danger"
-
-
-toRGBString : Color.Color -> String
-toRGBString color =
-    let
-        { red, green, blue } =
-            Color.toRgb color
-    in
-        "RGB(" ++ toString red ++ "," ++ toString green ++ "," ++ toString blue ++ ")"
