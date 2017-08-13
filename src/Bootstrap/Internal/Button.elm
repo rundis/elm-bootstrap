@@ -31,6 +31,8 @@ type Role
     | Info
     | Warning
     | Danger
+    | Dark
+    | Light
     | Link
 
 
@@ -125,6 +127,12 @@ roleClass role =
 
         Danger ->
             "danger"
+
+        Dark ->
+            "dark"
+
+        Light ->
+            "light"
 
         Link ->
             "link"

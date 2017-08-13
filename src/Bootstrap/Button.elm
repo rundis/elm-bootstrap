@@ -14,6 +14,8 @@ module Bootstrap.Button
         , info
         , warning
         , danger
+        , light
+        , dark
         , roleLink
         , block
         , disabled
@@ -23,6 +25,8 @@ module Bootstrap.Button
         , outlineInfo
         , outlineWarning
         , outlineDanger
+        , outlineLight
+        , outlineDark
         , Option
         )
 
@@ -38,10 +42,10 @@ You can also group a series of buttons together on a single line with the button
 @docs attrs, onClick, disabled, Option
 
 ## Roled
-@docs primary, secondary, success, info, warning, danger, roleLink
+@docs primary, secondary, success, info, warning, danger, light, dark, roleLink
 
 ## Outlined
-@docs outlinePrimary, outlineSecondary, outlineSuccess, outlineInfo, outlineWarning, outlineDanger
+@docs outlinePrimary, outlineSecondary, outlineSuccess, outlineInfo, outlineWarning, outlineDanger, outlineLight, outlineDark
 
 ## Size
 @docs small, large
@@ -231,6 +235,21 @@ danger =
     ButtonInternal.Coloring <| ButtonInternal.Roled ButtonInternal.Danger
 
 
+
+{-| Option to create a light button
+-}
+light : Option msg
+light =
+    ButtonInternal.Coloring <| ButtonInternal.Roled ButtonInternal.Light
+
+
+{-| Option to create a dark button
+-}
+dark : Option msg
+dark =
+    ButtonInternal.Coloring <| ButtonInternal.Roled ButtonInternal.Dark
+
+
 {-| Option to make a button look like a link element
 -}
 roleLink : Option msg
@@ -278,6 +297,20 @@ outlineWarning =
 outlineDanger : Option msg
 outlineDanger =
     ButtonInternal.Coloring <| ButtonInternal.Outlined ButtonInternal.Danger
+
+
+{-| Option to create a light outlined button
+-}
+outlineLight : Option msg
+outlineLight =
+    ButtonInternal.Coloring <| ButtonInternal.Outlined ButtonInternal.Light
+
+{-| Option to create a dark outlined button
+-}
+outlineDark : Option msg
+outlineDark =
+    ButtonInternal.Coloring <| ButtonInternal.Outlined ButtonInternal.Dark
+
 
 
 {-| Option to create block level buttons—those that span the full width of a parent
