@@ -1,27 +1,31 @@
 module Bootstrap.Badge
     exposing
-        ( badge
-        , badgePrimary
+        ( badgePrimary
+        , badgeSecondary
         , badgeSuccess
         , badgeInfo
         , badgeWarning
         , badgeDanger
-        , pill
+        , badgeLight
+        , badgeDark
         , pillPrimary
+        , pillSecondary
         , pillSuccess
         , pillInfo
         , pillWarning
         , pillDanger
+        , pillLight
+        , pillDark
         )
 
 {-| Small and adaptive badge for adding context to just about any content.
 
 # Tags
-@docs badge, badgePrimary, badgeSuccess, badgeInfo, badgeWarning, badgeDanger
+@docs badgePrimary, badgeSecondary, badgeSuccess, badgeInfo, badgeWarning, badgeDanger, badgeLight, badgeDark
 
 
 # Pills
-@docs pill, pillPrimary, pillSuccess, pillInfo, pillWarning, pillDanger
+@docs  pillPrimary, pillSecondary, pillSuccess, pillInfo, pillWarning, pillDanger, pillLight, pillDark
 
 -}
 
@@ -30,12 +34,14 @@ import Html.Attributes exposing (class)
 
 
 type Role
-    = Secondary
-    | Primary
+    = Primary
+    | Secondary
     | Success
     | Info
     | Warning
     | Danger
+    | Light
+    | Dark
 
 
 {-| Opaque type representing a badge styling option
@@ -44,16 +50,6 @@ type BadgeOption
     = Roled Role
     | Pill
 
-
-{-| Create a badge with default styling
-
-* `attributes` List of attributes
-* `children` List of child elements
-
--}
-badge : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
-badge =
-    badgeInternal [ Roled Secondary ]
 
 
 {-| Create a badge with primary colors
@@ -68,6 +64,19 @@ badgePrimary :
     -> Html.Html msg
 badgePrimary =
     badgeInternal [ Roled Primary ]
+
+
+{-| Create a badge with secondary colors
+
+* `attributes` List of attributes
+* `children` List of child elements
+
+-}
+badgeSecondary : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
+badgeSecondary =
+    badgeInternal [ Roled Secondary ]
+
+
 
 
 {-| Create a badge with success colors
@@ -120,15 +129,26 @@ badgeDanger =
     badgeInternal [ Roled Danger ]
 
 
-{-| Create a pill (badge with rounded corners) using default coloring
+{-| Create a light badge
 
 * `attributes` List of attributes
 * `children` List of child elements
 
 -}
-pill : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
-pill =
-    badgeInternal [ Roled Secondary, Pill ]
+badgeLight : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
+badgeLight =
+    badgeInternal [ Roled Light ]
+
+
+{-| Create a dark badge
+
+* `attributes` List of attributes
+* `children` List of child elements
+
+-}
+badgeDark : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
+badgeDark =
+    badgeInternal [ Roled Dark ]
 
 
 {-| Create a pill with primary colors
@@ -143,6 +163,18 @@ pillPrimary :
     -> Html.Html msg
 pillPrimary =
     badgeInternal [ Roled Primary, Pill ]
+
+
+{-| Create a pill (badge with rounded corners) using secondary coloring
+
+* `attributes` List of attributes
+* `children` List of child elements
+
+-}
+pillSecondary : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
+pillSecondary =
+    badgeInternal [ Roled Secondary, Pill ]
+
 
 
 {-| Create a pill with success colors
@@ -195,6 +227,36 @@ pillDanger =
     badgeInternal [ Roled Danger, Pill ]
 
 
+{-| Create a light pill
+
+* `attributes` List of attributes
+* `children` List of child elements
+
+-}
+pillLight :
+    List (Html.Attribute msg)
+    -> List (Html.Html msg)
+    -> Html.Html msg
+pillLight =
+    badgeInternal [ Roled Light, Pill ]
+
+
+{-| Create a dark pill
+
+* `attributes` List of attributes
+* `children` List of child elements
+
+-}
+pillDark :
+    List (Html.Attribute msg)
+    -> List (Html.Html msg)
+    -> Html.Html msg
+pillDark =
+    badgeInternal [ Roled Dark, Pill ]
+
+
+
+
 badgeInternal :
     List BadgeOption
     -> List (Html.Attribute msg)
@@ -225,11 +287,11 @@ badgeClass option =
 roleOption : Role -> String
 roleOption role =
     case role of
-        Secondary ->
-            "badge-secondary"
-
         Primary ->
             "badge-primary"
+
+        Secondary ->
+            "badge-secondary"
 
         Success ->
             "badge-success"
@@ -242,3 +304,13 @@ roleOption role =
 
         Danger ->
             "badge-danger"
+
+        Light ->
+            "badge-light"
+
+        Dark ->
+            "badge-dark"
+
+
+
+
