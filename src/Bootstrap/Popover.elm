@@ -138,6 +138,8 @@ type Content msg
 type alias Pos =
     { left : Float
     , top : Float
+    , arrowTop : Float
+    , arrowLeft : Float
     }
 
 
@@ -177,64 +179,64 @@ view state ((Config { triggerElement }) as config) =
 popoverView : State -> Config msg -> Html.Html msg
 popoverView (State { isActive, domState }) (Config config) =
     let
+        _ =
+            Debug.log "DomState: " domState
+
         px f =
             (toString f) ++ "px"
 
+        pos =
+            calculatePos config.direction domState
+
         styles =
             if isActive then
-                calculatePos config.direction domState
-                    |> (\pos ->
-                            [ ( "left", px pos.left )
-                            , ( "top", px pos.top )
-                            , ( "display", "inline-block" )
-                            , ( "position", "absolute" )
-                            , ( "width", px domState.offsetWidth )
-                            ]
-                       )
+                [ ( "left", px pos.left )
+                , ( "top", px pos.top )
+                , ( "display", "inline-block" )
+                , ( "position", "absolute" )
+                , ( "width", px domState.offsetWidth )
+                ]
             else
                 [ ( "left", "-5000px" )
                 , ( "top", "-5000px" )
                 ]
+
+        arrowStyles =
+            [ ( "top", px pos.arrowTop )
+            , ( "left", px pos.arrowLeft )
+            ]
     in
         Html.div
             [ classList
-                ([ ( "popover", True )
-                 , ( "fade", True )
-                 , ( "show", isActive )
-                 ]
-                    ++ positionClasses config.direction
-                )
+                [ ( "popover", True )
+                , ( "fade", True )
+                , ( "show", isActive )
+                , positionClass config.direction
+                ]
             , style styles
             ]
-            ([ Maybe.map (\(Title t) -> t) config.title
+            ([ Just <| Html.div [ class "arrow", style arrowStyles ] []
+             , Maybe.map (\(Title t) -> t) config.title
              , Maybe.map (\(Content c) -> c) config.content
              ]
                 |> List.filterMap identity
             )
 
 
-positionClasses : Position -> List ( String, Bool )
-positionClasses position =
+positionClass : Position -> ( String, Bool )
+positionClass position =
     case position of
         Left ->
-            [ ( "bs-tether-element-attached-middle", True )
-            , ( "bs-tether-element-attached-right", True )
-            ]
+            ( "bs-popover-left", True )
 
         Right ->
-            [ ( "bs-tether-element-attached-middle", True )
-            , ( "bs-tether-element-attached-left", True )
-            ]
+            ( "bs-popover-right", True )
 
         Top ->
-            [ ( "bs-tether-element-attached-center", True )
-            , ( "bs-tether-element-attached-bottom", True )
-            ]
+            ( "bs-popover-top", True )
 
         Bottom ->
-            [ ( "bs-tether-element-attached-center", True )
-            , ( "bs-tether-element-attached-top", True )
-            ]
+            ( "bs-popover-bottom", True )
 
 
 {-| Creates a click handler that will toggle the visibility of
@@ -313,7 +315,7 @@ content attributes children (Config config) =
     Config
         { config
             | content =
-                Html.div (class "popover-content" :: attributes) children
+                Html.div (class "popover-body" :: attributes) children
                     |> Content
                     |> Just
         }
@@ -427,7 +429,7 @@ titlePrivate elemFn attributes children (Config config) =
     Config
         { config
             | title =
-                elemFn (class "popover-title" :: attributes) children
+                elemFn (class "popover-header" :: attributes) children
                     |> Title
                     |> Just
         }
@@ -533,21 +535,31 @@ calculatePos : Position -> DOMState -> Pos
 calculatePos pos { rect, offsetWidth, offsetHeight } =
     case pos of
         Left ->
-            { left = -offsetWidth
+            { left = -offsetWidth - 10
             , top = (rect.height / 2) - (offsetHeight / 2)
+            , arrowTop = (offsetHeight / 2) - 2.5
+            , arrowLeft = offsetWidth - 11
             }
 
         Right ->
             { left = rect.width
             , top = (rect.height / 2) - (offsetHeight / 2)
+            , arrowTop = (offsetHeight / 2) - 2.5
+            , arrowLeft = 0
             }
 
         Top ->
             { left = (rect.width / 2) - (offsetWidth / 2)
-            , top = -offsetHeight
+            , top = -offsetHeight  - 10
+            , arrowTop = offsetHeight - 6.5
+            , arrowLeft = (offsetWidth/2) - 5
             }
 
         Bottom ->
             { left = (rect.width / 2) - (offsetWidth / 2)
             , top = rect.height
+            , arrowTop = 0
+            , arrowLeft = (offsetWidth/2) - 5
             }
+
+
