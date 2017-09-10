@@ -2,6 +2,8 @@ module Bootstrap.Internal.ListGroup exposing (..)
 
 import Html
 import Html.Attributes as Attr exposing (classList, class)
+import Bootstrap.Internal.Role as Role exposing (Role(..))
+
 
 
 type ItemOption msg
@@ -12,11 +14,6 @@ type ItemOption msg
     | Attrs (List (Html.Attribute msg))
 
 
-type Role
-    = Success
-    | Info
-    | Warning
-    | Danger
 
 
 type alias ItemOptions msg =
@@ -106,24 +103,7 @@ itemAttributes options =
         ]
     ]
         ++ [ Attr.disabled options.disabled ]
-        ++ (Maybe.map (\r -> [ roleClass r ]) options.role
+        ++ (Maybe.map (\r -> [ Role.toClass "list-group-item" r ]) options.role
                 |> Maybe.withDefault []
            )
         ++ options.attributes
-
-
-roleClass : Role -> Html.Attribute msg
-roleClass role =
-    class <|
-        case role of
-            Success ->
-                "list-group-item-success"
-
-            Info ->
-                "list-group-item-info"
-
-            Warning ->
-                "list-group-item-warning"
-
-            Danger ->
-                "list-group-item-danger"

@@ -7,10 +7,14 @@ module Bootstrap.ListGroup
         , keyedCustom
         , anchor
         , button
+        , primary
+        , secondary
         , success
         , info
         , warning
         , danger
+        , light
+        , dark
         , active
         , disabled
         , attrs
@@ -30,7 +34,7 @@ module Bootstrap.ListGroup
 
 
 # Options
-@docs success, info, warning, danger, active, disabled, attrs, ItemOption
+@docs primary, secondary, success, info, warning, danger, light, dark, active, disabled, attrs, ItemOption
 
 
 -}
@@ -39,6 +43,7 @@ import Html
 import Html.Attributes as Attr exposing (class, classList, type_)
 import Html.Keyed as Keyed
 import Bootstrap.Internal.ListGroup as Internal
+import Bootstrap.Internal.Role as Role
 
 
 {-| Opaque type representing configuration options for a list item
@@ -166,32 +171,61 @@ button options children =
         }
 
 
+
+{-| Option to style a list item with primary colors
+-}
+primary : ItemOption msg
+primary =
+    Internal.Roled Role.Primary
+
+
+{-| Option to style a list item with secondary colors
+-}
+secondary : ItemOption msg
+secondary =
+    Internal.Roled Role.Secondary
+
+
 {-| Option to style a list item with success colors
 -}
 success : ItemOption msg
 success =
-    Internal.Roled Internal.Success
+    Internal.Roled Role.Success
 
 
 {-| Option to style a list item with info colors
 -}
 info : ItemOption msg
 info =
-    Internal.Roled Internal.Info
+    Internal.Roled Role.Info
 
 
 {-| Option to style a list item with warning colors
 -}
 warning : ItemOption msg
 warning =
-    Internal.Roled Internal.Warning
+    Internal.Roled Role.Warning
 
 
 {-| Option to style a list item with danger colors
 -}
 danger : ItemOption msg
 danger =
-    Internal.Roled Internal.Danger
+    Internal.Roled Role.Danger
+
+
+{-| Option to style a list item with light colors
+-}
+light : ItemOption msg
+light =
+    Internal.Roled Role.Light
+
+
+{-| Option to style a list item with dark colors
+-}
+dark : ItemOption msg
+dark =
+    Internal.Roled Role.Dark
 
 
 {-| Option to mark a list item as active

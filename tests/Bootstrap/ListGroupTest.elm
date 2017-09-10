@@ -138,7 +138,19 @@ customListGroup =
 contextual : String -> Html.Html msg -> Test
 contextual name html =
     describe name
-        [ test "expect success" <|
+        [ test "expect primary" <|
+            \() ->
+                html
+                    |> Query.fromHtml
+                    |> Query.find [ class "list-group-item-primary" ]
+                    |> Query.has [ Selector.text "primary" ]
+        , test "expect secondary" <|
+            \() ->
+                html
+                    |> Query.fromHtml
+                    |> Query.find [ class "list-group-item-secondary" ]
+                    |> Query.has [ Selector.text "secondary" ]
+        , test "expect success" <|
             \() ->
                 html
                     |> Query.fromHtml
@@ -162,6 +174,18 @@ contextual name html =
                     |> Query.fromHtml
                     |> Query.find [ class "list-group-item-danger" ]
                     |> Query.has [ Selector.text "danger" ]
+        , test "expect light" <|
+            \() ->
+                html
+                    |> Query.fromHtml
+                    |> Query.find [ class "list-group-item-light" ]
+                    |> Query.has [ Selector.text "light" ]
+        , test "expect dark" <|
+            \() ->
+                html
+                    |> Query.fromHtml
+                    |> Query.find [ class "list-group-item-dark" ]
+                    |> Query.has [ Selector.text "dark" ]
         ]
 
 
@@ -170,18 +194,26 @@ contextualListGroup =
     let
         contextualList =
             ListGroup.ul
-                [ ListGroup.li [ ListGroup.success ] [ text "success" ]
+                [ ListGroup.li [ ListGroup.primary ] [ text "primary" ]
+                , ListGroup.li [ ListGroup.secondary ] [ text "secondary" ]
+                , ListGroup.li [ ListGroup.success ] [ text "success" ]
                 , ListGroup.li [ ListGroup.info ] [ text "info" ]
                 , ListGroup.li [ ListGroup.warning ] [ text "warning" ]
                 , ListGroup.li [ ListGroup.danger ] [ text "danger" ]
+                , ListGroup.li [ ListGroup.light ] [ text "light" ]
+                , ListGroup.li [ ListGroup.dark ] [ text "dark" ]
                 ]
 
         contextualButtonList =
             ListGroup.custom
-                [ ListGroup.button [ ListGroup.success ] [ text "success" ]
+                [ ListGroup.button [ ListGroup.primary ] [ text "primary" ]
+                , ListGroup.button [ ListGroup.secondary ] [ text "secondary" ]
+                , ListGroup.button [ ListGroup.success ] [ text "success" ]
                 , ListGroup.button [ ListGroup.info ] [ text "info" ]
                 , ListGroup.button [ ListGroup.warning ] [ text "warning" ]
                 , ListGroup.button [ ListGroup.danger ] [ text "danger" ]
+                , ListGroup.button [ ListGroup.light ] [ text "light" ]
+                , ListGroup.button [ ListGroup.dark ] [ text "dark" ]
                 ]
     in
         describe "contextual ListGroup"
