@@ -1,6 +1,7 @@
 module Bootstrap.CardTest exposing (..)
 
 import Bootstrap.Card as Card
+import Bootstrap.Card.Block as Block
 import Bootstrap.Text as Text
 import Html
 import Html.Attributes as Attr
@@ -35,10 +36,10 @@ notSoSimpleCard =
                 , Card.outlineInfo
                 ]
                 |> Card.block []
-                    [ Card.titleH1 [] [ Html.text "titleh1" ]
-                    , Card.text [] [ Html.text "cardtext" ]
-                    , Card.link [] [ Html.text "link" ]
-                    , Card.blockQuote [] [ Html.text "blockquote" ]
+                    [ Block.titleH1 [] [ Html.text "titleh1" ]
+                    , Block.text [] [ Html.text "cardtext" ]
+                    , Block.link [] [ Html.text "link" ]
+                    , Block.quote [] [ Html.text "blockquote" ]
                     ]
                 |> Card.view
     in
@@ -47,7 +48,7 @@ notSoSimpleCard =
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.has [ classes [ "card", "card-outline-info", "text-center" ] ]
+                        |> Query.has [ classes [ "card", "border-info", "text-center" ] ]
             , test "expect title" <|
                 \() ->
                     html
@@ -84,7 +85,7 @@ cardFullMonty =
                 |> Card.footer [] [ Html.text "Footer" ]
                 |> Card.imgTop [ Attr.src "/imgtop.jpg" ] []
                 |> Card.imgBottom [ Attr.src "/imgbottom.jpg" ] []
-                |> Card.block [] [ Card.text [] [ Html.text "cardblock" ] ]
+                |> Card.block [] [ Block.text [] [ Html.text "cardblock" ] ]
                 |> Card.view
     in
         describe "Card with everything in it"
@@ -92,7 +93,7 @@ cardFullMonty =
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.has [ classes [ "card", "card-outline-info" ] ]
+                        |> Query.has [ classes [ "card", "border-info" ] ]
             , test "expect card header" <|
                 \() ->
                     html
@@ -121,7 +122,7 @@ cardFullMonty =
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.find [ class "card-block" ]
+                        |> Query.find [ class "card-body" ]
                         |> Query.has [ text "cardblock" ]
             ]
 
