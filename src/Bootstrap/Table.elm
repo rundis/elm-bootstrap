@@ -28,11 +28,19 @@ module Bootstrap.Table
         , rowInfo
         , rowSuccess
         , rowWarning
+        , rowPrimary
+        , rowSecondary
+        , rowLight
+        , rowDark
         , cellActive
         , cellDanger
         , cellInfo
         , cellSuccess
         , cellWarning
+        , cellPrimary
+        , cellSecondary
+        , cellLight
+        , cellDark
         , THead
         , TBody
         , Row
@@ -68,20 +76,21 @@ module Bootstrap.Table
 @docs tr, keyedTr, Row
 
 ## Row options
-@docs rowActive, rowInfo, rowSuccess, rowWarning, rowDanger, rowAttr, RowOption
+@docs rowActive, rowPrimary, rowSecondary, rowInfo, rowSuccess, rowWarning, rowDanger, rowLight, rowDark, rowAttr, RowOption
 
 
 # Cells
 @docs td, th, Cell
 
 ## Cell options
-@docs cellActive, cellInfo, cellSuccess, cellWarning, cellDanger, cellAttr, CellOption
+@docs cellActive, cellPrimary, cellSecondary, cellInfo, cellSuccess, cellWarning, cellDanger, cellLight, cellDark, cellAttr, CellOption
 
 -}
 
 import Html
 import Html.Attributes exposing (class)
 import Html.Keyed as Keyed
+import Bootstrap.Internal.Role as Role exposing (Role(..))
 
 
 {-| Opaque type representing possible styling options for a table
@@ -108,25 +117,22 @@ type TableHeadOption msg
 {-| Opaque type representing possible styling options for a tr element (both in thead and tbody)
 -}
 type RowOption msg
-    = RoledRow Role
-    | InversedRow Role
+    = RoledRow RoledOrActive
+    | InversedRow RoledOrActive
     | RowAttr (Html.Attribute msg)
 
 
 {-| Opaque type representing possible styling options for a cell, ie td and th
 -}
 type CellOption msg
-    = RoledCell Role
-    | InversedCell Role
+    = RoledCell RoledOrActive
+    | InversedCell RoledOrActive
     | CellAttr (Html.Attribute msg)
 
 
-type Role
-    = Active
-    | Success
-    | Warning
-    | Danger
-    | Info
+type RoledOrActive
+    = Roled Role
+    | Active
 
 
 {-| Opaque type representing a tr
@@ -310,16 +316,6 @@ maybeMapInversedTBody isTableInversed tbody =
 
         ( True, KeyedTBody keyedBody ) ->
             KeyedTBody { keyedBody | rows = List.map (\( key, row ) -> ( key, mapInversedRow row )) keyedBody.rows }
-
-
-
-{- (if isTableInversed then
-       { tbody | rows = List.map mapInversedRow tbody.rows }
-    else
-       tbody
-   )
-       |> TBody
--}
 
 
 mapInversedRow : Row msg -> Row msg
@@ -535,32 +531,60 @@ rowActive =
     RoledRow Active
 
 
+{-| Style a table row with the primary color.
+-}
+rowPrimary : RowOption msg
+rowPrimary =
+    RoledRow <| Roled Primary
+
+
+{-| Style a table row with the secondary color.
+-}
+rowSecondary : RowOption msg
+rowSecondary =
+    RoledRow <| Roled Secondary
+
+
 {-| Style a table row with the success color.
 -}
 rowSuccess : RowOption msg
 rowSuccess =
-    RoledRow Success
+    RoledRow <| Roled Success
 
 
 {-| Style a table row with the warning color.
 -}
 rowWarning : RowOption msg
 rowWarning =
-    RoledRow Warning
+    RoledRow <| Roled Warning
 
 
 {-| Style a table row with the danger color.
 -}
 rowDanger : RowOption msg
 rowDanger =
-    RoledRow Danger
+    RoledRow <| Roled Danger
 
 
 {-| Style a table row with the info color.
 -}
 rowInfo : RowOption msg
 rowInfo =
-    RoledRow Info
+    RoledRow <| Roled Info
+
+
+{-| Style a table row with the light color.
+-}
+rowLight : RowOption msg
+rowLight =
+    RoledRow <| Roled Light
+
+
+{-| Style a table row with the dark color.
+-}
+rowDark : RowOption msg
+rowDark =
+    RoledRow <| Roled Dark
 
 
 {-| When you need to customize a tr element with standard Html.Attribute attributes, use this function
@@ -625,33 +649,61 @@ cellActive =
     RoledCell Active
 
 
+
+{-| Option to style an individual cell with the primary color
+-}
+cellPrimary : CellOption msg
+cellPrimary =
+    RoledCell <| Roled Primary
+
+
+{-| Option to style an individual cell with the secondary color
+-}
+cellSecondary : CellOption msg
+cellSecondary =
+    RoledCell <| Roled Secondary
+
+
 {-| Option to style an individual cell with the success color
 -}
 cellSuccess : CellOption msg
 cellSuccess =
-    RoledCell Success
+    RoledCell <| Roled Success
 
 
 {-| Option to style an individual cell with the warning color
 -}
 cellWarning : CellOption msg
 cellWarning =
-    RoledCell Warning
+    RoledCell <| Roled Warning
 
 
 {-| Option to style an individual cell with the danger color
 -}
 cellDanger : CellOption msg
 cellDanger =
-    RoledCell Danger
+    RoledCell <| Roled Danger
 
 
 {-| Option to style an individual cell with the info color
 -}
 cellInfo : CellOption msg
 cellInfo =
-    RoledCell Info
+    RoledCell <| Roled Info
 
+
+{-| Option to style an individual cell with the light color
+-}
+cellLight : CellOption msg
+cellLight =
+    RoledCell <| Roled Light
+
+
+{-| Option to style an individual cell with the dark color
+-}
+cellDark : CellOption msg
+cellDark =
+    RoledCell <| Roled Dark
 
 {-| Create a td element
 
@@ -781,11 +833,17 @@ rowAttributes options =
 rowClass : RowOption msg -> Html.Attribute msg
 rowClass option =
     case option of
-        RoledRow role ->
-            class <| "table-" ++ roleOption role
+        RoledRow (Roled role) ->
+            Role.toClass "table" role
 
-        InversedRow role ->
-            class <| "bg-" ++ roleOption role
+        RoledRow Active ->
+            class "table-active"
+
+        InversedRow (Roled role) ->
+            Role.toClass "bg" role
+
+        InversedRow Active ->
+            class "bg-active"
 
         RowAttr attr ->
             attr
@@ -799,30 +857,17 @@ cellAttributes options =
 cellAttribute : CellOption msg -> Html.Attribute msg
 cellAttribute option =
     case option of
-        RoledCell role ->
-            class <| "table-" ++ roleOption role
+        RoledCell (Roled role) ->
+            Role.toClass "table" role
 
-        InversedCell role ->
-            class <| "bg-" ++ roleOption role
+        RoledCell Active ->
+            class "table-active"
+
+        InversedCell (Roled role) ->
+            Role.toClass "bg-" role
+
+        InversedCell Active ->
+            class "bg-active"
 
         CellAttr attr ->
             attr
-
-
-roleOption : Role -> String
-roleOption role =
-    case role of
-        Active ->
-            "active"
-
-        Success ->
-            "success"
-
-        Warning ->
-            "warning"
-
-        Danger ->
-            "danger"
-
-        Info ->
-            "info"
