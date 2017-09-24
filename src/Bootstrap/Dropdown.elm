@@ -293,6 +293,7 @@ dropdown ((State status) as state) { toggleMsg, toggleButton, items, options } =
                 ([ classList
                     [ ( "dropdown-menu", True )
                     , ( "dropdown-menu-right", config.hasMenuRight )
+                    , ( "show", status /= Closed )
                     ]
                  ]
                     ++ config.menuAttrs
@@ -371,6 +372,7 @@ splitDropdown ((State status) as state) { toggleMsg, toggleButton, items, option
                         ([ classList
                             [ ( "dropdown-menu", True )
                             , ( "dropdown-menu-right", config.hasMenuRight )
+                            , ( "show", status /= Closed )
                             ]
                          ]
                             ++ config.menuAttrs
