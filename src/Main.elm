@@ -19,9 +19,11 @@ import Bootstrap.Form.InputGroup as InputGrp
 import Bootstrap.Form.Select as Select
 import Bootstrap.Form.Fieldset as Fieldset
 import Bootstrap.Card as Card
+import Bootstrap.Card.Block as Block
 import Bootstrap.Table as Table
 import Bootstrap.Progress as Progress
 import Bootstrap.Popover as Popover
+import Bootstrap.Text as Text
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -44,7 +46,6 @@ type alias Model =
     { dummy : String
     , dropdownState : Dropdown.State
     , splitDropState : Dropdown.State
-    , modalState : Modal.State
     , tabState : Tab.State
     , accordionState : Accordion.State
     , navbarState : Navbar.State
@@ -53,6 +54,7 @@ type alias Model =
     , popoverStateRight : Popover.State
     , popoverStateTop : Popover.State
     , popoverStateBottom : Popover.State
+    , modalVisibility : Modal.Visibility
     }
 
 
@@ -65,7 +67,6 @@ init =
         ( { dummy = "init"
           , dropdownState = Dropdown.initialState
           , splitDropState = Dropdown.initialState
-          , modalState = Modal.hiddenState
           , tabState = Tab.initialState
           , accordionState = Accordion.initialState
           , navbarState = navbarState
@@ -74,6 +75,7 @@ init =
           , popoverStateRight = Popover.initialState
           , popoverStateBottom = Popover.initialState
           , popoverStateTop = Popover.initialState
+          , modalVisibility = Modal.hidden
           }
         , navbarCmd
         )
@@ -88,7 +90,8 @@ type Msg
     | SplitMainMsg
     | SplitItem1Msg
     | SplitItem2Msg
-    | ModalMsg Modal.State
+    | ModalCloseMsg
+    | ModalShowMsg
     | TabMsg Tab.State
     | AccordionMsg Accordion.State
     | NavbarMsg Navbar.State
@@ -129,8 +132,12 @@ update msg ({ accordionState } as model) =
             , Cmd.none
             )
 
-        ModalMsg state ->
-            ( { model | modalState = state }
+        ModalCloseMsg  ->
+            ( { model | modalVisibility = Modal.hidden }
+            , Cmd.none
+            )
+        ModalShowMsg ->
+            ( { model | modalVisibility = Modal.shown }
             , Cmd.none
             )
 
@@ -290,7 +297,7 @@ mainContent model =
                     [ Button.small
                     , Button.outlineSuccess
                     , Button.block
-                    , Button.attrs [ onClick <| ModalMsg Modal.visibleState ]
+                    , Button.attrs [ onClick ModalShowMsg ]
                     ]
                     [ text "Show modal" ]
                 ]
@@ -361,7 +368,7 @@ mainContent model =
         , tables
         , listGroup2
         , progressBars
-        , modal model.modalState
+        , modal model.modalVisibility
         ]
 
 
@@ -494,16 +501,16 @@ gridForm =
         ]
 
 
-modal : Modal.State -> Html Msg
+modal : Modal.Visibility -> Html Msg
 modal modalState =
-    Modal.config ModalMsg
+    Modal.config ModalCloseMsg
         |> Modal.h5 [] [ text "Modal header" ]
         |> modalBody
         |> Modal.footer
             []
             [ Button.button
                 [ Button.outlinePrimary
-                , Button.attrs [ onClick <| ModalMsg Modal.hiddenState ]
+                , Button.attrs [ onClick <| ModalCloseMsg ]
                 ]
                 [ text "Close" ]
             ]
@@ -560,7 +567,7 @@ listGroup =
             , ListGroup.attrs [ class "justify-content-between" ]
             ]
             [ text "Hello"
-            , Badge.pill [] [ text "1" ]
+            , Badge.pillPrimary [] [ text "1" ]
             ]
         , ListGroup.anchor
             [ ListGroup.info
@@ -635,8 +642,8 @@ cardOne =
                 |> Accordion.prependHeader [ span [ class "fa fa-car" ] [] ]
         , blocks =
             [ Accordion.block []
-                [ Card.titleH4 [] [ text "Some title" ]
-                , Card.text [] [ text "Some content, lorem ipsum etc" ]
+                [ Block.titleH4 [] [ text "Some title" ]
+                , Block.text [] [ text "Some content, lorem ipsum etc" ]
                 ]
             , Accordion.listGroup
                 [ ListGroup.li [] [ text "List item 1" ]
@@ -656,12 +663,12 @@ cardTwo =
                 Accordion.toggle [] [ text "Card 2" ]
         , blocks =
             [ Accordion.block []
-                [ Card.titleH4 [] [ text "Some other title" ]
-                , Card.text [] [ text "Different content, lorem ipsum etc" ]
+                [ Block.titleH4 [] [ text "Some other title" ]
+                , Block.text [] [ text "Different content, lorem ipsum etc" ]
                 ]
-            , Accordion.block [ Card.blockAlign Text.alignXsCenter ]
-                [ Card.titleH5 [] [ text "Another block title" ]
-                , Card.text [] [ text "Even more content, lorem ipsum etc" ]
+            , Accordion.block [ Block.align Text.alignXsCenter ]
+                [ Block.titleH5 [] [ text "Another block title" ]
+                , Block.text [] [ text "Even more content, lorem ipsum etc" ]
                 ]
             ]
         }
@@ -676,41 +683,41 @@ cards =
                 |> Card.headerH1 [] [ text "Primary" ]
                 |> Card.footer [] [ text "Primary footer" ]
                 |> Card.block []
-                    [ Card.titleH4 [] [ text "Primary outlined" ]
-                    , Card.text [] [ text "Outlined primary card. Cool." ]
+                    [ Block.titleH4 [] [ text "Primary outlined" ]
+                    , Block.text [] [ text "Outlined primary card. Cool." ]
                     ]
             , Card.config [ Card.outlineSuccess ]
                 |> Card.headerH1 [] [ text "Success" ]
                 |> Card.footer [] [ text "Success footer" ]
                 |> Card.block
-                    [ Card.blockAlign Text.alignXsLeft ]
-                    [ Card.titleH4 [] [ text "Success outlined" ]
-                    , Card.text [] [ text "The success of outlining cards is staggering" ]
-                    , Card.link [ href "#" ] [ text "Link 1" ]
-                    , Card.link [ href "#" ] [ text "Link 2" ]
+                    [ Block.align Text.alignXsLeft ]
+                    [ Block.titleH4 [] [ text "Success outlined" ]
+                    , Block.text [] [ text "The success of outlining cards is staggering" ]
+                    , Block.link [ href "#" ] [ text "Link 1" ]
+                    , Block.link [ href "#" ] [ text "Link 2" ]
                     ]
             ]
         , Card.group
-            [ Card.config [ Card.danger, Card.align Text.alignXsCenter ]
+            [ Card.config [ Card.danger, Card.align Text.alignXsCenter, Card.textColor Text.white ]
                 |> Card.block []
-                    [ Card.titleH4 [] [ text "Danger inverse " ]
-                    , Card.text [] [ text " A Simple card with a dangerous role" ]
-                    , Card.link [ href "#" ] [ text "A Link !" ]
+                    [ Block.titleH4 [] [ text "Danger inverse " ]
+                    , Block.text [] [ text " A Simple card with a dangerous role" ]
+                    , Block.link [ href "#" ] [ text "A Link !" ]
                     ]
-            , Card.config [ Card.warning, Card.align Text.alignXsLeft ]
+            , Card.config [ Card.warning, Card.align Text.alignXsLeft, Card.textColor Text.white ]
                 |> Card.block []
-                    [ Card.titleH4 [] [ text "Warning inverse " ]
-                    , Card.text [] [ text " A Simple card with a warning role" ]
+                    [ Block.titleH4 [] [ text "Warning inverse " ]
+                    , Block.text [] [ text " A Simple card with a warning role" ]
                     ]
-            , Card.config [ Card.info, Card.align Text.alignXsRight ]
+            , Card.config [ Card.info, Card.align Text.alignXsRight, Card.textColor Text.white ]
                 |> Card.block []
-                    [ Card.titleH4 [] [ text "Info inverse " ]
-                    , Card.text [] [ text " A Simple card with a info role" ]
+                    [ Block.titleH4 [] [ text "Info inverse " ]
+                    , Block.text [] [ text " A Simple card with a info role" ]
                     ]
             ]
         , Card.config [ Card.outlineDanger ]
             |> Card.block []
-                [ Card.text [] [ text "Just some text you know" ] ]
+                [ Block.text [] [ text "Just some text you know" ] ]
             |> Card.view
         ]
 
