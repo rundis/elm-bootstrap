@@ -1340,12 +1340,15 @@ renderDropdown state ((Config { options }) as config) (Dropdown { id, toggle, it
                 [ ( "nav-item", True )
                 , ( "dropdown", True )
                 , ( "dropup", needsDropup )
-                , ( "show", getOrInitDropdownStatus id state /= Closed )
                 ]
             ]
             [ renderDropdownToggle state id config toggle
             , Html.div
-                [ class "dropdown-menu" ]
+                [ classList
+                    [ ("dropdown-menu", True)
+                    , ("show", getOrInitDropdownStatus id state /= Closed)
+                    ]
+                ]
                 (List.map (\(DropdownItem item) -> item) items)
             ]
 
