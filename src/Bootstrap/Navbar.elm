@@ -463,19 +463,19 @@ view :
 view state ((Config { options, brand, items, customItems }) as config) =
     Html.nav
         (navbarAttributes options)
-        ([ Html.button
-            [ class <|
-                "navbar-toggler"
-                    ++ (Maybe.map (\_ -> " navbar-toggler-right") brand
-                            |> Maybe.withDefault ""
-                       )
-              -- navbar-toggler-right"
-            , type_ "button"
-            , toggleHandler state config
-            ]
-            [ Html.span [ class "navbar-toggler-icon" ] [] ]
-         ]
-            ++ maybeBrand brand
+        (maybeBrand brand
+            ++ [ Html.button
+                    [ class <|
+                        "navbar-toggler"
+                            ++ (Maybe.map (\_ -> " navbar-toggler-right") brand
+                                    |> Maybe.withDefault ""
+                               )
+                      -- navbar-toggler-right"
+                    , type_ "button"
+                    , toggleHandler state config
+                    ]
+                    [ Html.span [ class "navbar-toggler-icon" ] [] ]
+               ]
             ++ [ Html.div
                     (menuAttributes state config)
                     [ Html.div (menuWrapperAttributes state config)
@@ -874,6 +874,7 @@ menuAttributes ((State { visibility, height }) as state) ((Config { withAnimatio
                                 [ ( "display", "block" )
                                 , ( "height", "0" )
                                 , ( "overflow", "hidden" )
+                                , ( "width", "100%")
                                 ]
                             ]
 
@@ -906,7 +907,7 @@ menuWrapperAttributes : State -> Config msg -> List (Html.Attribute msg)
 menuWrapperAttributes ((State { visibility, height }) as state) ((Config { withAnimation }) as config) =
     let
         styleBlock =
-            [ style [ ( "display", "block" ) ] ]
+            [ style [ ( "display", "block" ), ("width", "100%") ] ]
 
         display =
             case height of
@@ -952,6 +953,7 @@ shouldHideMenu (State { windowSize }) (Config { options }) =
 
                 Nothing ->
                     GridInternal.XS
+        _ = Debug.log "ScreenSize" winMedia
     in
         sizeToComparable winMedia > sizeToComparable options.toggleAt
 
@@ -1013,6 +1015,7 @@ transitionStyle maybeHeight =
         style
             [ ( "position", "relative" )
             , ( "height", pixelHeight )
+            , ( "width", "100%")
             , ( "overflow", "hidden" )
             , ( "-webkit-transition-timing-function", "ease" )
             , ( "-o-transition-timing-function", "ease" )
@@ -1094,12 +1097,8 @@ navbarAttributes options =
         [ ( "navbar", True )
         , ( "container", options.isContainer )
         ]
-    , class <|
-        "navbar-toggleable"
-            ++ (Maybe.map (\s -> "-" ++ s) (GridInternal.screenSizeOption options.toggleAt)
-                    |> Maybe.withDefault ""
-               )
     ]
+        ++ expandOption options.toggleAt
         ++ (case options.scheme of
                 Just scheme ->
                     schemeAttributes scheme
@@ -1115,6 +1114,33 @@ navbarAttributes options =
                     []
            )
         ++ options.attributes
+
+
+expandOption : GridInternal.ScreenSize -> List (Html.Attribute msg)
+expandOption size =
+    let
+        toClass sz =
+            class <|
+                "navbar-expand"
+                    ++ (Maybe.map (\s -> "-" ++ s) (GridInternal.screenSizeOption sz)
+                            |> Maybe.withDefault ""
+                       )
+    in
+        case size of
+            GridInternal.XS ->
+                [ toClass GridInternal.SM ]
+
+            GridInternal.SM ->
+                [ toClass GridInternal.MD ]
+
+            GridInternal.MD ->
+                [ toClass GridInternal.LG ]
+
+            GridInternal.LG ->
+                [ toClass GridInternal.XL ]
+
+            _ ->
+                []
 
 
 fixOption : Fix -> String
@@ -1139,7 +1165,7 @@ linkModifierClass modifier =
     class <|
         case modifier of
             Dark ->
-                "navbar-inverse"
+                "navbar-dark"
 
             Light ->
                 "navbar-light"
