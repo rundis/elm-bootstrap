@@ -18,6 +18,7 @@ module Bootstrap.Accordion
         , appendHeader
         , subscriptions
         , initialState
+        , initialStateWithOptions
         , config
         , State
         , Config
@@ -25,10 +26,11 @@ module Bootstrap.Accordion
         , CardBlock
         , Header
         , Toggle
+        , StateOptions
+        , Visibility(Shown, Hidden)
         )
 
 {-| An accordion is a group of stacked cards where you can toggle the visibility (slide up/down) of each card
-
 
     type alias Model =
         { accordionState = Accordion.state }
@@ -88,17 +90,17 @@ module Bootstrap.Accordion
         Accordion.subscriptions model.accordionState AccordionMsg
 
 
-
 ## Accordion
 @docs view, config, cards, withAnimation,  Config, initialState, State
 
 ## Contents
+
 @docs card, block, listGroup, header, toggle, headerH1, headerH2, headerH3, headerH4, headerH5, headerH6, appendHeader, prependHeader, Card, CardBlock, Header, Toggle
 
 
 ## Animation
-@docs subscriptions
 
+@docs subscriptions
 
 -}
 
@@ -135,11 +137,35 @@ type State
     = State (Dict String CardState)
 
 
+{-| Configuration for the State
+-}
+type alias StateOptions =
+    { id : String
+    , visibility : Visibility
+    }
+
+
 {-| Initial state for the accordion. Typically used from your main `init` function
 -}
 initialState : State
 initialState =
     State Dict.empty
+
+
+{-| An initial state with customized options
+
+    myOptions =
+        [ StateOptions "cardId" Accordion.Shown ]
+
+    init =
+        initialStateWithOptions myOptions
+
+-}
+initialStateWithOptions : List StateOptions -> State
+initialStateWithOptions options =
+    State <|
+        Dict.fromList <|
+            List.map (\option -> ( option.id, CardState option.visibility Nothing )) options
 
 
 type alias CardState =
@@ -148,6 +174,7 @@ type alias CardState =
     }
 
 
+{-| -}
 type Visibility
     = Hidden
     | StartDown
@@ -623,7 +650,7 @@ animationAttributes state config ((Card { id }) as card) =
                 [ style [ ( "height", pixelHeight ) ] ]
 
             Shown ->
-                [ style [ ( "height", pixelHeight ) ] ]
+                []
 
 
 transitionHandler :
