@@ -1308,18 +1308,25 @@ renderDropdown state ((Config { options }) as config) (Dropdown { id, toggle, it
                 )
                 options.fix
                 |> Maybe.withDefault False
+
+        isShown =
+            getOrInitDropdownStatus id state /= Closed
     in
         Html.li
             [ classList
                 [ ( "nav-item", True )
                 , ( "dropdown", True )
                 , ( "dropup", needsDropup )
-                , ( "show", getOrInitDropdownStatus id state /= Closed )
+                , ( "show", isShown )
                 ]
             ]
             [ renderDropdownToggle state id config toggle
             , Html.div
-                [ class "dropdown-menu" ]
+                [ classList
+                    [ ( "dropdown-menu", True )
+                    , ( "show", isShown )
+                    ]
+                ]
                 (List.map (\(DropdownItem item) -> item) items)
             ]
 
