@@ -1095,7 +1095,7 @@ navbarAttributes options =
         , ( "container", options.isContainer )
         ]
     , class <|
-        "navbar-toggleable"
+        "navbar-expand"
             ++ (Maybe.map (\s -> "-" ++ s) (GridInternal.screenSizeOption options.toggleAt)
                     |> Maybe.withDefault ""
                )
@@ -1139,7 +1139,7 @@ linkModifierClass modifier =
     class <|
         case modifier of
             Dark ->
-                "navbar-inverse"
+                "navbar-dark"
 
             Light ->
                 "navbar-light"
@@ -1167,7 +1167,7 @@ backgroundColorOption bgClass =
             class "bg-danger"
 
         Inverse ->
-            class "bg-inverse"
+            class "bg-dark"
 
         Custom color ->
             style [ ( "background-color", toRGBString color ) ]
@@ -1308,18 +1308,25 @@ renderDropdown state ((Config { options }) as config) (Dropdown { id, toggle, it
                 )
                 options.fix
                 |> Maybe.withDefault False
+
+        isShown =
+            getOrInitDropdownStatus id state /= Closed
     in
         Html.li
             [ classList
                 [ ( "nav-item", True )
                 , ( "dropdown", True )
                 , ( "dropup", needsDropup )
-                , ( "show", getOrInitDropdownStatus id state /= Closed )
+                , ( "show", isShown )
                 ]
             ]
             [ renderDropdownToggle state id config toggle
             , Html.div
-                [ class "dropdown-menu" ]
+                [ classList
+                    [ ( "dropdown-menu", True )
+                    , ( "show", isShown )
+                    ]
+                ]
                 (List.map (\(DropdownItem item) -> item) items)
             ]
 
