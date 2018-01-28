@@ -19,10 +19,10 @@ validationToString : Validation -> String
 validationToString validation =
     case validation of
         Success ->
-            "success"
+            "is-valid"
 
         Warning ->
             "warning"
 
         Danger ->
-            "danger"
+            "is-invalid"

@@ -11,7 +11,8 @@ module Bootstrap.Form
         , colLabelLg
         , help
         , helpInline
-        , validationText
+        , validFeedback
+        , invalidFeedback
         , groupSuccess
         , groupDanger
         , groupWarning
@@ -45,7 +46,7 @@ Use form groups to group items together (label + input is a typical simple examp
 
 
 # Validation
-@docs validationText
+@docs validFeedback, invalidFeedback
 
 # Handy helpers
 @docs help, helpInline
@@ -164,16 +165,24 @@ helpInline attributes children =
         children
 
 
-{-| Function to create validation related feedback. When placed inside a form group
-or form row with validation options set, this element will receive the appropriate color.
--}
-validationText :
+{-| Function to provide validation feedback information for valid inputs -}
+validFeedback :
     List (Html.Attribute msg)
     -> List (Html.Html msg)
     -> Html.Html msg
-validationText attributes children =
+validFeedback attributes children =
     Html.div
-        (Attributes.class "form-control-feedback" :: attributes)
+        (Attributes.class "valid-feedback" :: attributes)
+        children
+
+{-| Function to provide validation feedback information for invalid inputs -}
+invalidFeedback :
+    List (Html.Attribute msg)
+    -> List (Html.Html msg)
+    -> Html.Html msg
+invalidFeedback attributes children =
+    Html.div
+        (Attributes.class "invalid-feedback" :: attributes)
         children
 
 
