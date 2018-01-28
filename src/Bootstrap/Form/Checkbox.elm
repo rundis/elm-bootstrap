@@ -8,6 +8,7 @@ module Bootstrap.Form.Checkbox
         , disabled
         , onCheck
         , attrs
+        , id
         , success
         , warning
         , danger
@@ -21,7 +22,7 @@ module Bootstrap.Form.Checkbox
 @docs checkbox, custom
 
 # Options
-@docs checked, inline, indeterminate, disabled, onCheck, attrs, success, warning, danger, Option
+@docs id, checked, inline, indeterminate, disabled, onCheck, attrs, success, warning, danger, Option
 
 
 -}
@@ -44,7 +45,8 @@ type Checkbox msg
 {-| Opaque type representing valid customization options for a checkbox
 -}
 type Option msg
-    = Value CheckValue
+    = Id String
+    | Value CheckValue
     | Inline
     | OnChecked (Bool -> msg)
     | Custom
@@ -60,7 +62,8 @@ type CheckValue
 
 
 type alias Options msg =
-    { state : CheckValue
+    { id : Maybe String
+    , state : CheckValue
     , inline : Bool
     , custom : Bool
     , disabled : Bool
@@ -109,52 +112,32 @@ view (Checkbox chk) =
     let
         opts =
             List.foldl applyModifier defaultOptions chk.options
-
-        validationAttrs =
-            case opts.validation of
-                Just validation ->
-                    [ FormInternal.validationWrapperAttribute validation ]
-
-                Nothing ->
-                    []
     in
-        if opts.custom then
-            Html.div
+        Html.div
+            [ Attributes.classList
+                [ ( "form-check", not opts.custom )
+                , ( "form-check-inline", not opts.custom && opts.inline )
+                , ( "custom-control", opts.custom )
+                , ( "custom-checkbox", opts.custom )
+                , ( "custom-control-inline", opts.inline && opts.custom )
+                ]
+            ]
+            [ Html.input (toAttributes opts) []
+            , Html.label
                 ([ Attributes.classList
-                    [ ( "custom-controls-stacked", not opts.inline )
-                    , ( "d-inline-block", opts.inline )
+                    [ ( "form-check-label", not opts.custom )
+                    , ( "custom-control-label", opts.custom )
                     ]
                  ]
-                    ++ validationAttrs
+                    ++ case opts.id of
+                        Just v ->
+                            [ Attributes.for v ]
+
+                        Nothing ->
+                            []
                 )
-                [ Html.label
-                    ([ Attributes.class "custom-control custom-checkbox" ]
-                        ++ validationAttrs
-                    )
-                    [ Html.input (toAttributes opts) []
-                    , Html.span [ Attributes.class "custom-control-indicator" ] []
-                    , Html.span
-                        [ Attributes.class "custom-control-description" ]
-                        [ Html.text chk.label ]
-                    ]
-                ]
-        else
-            Html.div
-                ([ Attributes.classList
-                    [ ( "form-check", True )
-                    , ( "form-check-inline", opts.inline )
-                    , ( "disabled", opts.disabled )
-                    ]
-                 ]
-                    ++ validationAttrs
-                )
-                [ Html.label
-                    [ Attributes.class "form-check-label" ]
-                    [ Html.input (toAttributes opts) []
-                    , Html.text <| " " ++ chk.label
-                      -- ugly hack to provide left spacing
-                    ]
-                ]
+                [ Html.text chk.label ]
+            ]
 
 
 {-| Shorthand for assigning an onCheck handler for a checkbox.
@@ -220,6 +203,16 @@ danger =
     Validation FormInternal.Danger
 
 
+{-| Set the id for the checkbox. Will automatically set the for attribute for the label
+
+NOTE: You have to use this for custom checkboxes.
+
+-}
+id : String -> Option msg
+id theId =
+    Id theId
+
+
 {-| Use this function to handle any Html.Attribute option you wish for your select
 -}
 attrs : List (Html.Attribute msg) -> Option msg
@@ -230,6 +223,9 @@ attrs attrs =
 applyModifier : Option msg -> Options msg -> Options msg
 applyModifier modifier options =
     case modifier of
+        Id val ->
+            { options | id = Just val }
+
         Value val ->
             { options | state = val }
 
@@ -254,24 +250,33 @@ applyModifier modifier options =
 
 toAttributes : Options msg -> List (Html.Attribute msg)
 toAttributes options =
-    [ Attributes.class <|
-        if options.custom then
-            "custom-control-input"
-        else
-            "form-check-input"
+    [ Attributes.classList
+        [ ( "form-check-input", not options.custom )
+        , ( "custom-control-input", options.custom )
+        ]
     , Attributes.type_ "checkbox"
     , Attributes.disabled options.disabled
     , stateAttribute options.state
     ]
-        ++ ([ Maybe.map Events.onCheck options.onChecked ]
+        ++ ([ Maybe.map Events.onCheck options.onChecked
+            , Maybe.map Attributes.id options.id
+            ]
                 |> List.filterMap identity
+           )
+        ++ (case options.validation of
+                Just v ->
+                    [ Attributes.class <| FormInternal.validationToString v ]
+
+                Nothing ->
+                    []
            )
         ++ options.attributes
 
 
 defaultOptions : Options msg
 defaultOptions =
-    { state = Off
+    { id = Nothing
+    , state = Off
     , inline = False
     , custom = False
     , disabled = False
