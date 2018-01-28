@@ -165,14 +165,14 @@ toAttributes modifiers =
         options =
             List.foldl applyModifier defaultOptions modifiers
     in
-        [ if options.custom then
-            Attributes.class "custom-select form-control"
-          else
-            Attributes.class "form-control"
+        [ Attributes.classList
+            [ ( "form-control", not options.custom )
+            , ( "custom-select", options.custom )
+            ]
         , Attributes.disabled options.disabled
         ]
             ++ ([ Maybe.map Attributes.id options.id
-                , Maybe.andThen sizeAttribute options.size
+                , Maybe.andThen (sizeAttribute options.custom) options.size
                 , Maybe.map customEventOnChange options.onChange
                 ]
                     |> List.filterMap identity
@@ -213,8 +213,15 @@ applyModifier modifier options =
             { options | attributes = options.attributes ++ attrs }
 
 
-sizeAttribute : GridInternal.ScreenSize -> Maybe (Html.Attribute msg)
-sizeAttribute size =
-    Maybe.map
-        (\s -> Attributes.class <| "form-control-" ++ s)
-        (GridInternal.screenSizeOption size)
+sizeAttribute : Bool -> GridInternal.ScreenSize -> Maybe (Html.Attribute msg)
+sizeAttribute isCustom size =
+    let
+        prefix =
+            if isCustom then
+                "custom-select-"
+            else
+                "form-control-"
+    in
+        Maybe.map
+            (\s -> Attributes.class <| prefix ++ s)
+            (GridInternal.screenSizeOption size)
