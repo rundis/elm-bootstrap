@@ -252,6 +252,7 @@ type alias ConfigRec msg =
 type alias Options =
     { modalSize : Maybe GridInternal.ScreenSize
     , hideOnBackdropClick : Bool
+    , centered : Bool
     }
 
 
@@ -414,6 +415,7 @@ config closeMsg =
         , options =
             { modalSize = Nothing
             , hideOnBackdropClick = True
+            , centered = True
             }
         , header = Nothing
         , body = Nothing
@@ -595,7 +597,9 @@ footer attributes children (Config config) =
 
 modalAttributes : Options -> List (Html.Attribute msg)
 modalAttributes options =
-    [ Attr.class "modal-dialog"
+    [ Attr.classList [ ("modal-dialog", True)
+                     , ("modal-dialog-centered", options.centered)
+                     ]
     , Attr.style [ ( "pointer-events", "auto" ) ]
     ]
         ++ (Maybe.map modalClass options.modalSize
