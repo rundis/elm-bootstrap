@@ -11,6 +11,7 @@ module Bootstrap.Form.Radio
         , disabled
         , onClick
         , attrs
+        , id
         , Option
         , Radio
         )
@@ -22,7 +23,7 @@ module Bootstrap.Form.Radio
 @docs radio, custom, Radio
 
 # Options
-@docs checked, name, inline, onClick, disabled, attrs, Option
+@docs id, checked, name, inline, onClick, disabled, attrs, Option
 
 
 # Composing
@@ -48,7 +49,8 @@ type Radio msg
 {-| Opaque type representing valid customization options for a radio
 -}
 type Option msg
-    = Checked Bool
+    = Id String
+    | Checked Bool
     | Inline
     | Name String
     | OnClick msg
@@ -59,7 +61,8 @@ type Option msg
 
 
 type alias Options msg =
-    { checked : Bool
+    { id : Maybe String
+    , checked : Bool
     , name : Maybe String
     , custom : Bool
     , disabled : Bool
@@ -159,49 +162,33 @@ view (Radio radio) =
         opts =
             List.foldl applyModifier defaultOptions radio.options
 
-        validationAttrs =
-            case opts.validation of
-                Just validation ->
-                    [ FormInternal.validationWrapperAttribute validation ]
-
-                Nothing ->
-                    []
     in
-        if opts.custom then
-            Html.div
+        Html.div
+            [ Attributes.classList
+                [ ( "form-check", not opts.custom )
+                , ( "form-check-inline", not opts.custom && opts.inline )
+                , ( "custom-control", opts.custom )
+                , ( "custom-radio", opts.custom )
+                , ( "custom-control-inline", opts.inline && opts.custom )
+                ]
+            ]
+            [ Html.input (toAttributes opts) []
+            , Html.label
                 ([ Attributes.classList
-                    [ ( "custom-controls-stacked", not opts.inline )
-                    , ( "d-inline-block", opts.inline )
+                    [ ( "form-check-label", not opts.custom )
+                    , ( "custom-control-label", opts.custom )
                     ]
                  ]
-                    ++ validationAttrs
+                    ++ case opts.id of
+                        Just v ->
+                            [ Attributes.for v ]
+
+                        Nothing ->
+                            []
                 )
-                [ Html.label
-                    ([ Attributes.class "custom-control custom-radio" ]
-                        ++ validationAttrs
-                    )
-                    [ Html.input (toAttributes opts) []
-                    , Html.span [ Attributes.class "custom-control-indicator" ] []
-                    , Html.span
-                        [ Attributes.class "custom-control-description" ]
-                        [ Html.text radio.label ]
-                    ]
-                ]
-        else
-            Html.div
-                [ Attributes.classList
-                    [ ( "form-check", True )
-                    , ( "form-check-inline", opts.inline )
-                    , ( "disabled", opts.disabled )
-                    ]
-                ]
-                [ Html.label
-                    [ Attributes.class "form-check-label" ]
-                    [ Html.input (toAttributes opts) []
-                    , Html.text <| " " ++ radio.label
-                      -- ugly hack to provide left spacing
-                    ]
-                ]
+                [ Html.text radio.label ]
+            ]
+
 
 
 {-| Shorthand for assigning an onClick handler for a radio.
@@ -249,6 +236,17 @@ attrs attrs =
     Attrs attrs
 
 
+{-| Set the id for the radio. Will automatically set the for attribute for the label
+
+NOTE: You have to use this for custom checkboxes.
+
+-}
+id : String -> Option msg
+id theId =
+    Id theId
+
+
+
 {-| Option to color a radio with success.
 -}
 success : Option msg
@@ -273,6 +271,9 @@ danger =
 applyModifier : Option msg -> Options msg -> Options msg
 applyModifier modifier options =
     case modifier of
+        Id val ->
+            { options | id = Just val }
+
         Checked val ->
             { options | checked = val }
 
@@ -300,17 +301,17 @@ applyModifier modifier options =
 
 toAttributes : Options msg -> List (Html.Attribute msg)
 toAttributes options =
-    [ Attributes.class <|
-        if options.custom then
-            "custom-control-input"
-        else
-            "form-check-input"
+    [ Attributes.classList
+        [ ( "form-check-input", not options.custom )
+        , ( "custom-control-input", options.custom )
+        ]
     , Attributes.type_ "radio"
     , Attributes.disabled options.disabled
     , Attributes.checked options.checked
     ]
         ++ ([ Maybe.map Events.onClick options.onClick
             , Maybe.map Attributes.name options.name
+            , Maybe.map Attributes.id options.id
             ]
                 |> List.filterMap identity
            )
@@ -319,7 +320,8 @@ toAttributes options =
 
 defaultOptions : Options msg
 defaultOptions =
-    { checked = False
+    { id = Nothing
+    , checked = False
     , name = Nothing
     , custom = False
     , inline = False
