@@ -442,4 +442,4 @@ typeAttribute inputType =
 
 validationAttribute : FormInternal.Validation -> Html.Attribute msg
 validationAttribute validation =
-    Attributes.class <| "form-control-" ++ FormInternal.validationToString validation
+    Attributes.class <| FormInternal.validationToString validation
