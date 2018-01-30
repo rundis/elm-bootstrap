@@ -6,7 +6,6 @@ import Html.Attributes as Attributes
 
 type Validation
     = Success
-    | Warning
     | Danger
 
 
@@ -20,9 +19,6 @@ validationToString validation =
     case validation of
         Success ->
             "is-valid"
-
-        Warning ->
-            "warning"
 
         Danger ->
             "is-invalid"

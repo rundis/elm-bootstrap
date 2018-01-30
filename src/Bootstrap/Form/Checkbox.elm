@@ -10,7 +10,6 @@ module Bootstrap.Form.Checkbox
         , attrs
         , id
         , success
-        , warning
         , danger
         , Option
         )
@@ -22,7 +21,7 @@ module Bootstrap.Form.Checkbox
 @docs checkbox, custom
 
 # Options
-@docs id, checked, inline, indeterminate, disabled, onCheck, attrs, success, warning, danger, Option
+@docs id, checked, inline, indeterminate, disabled, onCheck, attrs, success, danger, Option
 
 
 -}
@@ -188,12 +187,6 @@ success : Option msg
 success =
     Validation FormInternal.Success
 
-
-{-| Option to color a checkbox with warning.
--}
-warning : Option msg
-warning =
-    Validation FormInternal.Warning
 
 
 {-| Option to color a checkbox with danger.

@@ -9,6 +9,8 @@ module Bootstrap.Form.Select
         , disabled
         , onChange
         , attrs
+        , success
+        , danger
         , Option
         , Item
         )
@@ -22,6 +24,9 @@ module Bootstrap.Form.Select
 # Options
 @docs id, small, large, id, disabled, onChange, attrs, Option
 
+# Validation
+@docs success, danger
+
 -}
 
 import Html
@@ -29,6 +34,7 @@ import Html.Attributes as Attributes
 import Html.Events as Events
 import Json.Decode as Json
 import Bootstrap.Grid.Internal as GridInternal
+import Bootstrap.Form.FormInternal as FormInternal
 
 
 {-| Opaque type representing a composable HTML select
@@ -54,6 +60,7 @@ type Option msg
     | Custom
     | Disabled Bool
     | OnChange (String -> msg)
+    | Validation FormInternal.Validation
     | Attrs (List (Html.Attribute msg))
 
 
@@ -63,6 +70,7 @@ type alias Options msg =
     , disabled : Bool
     , custom : Bool
     , onChange : Maybe (String -> msg)
+    , validation : Maybe FormInternal.Validation
     , attributes : List (Html.Attribute msg)
     }
 
@@ -146,6 +154,20 @@ onChange : (String -> msg) -> Option msg
 onChange toMsg =
     OnChange toMsg
 
+{-| Option to add a success marker icon for your select.
+-}
+success : Option msg
+success =
+    Validation FormInternal.Success
+
+
+{-| Option to add a danger marker icon for your select.
+-}
+danger : Option msg
+danger =
+    Validation FormInternal.Danger
+
+
 
 customEventOnChange : (String -> msg) -> Html.Attribute msg
 customEventOnChange tagger =
@@ -174,6 +196,7 @@ toAttributes modifiers =
             ++ ([ Maybe.map Attributes.id options.id
                 , Maybe.andThen (sizeAttribute options.custom) options.size
                 , Maybe.map customEventOnChange options.onChange
+                , Maybe.map validationAttribute options.validation
                 ]
                     |> List.filterMap identity
                )
@@ -187,6 +210,7 @@ defaultOptions =
     , custom = False
     , disabled = False
     , onChange = Nothing
+    , validation = Nothing
     , attributes = []
     }
 
@@ -209,6 +233,9 @@ applyModifier modifier options =
         OnChange onChange ->
             { options | onChange = Just onChange }
 
+        Validation validation ->
+            { options | validation = Just validation }
+
         Attrs attrs ->
             { options | attributes = options.attributes ++ attrs }
 
@@ -225,3 +252,7 @@ sizeAttribute isCustom size =
         Maybe.map
             (\s -> Attributes.class <| prefix ++ s)
             (GridInternal.screenSizeOption size)
+
+validationAttribute : FormInternal.Validation -> Html.Attribute msg
+validationAttribute validation =
+    Attributes.class <| FormInternal.validationToString validation

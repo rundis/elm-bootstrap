@@ -9,7 +9,6 @@ module Bootstrap.Form.Textarea
         , onInput
         , attrs
         , success
-        , warning
         , danger
         , Option
         )
@@ -25,14 +24,7 @@ module Bootstrap.Form.Textarea
 @docs id, rows, value, defaultValue, disabled, onInput, attrs, Option
 
 # Validation
-These options really only makes sense when you used in conjuction with the form module.
-To use standalone, remember to wrap your textarea in a containing element and provide it one of the following classes:
-
-* `has-success`
-* `has-warning`
-* `has-danger`
-
-@docs success, warning, danger
+@docs success, danger
 
 
 -}
@@ -138,26 +130,13 @@ disabled =
 
 
 {-| Option to add a success marker icon for your textarea.
-
-**Note:** Please read the caveat described about [`validation options`](#validation)
 -}
 success : Option msg
 success =
     Validation FormInternal.Success
 
 
-{-| Option to add a warning marker icon for your textarea.
-
-**Note:** Please read the caveat described about [`validation options`](#validation)
--}
-warning : Option msg
-warning =
-    Validation FormInternal.Warning
-
-
 {-| Option to add a danger marker icon for your textarea.
-
-**Note:** Please read the caveat described about [`validation options`](#validation)
 -}
 danger : Option msg
 danger =

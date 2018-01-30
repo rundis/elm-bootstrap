@@ -24,7 +24,6 @@ module Bootstrap.Form.Input
         , attrs
         , success
         , danger
-        , warning
         , Option
         )
 
@@ -41,14 +40,8 @@ module Bootstrap.Form.Input
 @docs id, small, large, value, defaultValue, disabled, onInput, placeholder, attrs, Option
 
 # Validation
-These options really only makes sense when used in conjunction with the form module.
-To use standalone, remember to wrap your inputs in a containing element and provide it one of the following classes:
-
-* `has-success`
-* `has-warning`
-* `has-danger`
-
-@docs success, warning, danger
+You can indicate success or invalid input using these functions.
+@docs success, danger
 
 
 -}
@@ -291,26 +284,13 @@ disabled disabled =
 
 
 {-| Option to add a success marker icon for your input.
-
-**Note:** Please read the caveat described about [`validation options`](#validation)
 -}
 success : Option msg
 success =
     Validation FormInternal.Success
 
 
-{-| Option to add a warning marker icon for your input.
-
-**Note:** Please read the caveat described about [`validation options`](#validation)
--}
-warning : Option msg
-warning =
-    Validation FormInternal.Warning
-
-
 {-| Option to add a danger marker icon for your input.
-
-**Note:** Please read the caveat described about [`validation options`](#validation)
 -}
 danger : Option msg
 danger =
