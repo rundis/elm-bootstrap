@@ -53,36 +53,49 @@ module Bootstrap.Table
 
 {-| Create simple and customizable tables in a fairly type safe manner!
 
+
 # Table
+
 @docs simpleTable, table
 
+
 ## Table options
+
 @docs inversed, striped, bordered, hover, small, responsive, reflow, attr, TableOption
 
 
 # Table headers
+
 @docs simpleThead, thead, headAttr, THead
 
 
 ## Header options
+
 @docs defaultHead, inversedHead, TableHeadOption
 
 
 # Table body
+
 @docs tbody, keyedTBody, TBody
 
 
 # Rows
+
 @docs tr, keyedTr, Row
 
+
 ## Row options
+
 @docs rowActive, rowPrimary, rowSecondary, rowInfo, rowSuccess, rowWarning, rowDanger, rowLight, rowDark, rowAttr, RowOption
 
 
 # Cells
+
 @docs td, th, Cell
 
+
 ## Cell options
+
 @docs cellActive, cellPrimary, cellSecondary, cellInfo, cellSuccess, cellWarning, cellDanger, cellLight, cellDark, cellAttr, CellOption
 
 -}
@@ -91,6 +104,7 @@ import Html
 import Html.Attributes exposing (class)
 import Html.Keyed as Keyed
 import Bootstrap.Internal.Role as Role exposing (Role(..))
+import Bootstrap.Grid.Internal as GridInternal
 
 
 {-| Opaque type representing possible styling options for a table
@@ -101,7 +115,7 @@ type TableOption msg
     | Bordered
     | Hover
     | Small
-    | Responsive
+    | Responsive (Maybe GridInternal.ScreenSize)
     | Reflow
     | TableAttr (Html.Attribute msg)
 
@@ -221,11 +235,11 @@ small =
     Small
 
 
-{-| Make table scroll horizontally on small devices (under 768px). When viewing on anything larger than 768px wide, you will not see any difference in the table.
+{-| Make table responsive for horizontally scrolling tables accross all breakpoints.
 -}
 responsive : TableOption msg
 responsive =
-    Responsive
+    Responsive Nothing
 
 
 {-| Turn traditional tables on their side. When using reflow, the table header becomes the first column of the table, the first row within the table body becomes the second column, the second row becomes the third column, etc. Only works out nicely for simple tables (e.g. no colspans, rowspans or multiple header rows etc.)
@@ -237,8 +251,7 @@ reflow =
 
 {-| Allows you to create a simple default table
 
-
-* (`thead`, `tbody`) - A tuple of a thead item and a tbody item
+  - (`thead`, `tbody`) - A tuple of a thead item and a tbody item
 
 -}
 simpleTable : ( THead msg, TBody msg ) -> Html.Html msg
@@ -275,10 +288,7 @@ table :
 table { options, thead, tbody } =
     let
         classOptions =
-            List.filter (\opt -> opt /= Responsive) options
-
-        isResponsive =
-            List.any (\opt -> opt == Responsive) options
+            List.filter (\opt -> not (isResponsive opt)) options
 
         isInversed =
             List.any (\opt -> opt == Inversed) options
@@ -288,7 +298,17 @@ table { options, thead, tbody } =
             [ maybeMapInversedTHead isInversed thead |> renderTHead
             , maybeMapInversedTBody isInversed tbody |> renderTBody
             ]
-            |> wrapResponsiveWhen isResponsive
+            |> maybeWrapResponsive options
+
+
+isResponsive : TableOption msg -> Bool
+isResponsive option =
+    case option of
+        Responsive _ ->
+            True
+
+        _ ->
+            False
 
 
 maybeMapInversedTHead : Bool -> THead msg -> THead msg
@@ -370,14 +390,31 @@ mapInversedCell cell =
                 Td { cellCfg | options = inverseOptions cellCfg.options }
 
 
-wrapResponsiveWhen : Bool -> Html.Html msg -> Html.Html msg
-wrapResponsiveWhen isResponsive table =
-    if isResponsive then
-        Html.div
-            [ class "table-responsive" ]
-            [ table ]
-    else
-        table
+maybeWrapResponsive : List (TableOption msg) -> Html.Html msg -> Html.Html msg
+maybeWrapResponsive options table =
+    let
+        responsiveClass =
+            List.filter isResponsive options
+                |> List.head
+                |> Maybe.andThen
+                    (\opt ->
+                        case opt of
+                            Responsive val ->
+                                val
+
+                            _ ->
+                                Nothing
+                    )
+                |> Maybe.andThen GridInternal.screenSizeOption
+                |> Maybe.map (\v -> "-" ++ v)
+                |> Maybe.withDefault ""
+                |> (++) "table-responsive"
+                |> class
+    in
+        if (List.any isResponsive options) then
+            Html.div [ responsiveClass ] [ table ]
+        else
+            table
 
 
 {-| Option to inverse thead element. Dark background and light text color
@@ -416,8 +453,9 @@ simpleThead cells =
 
 {-| Create a customizable thead element
 
-* `options` List of options to style the thead element
-* `rows` List of rows (aka tr)
+  - `options` List of options to style the thead element
+  - `rows` List of rows (aka tr)
+
 -}
 thead :
     List (TableHeadOption msg)
@@ -439,8 +477,8 @@ renderTHead (THead { options, rows }) =
 
 {-| Create a tbody element
 
-* `attributes` List of standard Elm html attributes
-* `rows` List of table row elements (tr)
+  - `attributes` List of standard Elm html attributes
+  - `rows` List of table row elements (tr)
 
 -}
 tbody :
@@ -456,8 +494,8 @@ tbody attributes rows =
 
 {-| Create a tbody element where each row is keyed
 
-* `attributes` List of standard Elm html attributes
-* `rows` List of key table row elements (tr) tuples
+  - `attributes` List of standard Elm html attributes
+  - `rows` List of key table row elements (tr) tuples
 
 -}
 keyedTBody :
@@ -649,7 +687,6 @@ cellActive =
     RoledCell Active
 
 
-
 {-| Option to style an individual cell with the primary color
 -}
 cellPrimary : CellOption msg
@@ -705,12 +742,13 @@ cellDark : CellOption msg
 cellDark =
     RoledCell <| Roled Dark
 
+
 {-| Create a td element
 
     Table.td [ Table.cellInfo ] [ text "Some info cell"]
 
-* `options` List of options for customizing
-* `children` List of child elements
+  - `options` List of options for customizing
+  - `children` List of child elements
 
 -}
 td :
@@ -728,8 +766,8 @@ td options children =
 
     Table.th [ Table.cellInfo ] [ text "Some info header cell"]
 
-* `options` List of options for customizing
-* `children` List of child elements
+  - `options` List of options for customizing
+  - `children` List of child elements
 
 -}
 th :
@@ -783,7 +821,7 @@ tableClass : TableOption msg -> Maybe (Html.Attribute msg)
 tableClass option =
     case option of
         Inversed ->
-            Just <| class "table-inverse"
+            Just <| class "table-dark"
 
         Striped ->
             Just <| class "table-striped"
@@ -797,7 +835,7 @@ tableClass option =
         Small ->
             Just <| class "table-sm"
 
-        Responsive ->
+        Responsive _ ->
             Nothing
 
         Reflow ->
@@ -816,7 +854,7 @@ theadAttribute : TableHeadOption msg -> Html.Attribute msg
 theadAttribute option =
     case option of
         InversedHead ->
-            class <| "thead-inverse"
+            class <| "thead-dark"
 
         DefaultHead ->
             class <| "thead-default"
