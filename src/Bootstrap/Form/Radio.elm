@@ -11,6 +11,8 @@ module Bootstrap.Form.Radio
         , disabled
         , onClick
         , attrs
+        , success
+        , danger
         , id
         , Option
         , Radio
@@ -25,6 +27,9 @@ module Bootstrap.Form.Radio
 # Options
 @docs id, checked, name, inline, onClick, disabled, attrs, Option
 
+
+# Validation
+@docs success, danger
 
 # Composing
 @docs radioList, create, createCustom, Radio
@@ -252,13 +257,6 @@ id theId =
 success : Option msg
 success =
     Validation FormInternal.Success
-
-
-{-| Option to color a radio with warning.
--}
-warning : Option msg
-warning =
-    Validation FormInternal.Warning
 
 
 {-| Option to color a radio with danger.
