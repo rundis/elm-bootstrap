@@ -20,7 +20,10 @@ module Bootstrap.Table
         , hover
         , small
         , responsive
-        , reflow
+        , responsiveSm
+        , responsiveMd
+        , responsiveLg
+        , responsiveXl
         , inversedHead
         , defaultHead
         , rowActive
@@ -61,7 +64,7 @@ module Bootstrap.Table
 
 ## Table options
 
-@docs inversed, striped, bordered, hover, small, responsive, reflow, attr, TableOption
+@docs inversed, striped, bordered, hover, small, responsive, responsiveSm, responsiveMd, responsiveLg, responsiveXl, attr, TableOption
 
 
 # Table headers
@@ -242,11 +245,32 @@ responsive =
     Responsive Nothing
 
 
-{-| Turn traditional tables on their side. When using reflow, the table header becomes the first column of the table, the first row within the table body becomes the second column, the second row becomes the third column, etc. Only works out nicely for simple tables (e.g. no colspans, rowspans or multiple header rows etc.)
+{-| Make table responsive for up until the -sm breakpoint.
 -}
-reflow : TableOption msg
-reflow =
-    Reflow
+responsiveSm : TableOption msg
+responsiveSm =
+    Responsive <| Just GridInternal.SM
+
+
+{-| Make table responsive for up until the -md breakpoint.
+-}
+responsiveMd : TableOption msg
+responsiveMd =
+    Responsive <| Just GridInternal.MD
+
+
+{-| Make table responsive for up until the -lg breakpoint.
+-}
+responsiveLg : TableOption msg
+responsiveLg =
+    Responsive <| Just GridInternal.LG
+
+
+{-| Make table responsive for up until the -xl breakpoint.
+-}
+responsiveXl : TableOption msg
+responsiveXl =
+    Responsive <| Just GridInternal.XL
 
 
 {-| Allows you to create a simple default table
