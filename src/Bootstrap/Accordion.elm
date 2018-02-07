@@ -18,6 +18,7 @@ module Bootstrap.Accordion
         , appendHeader
         , subscriptions
         , initialState
+        , initialStateCardOpen
         , config
         , State
         , Config
@@ -90,7 +91,7 @@ module Bootstrap.Accordion
 
 
 ## Accordion
-@docs view, config, cards, withAnimation,  Config, initialState, State
+@docs view, config, cards, withAnimation,  Config, initialState, initialStateCardOpen, State
 
 ## Contents
 @docs card, block, listGroup, header, toggle, headerH1, headerH2, headerH3, headerH4, headerH5, headerH6, appendHeader, prependHeader, Card, CardBlock, Header, Toggle
@@ -141,6 +142,12 @@ initialState : State
 initialState =
     State Dict.empty
 
+
+{-| Initial state with card that matches given id expanded.
+-}
+initialStateCardOpen : String -> State
+initialStateCardOpen id =
+    State <| Dict.fromList [(id, CardState Shown Nothing)]
 
 type alias CardState =
     { visibility : Visibility
@@ -623,7 +630,12 @@ animationAttributes state config ((Card { id }) as card) =
                 [ style [ ( "height", pixelHeight ) ] ]
 
             Shown ->
-                [ style [ ( "height", pixelHeight ) ] ]
+                case cardState.height of
+                    Just x ->
+                        [ style [ ( "height", pixelHeight ) ] ]
+                    Nothing ->
+                        []
+
 
 
 transitionHandler :
