@@ -120,9 +120,13 @@ view (Config config) =
                    )
                 ++ config.attributes
             )
-            (List.map (\(Addon e) -> e) config.predecessors
+            (List.map
+                (\(Addon e) -> Html.div [ Attributes.class "input-group-prepend" ] [ e ])
+                config.predecessors
                 ++ [ input ]
-                ++ List.map (\(Addon e) -> e) config.successors
+                ++ List.map
+                    (\(Addon e) -> Html.div [ Attributes.class "input-group-prepend" ] [ e ])
+                    config.successors
             )
 
 
@@ -162,7 +166,7 @@ successors addons (Config config) =
 span : List (Html.Attribute msg) -> List (Html.Html msg) -> Addon msg
 span attributes children =
     Html.span
-        (Attributes.class "input-group-addon" :: attributes)
+        (Attributes.class "input-group-text" :: attributes)
         children
         |> Addon
 
@@ -177,9 +181,7 @@ button :
     -> List (Html.Html msg)
     -> Addon msg
 button options children =
-    Html.span
-        [ Attributes.class "input-group-btn" ]
-        [ Button.button options children ]
+    Button.button options children
         |> Addon
 
 
