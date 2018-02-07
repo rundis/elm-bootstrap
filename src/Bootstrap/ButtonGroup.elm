@@ -157,7 +157,7 @@ The parameters are identical as for [`buttonGroup`](#buttonGroup)
 buttonGroupItem : List (Option msg) -> List (ButtonItem msg) -> GroupItem msg
 buttonGroupItem options items =
     Html.div
-        (groupAttributes options)
+        (groupAttributes False options)
         (List.map (\(ButtonItem elem) -> elem) items)
         |> GroupItem
 
@@ -167,7 +167,7 @@ buttonGroupItem options items =
 linkButtonGroupItem : List (Option msg) -> List (LinkButtonItem msg) -> GroupItem msg
 linkButtonGroupItem options items =
     Html.div
-        (groupAttributes options)
+        (groupAttributes False options)
         (List.map (\(LinkButtonItem elem) -> elem) items)
         |> GroupItem
 
@@ -177,7 +177,7 @@ linkButtonGroupItem options items =
 radioButtonGroupItem : List (Option msg) -> List (RadioButtonItem msg) -> GroupItem msg
 radioButtonGroupItem options items =
     Html.div
-        (groupAttributes options)
+        (groupAttributes True options)
         (List.map (\(RadioButtonItem elem) -> elem) items)
         |> GroupItem
 
@@ -187,7 +187,7 @@ radioButtonGroupItem options items =
 checkboxButtonGroupItem : List (Option msg) -> List (CheckboxButtonItem msg) -> GroupItem msg
 checkboxButtonGroupItem options items =
     Html.div
-        (groupAttributes options)
+        (groupAttributes True options)
         (List.map (\(CheckboxButtonItem elem) -> elem) items)
         |> GroupItem
 
@@ -280,8 +280,8 @@ attrs attrs =
     Attrs attrs
 
 
-groupAttributes : List (Option msg) -> List (Html.Attribute msg)
-groupAttributes modifiers =
+groupAttributes : Bool -> List (Option msg) -> List (Html.Attribute msg)
+groupAttributes toggle modifiers =
     let
         options =
             List.foldl applyModifier defaultOptions modifiers
@@ -289,6 +289,7 @@ groupAttributes modifiers =
         [ attribute "role" "group"
         , classList
             [ ( "btn-group", True )
+            , ( "btn-group-toggle", toggle )
             , ( "btn-group-vertical", options.vertical )
             ]
           -- data-toggle is needed to display radio buttons correctly (by hiding the actual radio input)
