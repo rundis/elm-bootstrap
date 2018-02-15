@@ -3,6 +3,7 @@ module Bootstrap.ButtonGroupTest exposing (..)
 import Bootstrap.ButtonGroup as ButtonGroup
 import Bootstrap.Button as Button
 import Html
+import Html.Attributes as Attr
 import Test exposing (Test, test, describe)
 import Test.Html.Query as Query
 import Test.Html.Selector exposing (text, tag, class, classes, attribute, checked)
@@ -22,7 +23,7 @@ simpleGroup =
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.has [ tag "div", class "btn-group", attribute "role" "group" ]
+                        |> Query.has [ tag "div", class "btn-group", attribute <| Attr.attribute "role" "group" ]
             , test "expect btn class" <|
                 \() ->
                     html
@@ -116,7 +117,7 @@ checkGroup =
                         |> Query.index 0
                         |> Query.has
                             [ tag "input"
-                            , attribute "type" "checkbox"
+                            , attribute <| Attr.attribute "type" "checkbox"
                             , checked False
                             ]
             ]
@@ -151,7 +152,7 @@ radioGroup =
                         |> Query.index 0
                         |> Query.has
                             [ tag "input"
-                            , attribute "type" "radio"
+                            , attribute <| Attr.attribute "type" "radio"
                             , checked False
                             ]
             ]

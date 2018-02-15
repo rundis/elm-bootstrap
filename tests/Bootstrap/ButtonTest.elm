@@ -49,7 +49,7 @@ linkButton =
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.has [ attribute "role" "button" ]
+                        |> Query.has [ attribute <| Attr.attribute "role" "button" ]
             ]
 
 
@@ -193,5 +193,5 @@ fancyBlockButton =
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.has [ attribute "role" "button" ]
+                        |> Query.has [ attribute <| Attr.attribute "role" "button" ]
             ]

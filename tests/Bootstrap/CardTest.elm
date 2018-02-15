@@ -111,13 +111,13 @@ cardFullMonty =
                     html
                         |> Query.fromHtml
                         |> Query.find [ class "card-img-top" ]
-                        |> Query.has [ attribute "src" "/imgtop.jpg" ]
+                        |> Query.has [ attribute <| Attr.attribute "src" "/imgtop.jpg" ]
             , test "expect card image bottom" <|
                 \() ->
                     html
                         |> Query.fromHtml
                         |> Query.find [ class "card-img-bottom" ]
-                        |> Query.has [ attribute "src" "/imgbottom.jpg" ]
+                        |> Query.has [ attribute <| Attr.attribute "src" "/imgbottom.jpg" ]
             , test "expect card block" <|
                 \() ->
                     html

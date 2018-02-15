@@ -129,6 +129,6 @@ splitDropDown =
                         |> Query.has
                             [ classes [ "btn", "btn-info", "dropdown-toggle", "dropdown-toggle-split" ]
                             , tag "button"
-                            , attribute "type" "button"
+                            , attribute <| Attr.attribute "type" "button"
                             ]
             ]

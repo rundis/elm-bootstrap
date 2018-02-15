@@ -87,7 +87,7 @@ styledTable =
                         |> Query.fromHtml
                         |> Query.has
                             [ classes
-                                [ "table", "table-bordered", "table-hover", "table-sm", "table-inverse" ]
+                                [ "table", "table-bordered", "table-hover", "table-sm", "table-dark" ]
                             ]
             , test "expect wrapped in div when responsive" <|
                 \() ->
@@ -96,20 +96,6 @@ styledTable =
                         |> Query.has [ class "table-responsive", tag "div" ]
             ]
 
-
-reflowedTable : Test
-reflowedTable =
-    let
-        html =
-            defaultTable [ Table.reflow ]
-    in
-        describe "Reflowed table"
-            [ test "expect class" <|
-                \() ->
-                    html
-                        |> Query.fromHtml
-                        |> Query.has [ class "table-reflow" ]
-            ]
 
 
 styledThead : Test
@@ -128,7 +114,7 @@ styledThead =
                     tblHtml Table.inversedHead
                         |> Query.fromHtml
                         |> Query.find [ tag "thead" ]
-                        |> Query.has [ class "thead-inverse" ]
+                        |> Query.has [ class "thead-dark" ]
             , test "expect default" <|
                 \() ->
                     tblHtml Table.defaultHead
@@ -166,7 +152,7 @@ styledTdOrRowInBody =
                     html []
                         |> Query.fromHtml
                         |> Query.find [ tag "td" ]
-                        |> Query.has [ class "table-active", attribute "align" "left" ]
+                        |> Query.has [ class "table-active", attribute <| Attr.attribute "align" "left" ]
             , test "expect td active bg class when table inversed" <|
                 \() ->
                     html [ Table.inversed ]
@@ -180,7 +166,7 @@ styledTdOrRowInBody =
                         |> Query.find [ tag "tbody" ]
                         |> Query.children []
                         |> Query.first
-                        |> Query.has [ class "table-success", attribute "align" "left" ]
+                        |> Query.has [ class "table-success", attribute <| Attr.attribute "align" "left" ]
             , test "expect tr success bg class when table inversed" <|
                 \() ->
                     html [ Table.inversed ]

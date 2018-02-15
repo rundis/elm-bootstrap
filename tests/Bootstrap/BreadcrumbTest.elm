@@ -3,6 +3,7 @@ module Bootstrap.BreadcrumbTest exposing (..)
 import Bootstrap.Breadcrumb as Breadcrumb
 import Expect
 import Html exposing (div, text)
+import Html.Attributes as Attr
 import Test exposing (Test, describe, test)
 import Test.Html.Query as Query
 import Test.Html.Selector exposing (attribute, class, tag)
@@ -39,13 +40,13 @@ testWithTwoItems =
                     html
                         |> Query.fromHtml
                         |> Query.find [ tag "nav" ]
-                        |> Query.has [ attribute "aria-label" "breadcrumb" ]
+                        |> Query.has [ attribute <| Attr.attribute "aria-label" "breadcrumb" ]
             , test "Expect the navigation with the role 'navigation'" <|
                 \() ->
                     html
                         |> Query.fromHtml
                         |> Query.find [ tag "nav" ]
-                        |> Query.has [ attribute "role" "navigation" ]
+                        |> Query.has [ attribute <| Attr.attribute "role" "navigation" ]
             , test "Expect the orderen list with the class 'breadcrumb'" <|
                 \() ->
                     html
@@ -84,12 +85,12 @@ testWithTwoItems =
                         |> Query.fromHtml
                         |> Query.findAll [ tag "li" ]
                         |> Query.index 0
-                        |> Query.hasNot [ attribute "aria-current" "page" ]
+                        |> Query.hasNot [ attribute <| Attr.attribute "aria-current" "page" ]
             , test "Expect second/last element with an aria-current" <|
                 \() ->
                     html
                         |> Query.fromHtml
                         |> Query.findAll [ tag "li" ]
                         |> Query.index 1
-                        |> Query.has [ attribute "aria-current" "page" ]
+                        |> Query.has [ attribute <| Attr.attribute "aria-current" "page" ]
             ]

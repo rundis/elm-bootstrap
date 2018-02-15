@@ -58,7 +58,7 @@ simpleTabs =
                         nav
                             |> Query.findAll [ tag "a" ]
                             |> Query.index 0
-                            |> Query.has [ attribute "href" "#tabItem1" ]
+                            |> Query.has [ attribute <| Attributes.attribute "href" "#tabItem1" ]
                 , test "Expect links to have children" <|
                     \() ->
                         nav
@@ -89,7 +89,7 @@ simpleTabs =
                         content
                             |> Query.findAll [ class "tab-pane" ]
                             |> Query.index 0
-                            |> Query.has [ attribute "id" "tabItem1" ]
+                            |> Query.has [ attribute <| Attributes.attribute "id" "tabItem1" ]
                 ]
             ]
 
@@ -115,7 +115,7 @@ pillsAndAttributes =
                     html
                         |> Query.fromHtml
                         |> Query.find [ tag "ul" ]
-                        |> Query.has [ attribute "name" "myTabs" ]
+                        |> Query.has [ attribute <| Attributes.attribute "name" "myTabs" ]
             ]
 
 

@@ -26,21 +26,21 @@ vanillaProgress =
                 \() ->
                     html
                         |> Query.fromHtml
-                        |> Query.has [ tag "div", class "progress-bar", attribute "role" "progressbar" ]
+                        |> Query.has [ tag "div", class "progress-bar", attribute <| Attr.attribute "role" "progressbar" ]
             , test "expect minimum = 0, maximum = 100" <|
                 \() ->
                     html
                         |> Query.fromHtml
                         |> Query.has
-                            [ attribute "aria-valuemin" "0"
-                            , attribute "aria-valuemax" "100"
+                            [ attribute <| Attr.attribute "aria-valuemin" "0"
+                            , attribute <| Attr.attribute "aria-valuemax" "100"
                             ]
             , fuzz (Fuzz.floatRange 0 100) "expect the progress value is present" <|
                 \progressValue ->
                     Progress.progress [ Progress.value progressValue ]
                         |> Query.fromHtml
                         |> Query.find [ tag "div", class "progress-bar" ]
-                        |> Query.has [ attribute "aria-value-now" (toString progressValue) ]
+                        |> Query.has [ attribute <| Attr.attribute "aria-value-now" (toString progressValue) ]
             ]
 
 
@@ -71,7 +71,7 @@ options =
             \progressValue ->
                 Progress.progress [ Progress.value progressValue ]
                     |> Query.fromHtml
-                    |> Query.has [ attribute "aria-value-now" (toString progressValue) ]
+                    |> Query.has [ attribute <| Attr.attribute "aria-value-now" (toString progressValue) ]
         , fuzz Fuzz.string "expect a label" <|
             \label ->
                 Progress.progress [ Progress.value 42, Progress.label label ]
