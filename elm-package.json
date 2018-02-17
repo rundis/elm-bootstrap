@@ -10,6 +10,7 @@
         "Bootstrap.Accordion",
         "Bootstrap.Alert",
         "Bootstrap.Badge",
+        "Bootstrap.Breadcrumb",
         "Bootstrap.Button",
         "Bootstrap.ButtonGroup",
         "Bootstrap.Card",
