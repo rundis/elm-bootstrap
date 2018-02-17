@@ -21,6 +21,7 @@ module Bootstrap.Form.Input
         , placeholder
         , onInput
         , disabled
+        , readonly
         , attrs
         , success
         , danger
@@ -37,7 +38,7 @@ module Bootstrap.Form.Input
 
 
 # Options
-@docs id, small, large, value, defaultValue, disabled, onInput, placeholder, attrs, Option
+@docs id, small, large, value, defaultValue, disabled, readonly, onInput, placeholder, attrs, Option
 
 # Validation
 You can indicate success or invalid input using these functions.
@@ -71,6 +72,7 @@ type Option msg
     | OnInput (String -> msg)
     | Validation FormInternal.Validation
     | Placeholder String
+    | Readonly Bool
     | Attrs (List (Html.Attribute msg))
 
 
@@ -100,6 +102,7 @@ type alias Options msg =
     , placeholder : Maybe String
     , onInput : Maybe (String -> msg)
     , validation : Maybe FormInternal.Validation
+    , readonly : Bool
     , attributes : List (Html.Attribute msg)
     }
 
@@ -282,6 +285,13 @@ disabled : Bool -> Option msg
 disabled disabled =
     Disabled disabled
 
+{-| Shorthand for setting the readonly attribute of an input
+-}
+readonly : Bool -> Option msg
+readonly readonly =
+    Readonly readonly
+
+
 
 {-| Option to add a success marker icon for your input.
 -}
@@ -305,6 +315,7 @@ toAttributes modifiers =
     in
         [ Attributes.class "form-control"
         , Attributes.disabled options.disabled
+        , Attributes.readonly options.readonly
         , typeAttribute options.tipe
         ]
             ++ ([ Maybe.map Attributes.id options.id
@@ -331,6 +342,7 @@ defaultOptions =
     , placeholder = Nothing
     , onInput = Nothing
     , validation = Nothing
+    , readonly = False
     , attributes = []
     }
 
@@ -364,6 +376,10 @@ applyModifier modifier options =
 
         Validation validation ->
             { options | validation = Just validation }
+
+        Readonly val ->
+            { options | readonly = val }
+
 
         Attrs attrs ->
             { options | attributes = options.attributes ++ attrs }
