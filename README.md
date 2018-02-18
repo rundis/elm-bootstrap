@@ -104,6 +104,16 @@ There's a bunch of work left to do, especially when it comes to documentation an
 
 
 ## Release history
+* 4.0.0 Updated to support Twitter Bootstrap 4.0 release version
+  * **Breaking changes** - There's quite a few breaking changes. Please consult `elm-package diff` for details. For a large part the breaking changes are caused by major changes from Twitter Bootstrap Alpha 6 to Twitter Bootstrap 4 release. Since it was going to be breaking changes regardless, we took the liberty of refactoring some modules to improve the API as well.
+  * **New feature**: Support breadcrumb
+  * **Addition**: Added support for the new color roles in TWBS 4.0 accross a range of modules in elm-bootstrap
+  * **Addition**: You can now use dropdowns in inputgroups
+  * **Addition**: Show accordion with one card open initially when that makes sense.
+  * **Addition**: Allow tables to be responsive from given breakpoints.
+  * **Subtraction**: Form validation got more tedious as TWBS changed this completely from the alpha release. Hopefully we can come up with improvements in this area to make it better again.
+
+
 * 3.0.0
   * **New Feature**: Support for bootstrap carousels (great job by [@folkertdev])
   * **Fix**: Expose fieldset module
