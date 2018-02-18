@@ -81,7 +81,8 @@ type alias Options msg =
 {-| Create a single radio input.
 
     Radio.radio
-        [ Radio.checked True
+        [ Radio.id "myRadio"
+        , Radio.checked True
         , Radio.onClick MyRadioMsg
         ]
 
@@ -94,7 +95,8 @@ radio options label =
 {-| Create a single radio input with customized Bootstrap styling.
 
     Radio.custom
-        [ Radio.checked True
+        [ Radio.id "myCustomRadio"
+        , Radio.checked True
         , Radio.onClick MyRadioMsg
         ]
 
@@ -120,9 +122,15 @@ This function is a convenient helper to create a list of radios
     -- In some view function your could create a radio list as follows
 
     Radio.radioList "myradios"
-        [ Radio.create [ Radio.onCheck (MyRadioMsg MyRadio1) ] "Radio 1"
-        , Radio.create [ Radio.onCheck (MyRadioMsg MyRadio2) ] "Radio 2"
-        , Radio.create [ Radio.onCheck (MyRadioMsg MyRadio3) ] "Radio 3"
+        [ Radio.create
+            [ Radio.id "myRadio1", Radio.onCheck (MyRadioMsg MyRadio1) ]
+            "Radio 1"
+        , Radio.create
+            [ Radio.id "myRadio2", Radio.onCheck (MyRadioMsg MyRadio2) ]
+            "Radio 2"
+        , Radio.create
+            [ Radio.id "myRadio3", Radio.onCheck (MyRadioMsg MyRadio3) ]
+            "Radio 3"
         ]
 
 

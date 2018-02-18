@@ -75,7 +75,8 @@ type alias Options msg =
 {-| Create a checkbox element
 
     Checkbox.checkbox
-        [ Checkbox.checked True
+        [ Checkbox.id "myChk"
+        , Checkbox.checked True
         , Checkbox.onCheck MyCheckMsg
         ]
 
@@ -88,7 +89,8 @@ checkbox options label =
 {-| Create a composable Bootstrap custom styled checkbox
 
     Checkbox.custom
-        [ Checkbox.checked True
+        [ Checkbox.id "myCustomChk"
+        , Checkbox.checked True
         , Checkbox.onCheck MyCheckMsg
         ]
 
