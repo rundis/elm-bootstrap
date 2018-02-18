@@ -17,6 +17,8 @@ module Bootstrap.Form.InputGroup
         , search
         , tel
         , button
+        , dropdown
+        , splitDropdown
         , span
         , large
         , small
@@ -44,7 +46,7 @@ module Bootstrap.Form.InputGroup
 
 
 # General
-@docs view, config, predecessors, successors, text, button, span, Config, Input, Addon
+@docs view, config, predecessors, successors, text, button, dropdown, splitDropdown, span, Config, Input, Addon
 
 # Additional input flavors
 @docs password, datetimeLocal, date, month, time, week, number, email, url, search, tel
@@ -63,6 +65,7 @@ import Html.Attributes as Attributes
 import Bootstrap.Grid.Internal as GridInternal
 import Bootstrap.Button as Button
 import Bootstrap.Form.Input as Input
+import Bootstrap.Dropdown as Dropdown
 
 
 {-| Opaque representation of the view configuration for an input group.
@@ -182,6 +185,42 @@ button :
     -> Addon msg
 button options children =
     Button.button options children
+        |> Addon
+
+
+{-| Create a dropdown add-on.
+
+For details see the [`Bootstrap.Dropdown`](Bootstrap-Dropdown) module.
+-}
+dropdown :
+    Dropdown.State
+    ->
+        { toggleMsg : Dropdown.State -> msg
+        , toggleButton : Dropdown.DropdownToggle msg
+        , options : List (Dropdown.DropdownOption msg)
+        , items : List (Dropdown.DropdownItem msg)
+        }
+    -> Addon msg
+dropdown state config =
+    Dropdown.dropdown state config
+        |> Addon
+
+
+{-| Create a split dropdown add-on.
+
+For details see the [`Bootstrap.Dropdown`](Bootstrap-Dropdown) module.
+-}
+splitDropdown :
+    Dropdown.State
+    ->
+        { toggleMsg : Dropdown.State -> msg
+        , toggleButton : Dropdown.SplitDropdownToggle msg
+        , options : List (Dropdown.DropdownOption msg)
+        , items : List (Dropdown.DropdownItem msg)
+        }
+    -> Addon msg
+splitDropdown state config =
+    Dropdown.splitDropdown state config
         |> Addon
 
 
