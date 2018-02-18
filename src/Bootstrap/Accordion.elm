@@ -32,17 +32,14 @@ module Bootstrap.Accordion
 
 
     type alias Model =
-        { accordionState = Accordion.state }
+        { accordionState : Accordion.State }
 
-
-    init: (Model, Cmd Msg)
+    init : ( Model, Cmd Msg )
+    init =
         ( { accordionState = Accordion.initialState }, Cmd.none )
-
 
     type Msg
         = AccordionMsg Accordion.State
-
-
 
     update : Msg -> Model -> ( Model, Cmd Msg )
     update msg model =
@@ -52,10 +49,9 @@ module Bootstrap.Accordion
                 , Cmd.none
                 )
 
-
     view : Model -> Html Msg
     view model =
-        Accordion.config
+        Accordion.config AccordionMsg
             |> Accordion.withAnimation
             |> Accordion.cards
                 [ Accordion.card
@@ -87,7 +83,6 @@ module Bootstrap.Accordion
     subscriptions : Model -> Sub Msg
     subscriptions model =
         Accordion.subscriptions model.accordionState AccordionMsg
-
 
 
 ## Accordion
