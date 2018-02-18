@@ -634,7 +634,7 @@ animationAttributes state config ((Card { id }) as card) =
             Shown ->
                 case cardState.height of
                     Just x ->
-                        [ style [ ( "height", pixelHeight ) ] ]
+                        [ style [ ( "height", "100%" ) ] ]
 
                     Nothing ->
                         []
