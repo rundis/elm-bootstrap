@@ -189,7 +189,8 @@ import AnimationFrame
 import Json.Decode as Json
 
 
-{-| Visibility state for the modal -}
+{-| Visibility state for the modal
+-}
 type Visibility
     = Show
     | StartClose
@@ -197,16 +198,19 @@ type Visibility
     | Hide
 
 
-{-| The modal should be made visible. -}
+{-| The modal should be made visible.
+-}
 shown : Visibility
 shown =
     Show
 
 
-{-| The modal should be hidden -}
+{-| The modal should be hidden
+-}
 hidden : Visibility
 hidden =
     Hide
+
 
 {-| When using animations use this state for handling custom close buttons etc.
 
@@ -222,12 +226,14 @@ hiddenAnimated =
     StartClose
 
 
-{-| Subscription for handling animations -}
+{-| Subscription for handling animations
+-}
 subscriptions : Visibility -> (Visibility -> msg) -> Sub msg
 subscriptions visibility animateMsg =
     case visibility of
         StartClose ->
-            AnimationFrame.times (\_ -> animateMsg FadeClose )
+            AnimationFrame.times (\_ -> animateMsg FadeClose)
+
         _ ->
             Sub.none
 
@@ -236,7 +242,6 @@ subscriptions visibility animateMsg =
 -}
 type Config msg
     = Config (ConfigRec msg)
-
 
 
 type alias ConfigRec msg =
@@ -254,8 +259,6 @@ type alias Options =
     , hideOnBackdropClick : Bool
     , centered : Bool
     }
-
-
 
 
 {-| Opaque type representing a modal header
@@ -296,7 +299,6 @@ large (Config ({ options } as config)) =
     Config { config | options = { options | modalSize = Just LG } }
 
 
-
 {-| Option to trigger close message when the user clicks on the modal backdrop. Default True.
 -}
 hideOnBackdropClick : Bool -> Config msg -> Config msg
@@ -305,7 +307,8 @@ hideOnBackdropClick hide (Config ({ options } as config)) =
 
 
 {-| Configure the modal to support fade-in/out animations. You'll need to provide
-a message to handle animation. -}
+a message to handle animation.
+-}
 withAnimation : (Visibility -> msg) -> Config msg -> Config msg
 withAnimation animateMsg (Config config) =
     Config { config | withAnimation = Just animateMsg }
@@ -321,18 +324,13 @@ view :
     Visibility
     -> Config msg
     -> Html.Html msg
-view visibility (Config ({body, footer, options} as config) ) =
-    let
-        _ = Debug.log "Visibility " visibility
-        _ = Debug.log "Config " config
-
-    in
-     Html.div
+view visibility (Config ({ body, footer, options } as config)) =
+    Html.div
         []
         ([ Html.div
-            ([ Attr.tabindex -1 ] ++ display visibility config )
+            ([ Attr.tabindex -1 ] ++ display visibility config)
             [ Html.div
-                (Attr.attribute "role" "document" :: modalAttributes options )
+                (Attr.attribute "role" "document" :: modalAttributes options)
                 [ Html.div
                     [ Attr.class "modal-content" ]
                     (List.filterMap
@@ -355,7 +353,7 @@ display visibility config =
         Show ->
             [ Attr.style
                 [ ( "pointer-events", "none" )
-                , ( "display", "block")
+                , ( "display", "block" )
                 ]
             , Attr.classList
                 [ ( "modal", True )
@@ -367,7 +365,7 @@ display visibility config =
         StartClose ->
             [ Attr.style
                 [ ( "pointer-events", "none" )
-                , ( "display", "block")
+                , ( "display", "block" )
                 ]
             , Attr.classList
                 [ ( "modal", True )
@@ -379,7 +377,7 @@ display visibility config =
         FadeClose ->
             [ Attr.style
                 [ ( "pointer-events", "none" )
-                , ( "display", "block")
+                , ( "display", "block" )
                 ]
             , Attr.classList
                 [ ( "modal", True )
@@ -390,7 +388,7 @@ display visibility config =
             ]
 
         Hide ->
-            [ Attr.style [ ( "height", "0px" ) , ( "display", "block") ]
+            [ Attr.style [ ( "height", "0px" ), ( "display", "block" ) ]
             , Attr.classList
                 [ ( "modal", True )
                 , ( "fade", isFade config )
@@ -402,7 +400,6 @@ display visibility config =
 isFade : ConfigRec msg -> Bool
 isFade config =
     Maybe.map (\_ -> True) config.withAnimation |> Maybe.withDefault False
-
 
 
 {-| Create an initial modal config. You can enrich the config by using the header, body, footer and option related functions.
@@ -593,13 +590,12 @@ footer attributes children (Config config) =
         |> Config
 
 
-
-
 modalAttributes : Options -> List (Html.Attribute msg)
 modalAttributes options =
-    [ Attr.classList [ ("modal-dialog", True)
-                     , ("modal-dialog-centered", options.centered)
-                     ]
+    [ Attr.classList
+        [ ( "modal-dialog", True )
+        , ( "modal-dialog-centered", options.centered )
+        ]
     , Attr.style [ ( "pointer-events", "auto" ) ]
     ]
         ++ (Maybe.map modalClass options.modalSize
@@ -618,7 +614,7 @@ modalClass size =
 
 
 renderHeader : ConfigRec msg -> Maybe (Html.Html msg)
-renderHeader ({header} as config) =
+renderHeader ({ header } as config) =
     case header of
         Just (Header cfg) ->
             Html.div
@@ -628,6 +624,7 @@ renderHeader ({header} as config) =
 
         Nothing ->
             Nothing
+
 
 getCloseMsg : ConfigRec msg -> msg
 getCloseMsg config =
