@@ -14,6 +14,7 @@ module Bootstrap.Form
         , validFeedback
         , invalidFeedback
         , Col
+        , Option
         )
 
 {-| Bootstrap provides several form control styles, layout options, and custom components for creating a wide variety of forms.
@@ -28,7 +29,7 @@ module Bootstrap.Form
 
 Use form groups to group items together (label + input is a typical simple example)
 
-@docs group, label
+@docs group, label, Option
 
 
 # Grid layouts
@@ -63,7 +64,8 @@ type Col msg
         , children : List (Html.Html msg)
         }
 
-
+{-| Opaque type representing options for customing form groups.
+-}
 type Option msg
     = Attrs (List (Html.Attribute msg))
 
