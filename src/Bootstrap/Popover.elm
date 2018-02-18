@@ -87,7 +87,7 @@ cases where they don't work as you'd expect. So make sure you test your views wh
 -}
 
 import Html
-import Html.Attributes exposing (class, classList, style)
+import Html.Attributes exposing (class, classList, style, attribute)
 import Html.Events
 import Json.Decode as Json
 import DOM
@@ -138,8 +138,8 @@ type Content msg
 type alias Pos =
     { left : Float
     , top : Float
-    , arrowTop : Float
-    , arrowLeft : Float
+    , arrowTop : Maybe Float
+    , arrowLeft : Maybe Float
     }
 
 
@@ -193,7 +193,7 @@ popoverView (State { isActive, domState }) (Config config) =
                 [ ( "left", px pos.left )
                 , ( "top", px pos.top )
                 , ( "display", "inline-block" )
-                , ( "position", "absolute" )
+                  --, ( "position", "absolute" )
                 , ( "width", px domState.offsetWidth )
                 ]
             else
@@ -202,9 +202,10 @@ popoverView (State { isActive, domState }) (Config config) =
                 ]
 
         arrowStyles =
-            [ ( "top", px pos.arrowTop )
-            , ( "left", px pos.arrowLeft )
+            [ Maybe.map (\t -> ( "top", px t )) pos.arrowTop
+            , Maybe.map (\l -> ( "left", px l )) pos.arrowLeft
             ]
+                |> List.filterMap identity
     in
         Html.div
             [ classList
@@ -214,6 +215,7 @@ popoverView (State { isActive, domState }) (Config config) =
                 , positionClass config.direction
                 ]
             , style styles
+            , directionAttr config.direction
             ]
             ([ Just <| Html.div [ class "arrow", style arrowStyles ] []
              , Maybe.map (\(Title t) -> t) config.title
@@ -221,6 +223,23 @@ popoverView (State { isActive, domState }) (Config config) =
              ]
                 |> List.filterMap identity
             )
+
+
+directionAttr : Position -> Html.Attribute msg
+directionAttr position =
+    attribute "x-placement" <|
+        case position of
+            Left ->
+                "left"
+
+            Right ->
+                "right"
+
+            Top ->
+                "top"
+
+            Bottom ->
+                "bottom"
 
 
 positionClass : Position -> ( String, Bool )
@@ -537,29 +556,27 @@ calculatePos pos { rect, offsetWidth, offsetHeight } =
         Left ->
             { left = -offsetWidth - 10
             , top = (rect.height / 2) - (offsetHeight / 2)
-            , arrowTop = (offsetHeight / 2) - 2.5
-            , arrowLeft = offsetWidth - 11
+            , arrowTop = Just <| (offsetHeight / 2) - 12
+            , arrowLeft = Nothing
             }
 
         Right ->
             { left = rect.width
             , top = (rect.height / 2) - (offsetHeight / 2)
-            , arrowTop = (offsetHeight / 2) - 2.5
-            , arrowLeft = 0
+            , arrowTop = Just <| (offsetHeight / 2) - 12
+            , arrowLeft = Nothing
             }
 
         Top ->
             { left = (rect.width / 2) - (offsetWidth / 2)
-            , top = -offsetHeight  - 10
-            , arrowTop = offsetHeight - 6.5
-            , arrowLeft = (offsetWidth/2) - 5
+            , top = -offsetHeight - 10
+            , arrowTop =Nothing
+            , arrowLeft = Just <| (offsetWidth / 2) - 12
             }
 
         Bottom ->
             { left = (rect.width / 2) - (offsetWidth / 2)
             , top = rect.height
-            , arrowTop = 0
-            , arrowLeft = (offsetWidth/2) - 5
+            , arrowTop = Nothing
+            , arrowLeft = Just <| (offsetWidth / 2) - 12
             }
-
-
