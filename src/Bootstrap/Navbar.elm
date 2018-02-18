@@ -7,13 +7,14 @@ module Bootstrap.Navbar
         , withAnimation
         , fixTop
         , fixBottom
-        , faded
+        , dark
+        , light
         , primary
+        , secondary
         , success
         , info
         , warning
         , danger
-        , inverse
         , lightCustom
         , darkCustom
         , lightCustomClass
@@ -111,7 +112,7 @@ The navbar is designed to be responsive by default and made interactive with a t
 
 
 ## Options
-@docs withAnimation, primary, success, info, warning, danger, inverse, faded, fixTop, fixBottom, lightCustom, darkCustom, lightCustomClass, darkCustomClass, collapseSmall, collapseMedium, collapseLarge, collapseExtraLarge, container, attrs
+@docs withAnimation, primary, secondary, success, info, warning, danger, light, dark, fixTop, fixBottom, lightCustom, darkCustom, lightCustomClass, darkCustomClass, collapseSmall, collapseMedium, collapseLarge, collapseExtraLarge, container, attrs
 
 
 ## Brand
@@ -143,6 +144,7 @@ import Html
 import Html.Attributes exposing (class, classList, style, type_, id, href)
 import Html.Events exposing (onClick, on, onWithOptions)
 import Bootstrap.Grid.Internal as GridInternal
+import Bootstrap.Internal.Role as RoleInternal
 import Color
 import Dict
 import Json.Decode as Json
@@ -231,13 +233,7 @@ type LinkModifier
 
 
 type BackgroundColor
-    = Faded
-    | Primary
-    | Success
-    | Info
-    | Warning
-    | Danger
-    | Inverse
+    = Roled RoleInternal.Role
     | Custom Color.Color
     | Class String
 
@@ -422,7 +418,7 @@ config toMsg =
         , options =
             { fix = Nothing
             , isContainer = False
-            , scheme = Just { modifier = Light, bgColor = Faded }
+            , scheme = Just { modifier = Light, bgColor = Roled RoleInternal.Light }
             , toggleAt = GridInternal.XS
             , attributes = []
             }
@@ -521,53 +517,60 @@ container config =
     updateOptions (\opts -> { opts | isContainer = True }) config
 
 
-{-| Inverse the colors of your menu. Dark background and light text
+{-| Use a light background color (with a dark text)
 -}
-inverse : Config msg -> Config msg
-inverse =
-    scheme Dark Inverse
+light : Config msg -> Config msg
+light =
+    scheme Light <| Roled RoleInternal.Light
 
 
-{-| Give your menu a light faded gray look
+{-| Give your dark background (with a light text)
 -}
-faded : Config msg -> Config msg
-faded =
-    scheme Light Faded
+dark : Config msg -> Config msg
+dark =
+    scheme Dark <| Roled RoleInternal.Dark
 
 
 {-| Option to color menu using the primary color
 -}
 primary : Config msg -> Config msg
 primary =
-    scheme Dark Primary
+    scheme Dark <| Roled RoleInternal.Primary
+
+
+{-| Option to color menu using the secondary color
+-}
+secondary : Config msg -> Config msg
+secondary =
+    scheme Dark <| Roled RoleInternal.Secondary
 
 
 {-| Option to color menu using the success color
 -}
 success : Config msg -> Config msg
 success =
-    scheme Dark Success
+    scheme Dark <| Roled RoleInternal.Success
 
 
 {-| Option to color menu using the info color
 -}
 info : Config msg -> Config msg
 info =
-    scheme Dark Info
+    scheme Dark <| Roled RoleInternal.Info
 
 
 {-| Option to color menu using the warning color
 -}
 warning : Config msg -> Config msg
 warning =
-    scheme Dark Warning
+    scheme Dark <| Roled RoleInternal.Warning
 
 
 {-| Option to color menu using the danger color
 -}
 danger : Config msg -> Config msg
 danger =
-    scheme Dark Danger
+    scheme Dark <| Roled RoleInternal.Danger
 
 
 {-| Option to color menu using a dark custom background color
@@ -874,7 +877,7 @@ menuAttributes ((State { visibility, height }) as state) ((Config { withAnimatio
                                 [ ( "display", "block" )
                                 , ( "height", "0" )
                                 , ( "overflow", "hidden" )
-                                , ( "width", "100%")
+                                , ( "width", "100%" )
                                 ]
                             ]
 
@@ -907,7 +910,7 @@ menuWrapperAttributes : State -> Config msg -> List (Html.Attribute msg)
 menuWrapperAttributes ((State { visibility, height }) as state) ((Config { withAnimation }) as config) =
     let
         styleBlock =
-            [ style [ ( "display", "block" ), ("width", "100%") ] ]
+            [ style [ ( "display", "block" ), ( "width", "100%" ) ] ]
 
         display =
             case height of
@@ -953,7 +956,9 @@ shouldHideMenu (State { windowSize }) (Config { options }) =
 
                 Nothing ->
                     GridInternal.XS
-        _ = Debug.log "ScreenSize" winMedia
+
+        _ =
+            Debug.log "ScreenSize" winMedia
     in
         sizeToComparable winMedia > sizeToComparable options.toggleAt
 
@@ -1015,7 +1020,7 @@ transitionStyle maybeHeight =
         style
             [ ( "position", "relative" )
             , ( "height", pixelHeight )
-            , ( "width", "100%")
+            , ( "width", "100%" )
             , ( "overflow", "hidden" )
             , ( "-webkit-transition-timing-function", "ease" )
             , ( "-o-transition-timing-function", "ease" )
@@ -1174,26 +1179,8 @@ linkModifierClass modifier =
 backgroundColorOption : BackgroundColor -> Html.Attribute msg
 backgroundColorOption bgClass =
     case bgClass of
-        Faded ->
-            class "bg-faded"
-
-        Primary ->
-            class "bg-primary"
-
-        Success ->
-            class "bg-success"
-
-        Info ->
-            class "bg-info"
-
-        Warning ->
-            class "bg-warning"
-
-        Danger ->
-            class "bg-danger"
-
-        Inverse ->
-            class "bg-inverse"
+        Roled role ->
+            RoleInternal.toClass "bg" role
 
         Custom color ->
             style [ ( "background-color", toRGBString color ) ]
@@ -1334,19 +1321,23 @@ renderDropdown state ((Config { options }) as config) (Dropdown { id, toggle, it
                 )
                 options.fix
                 |> Maybe.withDefault False
+
+        isShown =
+            getOrInitDropdownStatus id state /= Closed
     in
         Html.li
             [ classList
                 [ ( "nav-item", True )
                 , ( "dropdown", True )
+                , ( "shown", isShown )
                 , ( "dropup", needsDropup )
                 ]
             ]
             [ renderDropdownToggle state id config toggle
             , Html.div
                 [ classList
-                    [ ("dropdown-menu", True)
-                    , ("show", getOrInitDropdownStatus id state /= Closed)
+                    [ ( "dropdown-menu", True )
+                    , ( "show", isShown )
                     ]
                 ]
                 (List.map (\(DropdownItem item) -> item) items)
