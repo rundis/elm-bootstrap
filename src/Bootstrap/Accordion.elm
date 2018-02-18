@@ -35,7 +35,8 @@ module Bootstrap.Accordion
         { accordionState = Accordion.state }
 
 
-    init: (Model, Cmd Msg)
+    init : (Model, Cmd Msg)
+    init =
         ( { accordionState = Accordion.initialState }, Cmd.none )
 
 
@@ -55,7 +56,7 @@ module Bootstrap.Accordion
 
     view : Model -> Html Msg
     view model =
-        Accordion.config
+        Accordion.config AccordionMsg
             |> Accordion.withAnimation
             |> Accordion.cards
                 [ Accordion.card
@@ -147,7 +148,8 @@ initialState =
 -}
 initialStateCardOpen : String -> State
 initialStateCardOpen id =
-    State <| Dict.fromList [(id, CardState Shown Nothing)]
+    State <| Dict.fromList [ ( id, CardState Shown Nothing ) ]
+
 
 type alias CardState =
     { visibility : Visibility
@@ -633,9 +635,9 @@ animationAttributes state config ((Card { id }) as card) =
                 case cardState.height of
                     Just x ->
                         [ style [ ( "height", pixelHeight ) ] ]
+
                     Nothing ->
                         []
-
 
 
 transitionHandler :
