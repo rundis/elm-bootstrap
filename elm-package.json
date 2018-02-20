@@ -37,7 +37,12 @@
         "Bootstrap.Progress",
         "Bootstrap.Tab",
         "Bootstrap.Table",
-        "Bootstrap.Text"
+        "Bootstrap.Text",
+        "Bootstrap.Utilities.Border",
+        "Bootstrap.Utilities.Display",
+        "Bootstrap.Utilities.Flex",
+        "Bootstrap.Utilities.Size",
+        "Bootstrap.Utilities.Spacing"
     ],
     "dependencies": {
         "debois/elm-dom": "1.0.0 <= v < 2.0.0",
