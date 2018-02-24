@@ -11,13 +11,19 @@ import Test.Html.Selector exposing (text, tag, class, classes)
 simpleAlerts : Test
 simpleAlerts =
     let
+        alert txt roleFn =
+            Alert.config
+                    |> roleFn
+                    |> Alert.children [ Alert.customElement <| Html.text txt ]
+                    |> Alert.view Alert.shown
+
         html =
             Html.div
                 []
-                [ Alert.success [ Html.text "success" ]
-                , Alert.info [ Html.text "info" ]
-                , Alert.warning [ Html.text "warning" ]
-                , Alert.danger [ Html.text "danger" ]
+                [ alert "success" Alert.success
+                , alert "info" Alert.info
+                , alert "warning" Alert.warning
+                , alert "danger" Alert.danger
                 ]
     in
         describe "Simple alerts"
@@ -58,8 +64,10 @@ alertWithLink : Test
 alertWithLink =
     let
         html =
-            Alert.info
-                [ Alert.link [] [ Html.text "link" ] ]
+            Alert.config
+                |> Alert.info
+                |> Alert.children [ Alert.link [] [ Html.text "link" ]]
+                |> Alert.view Alert.shown
     in
         describe "Alert with link"
             [ test "Expect link class and text" <|
@@ -75,14 +83,17 @@ alertWithHeaders : Test
 alertWithHeaders =
     let
         html =
-            Alert.info
-                [ Alert.h1 [] [ Html.text "h1" ]
-                , Alert.h2 [] [ Html.text "h2" ]
-                , Alert.h3 [] [ Html.text "h3" ]
-                , Alert.h4 [] [ Html.text "h4" ]
-                , Alert.h5 [] [ Html.text "h5" ]
-                , Alert.h6 [] [ Html.text "h6" ]
-                ]
+            Alert.config
+                |> Alert.info
+                |> Alert.children
+                    [ Alert.h1 [] [ Html.text "h1" ]
+                    , Alert.h2 [] [ Html.text "h2" ]
+                    , Alert.h3 [] [ Html.text "h3" ]
+                    , Alert.h4 [] [ Html.text "h4" ]
+                    , Alert.h5 [] [ Html.text "h5" ]
+                    , Alert.h6 [] [ Html.text "h6" ]
+                    ]
+                |> Alert.view Alert.shown
     in
         describe "Alert with headers"
             [ test "Expect link class and text" <|
