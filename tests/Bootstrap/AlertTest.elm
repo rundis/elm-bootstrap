@@ -11,52 +11,59 @@ import Test.Html.Selector exposing (text, tag, class, classes)
 simpleAlerts : Test
 simpleAlerts =
     let
-        alert txt roleFn =
-            Alert.config
-                    |> roleFn
-                    |> Alert.children [ Alert.customElement <| Html.text txt ]
-                    |> Alert.view Alert.shown
+        alert txt alertFn =
+            alertFn [] [ Html.text txt ]
 
         html =
             Html.div
                 []
-                [ alert "success" Alert.success
-                , alert "info" Alert.info
-                , alert "warning" Alert.warning
-                , alert "danger" Alert.danger
+                [ alert "primary" Alert.simplePrimary
+                , alert "secondary" Alert.simpleSecondary
+                , alert "success" Alert.simpleSuccess
+                , alert "info" Alert.simpleInfo
+                , alert "warning" Alert.simpleWarning
+                , alert "danger" Alert.simpleDanger
+                , alert "light" Alert.simpleLight
+                , alert "dark" Alert.simpleDark
                 ]
+
+        expectRoled roleTxt =
+            html
+                |> Query.fromHtml
+                |> Query.find [ class ("alert-" ++ roleTxt) ]
+                |> Query.has [ text roleTxt ]
     in
         describe "Simple alerts"
-            [ test "Expect 4 alerts" <|
+            [ test "Expect 8 alerts" <|
                 \() ->
                     html
                         |> Query.fromHtml
                         |> Query.findAll [ class "alert" ]
-                        |> Query.count (Expect.equal 4)
+                        |> Query.count (Expect.equal 8)
+            , test "Expect primary" <|
+                \() ->
+                    expectRoled "primary"
+            , test "Expect secondary" <|
+                \() ->
+                    expectRoled "secondary"
             , test "Expect success" <|
                 \() ->
-                    html
-                        |> Query.fromHtml
-                        |> Query.find [ class "alert-success" ]
-                        |> Query.has [ text "success" ]
+                    expectRoled "success"
             , test "Expect info" <|
                 \() ->
-                    html
-                        |> Query.fromHtml
-                        |> Query.find [ class "alert-info" ]
-                        |> Query.has [ text "info" ]
+                    expectRoled "info"
             , test "Expect warning" <|
                 \() ->
-                    html
-                        |> Query.fromHtml
-                        |> Query.find [ class "alert-warning" ]
-                        |> Query.has [ text "warning" ]
+                    expectRoled "warning"
             , test "Expect danger" <|
                 \() ->
-                    html
-                        |> Query.fromHtml
-                        |> Query.find [ class "alert-danger" ]
-                        |> Query.has [ text "danger" ]
+                    expectRoled "danger"
+            , test "Expect light" <|
+                \() ->
+                    expectRoled "light"
+            , test "Expect dark" <|
+                \() ->
+                    expectRoled "dark"
             ]
 
 
@@ -64,10 +71,7 @@ alertWithLink : Test
 alertWithLink =
     let
         html =
-            Alert.config
-                |> Alert.info
-                |> Alert.children [ Alert.link [] [ Html.text "link" ]]
-                |> Alert.view Alert.shown
+            Alert.simpleInfo [] [ Alert.link [] [ Html.text "link" ] ]
     in
         describe "Alert with link"
             [ test "Expect link class and text" <|
@@ -83,17 +87,20 @@ alertWithHeaders : Test
 alertWithHeaders =
     let
         html =
-            Alert.config
-                |> Alert.info
-                |> Alert.children
-                    [ Alert.h1 [] [ Html.text "h1" ]
-                    , Alert.h2 [] [ Html.text "h2" ]
-                    , Alert.h3 [] [ Html.text "h3" ]
-                    , Alert.h4 [] [ Html.text "h4" ]
-                    , Alert.h5 [] [ Html.text "h5" ]
-                    , Alert.h6 [] [ Html.text "h6" ]
-                    ]
-                |> Alert.view Alert.shown
+            Alert.simpleInfo []
+                [ Alert.h1 [] [ Html.text "h1" ]
+                , Alert.h2 [] [ Html.text "h2" ]
+                , Alert.h3 [] [ Html.text "h3" ]
+                , Alert.h4 [] [ Html.text "h4" ]
+                , Alert.h5 [] [ Html.text "h5" ]
+                , Alert.h6 [] [ Html.text "h6" ]
+                ]
+
+        expectH txt =
+            html
+                |> Query.fromHtml
+                |> Query.find [ tag txt ]
+                |> Query.has [ text txt ]
     in
         describe "Alert with headers"
             [ test "Expect link class and text" <|
@@ -102,40 +109,10 @@ alertWithHeaders =
                         |> Query.fromHtml
                         |> Query.findAll [ class "alert-header" ]
                         |> Query.count (Expect.equal 6)
-            , test "Expect h1" <|
-                \() ->
-                    html
-                        |> Query.fromHtml
-                        |> Query.find [ tag "h1" ]
-                        |> Query.has [ text "h1" ]
-            , test "Expect h2" <|
-                \() ->
-                    html
-                        |> Query.fromHtml
-                        |> Query.find [ tag "h2" ]
-                        |> Query.has [ text "h2" ]
-            , test "Expect h3" <|
-                \() ->
-                    html
-                        |> Query.fromHtml
-                        |> Query.find [ tag "h3" ]
-                        |> Query.has [ text "h3" ]
-            , test "Expect h4" <|
-                \() ->
-                    html
-                        |> Query.fromHtml
-                        |> Query.find [ tag "h4" ]
-                        |> Query.has [ text "h4" ]
-            , test "Expect h5" <|
-                \() ->
-                    html
-                        |> Query.fromHtml
-                        |> Query.find [ tag "h5" ]
-                        |> Query.has [ text "h5" ]
-            , test "Expect h6" <|
-                \() ->
-                    html
-                        |> Query.fromHtml
-                        |> Query.find [ tag "h6" ]
-                        |> Query.has [ text "h6" ]
+            , test "Expect h1" <| \() -> expectH "h1"
+            , test "Expect h2" <| \() -> expectH "h2"
+            , test "Expect h3" <| \() -> expectH "h3"
+            , test "Expect h4" <| \() -> expectH "h4"
+            , test "Expect h5" <| \() -> expectH "h5"
+            , test "Expect h6" <| \() -> expectH "h6"
             ]
