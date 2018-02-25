@@ -21,7 +21,7 @@ Twitter Bootstrap is one of the most popular CSS (with some JS) frameworks for b
 For user documentation, check out the [Docs Site](http://elm-bootstrap.info/).
 The latest API documentation is up on [Elm Package](http://package.elm-lang.org/packages/rundis/elm-bootstrap/latest).
 
-It also helps to read through the relevant [Twitter Bootstrap documentation](https://v4-alpha.getbootstrap.com/getting-started/introduction/).
+It also helps to read through the relevant [Twitter Bootstrap documentation](https://getbootstrap.com/docs/4.0/getting-started/introduction/).
 
 
 ## Getting started
