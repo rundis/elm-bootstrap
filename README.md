@@ -2,16 +2,16 @@
 
 
 
-Elm Bootstrap is a comprehensive library package that aims to make it pleasant and reasonably type safe to use the upcoming [Twitter Bootstrap 4](https://v4-alpha.getbootstrap.com/) CSS Framework in Elm applications.
+Elm Bootstrap is a comprehensive library package that aims to make it pleasant and reasonably type safe to use [Twitter Bootstrap 4](https://getbootstrap.com/) CSS Framework in Elm applications.
 
 
-Twitter Bootstrap is one of the most popular CSS (with some JS) frameworks for building responsive, mobile first web sites. Version 4 is fully embracing flexbox, which will provide much better control and flexibility.
+Twitter Bootstrap is one of the most popular CSS (with some JS) frameworks for building responsive, mobile first web sites. Version 4 is fully embracing flexbox, which provides much better control and flexibility.
 
 
 ### What's in it for me?
 * A reasonably type safe API for using Bootstrap
 * Some boilerplate is being handled for you
-* Interactive elements like Navbar, Dropdowns, Accordion, Modal, Popups, Tabs and Carousel
+* Interactive elements like Navbar, Dropdowns, Accordion, Modal, Popups, Dismissable Alerts, Tabs and Carousel
 * Horizontally AND vertically center stuff without tearing your hair out
 
 
@@ -108,6 +108,7 @@ There's a bunch of work left to do, especially when it comes to documentation an
   * **New feature**: Support breadcrumb
   * **New feature**: Added Border, Flex, Size, Spacing and Display modules (under Bootstrap.Utilities). They contain a bunch a functions for creating handy TWBS classes.
   * **Addition**: Added support for the new color roles in TWBS 4.0 accross a range of modules in elm-bootstrap
+  * **Addition**: We now support dismissable alerts (with optional fade out animation).
   * **Addition**: You can now use dropdowns in inputgroups
   * **Addition**: Show accordion with one card open initially when that makes sense.
   * **Addition**: Allow tables to be responsive from given breakpoints.
