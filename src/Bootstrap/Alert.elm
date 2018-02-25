@@ -6,6 +6,14 @@ module Bootstrap.Alert
         , config
         , Config
         , Visibility
+        , simplePrimary
+        , simpleSecondary
+        , simpleSuccess
+        , simpleInfo
+        , simpleWarning
+        , simpleDanger
+        , simpleLight
+        , simpleDark
         , primary
         , secondary
         , success
@@ -16,9 +24,6 @@ module Bootstrap.Alert
         , dark
         , children
         , link
-        , p
-        , text
-        , customElement
         , h1
         , h2
         , h3
@@ -28,36 +33,84 @@ module Bootstrap.Alert
         , dismissable
         , dismissableWithAnimation
         , subscriptions
-        , Child
         )
 
 {-| Provide contextual feedback messages for typical user actions with the handful of available and flexible alert messages.
 
 
-    Alert.config
-        |> Alert.info
-        |> Alert.children
-            [ Alert.h4 [] [ text "Alert heading" ]
-            , Alert.text "This info message has a "
-            , Alert.link [ href "javascript:void()" ] [ text "link" ]
-            , Alert.p [] [ text "Followed by a paragraph behaving as you'd expect." ]
-            ]
-        |> Alert.view Alert.shown
+# Simple alerts
+When you just need a simple alert, these shorthand functions lets you quickly display an alert.
 
-# Configuring
-@docs config, view, shown, closed, Visibility, Config
+```elm
+    simplePrimary [] [ text "I'm a simple alert!" ]
+
+    simpleWarning
+        [ class "myCustomAlertClass" ]
+        [ Alert.h1 [] [ text "Alert heading" ]
+        , p [] [ text "Some alert content." ]
+        , Alert.link [ href "#somewhere" ] [ text "Styled link" ]
+        ]
+```
+
+@docs simplePrimary, simpleSecondary, simpleSuccess, simpleInfo, simpleWarning, simpleDanger, simpleLight, simpleDark
+
+## Helpers
+These functions allow you to create alert children with alert specific styling
+@docs link, h1, h2, h3, h4, h5, h6
+
+
+# Dismissable alerts
+Dismissable alerts are also supported. You can even configure them to have a fade out animation when dismissed.
+Unlike it's Twitter Bootstrap JavaScript counterpart we can't remove the alert element from the DOM. It's simply set to **display:none**.
+To support dismissable alerts you must keep track of the alerts visibility in your model.
 
 
 
-# Child elements
-@docs children, link, p, text, customElement, h1, h2, h3, h4, h5, h6, Child
+    type alias Model =
+        { alertVisibility : Alert.Visibility }
+
+    type Msg
+        = AlertMsg Alert.Visibility
+
+    init : (Model, Cmd Msg)
+    init =
+        ( { alertVisibility : Alert.shownn} )
+
+    update : Msg -> Model -> ( Model, Cmd Msg )
+    update msg model =
+        case msg of
+            AlertMsg visibility ->
+                ( { model | alertVisibility = visibility }, Cmd.none )
+
+    view : Model -> Html Msg
+    view model =
+        Alert.config
+            |> Alert.dismissableWithAnimation AlertMsg
+            |> Alert.info
+            |> Alert.children
+                [ Alert.h4 [] [ text "Alert heading" ]
+                , Alert.text "This info message has a "
+                , Alert.link [ href "javascript:void()" ] [ text "link" ]
+                , Alert.p [] [ text "Followed by a paragraph behaving as you'd expect." ]
+                ]
+            |> Alert.view model.alertVisibility
 
 
-# Config options
+    -- Subscriptions are only needed when you choose to use dismissableWithAnimation
+
+    subscriptions : Model -> Sub Msg
+    subscriptions model =
+        Alert.subscriptions model.alertVisibility AlertMsg
+
+
+## Configure
+@docs config, view, children, Config
+
+## Visibility
+@docs shown, closed, Visibility
 
 ## Contextual alerts
 @docs primary, secondary, success, info, warning, danger, light, dark
-
 
 ## Dismiss with/without Animation
 @docs dismissable, dismissableWithAnimation, subscriptions
@@ -82,16 +135,10 @@ type alias ConfigRec msg =
     { visibility : Visibility
     , dismissable : Maybe (Visibility -> msg)
     , attributes : List (Html.Attribute msg)
-    , children : List (Child msg)
+    , children : List (Html.Html msg)
     , role : Role
     , withAnimation : Bool
     }
-
-
-{-| Opaque type representing a child element for an alert.
--}
-type Child msg
-    = Child (Html.Html msg)
 
 
 {-| Opaque type used to represent whether to display the alert or not.
@@ -131,56 +178,144 @@ config =
         }
 
 
-{-| Alert using primary colors.
+{-| Show an elert using primary color.
+
+* `attributes` - List of attributes to customize the alert container
+* `children` - List of child html elements
+-}
+simplePrimary : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
+simplePrimary =
+    simple Primary
+
+
+{-| Show an elert using secondary color.
+
+* `attributes` - List of attributes to customize the alert container
+* `children` - List of child html elements
+-}
+simpleSecondary : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
+simpleSecondary =
+    simple Secondary
+
+
+{-| Show an elert using success color.
+
+* `attributes` - List of attributes to customize the alert container
+* `children` - List of child html elements
+-}
+simpleSuccess : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
+simpleSuccess =
+    simple Success
+
+
+{-| Show an elert using info color.
+
+* `attributes` - List of attributes to customize the alert container
+* `children` - List of child html elements
+-}
+simpleInfo : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
+simpleInfo =
+    simple Info
+
+
+{-| Show an elert using warning color.
+
+* `attributes` - List of attributes to customize the alert container
+* `children` - List of child html elements
+-}
+simpleWarning : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
+simpleWarning =
+    simple Warning
+
+
+{-| Show an elert using danger color.
+
+* `attributes` - List of attributes to customize the alert container
+* `children` - List of child html elements
+-}
+simpleDanger : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
+simpleDanger =
+    simple Danger
+
+
+{-| Show an elert using dark color.
+
+* `attributes` - List of attributes to customize the alert container
+* `children` - List of child html elements
+-}
+simpleDark : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
+simpleDark =
+    simple Dark
+
+
+{-| Show an elert using light color.
+
+* `attributes` - List of attributes to customize the alert container
+* `children` - List of child html elements
+-}
+simpleLight : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
+simpleLight =
+    simple Light
+
+
+simple : Role -> List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
+simple role_ attributes children_ =
+    (role role_ config)
+        |> attrs attributes
+        |> children children_
+        |> view Shown
+
+
+{-| Configure alert to use primary colors.
 -}
 primary : Config msg -> Config msg
 primary config =
     role Primary config
 
 
-{-| Alert using secondary colors.
+{-| Configure alert to use secondary colors.
 -}
 secondary : Config msg -> Config msg
 secondary config =
     role Secondary config
 
 
-{-| Alert using success colors.
+{-| Configure alert to use success colors.
 -}
 success : Config msg -> Config msg
 success config =
     role Success config
 
 
-{-| Alert using info colors.
+{-| Configure alert to use info colors.
 -}
 info : Config msg -> Config msg
 info config =
     role Info config
 
 
-{-| Alert using warning colors.
+{-| Configure alert to use warning colors.
 -}
 warning : Config msg -> Config msg
 warning config =
     role Warning config
 
 
-{-| Alert using danger colors.
+{-| Configure alert to use danger colors.
 -}
 danger : Config msg -> Config msg
 danger config =
     role Danger config
 
 
-{-| Alert using dark colors.
+{-| Configure alert to use dark colors.
 -}
 dark : Config msg -> Config msg
 dark config =
     role Dark config
 
 
-{-| Alert using light colors.
+{-| Configure alert to use light colors.
 -}
 light : Config msg -> Config msg
 light config =
@@ -227,9 +362,9 @@ dismissableWithAnimation dismissMsg (Config configRec) =
         { configRec | dismissable = Just dismissMsg, withAnimation = True }
 
 
-{-| Add child elements to the alert.
+{-| Configure child elements for the alert.
 -}
-children : List (Child msg) -> Config msg -> Config msg
+children : List (Html.Html msg) -> Config msg -> Config msg
 children children (Config configRec) =
     Config <|
         { configRec | children = children }
@@ -244,7 +379,7 @@ view : Visibility -> Config msg -> Html.Html msg
 view visibility (Config configRec) =
     Html.div
         (viewAttributes visibility configRec)
-        (List.map (\(Child e) -> e) configRec.children
+        (configRec.children
             |> maybeAddDismissButton visibility configRec
         )
 
@@ -334,45 +469,11 @@ isDismissable configRec =
 * `children` List of child elements
 
 -}
-link : List (Html.Attribute msg) -> List (Html.Html msg) -> Child msg
+link : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
 link attributes children =
-    Child <|
-        Html.a
-            (class "alert-link" :: attributes)
-            children
-
-
-{-| Shorthand to create an Html.text element
-
-* `txt` Content string
--}
-text : String -> Child msg
-text text =
-    Child <|
-        Html.text text
-
-
-{-| Shorthand to create an alert paragraph child element
-
-* `attributes` List of attributes for the link element
-* `children` List of child elements
-
--}
-p : List (Html.Attribute msg) -> List (Html.Html msg) -> Child msg
-p attributes children =
-    Child <|
-        Html.p
-            attributes
-            children
-
-
-{-| Add any html element as a child element to an alert
-
-* `element` Element that should be a child in an alert
--}
-customElement : Html.Html msg -> Child msg
-customElement elem =
-    Child elem
+    Html.a
+        (class "alert-link" :: attributes)
+        children
 
 
 {-| Alert h1 header with appropriate color styling
@@ -381,7 +482,7 @@ customElement elem =
 * `children` List of child elements
 
 -}
-h1 : List (Html.Attribute msg) -> List (Html.Html msg) -> Child msg
+h1 : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
 h1 attributes children =
     headingPrivate Html.h1 attributes children
 
@@ -392,7 +493,7 @@ h1 attributes children =
 * `children` List of child elements
 
 -}
-h2 : List (Html.Attribute msg) -> List (Html.Html msg) -> Child msg
+h2 : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
 h2 attributes children =
     headingPrivate Html.h2 attributes children
 
@@ -403,7 +504,7 @@ h2 attributes children =
 * `children` List of child elements
 
 -}
-h3 : List (Html.Attribute msg) -> List (Html.Html msg) -> Child msg
+h3 : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
 h3 attributes children =
     headingPrivate Html.h3 attributes children
 
@@ -414,7 +515,7 @@ h3 attributes children =
 * `children` List of child elements
 
 -}
-h4 : List (Html.Attribute msg) -> List (Html.Html msg) -> Child msg
+h4 : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
 h4 attributes children =
     headingPrivate Html.h4 attributes children
 
@@ -425,7 +526,7 @@ h4 attributes children =
 * `children` List of child elements
 
 -}
-h5 : List (Html.Attribute msg) -> List (Html.Html msg) -> Child msg
+h5 : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
 h5 attributes children =
     headingPrivate Html.h5 attributes children
 
@@ -436,7 +537,7 @@ h5 attributes children =
 * `children` List of child elements
 
 -}
-h6 : List (Html.Attribute msg) -> List (Html.Html msg) -> Child msg
+h6 : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
 h6 attributes children =
     headingPrivate Html.h6 attributes children
 
@@ -445,12 +546,11 @@ headingPrivate :
     (List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg)
     -> List (Html.Attribute msg)
     -> List (Html.Html msg)
-    -> Child msg
+    -> Html.Html msg
 headingPrivate elemFn attributes children =
-    Child <|
-        elemFn
-            (class "alert-header" :: attributes)
-            children
+    elemFn
+        (class "alert-header" :: attributes)
+        children
 
 
 {-| Subscription for handling animations. Don't forget this when configuring your alert to be dismissable with animation.
