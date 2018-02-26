@@ -18,10 +18,10 @@ Twitter Bootstrap is one of the most popular CSS (with some JS) frameworks for b
 
 
 ## Documentation
-For user documentation, check out the [Docs Site](http://elm-bootstrap.info/).
-The latest API documentation is up on [Elm Package](http://package.elm-lang.org/packages/rundis/elm-bootstrap/latest).
-
-It also helps to read through the relevant [Twitter Bootstrap documentation](https://getbootstrap.com/docs/4.0/getting-started/introduction/).
+* User documentation - Check out the [Docs Site](http://elm-bootstrap.info/). If need/prefer https
+you'll need to go [here](https://elm-bootstrap.surge.sh/).
+* API documentation - is up on [Elm Package](http://package.elm-lang.org/packages/rundis/elm-bootstrap/latest).
+* It also helps to read through the relevant [Twitter Bootstrap documentation](https://getbootstrap.com/docs/4.0/getting-started/introduction/).
 
 
 ## Getting started
@@ -113,6 +113,7 @@ There's a bunch of work left to do, especially when it comes to documentation an
   * **Addition**: Show accordion with one card open initially when that makes sense.
   * **Addition**: Allow tables to be responsive from given breakpoints.
   * **Subtraction**: Form validation got more tedious as TWBS changed this completely from the alpha release. Hopefully we can come up with improvements in this area to make it better again.
+  * _**Special mention**: TWBS changed how labels and checkboxes and radios need to be composed. You'll need to/really should provide an id (`Checkbox.id` or `Radio.id`)_
 
 
 * 3.0.0
