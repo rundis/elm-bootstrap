@@ -128,7 +128,7 @@ view (Config config) =
                 config.predecessors
                 ++ [ input ]
                 ++ List.map
-                    (\(Addon e) -> Html.div [ Attributes.class "input-group-prepend" ] [ e ])
+                    (\(Addon e) -> Html.div [ Attributes.class "input-group-append" ] [ e ])
                     config.successors
             )
 
