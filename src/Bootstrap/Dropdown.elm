@@ -11,6 +11,7 @@ module Bootstrap.Dropdown
         , alignMenuRight
         , anchorItem
         , buttonItem
+        , customItem
         , divider
         , header
         , attrs
