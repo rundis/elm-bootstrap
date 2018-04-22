@@ -38,12 +38,99 @@ module Bootstrap.Pagination exposing
                 , itemFn = \idx _ -> Pagination.ListItem [] [ text <| toString (idx + 1) ]
                 , urlFn = \idx _ -> "#/pages/" ++ toString (idx + 1)
                 }
+            |> Pagination.view
+
+
+## Customized pagination
+
+
+    import Bootstrap.Pagination as Pagination
+    import Bootstrap.Pagination as Item
+    import Bootstrap.HAlign as HAlign
+
+
+    customPagination : Model -> Html Msg
+    customPagination model =
+        let
+            myData =
+                [ { icon = "car", name = "Car" }
+                , { icon = "bus", name = "Bus" }
+                , { icon = "train", name = "Train" }
+                ]
+        in
+            div []
+                [ h1 [] [ text "Pagination" ]
+                , Pagination.defaultConfig
+                    |> Pagination.ariaLabel "Pagination"
+                    |> Pagination.align HAlign.centerXs
+                    |> Pagination.large
+                    |> Pagination.items
+                        ([ Item.item
+                            |> Item.span [ class "custom-page-item" ]
+                                [ span
+                                    [ class "fa fa-fast-backward"
+                                    , attribute "aria-hidden" "true" ]
+                                    []
+                                , span [ class "sr-only" ]
+                                    [ text "First page" ]
+                                ]
+                         , Item.item
+                            |> Item.span [ class "custom-page-item" ]
+                                [ span
+                                    [ class "fa fa-arrow-left"
+                                    , attribute "aria-hidden" "true"
+                                    ]
+                                    []
+                                , span [ class "sr-only" ] [ text "Previous" ]
+                                ]
+                         ]
+                            ++ (List.indexedMap
+                                    (\idx item ->
+                                        Item.item
+                                            |> Item.active ( idx == model.activePageIdx )
+                                            |> Item.span [ class "custom-page-item" ]
+                                                [ span
+                                                    [ class <| "fa fa-" ++ item.icon
+                                                    , attribute "aria-hidden" "true"
+                                                    ]
+                                                    []
+                                                , span [ class "sr-only" ] [ text item.name ]
+                                                ]
+                                    )
+                                    myData
+                               )
+                            ++ [ Item.item
+                                    |> Item.span [ class "custom-page-item" ]
+                                        [ span
+                                            [ class "fa fa-arrow-right"
+                                            , attribute "aria-hidden" "true"
+                                            ]
+                                            []
+                                        , span [ class "sr-only" ] [ text "Next" ]
+                                        ]
+                               , Item.item
+                                    |> Item.span [ class "custom-page-item" ]
+                                        [ span
+                                            [ class "fa fa-fast-forward"
+                                            , attribute "aria-hidden" "true" ]
+                                            []
+                                        , span [ class "sr-only" ] [ text "Last page" ]
+                                        ]
+                               ]
+                        )
+                    |> Pagination.view
+                ]
+
+
+
+
 
 
 @docs defaultConfig, view
 
 ## Customization
 @docs ariaLabel, small, large, attrs, listAttrs, align, items, Config
+
 
 
 ## Simple pagination lists

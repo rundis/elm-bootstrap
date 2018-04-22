@@ -31,6 +31,7 @@ import Color
 import Bootstrap.Grid.Col as Col
 import Bootstrap.Grid.Row as Row
 import Bootstrap.Pagination as Pagination
+import Bootstrap.Pagination.Item as Item
 import Bootstrap.General.HAlign as HAlign
 
 
@@ -79,7 +80,7 @@ init =
           , popoverStateBottom = Popover.initialState
           , popoverStateTop = Popover.initialState
           , modalVisibility = Modal.hidden
-          , activePageIdx = 4
+          , activePageIdx = 1
           }
         , navbarCmd
         )
@@ -375,6 +376,7 @@ mainContent model =
         , progressBars
         , modal model.modalVisibility
         , simplePaginationList model
+        , customPagination model
         ]
 
 
@@ -820,7 +822,7 @@ progressBars =
 simplePaginationList : Model -> Html Msg
 simplePaginationList model =
     div []
-        [ h1 [] [ text "Pagination"]
+        [ h1 [] [ text "Pagination" ]
         , Pagination.defaultConfig
             |> Pagination.ariaLabel "Pagination"
             |> Pagination.align HAlign.centerXs
@@ -835,6 +837,60 @@ simplePaginationList model =
                 }
             |> Pagination.view
         ]
+
+
+customPagination : Model -> Html Msg
+customPagination model =
+    let
+        myData =
+            [ { icon = "car", name = "Car" }
+            , { icon = "bus", name = "Bus" }
+            , { icon = "train", name = "Train" }
+            ]
+    in
+        div []
+            [ h1 [] [ text "Pagination" ]
+            , Pagination.defaultConfig
+                |> Pagination.ariaLabel "Pagination"
+                |> Pagination.align HAlign.centerXs
+                |> Pagination.large
+                |> Pagination.items
+                    ([ Item.item
+                        |> Item.span [ class "custom-page-item" ]
+                            [ span [ class "fa fa-fast-backward", attribute "aria-hidden" "true" ] []
+                            , span [ class "sr-only" ] [ text "First page" ]
+                            ]
+                     , Item.item
+                        |> Item.span [ class "custom-page-item" ]
+                            [ span [ class "fa fa-arrow-left", attribute "aria-hidden" "true" ] []
+                            , span [ class "sr-only" ] [ text "Previous" ]
+                            ]
+                     ]
+                        ++ (List.indexedMap
+                                (\idx item ->
+                                    Item.item
+                                        |> Item.active ( idx == model.activePageIdx )
+                                        |> Item.span [ class "custom-page-item" ]
+                                            [ span [ class <| "fa fa-" ++ item.icon, attribute "aria-hidden" "true" ] []
+                                            , span [ class "sr-only" ] [ text item.name ]
+                                            ]
+                                )
+                                myData
+                           )
+                        ++ [ Item.item
+                                |> Item.span [ class "custom-page-item" ]
+                                    [ span [ class "fa fa-arrow-right", attribute "aria-hidden" "true" ] []
+                                    , span [ class "sr-only" ] [ text "Next" ]
+                                    ]
+                           , Item.item
+                                |> Item.span [ class "custom-page-item" ]
+                                    [ span [ class "fa fa-fast-forward", attribute "aria-hidden" "true" ] []
+                                    , span [ class "sr-only" ] [ text "Last page" ]
+                                    ]
+                           ]
+                    )
+                |> Pagination.view
+            ]
 
 
 rowStyle : Attribute Msg
