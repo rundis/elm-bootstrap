@@ -27,6 +27,7 @@ module Bootstrap.ButtonGroup
 
 {-| Group a series of buttons together on a single line with the button group.
 
+
 # Button group
 
 @docs button, linkButton, radioButton, checkboxButton
@@ -35,32 +36,33 @@ module Bootstrap.ButtonGroup
 
 
 ## Group options
+
 @docs small, large, vertical, attrs, Option
 
 
 # Button toolbar
+
 @docs toolbar, buttonGroupItem, linkButtonGroupItem, radioButtonGroupItem
 @docs checkboxButtonGroupItem, GroupItem
-
 
 -}
 
 import Html
 import Html.Attributes as Attributes exposing (class, classList, attribute)
 import Bootstrap.Button as Button
-import Bootstrap.Grid.Internal as GridInternal
+import Bootstrap.General.Internal exposing (ScreenSize(..), screenSizeOption)
 
 
 {-| Opaque type representing the possible styling options for a button group
 -}
 type Option msg
-    = Size GridInternal.ScreenSize
+    = Size ScreenSize
     | Vertical
     | Attrs (List (Html.Attribute msg))
 
 
 type alias Options msg =
-    { size : Maybe GridInternal.ScreenSize
+    { size : Maybe ScreenSize
     , vertical : Bool
     , attributes : List (Html.Attribute msg)
     }
@@ -104,8 +106,8 @@ type CheckboxButtonItem msg
         , ButtonGroup.button [ Button.secondary ] [ text "Secondary" ]
         ]
 
-  * `options` List of styling options
-  * `items` List of button items (ref [`buttonItem`](#buttonItem) and [`linkButtonItem`](#linkButtonItem))
+  - `options` List of styling options
+  - `items` List of button items (ref [`buttonItem`](#buttonItem) and [`linkButtonItem`](#linkButtonItem))
 
 -}
 buttonGroup : List (Option msg) -> List (ButtonItem msg) -> Html.Html msg
@@ -129,6 +131,7 @@ linkButtonGroup options items =
         [ ButtonGroup.radioButton True [ Button.primary ] [ text "On" ]
         , ButtonGroup.radioButton False [ Button.primary ] [ text "Off" ]
         ]
+
 -}
 radioButtonGroup : List (Option msg) -> List (RadioButtonItem msg) -> Html.Html msg
 radioButtonGroup options items =
@@ -143,6 +146,7 @@ radioButtonGroup options items =
         [ ButtonGroup.checkboxButton True [ Button.primary ] [ text "Bold" ]
         , ButtonGroup.checkboxButton True [ Button.primary ] [ text "Italic" ]
         ]
+
 -}
 checkboxButtonGroup : List (Option msg) -> List (CheckboxButtonItem msg) -> Html.Html msg
 checkboxButtonGroup options items =
@@ -153,6 +157,7 @@ checkboxButtonGroup options items =
 {-| Create a button group that can be composed in a [`toolbar`](#toolbar)
 
 The parameters are identical as for [`buttonGroup`](#buttonGroup)
+
 -}
 buttonGroupItem : List (Option msg) -> List (ButtonItem msg) -> GroupItem msg
 buttonGroupItem options items =
@@ -204,9 +209,9 @@ checkboxButtonGroupItem options items =
 
         ]
 
+  - `attributes` List of attributes to customize the toolbar element
+  - `items` List of button group (items)
 
-* `attributes` List of attributes to customize the toolbar element
-* `items` List of button group (items)
 -}
 toolbar : List (Html.Attribute msg) -> List (GroupItem msg) -> Html.Html msg
 toolbar attributes items =
@@ -256,14 +261,14 @@ checkboxButton checked options children =
 -}
 small : Option msg
 small =
-    Size GridInternal.SM
+    Size SM
 
 
 {-| Option to make all buttons in the given group large
 -}
 large : Option msg
 large =
-    Size GridInternal.LG
+    Size LG
 
 
 {-| Option to make all buttons stack vertically for a button group
@@ -292,10 +297,11 @@ groupAttributes toggle modifiers =
             , ( "btn-group-toggle", toggle )
             , ( "btn-group-vertical", options.vertical )
             ]
-          -- data-toggle is needed to display radio buttons correctly (by hiding the actual radio input)
+
+        -- data-toggle is needed to display radio buttons correctly (by hiding the actual radio input)
         , attribute "data-toggle" "buttons"
         ]
-            ++ (case (options.size |> Maybe.andThen GridInternal.screenSizeOption) of
+            ++ (case (options.size |> Maybe.andThen screenSizeOption) of
                     Just s ->
                         [ class <| "btn-group-" ++ s ]
 
