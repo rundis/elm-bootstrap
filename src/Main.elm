@@ -30,6 +30,8 @@ import Html.Events exposing (..)
 import Color
 import Bootstrap.Grid.Col as Col
 import Bootstrap.Grid.Row as Row
+import Bootstrap.Pagination as Pagination
+import Bootstrap.General.HAlign as HAlign
 
 
 main : Program Never Model Msg
@@ -55,6 +57,7 @@ type alias Model =
     , popoverStateTop : Popover.State
     , popoverStateBottom : Popover.State
     , modalVisibility : Modal.Visibility
+    , activePageIdx : Int
     }
 
 
@@ -76,6 +79,7 @@ init =
           , popoverStateBottom = Popover.initialState
           , popoverStateTop = Popover.initialState
           , modalVisibility = Modal.hidden
+          , activePageIdx = 4
           }
         , navbarCmd
         )
@@ -132,10 +136,11 @@ update msg ({ accordionState } as model) =
             , Cmd.none
             )
 
-        ModalCloseMsg  ->
+        ModalCloseMsg ->
             ( { model | modalVisibility = Modal.hidden }
             , Cmd.none
             )
+
         ModalShowMsg ->
             ( { model | modalVisibility = Modal.shown }
             , Cmd.none
@@ -369,6 +374,7 @@ mainContent model =
         , listGroup2
         , progressBars
         , modal model.modalVisibility
+        , simplePaginationList model
         ]
 
 
@@ -411,7 +417,7 @@ simpleForm =
     Form.form
         []
         [ h1 [] [ text "Vertical Form" ]
-        , Form.group [  ]
+        , Form.group []
             [ Form.label [ for "simpleInput" ] [ text "SimpleInput" ]
             , Input.text [ Input.id "simpleInput", Input.success ]
             , Form.validFeedback [] [ text "This went well !" ]
@@ -808,6 +814,26 @@ progressBars =
             , Progress.customLabel
                 [ span [ class "fa fa-car" ] [] ]
             ]
+        ]
+
+
+simplePaginationList : Model -> Html Msg
+simplePaginationList model =
+    div []
+        [ h1 [] [ text "Pagination"]
+        , Pagination.defaultConfig
+            |> Pagination.ariaLabel "Pagination"
+            |> Pagination.align HAlign.centerXs
+            |> Pagination.small
+            |> Pagination.itemsList
+                { prevItem = Just <| Pagination.ListItem [] [ text "Previous" ]
+                , nextItem = Just <| Pagination.ListItem [] [ text "Next" ]
+                , activeIdx = model.activePageIdx
+                , data = [ 1, 2, 3, 4, 5 ] -- You'd typically generate this from your model somehow !
+                , itemFn = \idx _ -> Pagination.ListItem [] [ text <| toString (idx + 1) ]
+                , urlFn = \idx _ -> "#/pages/" ++ toString (idx + 1)
+                }
+            |> Pagination.view
         ]
 
 
