@@ -35,24 +35,33 @@ You can also group a series of buttons together on a single line with the button
 
 
 # Buttons
+
 @docs button, linkButton, radioButton, checkboxButton
+
 
 # Button options
 
 @docs attrs, onClick, disabled, Option
 
+
 ## Roled
+
 @docs primary, secondary, success, info, warning, danger, light, dark, roleLink
 
+
 ## Outlined
+
 @docs outlinePrimary, outlineSecondary, outlineSuccess, outlineInfo, outlineWarning, outlineDanger, outlineLight, outlineDark
 
+
 ## Size
+
 @docs small, large
 
-## Block
-@docs block
 
+## Block
+
+@docs block
 
 -}
 
@@ -61,7 +70,7 @@ import Html.Attributes as Attributes exposing (class, classList)
 import Html.Events as Events
 import Json.Decode as Decode
 import Bootstrap.Internal.Button as ButtonInternal
-import Bootstrap.Grid.Internal as GridInternal
+import Bootstrap.General.Internal exposing (ScreenSize(..))
 
 
 {-| Opaque type reresenting available options for styling a button
@@ -74,9 +83,8 @@ type alias Option msg =
 
     Button.button [ Button.primary ] [ text "Primary" ]
 
-
-* `options` List of styling options
-* `children` List of child elements
+  - `options` List of styling options
+  - `children` List of child elements
 
 -}
 button :
@@ -93,10 +101,8 @@ button options children =
 
     Button.linkButton [ Button.primary ] [ text "Primary" ]
 
-
-
-* `options` List of styling options
-* `children` List of child elements
+  - `options` List of styling options
+  - `children` List of child elements
 
 -}
 linkButton :
@@ -115,10 +121,9 @@ linkButton options children =
 
     Button.radioButton True [ Button.primary ] [ text "Primary" ]
 
-
-* `checked` Default value
-* `options` List of styling options
-* `children` List of child elements
+  - `checked` Default value
+  - `options` List of styling options
+  - `children` List of child elements
 
 -}
 radioButton :
@@ -144,10 +149,9 @@ radioButton checked options children =
 
     Button.checkboxButton True [ Button.primary ] [ text "Primary" ]
 
-
-* `checked` Default value
-* `options` List of styling options
-* `children` List of child elements
+  - `checked` Default value
+  - `options` List of styling options
+  - `children` List of child elements
 
 -}
 checkboxButton :
@@ -183,14 +187,14 @@ onClick message =
 -}
 small : Option msg
 small =
-    ButtonInternal.Size GridInternal.SM
+    ButtonInternal.Size SM
 
 
 {-| Option to make a button large
 -}
 large : Option msg
 large =
-    ButtonInternal.Size GridInternal.LG
+    ButtonInternal.Size LG
 
 
 {-| Option to color a button to signal a primary action
@@ -233,7 +237,6 @@ warning =
 danger : Option msg
 danger =
     ButtonInternal.Coloring <| ButtonInternal.Roled ButtonInternal.Danger
-
 
 
 {-| Option to create a light button
@@ -305,12 +308,12 @@ outlineLight : Option msg
 outlineLight =
     ButtonInternal.Coloring <| ButtonInternal.Outlined ButtonInternal.Light
 
+
 {-| Option to create a dark outlined button
 -}
 outlineDark : Option msg
 outlineDark =
     ButtonInternal.Coloring <| ButtonInternal.Outlined ButtonInternal.Dark
-
 
 
 {-| Option to create block level buttons—those that span the full width of a parent

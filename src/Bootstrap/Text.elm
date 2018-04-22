@@ -30,15 +30,19 @@ module Bootstrap.Text
 
 {-| Utilities for text options. Currently only exposing helpers used by Bootstrap.Card for horizontal alignment and text coloring
 
+
 # Aligment
+
 @docs alignXsLeft, alignXsCenter, alignXsRight, alignSmLeft, alignSmCenter, alignSmRight, alignMdLeft, alignMdCenter, alignMdRight, alignLgLeft, alignLgCenter, alignLgRight, alignXlLeft, alignXlCenter, alignXlRight, HAlign
 
+
 # Text coloring
+
 @docs white, primary, secondary, success, info, warning, danger, light, dark, Color
 
 -}
 
-import Bootstrap.Grid.Internal as GridInternal
+import Bootstrap.General.Internal exposing (ScreenSize(..), screenSizeOption)
 import Bootstrap.Internal.Text as TextInternal exposing (TextAlignDir(..))
 import Bootstrap.Internal.Role as Role
 
@@ -48,11 +52,12 @@ import Bootstrap.Internal.Role as Role
 type alias HAlign =
     TextInternal.HAlign
 
+
 {-| Opaque type representing a text color option
-|-}
+|
+-}
 type alias Color =
     TextInternal.Color
-
 
 
 {-| Align left at smallest responsive breakpoint
@@ -79,7 +84,7 @@ alignXsRight =
 alignXs : TextAlignDir -> HAlign
 alignXs dir =
     { dir = dir
-    , size = GridInternal.XS
+    , size = XS
     }
 
 
@@ -107,7 +112,7 @@ alignSmRight =
 alignSm : TextAlignDir -> HAlign
 alignSm dir =
     { dir = dir
-    , size = GridInternal.SM
+    , size = SM
     }
 
 
@@ -135,7 +140,7 @@ alignMdRight =
 alignMd : TextAlignDir -> HAlign
 alignMd dir =
     { dir = dir
-    , size = GridInternal.MD
+    , size = MD
     }
 
 
@@ -163,7 +168,7 @@ alignLgRight =
 alignLg : TextAlignDir -> HAlign
 alignLg dir =
     { dir = dir
-    , size = GridInternal.LG
+    , size = LG
     }
 
 
@@ -191,58 +196,68 @@ alignXlRight =
 alignXl : TextAlignDir -> HAlign
 alignXl dir =
     { dir = dir
-    , size = GridInternal.XL
+    , size = XL
     }
 
-{-| White text color option. |-}
+
+{-| White text color option. |
+-}
 white : Color
 white =
     TextInternal.White
 
 
-{-| Primary color text option. |-}
+{-| Primary color text option. |
+-}
 primary : Color
 primary =
     TextInternal.Role Role.Primary
 
 
-{-| Secondary color text option. |-}
+{-| Secondary color text option. |
+-}
 secondary : Color
 secondary =
     TextInternal.Role Role.Secondary
 
-{-| Success color text option. |-}
+
+{-| Success color text option. |
+-}
 success : Color
 success =
     TextInternal.Role Role.Success
 
 
-{-| Info color text option. |-}
+{-| Info color text option. |
+-}
 info : Color
 info =
     TextInternal.Role Role.Info
 
 
-{-| Warning color text option. |-}
+{-| Warning color text option. |
+-}
 warning : Color
 warning =
     TextInternal.Role Role.Warning
 
 
-{-| Danger color text option. |-}
+{-| Danger color text option. |
+-}
 danger : Color
 danger =
     TextInternal.Role Role.Danger
 
 
-{-| Light color text option. |-}
+{-| Light color text option. |
+-}
 light : Color
 light =
     TextInternal.Role Role.Light
 
-{-| Dark color text option. |-}
+
+{-| Dark color text option. |
+-}
 dark : Color
 dark =
     TextInternal.Role Role.Dark
-
-

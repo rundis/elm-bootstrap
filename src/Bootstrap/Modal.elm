@@ -28,21 +28,16 @@ module Bootstrap.Modal
 
 {-| Modals are streamlined, but flexible dialog prompts. They support a number of use cases from user notifications to completely custom content and feature a handful of helpful subcomponents, sizes, and more.
 
-
-
     type alias Model =
         { modalVisibility : Modal.Visibility }
-
 
     init : ( Model, Cmd Msg )
     init =
         ( { modalVisibility = Modal.hidden }, Cmd.none )
 
-
     type Msg
         = CloseModal
         | ShowModal
-
 
     update : Msg -> Model -> ( Model, Cmd msg )
     update msg model =
@@ -63,7 +58,6 @@ module Bootstrap.Modal
             [ Button.button
                 [ Button.attrs [ onClick ShowModal ] ]
                 [ text "Show modal" ]
-
             , Modal.config CloseModal
                 |> Modal.small
                 |> Modal.h5 [] [ text "Modal header" ]
@@ -89,36 +83,41 @@ module Bootstrap.Modal
                 |> Modal.view
             ]
 
-
 **NOTE:** Don't try to open several modals at the same time. It probably won't end well.
 
 
-
 # Modal
+
 @docs view, config, Config
 
 
 # State
+
 @docs hidden, shown, Visibility
 
 
-
 # Modal options
+
 @docs small, large, hideOnBackdropClick
 
 
 # Header
+
 @docs header, h1, h2, h3, h4, h5, h6, Header
 
 
 # Body
+
 @docs body, Body
 
+
 # Footer
+
 @docs footer, Footer
 
 
 # Animated Modals
+
 When you want your modal to support an animation when displayed and closed. There
 is a few more things you must wire-up and keep in mind.
 
@@ -127,13 +126,11 @@ is a few more things you must wire-up and keep in mind.
 
 ## Example
 
-
     type Msg
         = ShowModal
-        -- Note the extra msg constructor needed
+          -- Note the extra msg constructor needed
         | AnimateModal Modal.Visibility
         | CloseModal
-
 
     update : Msg -> State -> State
     update msg state =
@@ -151,12 +148,11 @@ is a few more things you must wire-up and keep in mind.
 
     -- Animations for modal doesn't work without a subscription.
     -- DON´T forget this !
+
     subscriptions : Model -> Sub msg
     subscriptions model =
         Sub.batch
             [ Modal.subscriptions model.modalVisibility AnimateModal ]
-
-
 
     view : Model -> Html msg
     view model =
@@ -164,7 +160,6 @@ is a few more things you must wire-up and keep in mind.
             [ Button.button
                 [ Button.attrs [ onClick ShowModal ] ]
                 [ text "Show modal" ]
-
             , Modal.config CloseModal
                 |> Modal.h5 [] [ text "Modal header" ]
                 |> Modal.body [] [ text "Modal body" ]
@@ -178,13 +173,12 @@ is a few more things you must wire-up and keep in mind.
                 |> Modal.view
             ]
 
-
 -}
 
 import Html
 import Html.Attributes as Attr
 import Html.Events as Events
-import Bootstrap.Grid.Internal as GridInternal exposing (ScreenSize(..))
+import Bootstrap.General.Internal exposing (ScreenSize(..), screenSizeOption)
 import AnimationFrame
 import Json.Decode as Json
 
@@ -255,7 +249,7 @@ type alias ConfigRec msg =
 
 
 type alias Options =
-    { modalSize : Maybe GridInternal.ScreenSize
+    { modalSize : Maybe ScreenSize
     , hideOnBackdropClick : Bool
     , centered : Bool
     }
@@ -316,8 +310,8 @@ withAnimation animateMsg (Config config) =
 
 {-| Create a modal for your application
 
-* `show` Whether to display the modal or not (if `False` the content is still in the dom, but hidden). You need to keep track of this state in your model
-* `config` View configuration
+  - `show` Whether to display the modal or not (if `False` the content is still in the dom, but hidden). You need to keep track of this state in your model
+  - `config` View configuration
 
 -}
 view :
@@ -422,9 +416,10 @@ config closeMsg =
 
 {-| Create a header for a modal, typically for titles, but you can be imaginative
 
-* `attributes` List of attributes
-* `children` List of child elements
-* `config` configuration settings to configure header for
+  - `attributes` List of attributes
+  - `children` List of child elements
+  - `config` configuration settings to configure header for
+
 -}
 header :
     List (Html.Attribute msg)
@@ -445,9 +440,10 @@ header attributes children (Config config) =
 
 {-| Creates a modal header with a h1 title child element
 
-* `attributes` List of attributes
-* `children` List of child elements
-* `config` configuration settings to configure header for
+  - `attributes` List of attributes
+  - `children` List of child elements
+  - `config` configuration settings to configure header for
+
 -}
 h1 :
     List (Html.Attribute msg)
@@ -460,9 +456,10 @@ h1 =
 
 {-| Creates a modal header with a h2 title child element
 
-* `attributes` List of attributes
-* `children` List of child elements
-* `config` configuration settings to configure header for
+  - `attributes` List of attributes
+  - `children` List of child elements
+  - `config` configuration settings to configure header for
+
 -}
 h2 :
     List (Html.Attribute msg)
@@ -475,9 +472,10 @@ h2 =
 
 {-| Creates a modal header with a h3 title child element
 
-* `attributes` List of attributes
-* `children` List of child elements
-* `config` configuration settings to configure header for
+  - `attributes` List of attributes
+  - `children` List of child elements
+  - `config` configuration settings to configure header for
+
 -}
 h3 :
     List (Html.Attribute msg)
@@ -490,9 +488,10 @@ h3 =
 
 {-| Creates a modal header with a h4 title child element
 
-* `attributes` List of attributes
-* `children` List of child elements
-* `config` configuration settings to configure header for
+  - `attributes` List of attributes
+  - `children` List of child elements
+  - `config` configuration settings to configure header for
+
 -}
 h4 :
     List (Html.Attribute msg)
@@ -505,9 +504,10 @@ h4 =
 
 {-| Creates a modal header with a h5 title child element
 
-* `attributes` List of attributes
-* `children` List of child elements
-* `config` configuration settings to configure header for
+  - `attributes` List of attributes
+  - `children` List of child elements
+  - `config` configuration settings to configure header for
+
 -}
 h5 :
     List (Html.Attribute msg)
@@ -520,9 +520,10 @@ h5 =
 
 {-| Creates a modal header with a h6 title child element
 
-* `attributes` List of attributes
-* `children` List of child elements
-* `config` configuration settings to configure header for
+  - `attributes` List of attributes
+  - `children` List of child elements
+  - `config` configuration settings to configure header for
+
 -}
 h6 :
     List (Html.Attribute msg)
@@ -546,9 +547,10 @@ titledHeader itemFn attributes children =
 
 {-| Create a body for a modal, you would typically always create a body for a modal
 
-* `attributes` List of attributes
-* `children` List of child elements
-* `config` configuration settings to configure body for
+  - `attributes` List of attributes
+  - `children` List of child elements
+  - `config` configuration settings to configure body for
+
 -}
 body :
     List (Html.Attribute msg)
@@ -569,9 +571,10 @@ body attributes children (Config config) =
 
 {-| Create a footer for a modal. Normally used for action buttons, but you might be creative
 
-* `attributes` List of attributes
-* `children` List of child elements
-* `config` configuration settings to configure header for
+  - `attributes` List of attributes
+  - `children` List of child elements
+  - `config` configuration settings to configure header for
+
 -}
 footer :
     List (Html.Attribute msg)
@@ -605,7 +608,7 @@ modalAttributes options =
 
 modalClass : ScreenSize -> List (Html.Attribute msg)
 modalClass size =
-    case GridInternal.screenSizeOption size of
+    case screenSizeOption size of
         Just s ->
             [ Attr.class <| "modal-" ++ s ]
 

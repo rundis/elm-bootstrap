@@ -9,13 +9,13 @@ module Bootstrap.Internal.Text
 
 import Html
 import Html.Attributes
-import Bootstrap.Grid.Internal as GridInternal
+import Bootstrap.General.Internal exposing (ScreenSize(..), screenSizeOption)
 import Bootstrap.Internal.Role as Role
 
 
 type alias HAlign =
     { dir : TextAlignDir
-    , size : GridInternal.ScreenSize
+    , size : ScreenSize
     }
 
 
@@ -25,17 +25,15 @@ type TextAlignDir
     | Right
 
 
-
 type Color
     = Role Role.Role
     | White
 
 
-
 textAlignClass : HAlign -> Html.Attribute msg
 textAlignClass { dir, size } =
     "text"
-        ++ (Maybe.map (\s -> "-" ++ s ++ "-") (GridInternal.screenSizeOption size)
+        ++ (Maybe.map (\s -> "-" ++ s ++ "-") (screenSizeOption size)
                 |> Maybe.withDefault "-"
            )
         ++ textAlignDirOption dir
@@ -55,7 +53,6 @@ textAlignDirOption dir =
             "right"
 
 
-
 textColorClass : Color -> Html.Attribute msg
 textColorClass color =
     case color of
@@ -64,4 +61,3 @@ textColorClass color =
 
         Role role ->
             Role.toClass "text" role
-

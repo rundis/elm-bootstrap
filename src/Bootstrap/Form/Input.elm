@@ -50,7 +50,7 @@ You can indicate success or invalid input using these functions.
 import Html
 import Html.Attributes as Attributes
 import Html.Events as Events
-import Bootstrap.Grid.Internal as GridInternal
+import Bootstrap.General.Internal exposing (ScreenSize(..), screenSizeOption)
 import Bootstrap.Form.FormInternal as FormInternal
 
 
@@ -63,7 +63,7 @@ type Input msg
 {-| Opaque type representing legal input configuration options
 -}
 type Option msg
-    = Size GridInternal.ScreenSize
+    = Size ScreenSize
     | Id String
     | Type InputType
     | Disabled Bool
@@ -95,7 +95,7 @@ type InputType
 type alias Options msg =
     { tipe : InputType
     , id : Maybe String
-    , size : Maybe GridInternal.ScreenSize
+    , size : Maybe ScreenSize
     , disabled : Bool
     , value : Maybe String
     , defaultValue : Maybe String
@@ -227,14 +227,14 @@ view (Input { options }) =
 -}
 small : Option msg
 small =
-    Size GridInternal.SM
+    Size SM
 
 
 {-| Option to make an input taller (in height)
 -}
 large : Option msg
 large =
-    Size GridInternal.LG
+    Size LG
 
 
 {-| Options/shorthand for setting the id of an input
@@ -385,11 +385,11 @@ applyModifier modifier options =
             { options | attributes = options.attributes ++ attrs }
 
 
-sizeAttribute : GridInternal.ScreenSize -> Maybe (Html.Attribute msg)
+sizeAttribute : ScreenSize -> Maybe (Html.Attribute msg)
 sizeAttribute size =
     Maybe.map
         (\s -> Attributes.class <| "form-control-" ++ s)
-        (GridInternal.screenSizeOption size)
+        (screenSizeOption size)
 
 
 typeAttribute : InputType -> Html.Attribute msg

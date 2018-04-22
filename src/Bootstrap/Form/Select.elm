@@ -33,7 +33,7 @@ import Html
 import Html.Attributes as Attributes
 import Html.Events as Events
 import Json.Decode as Json
-import Bootstrap.Grid.Internal as GridInternal
+import Bootstrap.General.Internal exposing (ScreenSize (..), screenSizeOption)
 import Bootstrap.Form.FormInternal as FormInternal
 
 
@@ -55,7 +55,7 @@ type Item msg
 {-| Opaque type representing legal select options
 -}
 type Option msg
-    = Size GridInternal.ScreenSize
+    = Size ScreenSize
     | Id String
     | Custom
     | Disabled Bool
@@ -66,7 +66,7 @@ type Option msg
 
 type alias Options msg =
     { id : Maybe String
-    , size : Maybe GridInternal.ScreenSize
+    , size : Maybe ScreenSize
     , disabled : Bool
     , custom : Bool
     , onChange : Maybe (String -> msg)
@@ -124,14 +124,14 @@ item attributes children =
 -}
 small : Option msg
 small =
-    Size GridInternal.SM
+    Size SM
 
 
 {-| Option to make a select taller (height)
 -}
 large : Option msg
 large =
-    Size GridInternal.LG
+    Size LG
 
 
 {-| Options/shorthand for setting the id of a select
@@ -240,7 +240,7 @@ applyModifier modifier options =
             { options | attributes = options.attributes ++ attrs }
 
 
-sizeAttribute : Bool -> GridInternal.ScreenSize -> Maybe (Html.Attribute msg)
+sizeAttribute : Bool -> ScreenSize -> Maybe (Html.Attribute msg)
 sizeAttribute isCustom size =
     let
         prefix =
@@ -251,7 +251,7 @@ sizeAttribute isCustom size =
     in
         Maybe.map
             (\s -> Attributes.class <| prefix ++ s)
-            (GridInternal.screenSizeOption size)
+            (screenSizeOption size)
 
 validationAttribute : FormInternal.Validation -> Html.Attribute msg
 validationAttribute validation =

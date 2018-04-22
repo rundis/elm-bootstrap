@@ -46,23 +46,29 @@ module Bootstrap.Form.InputGroup
 
 
 # General
+
 @docs view, config, predecessors, successors, text, button, dropdown, splitDropdown, span, Config, Input, Addon
 
+
 # Additional input flavors
+
 @docs password, datetimeLocal, date, month, time, week, number, email, url, search, tel
 
 
 # Sizing
+
 @docs large, small
 
+
 # Further customization
+
 @docs attrs
 
 -}
 
 import Html
 import Html.Attributes as Attributes
-import Bootstrap.Grid.Internal as GridInternal
+import Bootstrap.General.Internal exposing (ScreenSize(..), screenSizeOption)
 import Bootstrap.Button as Button
 import Bootstrap.Form.Input as Input
 import Bootstrap.Dropdown as Dropdown
@@ -75,7 +81,7 @@ type Config msg
         { input : Input msg
         , predecessors : List (Addon msg)
         , successors : List (Addon msg)
-        , size : Maybe GridInternal.ScreenSize
+        , size : Maybe ScreenSize
         , attributes : List (Html.Attribute msg)
         }
 
@@ -94,7 +100,8 @@ type Addon msg
 
 {-| Create initial view configuration for an input group.
 
-* `input` - The input for the input group
+  - `input` - The input for the input group
+
 -}
 config : Input msg -> Config msg
 config input =
@@ -135,8 +142,9 @@ view (Config config) =
 
 {-| Specify a list of add-ons to display before the input.
 
-* `addons` List of add-ons
-* `config` View configuration for Input group (so far)
+  - `addons` List of add-ons
+  - `config` View configuration for Input group (so far)
+
 -}
 predecessors :
     List (Addon msg)
@@ -149,8 +157,9 @@ predecessors addons (Config config) =
 
 {-| Specify a list of add-ons to display after the input.
 
-* `addons` List of add-ons
-* `config` View configuration for Input group (so far)
+  - `addons` List of add-ons
+  - `config` View configuration for Input group (so far)
+
 -}
 successors :
     List (Addon msg)
@@ -163,8 +172,9 @@ successors addons (Config config) =
 
 {-| Create a simple span add-on. Great for simple texts or font icons
 
-* `attributes` - List of attributes
-* `children` - List of child elements
+  - `attributes` - List of attributes
+  - `children` - List of child elements
+
 -}
 span : List (Html.Attribute msg) -> List (Html.Html msg) -> Addon msg
 span attributes children =
@@ -176,8 +186,9 @@ span attributes children =
 
 {-| Create a button add-on.
 
-* `options` List of button options
-* `children` LIst of child elements
+  - `options` List of button options
+  - `children` LIst of child elements
+
 -}
 button :
     List (Button.Option msg)
@@ -191,6 +202,7 @@ button options children =
 {-| Create a dropdown add-on.
 
 For details see the [`Bootstrap.Dropdown`](Bootstrap-Dropdown) module.
+
 -}
 dropdown :
     Dropdown.State
@@ -209,6 +221,7 @@ dropdown state config =
 {-| Create a split dropdown add-on.
 
 For details see the [`Bootstrap.Dropdown`](Bootstrap-Dropdown) module.
+
 -}
 splitDropdown :
     Dropdown.State
@@ -321,7 +334,7 @@ input inputFn options =
 large : Config msg -> Config msg
 large (Config config) =
     Config
-        { config | size = Just GridInternal.LG }
+        { config | size = Just LG }
 
 
 {-| Make all controls in an input group small
@@ -329,7 +342,7 @@ large (Config config) =
 small : Config msg -> Config msg
 small (Config config) =
     Config
-        { config | size = Just GridInternal.SM }
+        { config | size = Just SM }
 
 
 {-| When you need to customize the input group container, use this function to provide customization attributes.
@@ -340,8 +353,8 @@ attrs attributes (Config config) =
         { config | attributes = attributes }
 
 
-sizeAttribute : GridInternal.ScreenSize -> Maybe (Html.Attribute msg)
+sizeAttribute : ScreenSize -> Maybe (Html.Attribute msg)
 sizeAttribute size =
     Maybe.map
         (\s -> Attributes.class <| "input-group-" ++ s)
-        (GridInternal.screenSizeOption size)
+        (screenSizeOption size)

@@ -107,7 +107,7 @@ import Html
 import Html.Attributes exposing (class)
 import Html.Keyed as Keyed
 import Bootstrap.Internal.Role as Role exposing (Role(..))
-import Bootstrap.Grid.Internal as GridInternal
+import Bootstrap.General.Internal exposing (ScreenSize(..), screenSizeOption)
 
 
 {-| Opaque type representing possible styling options for a table
@@ -118,7 +118,7 @@ type TableOption msg
     | Bordered
     | Hover
     | Small
-    | Responsive (Maybe GridInternal.ScreenSize)
+    | Responsive (Maybe ScreenSize)
     | Reflow
     | TableAttr (Html.Attribute msg)
 
@@ -249,28 +249,28 @@ responsive =
 -}
 responsiveSm : TableOption msg
 responsiveSm =
-    Responsive <| Just GridInternal.SM
+    Responsive <| Just SM
 
 
 {-| Make table responsive for up until the -md breakpoint.
 -}
 responsiveMd : TableOption msg
 responsiveMd =
-    Responsive <| Just GridInternal.MD
+    Responsive <| Just MD
 
 
 {-| Make table responsive for up until the -lg breakpoint.
 -}
 responsiveLg : TableOption msg
 responsiveLg =
-    Responsive <| Just GridInternal.LG
+    Responsive <| Just LG
 
 
 {-| Make table responsive for up until the -xl breakpoint.
 -}
 responsiveXl : TableOption msg
 responsiveXl =
-    Responsive <| Just GridInternal.XL
+    Responsive <| Just XL
 
 
 {-| Allows you to create a simple default table
@@ -429,7 +429,7 @@ maybeWrapResponsive options table =
                             _ ->
                                 Nothing
                     )
-                |> Maybe.andThen GridInternal.screenSizeOption
+                |> Maybe.andThen screenSizeOption
                 |> Maybe.map (\v -> "-" ++ v)
                 |> Maybe.withDefault ""
                 |> (++) "table-responsive"

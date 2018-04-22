@@ -4,20 +4,24 @@ module Bootstrap.Grid.Row exposing (..)
 
 
 # Vertical alignment
+
 @docs topXs, topSm, topMd, topLg, topXl, middleXs, middleSm, middleMd, middleLg, middleXl, bottomXs, bottomSm, bottomMd, bottomLg, bottomXl
 
 
 # Horizontal alignment
+
 @docs leftXs, leftSm, leftMd, leftLg, leftXl, centerXs, centerSm, centerMd, centerLg, centerXl, rightXs, rightSm, rightMd, rightLg, rightXl, aroundXs, aroundSm, aroundMd, aroundLg, aroundXl, betweenXs, betweenSm, betweenMd, betweenLg, betweenXl
 
 
 # Misc
+
 @docs attrs, Option
 
 -}
 
 import Html
 import Bootstrap.Grid.Internal as Internal exposing (..)
+import Bootstrap.General.Internal exposing (ScreenSize(..), HorizontalAlign(..))
 
 
 {-| Opaque type representing valid row options

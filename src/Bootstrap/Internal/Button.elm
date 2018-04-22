@@ -6,13 +6,13 @@ module Bootstrap.Internal.Button
         , RoledButton(..)
         )
 
-import Bootstrap.Grid.Internal as GridInternal
+import Bootstrap.General.Internal exposing (ScreenSize(..), screenSizeOption)
 import Html
 import Html.Attributes as Attributes exposing (class, classList)
 
 
 type Option msg
-    = Size GridInternal.ScreenSize
+    = Size ScreenSize
     | Coloring RoledButton
     | Block
     | Disabled Bool
@@ -40,7 +40,7 @@ type alias Options msg =
     { coloring : Maybe RoledButton
     , block : Bool
     , disabled : Bool
-    , size : Maybe GridInternal.ScreenSize
+    , size : Maybe ScreenSize
     , attributes : List (Html.Attribute msg)
     }
 
@@ -58,7 +58,7 @@ buttonAttributes modifiers =
             ]
         , Attributes.disabled options.disabled
         ]
-            ++ (case (options.size |> Maybe.andThen GridInternal.screenSizeOption) of
+            ++ (case (options.size |> Maybe.andThen screenSizeOption) of
                     Just s ->
                         [ class <| "btn-" ++ s ]
 

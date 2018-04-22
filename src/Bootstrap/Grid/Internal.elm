@@ -2,6 +2,7 @@ module Bootstrap.Grid.Internal exposing (..)
 
 import Html
 import Html.Attributes exposing (class)
+import Bootstrap.General.Internal exposing (ScreenSize(..), HAlign, HorizontalAlign(..), hAlignClass, screenSizeOption)
 
 
 type ColOption msg
@@ -48,19 +49,6 @@ type alias VAlign =
     , align : VerticalAlign
     }
 
-
-type alias HAlign =
-    { screenSize : ScreenSize
-    , align : HorizontalAlign
-    }
-
-
-type ScreenSize
-    = XS
-    | SM
-    | MD
-    | LG
-    | XL
 
 
 type ColumnCount
@@ -116,13 +104,6 @@ type VerticalAlign
     | Middle
     | Bottom
 
-
-type HorizontalAlign
-    = Left
-    | Center
-    | Right
-    | Around
-    | Between
 
 
 type alias ColOptions msg =
@@ -601,15 +582,6 @@ hAlignsToAttributes aligns =
             |> List.filterMap identity
 
 
-hAlignClass : HAlign -> Html.Attribute msg
-hAlignClass { align, screenSize } =
-    class <|
-        ("justify-content-"
-            ++ (Maybe.map (\v -> v ++ "-") (screenSizeOption screenSize)
-                    |> Maybe.withDefault ""
-               )
-            ++ horizontalAlignOption align
-        )
 
 
 screenSizeToPartialString : ScreenSize -> String
@@ -621,24 +593,6 @@ screenSizeToPartialString screenSize =
         Nothing ->
             "-"
 
-
-screenSizeOption : ScreenSize -> Maybe String
-screenSizeOption size =
-    case size of
-        XS ->
-            Nothing
-
-        SM ->
-            Just "sm"
-
-        MD ->
-            Just "md"
-
-        LG ->
-            Just "lg"
-
-        XL ->
-            Just "xl"
 
 
 columnCountOption : ColumnCount -> Maybe String
@@ -781,22 +735,3 @@ verticalAlignOption align =
 
         Bottom ->
             "end"
-
-
-horizontalAlignOption : HorizontalAlign -> String
-horizontalAlignOption align =
-    case align of
-        Left ->
-            "start"
-
-        Center ->
-            "center"
-
-        Right ->
-            "end"
-
-        Around ->
-            "around"
-
-        Between ->
-            "between"
