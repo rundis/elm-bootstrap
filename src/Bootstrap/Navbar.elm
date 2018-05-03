@@ -517,7 +517,7 @@ fixBottom config =
     updateOptions (\opts -> { opts | fix = Just Bottom }) config
 
 
-{-| Use this option when you want a fixed width menu (typically because you're main content is also confgirued to be fixed width)
+{-| Use this option when you want a fixed width menu (typically because your main content is also configured to be fixed width)
 -}
 container : Config msg -> Config msg
 container config =
@@ -531,7 +531,7 @@ light =
     scheme Light <| Roled RoleInternal.Light
 
 
-{-| Give your dark background (with a light text)
+{-| Use a dark background color (with a light text)
 -}
 dark : Config msg -> Config msg
 dark =
@@ -780,7 +780,8 @@ formItem attributes children =
         |> CustomItem
 
 
-{-| Create a completely custom item, which will float to the right when the menu isn't collapsed. You should ensure that you create inline elements or else your menu will break in unfortunate ways !
+{-| Create a completely custom item, which will float to the right when the menu isn't collapsed.
+You should ensure that you create inline elements or else your menu will break in unfortunate ways!
 
   - `attributes` List of attributes
   - `children` List of children
@@ -1099,13 +1100,6 @@ renderCustom items =
     List.map (\(CustomItem item) -> item) items
 
 
-
-{- navbarAttributes : List (Option msg) -> List (Html.Attribute msg)
-   navbarAttributes options =
-       class "navbar" :: List.concatMap navbarAttribute options
--}
-
-
 navbarAttributes : Options msg -> List (Html.Attribute msg)
 navbarAttributes options =
     [ classList
@@ -1246,8 +1240,9 @@ visibilityTransition withAnimation visibility =
 {-| Create a dropdown menu for use in a navbar
 
   - `config` A record with the following properties
-      - `id` A unique id for your dropdown. It's important, because it's used to keep track of the state of the dropdown !
+      - `id` A unique id for your dropdown. It's important, because it's used to keep track of the state of the dropdown!
       - `toggle` The main item ([`toggle`](#dropdownToggle)) that toggles the dropdown menu up or down
+      - `items` List of menu items for the dropdown
 
 -}
 dropdown :
@@ -1292,9 +1287,6 @@ dropdownItem attributes children =
 {-| Creates a divider element appropriate for use in dropdowns.
 Handy when you want to visually separate groups of menu items in a dropdown menu
 
-  - `attributes` List of attributes
-  - `children` List of child elements
-
 -}
 dropdownDivider : DropdownItem msg
 dropdownDivider =
@@ -1305,7 +1297,6 @@ dropdownDivider =
 {-| Creates an header element appropriate for use in dropdowns.
 Handy when you want to provide a heading for a group of menu items in a dropdown menu
 
-  - `attributes` List of attributes
   - `children` List of child elements
 
 -}
