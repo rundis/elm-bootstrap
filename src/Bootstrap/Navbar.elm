@@ -967,8 +967,6 @@ shouldHideMenu (State { windowSize }) (Config { options }) =
                 Nothing ->
                     XS
 
-        _ =
-            Debug.log "ScreenSize" winMedia
     in
         sizeToComparable winMedia > sizeToComparable options.toggleAt
 
