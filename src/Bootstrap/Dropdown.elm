@@ -675,11 +675,45 @@ clickHandler toMsg (State {status} as state) =
 sizeDecoder : Json.Decoder (DOM.Rectangle, DOM.Rectangle)
 sizeDecoder =
     Json.map2 (,)
-      (DOM.target <| DOM.boundingClientRect)
-      (DOM.target <|
-        DOM.nextSibling <|
-            DOM.childNode 0 <|
-                DOM.boundingClientRect)
+        (toggler [ "target" ] DOM.boundingClientRect)
+        (toggler [ "target" ]
+            (DOM.nextSibling <|
+                DOM.childNode 0 <|
+                    DOM.boundingClientRect
+            )
+        )
+
+
+
+toggler : List String -> Json.Decoder a -> Json.Decoder a
+toggler path decoder =
+    Json.oneOf
+        [ Json.at path isToggle
+            |> Json.andThen
+                (\res ->
+                    if res then
+                        Json.at path decoder
+                    else
+                        Json.fail ""
+                )
+        , Json.at (path ++ [ "parentElement" ]) DOM.className
+            |> Json.andThen
+                (\_ -> toggler (path ++ [ "parentElement" ]) decoder)
+        , Json.fail "No toggler found"
+        ]
+
+
+isToggle : Json.Decoder Bool
+isToggle =
+    DOM.className
+        |> Json.andThen
+            (\class ->
+                if String.contains "dropdown-toggle" class then
+                    Json.succeed True
+                else
+                    Json.succeed False
+            )
+
 
 
 toggleOpen : (State -> msg) -> State -> msg
