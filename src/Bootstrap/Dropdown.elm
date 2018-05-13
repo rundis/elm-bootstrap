@@ -11,6 +11,7 @@ module Bootstrap.Dropdown
         , alignMenuRight
         , anchorItem
         , buttonItem
+        , customItem
         , divider
         , header
         , attrs
@@ -587,6 +588,16 @@ buttonItem : List (Html.Attribute msg) -> List (Html.Html msg) -> DropdownItem m
 buttonItem attributes children =
     Html.button ([ type_ "button", class "dropdown-item" ] ++ attributes) children
         |> DropdownItem
+
+
+{-| Creates a dropdown item from any html element
+
+  - `child` Child element
+
+-}
+customItem : Html.Html msg -> DropdownItem msg
+customItem child =
+    DropdownItem child
 
 
 {-| Creates divider element appropriate for use in dropdowns.
