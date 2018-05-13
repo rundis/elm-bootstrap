@@ -179,9 +179,6 @@ view state ((Config { triggerElement }) as config) =
 popoverView : State -> Config msg -> Html.Html msg
 popoverView (State { isActive, domState }) (Config config) =
     let
-        _ =
-            Debug.log "DomState: " domState
-
         px f =
             (toString f) ++ "px"
 
@@ -193,7 +190,6 @@ popoverView (State { isActive, domState }) (Config config) =
                 [ ( "left", px pos.left )
                 , ( "top", px pos.top )
                 , ( "display", "inline-block" )
-                  --, ( "position", "absolute" )
                 , ( "width", px domState.offsetWidth )
                 ]
             else
