@@ -386,15 +386,16 @@ view visibility (Config configRec) =
 
 viewAttributes : Visibility -> ConfigRec msg -> List (Html.Attribute msg)
 viewAttributes visibility configRec =
-    [ Html.Attributes.attribute "role" "alert"
-    , classList
-        [ ( "alert", True )
-        , ( "alert-dismissible", isDismissable configRec )
-        , ( "fade", configRec.withAnimation )
-        , ( "show", visibility == Shown )
-        ]
-    , Role.toClass "alert" configRec.role
-    ]
+    configRec.attributes
+        ++ [ Html.Attributes.attribute "role" "alert"
+           , classList
+                [ ( "alert", True )
+                , ( "alert-dismissible", isDismissable configRec )
+                , ( "fade", configRec.withAnimation )
+                , ( "show", visibility == Shown )
+                ]
+           , Role.toClass "alert" configRec.role
+           ]
         ++ if visibility == Closed then
             [ style [ ( "display", "none" ) ] ]
            else
