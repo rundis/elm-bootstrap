@@ -386,29 +386,41 @@ view visibility (Config configRec) =
 
 viewAttributes : Visibility -> ConfigRec msg -> List (Html.Attribute msg)
 viewAttributes visibility configRec =
-    configRec.attributes
-        ++ [ Html.Attributes.attribute "role" "alert"
-           , classList
+    let
+        alertAttributes =
+            [ Html.Attributes.attribute "role" "alert"
+            , classList
                 [ ( "alert", True )
                 , ( "alert-dismissible", isDismissable configRec )
                 , ( "fade", configRec.withAnimation )
                 , ( "show", visibility == Shown )
                 ]
-           , Role.toClass "alert" configRec.role
-           ]
-        ++ if visibility == Closed then
-            [ style [ ( "display", "none" ) ] ]
-           else
-            []
-                ++ if configRec.withAnimation then
-                    case configRec.dismissable of
-                        Just dismissMsg ->
-                            [ on "transitionend" (Decode.succeed (dismissMsg Closed)) ]
+            , Role.toClass "alert" configRec.role
+            ]
 
-                        Nothing ->
-                            []
-                   else
-                    []
+        visibiltyAttributes =
+            if visibility == Closed then
+                [ style [ ( "display", "none" ) ] ]
+            else
+                []
+
+        animationAttributes =
+            if configRec.withAnimation then
+                case configRec.dismissable of
+                    Just dismissMsg ->
+                        [ on "transitionend" (Decode.succeed (dismissMsg Closed)) ]
+
+                    Nothing ->
+                        []
+            else
+                []
+    in
+        List.concat
+            [ configRec.attributes
+            , alertAttributes
+            , visibiltyAttributes
+            , animationAttributes
+            ]
 
 
 maybeAddDismissButton : Visibility -> ConfigRec msg -> List (Html.Html msg) -> List (Html.Html msg)
