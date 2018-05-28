@@ -120,6 +120,34 @@ module Bootstrap.Grid.Col exposing (..)
 @docs pushXl0, pushXl1, pushXl2, pushXl3, pushXl4, pushXl5, pushXl6, pushXl7, pushXl8, pushXl9, pushXl10, pushXl11, pushXl12
 
 
+# Order
+
+
+## Extra Small
+
+@docs orderXsFirst, orderXs1, orderXs2, orderXs3, orderXs4, orderXs5, orderXs6, orderXs7, orderXs8, orderXs9, orderXs10, orderXs11, orderXs12, orderXsLast
+
+
+## Small
+
+@docs orderSmFirst, orderSm1, orderSm2, orderSm3, orderSm4, orderSm5, orderSm6, orderSm7, orderSm8, orderSm9, orderSm10, orderSm11, orderSm12, orderSmLast
+
+
+## Medium
+
+@docs orderMdFirst, orderMd1, orderMd2, orderMd3, orderMd4, orderMd5, orderMd6, orderMd7, orderMd8, orderMd9, orderMd10, orderMd11, orderMd12, orderMdLast
+
+
+## Large
+
+@docs orderLgFirst, orderLg1, orderLg2, orderLg3, orderLg4, orderLg5, orderLg6, orderLg7, orderLg8, orderLg9, orderLg10, orderLg11, orderLg12, orderLgLast
+
+
+## Extra Large
+
+@docs orderXlFirst, orderXl1, orderXl2, orderXl3, orderXl4, orderXl5, orderXl6, orderXl7, orderXl8, orderXl9, orderXl10, orderXl11, orderXl12, orderXlLast
+
+
 # Misc
 
 @docs attrs, Option
@@ -1874,3 +1902,444 @@ pushXl11 =
 pushXl12 : Option msg
 pushXl12 =
     push XL Move12
+
+
+
+{- *********** Orders ******************** -}
+-- XS Orders
+
+
+{-| -}
+orderXsFirst : Option msg
+orderXsFirst =
+    order XS OrderFirst
+
+
+{-| -}
+orderXs1 : Option msg
+orderXs1 =
+    order XS Order1
+
+
+{-| -}
+orderXs2 : Option msg
+orderXs2 =
+    order XS Order2
+
+
+{-| -}
+orderXs3 : Option msg
+orderXs3 =
+    order XS Order3
+
+
+{-| -}
+orderXs4 : Option msg
+orderXs4 =
+    order XS Order4
+
+
+{-| -}
+orderXs5 : Option msg
+orderXs5 =
+    order XS Order5
+
+
+{-| -}
+orderXs6 : Option msg
+orderXs6 =
+    order XS Order6
+
+
+{-| -}
+orderXs7 : Option msg
+orderXs7 =
+    order XS Order7
+
+
+{-| -}
+orderXs8 : Option msg
+orderXs8 =
+    order XS Order8
+
+
+{-| -}
+orderXs9 : Option msg
+orderXs9 =
+    order XS Order9
+
+
+{-| -}
+orderXs10 : Option msg
+orderXs10 =
+    order XS Order10
+
+
+{-| -}
+orderXs11 : Option msg
+orderXs11 =
+    order XS Order11
+
+
+{-| -}
+orderXs12 : Option msg
+orderXs12 =
+    order XS Order12
+
+
+{-| -}
+orderXsLast : Option msg
+orderXsLast =
+    order XS OrderLast
+
+
+
+-- SM Orders
+
+
+{-| -}
+orderSmFirst : Option msg
+orderSmFirst =
+    order SM OrderFirst
+
+
+{-| -}
+orderSm1 : Option msg
+orderSm1 =
+    order SM Order1
+
+
+{-| -}
+orderSm2 : Option msg
+orderSm2 =
+    order SM Order2
+
+
+{-| -}
+orderSm3 : Option msg
+orderSm3 =
+    order SM Order3
+
+
+{-| -}
+orderSm4 : Option msg
+orderSm4 =
+    order SM Order4
+
+
+{-| -}
+orderSm5 : Option msg
+orderSm5 =
+    order SM Order5
+
+
+{-| -}
+orderSm6 : Option msg
+orderSm6 =
+    order SM Order6
+
+
+{-| -}
+orderSm7 : Option msg
+orderSm7 =
+    order SM Order7
+
+
+{-| -}
+orderSm8 : Option msg
+orderSm8 =
+    order SM Order8
+
+
+{-| -}
+orderSm9 : Option msg
+orderSm9 =
+    order SM Order9
+
+
+{-| -}
+orderSm10 : Option msg
+orderSm10 =
+    order SM Order10
+
+
+{-| -}
+orderSm11 : Option msg
+orderSm11 =
+    order SM Order11
+
+
+{-| -}
+orderSm12 : Option msg
+orderSm12 =
+    order SM Order12
+
+
+{-| -}
+orderSmLast : Option msg
+orderSmLast =
+    order SM OrderLast
+
+
+
+-- MD Orders
+
+
+{-| -}
+orderMdFirst : Option msg
+orderMdFirst =
+    order MD OrderFirst
+
+
+{-| -}
+orderMd1 : Option msg
+orderMd1 =
+    order MD Order1
+
+
+{-| -}
+orderMd2 : Option msg
+orderMd2 =
+    order MD Order2
+
+
+{-| -}
+orderMd3 : Option msg
+orderMd3 =
+    order MD Order3
+
+
+{-| -}
+orderMd4 : Option msg
+orderMd4 =
+    order MD Order4
+
+
+{-| -}
+orderMd5 : Option msg
+orderMd5 =
+    order MD Order5
+
+
+{-| -}
+orderMd6 : Option msg
+orderMd6 =
+    order MD Order6
+
+
+{-| -}
+orderMd7 : Option msg
+orderMd7 =
+    order MD Order7
+
+
+{-| -}
+orderMd8 : Option msg
+orderMd8 =
+    order MD Order8
+
+
+{-| -}
+orderMd9 : Option msg
+orderMd9 =
+    order MD Order9
+
+
+{-| -}
+orderMd10 : Option msg
+orderMd10 =
+    order MD Order10
+
+
+{-| -}
+orderMd11 : Option msg
+orderMd11 =
+    order MD Order11
+
+
+{-| -}
+orderMd12 : Option msg
+orderMd12 =
+    order MD Order12
+
+
+{-| -}
+orderMdLast : Option msg
+orderMdLast =
+    order MD OrderLast
+
+
+
+-- LG Orders
+
+
+{-| -}
+orderLgFirst : Option msg
+orderLgFirst =
+    order LG OrderFirst
+
+
+{-| -}
+orderLg1 : Option msg
+orderLg1 =
+    order LG Order1
+
+
+{-| -}
+orderLg2 : Option msg
+orderLg2 =
+    order LG Order2
+
+
+{-| -}
+orderLg3 : Option msg
+orderLg3 =
+    order LG Order3
+
+
+{-| -}
+orderLg4 : Option msg
+orderLg4 =
+    order LG Order4
+
+
+{-| -}
+orderLg5 : Option msg
+orderLg5 =
+    order LG Order5
+
+
+{-| -}
+orderLg6 : Option msg
+orderLg6 =
+    order LG Order6
+
+
+{-| -}
+orderLg7 : Option msg
+orderLg7 =
+    order LG Order7
+
+
+{-| -}
+orderLg8 : Option msg
+orderLg8 =
+    order LG Order8
+
+
+{-| -}
+orderLg9 : Option msg
+orderLg9 =
+    order LG Order9
+
+
+{-| -}
+orderLg10 : Option msg
+orderLg10 =
+    order LG Order10
+
+
+{-| -}
+orderLg11 : Option msg
+orderLg11 =
+    order LG Order11
+
+
+{-| -}
+orderLg12 : Option msg
+orderLg12 =
+    order LG Order12
+
+
+{-| -}
+orderLgLast : Option msg
+orderLgLast =
+    order LG OrderLast
+
+
+
+-- XL Orders
+
+
+{-| -}
+orderXlFirst : Option msg
+orderXlFirst =
+    order XL OrderFirst
+
+
+{-| -}
+orderXl1 : Option msg
+orderXl1 =
+    order XL Order1
+
+
+{-| -}
+orderXl2 : Option msg
+orderXl2 =
+    order XL Order2
+
+
+{-| -}
+orderXl3 : Option msg
+orderXl3 =
+    order XL Order3
+
+
+{-| -}
+orderXl4 : Option msg
+orderXl4 =
+    order XL Order4
+
+
+{-| -}
+orderXl5 : Option msg
+orderXl5 =
+    order XL Order5
+
+
+{-| -}
+orderXl6 : Option msg
+orderXl6 =
+    order XL Order6
+
+
+{-| -}
+orderXl7 : Option msg
+orderXl7 =
+    order XL Order7
+
+
+{-| -}
+orderXl8 : Option msg
+orderXl8 =
+    order XL Order8
+
+
+{-| -}
+orderXl9 : Option msg
+orderXl9 =
+    order XL Order9
+
+
+{-| -}
+orderXl10 : Option msg
+orderXl10 =
+    order XL Order10
+
+
+{-| -}
+orderXl11 : Option msg
+orderXl11 =
+    order XL Order11
+
+
+{-| -}
+orderXl12 : Option msg
+orderXl12 =
+    order XL Order12
+
+
+{-| -}
+orderXlLast : Option msg
+orderXlLast =
+    order XL OrderLast
