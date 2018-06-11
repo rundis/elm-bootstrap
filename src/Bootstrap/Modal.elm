@@ -80,7 +80,7 @@ module Bootstrap.Modal
                         ]
                         [ text "Close" ]
                     ]
-                |> Modal.view
+                |> Modal.view model.modalVisibility
             ]
 
 **NOTE:** Don't try to open several modals at the same time. It probably won't end well.
@@ -170,7 +170,7 @@ is a few more things you must wire-up and keep in mind.
                         ]
                         [ text "Close" ]
                     ]
-                |> Modal.view
+                |> Modal.view model.modalVisibility
             ]
 
 -}
