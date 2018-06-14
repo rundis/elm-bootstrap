@@ -157,8 +157,8 @@ type ImageBottom msg
 {-| Option to specify horizonal alignment of card contents
 -}
 align : Text.HAlign -> Option msg
-align align =
-    Internal.Aligned align
+align hAlign =
+    Internal.Aligned hAlign
 
 
 {-| Give cards a primary background color
@@ -281,8 +281,8 @@ textColor color =
 {-| When you need to customize a card item with standard Html.Attribute attributes use this function
 -}
 attrs : List (Html.Attribute msg) -> Option msg
-attrs attrs =
-    Internal.Attrs attrs
+attrs attrs_ =
+    Internal.Attrs attrs_
 
 
 {-| Template/default config which you use as a starting point to compose your cards.
@@ -319,19 +319,19 @@ of several optional elements.
 view :
     Config msg
     -> Html.Html msg
-view (Config { options, header, footer, imgTop, imgBottom, blocks }) =
+view (Config conf) =
     Html.div
-        (Internal.cardAttributes options)
+        (Internal.cardAttributes conf.options)
         (List.filterMap
             identity
-            [ Maybe.map (\(Header e) -> e) header
-            , Maybe.map (\(ImageTop e) -> e) imgTop
+            [ Maybe.map (\(Header e) -> e) conf.header
+            , Maybe.map (\(ImageTop e) -> e) conf.imgTop
             ]
-            ++ (Internal.renderBlocks blocks)
+            ++ (Internal.renderBlocks conf.blocks)
             ++ List.filterMap
                 identity
-                [ Maybe.map (\(Footer e) -> e) footer
-                , Maybe.map (\(ImageBottom e) -> e) imgBottom
+                [ Maybe.map (\(Footer e) -> e) conf.footer
+                , Maybe.map (\(ImageBottom e) -> e) conf.imgBottom
                 ]
         )
 
@@ -346,9 +346,9 @@ imgTop :
     -> List (Html.Html msg)
     -> Config msg
     -> Config msg
-imgTop attributes children (Config config) =
+imgTop attributes children (Config conf) =
     Config
-        { config
+        { conf
             | imgTop =
                 Html.img
                     ([ class "card-img-top" ] ++ attributes)
@@ -368,9 +368,9 @@ imgBottom :
     -> List (Html.Html msg)
     -> Config msg
     -> Config msg
-imgBottom attributes children (Config config) =
+imgBottom attributes children (Config conf) =
     Config
-        { config
+        { conf
             | imgBottom =
                 Html.img
                     ([ class "card-img-bottom" ] ++ attributes)
@@ -406,9 +406,9 @@ footer :
     -> List (Html.Html msg)
     -> Config msg
     -> Config msg
-footer attributes children (Config config) =
+footer attributes children (Config conf) =
     Config
-        { config
+        { conf
             | footer =
                 Html.div
                     (class "card-footer" :: attributes)
@@ -514,9 +514,9 @@ headerPrivate :
     -> List (Html.Html msg)
     -> Config msg
     -> Config msg
-headerPrivate elemFn attributes children (Config config) =
+headerPrivate elemFn attributes children (Config conf) =
     Config
-        { config
+        { conf
             | header =
                 elemFn (class "card-header" :: attributes) children
                     |> Header
@@ -534,11 +534,11 @@ listGroup :
     List (ListGroup.Item msg)
     -> Config msg
     -> Config msg
-listGroup items (Config config) =
+listGroup items (Config conf) =
     Config
-        { config
+        { conf
             | blocks =
-                config.blocks
+                conf.blocks
                     ++ [ Internal.listGroup items ]
         }
 
@@ -558,11 +558,11 @@ block :
     -> List (Block.Item msg)
     -> Config msg
     -> Config msg
-block options items (Config config) =
+block options items (Config conf) =
     Config
-        { config
+        { conf
             | blocks =
-                config.blocks
+                conf.blocks
                     ++ [ Internal.block options items ]
         }
 

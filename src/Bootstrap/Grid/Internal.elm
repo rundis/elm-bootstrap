@@ -323,17 +323,17 @@ applyColOption modifier options =
         ColAttrs attrs ->
             { options | attributes = options.attributes ++ attrs }
 
-        ColWidth width ->
-            applyColWidth width options
+        ColWidth width_ ->
+            applyColWidth width_ options
 
-        ColOffset offset ->
-            applyColOffset offset options
+        ColOffset offset_ ->
+            applyColOffset offset_ options
 
-        ColPull pull ->
-            applyColPull pull options
+        ColPull pull_ ->
+            applyColPull pull_ options
 
-        ColPush push ->
-            applyColPush push options
+        ColPush push_ ->
+            applyColPush push_ options
 
         ColOrder order ->
             applyColOrder order options
@@ -346,79 +346,79 @@ applyColOption modifier options =
 
 
 applyColWidth : Width -> ColOptions msg -> ColOptions msg
-applyColWidth width options =
-    case width.screenSize of
+applyColWidth width_ options =
+    case width_.screenSize of
         XS ->
-            { options | widthXs = Just width }
+            { options | widthXs = Just width_ }
 
         SM ->
-            { options | widthSm = Just width }
+            { options | widthSm = Just width_ }
 
         MD ->
-            { options | widthMd = Just width }
+            { options | widthMd = Just width_ }
 
         LG ->
-            { options | widthLg = Just width }
+            { options | widthLg = Just width_ }
 
         XL ->
-            { options | widthXl = Just width }
+            { options | widthXl = Just width_ }
 
 
 applyColOffset : Offset -> ColOptions msg -> ColOptions msg
-applyColOffset offset options =
-    case offset.screenSize of
+applyColOffset offset_ options =
+    case offset_.screenSize of
         XS ->
-            { options | offsetXs = Just offset }
+            { options | offsetXs = Just offset_ }
 
         SM ->
-            { options | offsetSm = Just offset }
+            { options | offsetSm = Just offset_ }
 
         MD ->
-            { options | offsetMd = Just offset }
+            { options | offsetMd = Just offset_ }
 
         LG ->
-            { options | offsetLg = Just offset }
+            { options | offsetLg = Just offset_ }
 
         XL ->
-            { options | offsetXl = Just offset }
+            { options | offsetXl = Just offset_ }
 
 
 applyColPull : Pull -> ColOptions msg -> ColOptions msg
-applyColPull pull options =
-    case pull.screenSize of
+applyColPull pull_ options =
+    case pull_.screenSize of
         XS ->
-            { options | pullXs = Just pull }
+            { options | pullXs = Just pull_ }
 
         SM ->
-            { options | pullSm = Just pull }
+            { options | pullSm = Just pull_ }
 
         MD ->
-            { options | pullMd = Just pull }
+            { options | pullMd = Just pull_ }
 
         LG ->
-            { options | pullLg = Just pull }
+            { options | pullLg = Just pull_ }
 
         XL ->
-            { options | pullXl = Just pull }
+            { options | pullXl = Just pull_ }
 
 
 applyColPush : Push -> ColOptions msg -> ColOptions msg
-applyColPush push options =
-    case push.screenSize of
+applyColPush push_ options =
+    case push_.screenSize of
         XS ->
-            { options | pushXs = Just push }
+            { options | pushXs = Just push_ }
 
         SM ->
-            { options | pushSm = Just push }
+            { options | pushSm = Just push_ }
 
         MD ->
-            { options | pushMd = Just push }
+            { options | pushMd = Just push_ }
 
         LG ->
-            { options | pushLg = Just push }
+            { options | pushLg = Just push_ }
 
         XL ->
-            { options | pushXl = Just push }
+            { options | pushXl = Just push_ }
 
 
 applyColOrder : Order -> ColOptions msg -> ColOptions msg
@@ -441,22 +441,22 @@ applyColOrder order options =
 
 
 applyColAlign : VAlign -> ColOptions msg -> ColOptions msg
-applyColAlign align options =
-    case align.screenSize of
+applyColAlign align_ options =
+    case align_.screenSize of
         XS ->
-            { options | alignXs = Just align }
+            { options | alignXs = Just align_ }
 
         SM ->
-            { options | alignSm = Just align }
+            { options | alignSm = Just align_ }
 
         MD ->
-            { options | alignMd = Just align }
+            { options | alignMd = Just align_ }
 
         LG ->
-            { options | alignLg = Just align }
+            { options | alignLg = Just align_ }
 
         XL ->
-            { options | alignXl = Just align }
+            { options | alignXl = Just align_ }
 
 
 applyRowOption : RowOption msg -> RowOptions msg -> RowOptions msg
@@ -473,22 +473,22 @@ applyRowOption modifier options =
 
 
 applyRowVAlign : VAlign -> RowOptions msg -> RowOptions msg
-applyRowVAlign align options =
-    case align.screenSize of
+applyRowVAlign align_ options =
+    case align_.screenSize of
         XS ->
-            { options | vAlignXs = Just align }
+            { options | vAlignXs = Just align_ }
 
         SM ->
-            { options | vAlignSm = Just align }
+            { options | vAlignSm = Just align_ }
 
         MD ->
-            { options | vAlignMd = Just align }
+            { options | vAlignMd = Just align_ }
 
         LG ->
-            { options | vAlignLg = Just align }
+            { options | vAlignLg = Just align_ }
 
         XL ->
-            { options | vAlignXl = Just align }
+            { options | vAlignXl = Just align_ }
 
 
 applyRowHAlign : HAlign -> RowOptions msg -> RowOptions msg
@@ -566,10 +566,10 @@ defaultRowOptions =
 colWidthsToAttributes : List (Maybe Width) -> List (Html.Attribute msg)
 colWidthsToAttributes widths =
     let
-        width w =
+        width_ w =
             Maybe.map colWidthClass w
     in
-        List.map width widths
+        List.map width_ widths
             |> List.filterMap identity
 
 
@@ -588,10 +588,10 @@ colWidthClass { screenSize, columnCount } =
 offsetsToAttributes : List (Maybe Offset) -> List (Html.Attribute msg)
 offsetsToAttributes offsets =
     let
-        offset m =
+        offset_ m =
             Maybe.map offsetClass m
     in
-        List.map offset offsets
+        List.map offset_ offsets
             |> List.filterMap identity
 
 
@@ -603,7 +603,7 @@ offsetClass { screenSize, offsetCount } =
 pullsToAttributes : List (Maybe Pull) -> List (Html.Attribute msg)
 pullsToAttributes pulls =
     let
-        pull m =
+        pull_ m =
             case m of
                 Just { screenSize, moveCount } ->
                     Just <| class <| "pull" ++ screenSizeToPartialString screenSize ++ moveCountOption moveCount
@@ -611,14 +611,14 @@ pullsToAttributes pulls =
                 Nothing ->
                     Nothing
     in
-        List.map pull pulls
+        List.map pull_ pulls
             |> List.filterMap identity
 
 
 pushesToAttributes : List (Maybe Pull) -> List (Html.Attribute msg)
 pushesToAttributes pushes =
     let
-        push m =
+        push_ m =
             case m of
                 Just { screenSize, moveCount } ->
                     Just <| class <| "push" ++ screenSizeToPartialString screenSize ++ moveCountOption moveCount
@@ -626,7 +626,7 @@ pushesToAttributes pushes =
                 Nothing ->
                     Nothing
     in
-        List.map push pushes
+        List.map push_ pushes
             |> List.filterMap identity
 
 

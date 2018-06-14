@@ -57,8 +57,8 @@ type BlockItem msg
 renderBlocks : List (CardBlock msg) -> List (Html.Html msg)
 renderBlocks blocks =
     List.map
-        (\block ->
-            case block of
+        (\block_ ->
+            case block_ of
                 CardBlock e ->
                     e
 
@@ -69,8 +69,8 @@ renderBlocks blocks =
 
 
 renderBlock : CardBlock msg -> Html.Html msg
-renderBlock block =
-    case block of
+renderBlock block_ =
+    case block_ of
         CardBlock e ->
             e
 

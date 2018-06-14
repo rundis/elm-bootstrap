@@ -268,64 +268,64 @@ simple role_ attributes children_ =
 
 {-| Configure alert to use primary colors.
 -}
-primary : Config msg -> Config msg
-primary config =
+primary : msg -> Config msg
+primary conf =
     role Primary config
 
 
 {-| Configure alert to use secondary colors.
 -}
 secondary : Config msg -> Config msg
-secondary config =
+secondary conf =
     role Secondary config
 
 
 {-| Configure alert to use success colors.
 -}
 success : Config msg -> Config msg
-success config =
+success conf =
     role Success config
 
 
 {-| Configure alert to use info colors.
 -}
 info : Config msg -> Config msg
-info config =
+info conf =
     role Info config
 
 
 {-| Configure alert to use warning colors.
 -}
 warning : Config msg -> Config msg
-warning config =
+warning conf =
     role Warning config
 
 
 {-| Configure alert to use danger colors.
 -}
 danger : Config msg -> Config msg
-danger config =
+danger conf =
     role Danger config
 
 
 {-| Configure alert to use dark colors.
 -}
 dark : Config msg -> Config msg
-dark config =
+dark conf =
     role Dark config
 
 
 {-| Configure alert to use light colors.
 -}
 light : Config msg -> Config msg
-light config =
+light conf =
     role Light config
 
 
 role : Role -> Config msg -> Config msg
-role role (Config configRec) =
+role role_ (Config configRec) =
     Config <|
-        { configRec | role = role }
+        { configRec | role = role_ }
 
 
 {-| Customize the alert with std Elm Html Attributes.
@@ -365,9 +365,9 @@ dismissableWithAnimation dismissMsg (Config configRec) =
 {-| Configure child elements for the alert.
 -}
 children : List (Html.Html msg) -> Config msg -> Config msg
-children children (Config configRec) =
+children children_ (Config configRec) =
     Config <|
-        { configRec | children = children }
+        { configRec | children = children_ }
 
 
 {-| Call the view function to turn an alert config into an Elm Html element.
@@ -422,9 +422,8 @@ viewAttributes visibility configRec =
             , animationAttributes
             ]
 
-
 maybeAddDismissButton : Visibility -> ConfigRec msg -> List (Html.Html msg) -> List (Html.Html msg)
-maybeAddDismissButton visibilty configRec children =
+maybeAddDismissButton visibilty configRec children_ =
     if isDismissable configRec then
         injectButton
             (Html.button
@@ -433,14 +432,14 @@ maybeAddDismissButton visibilty configRec children =
                 )
                 [ Html.span [ attribute "aria-hidden" "true" ] [ Html.text "×" ] ]
             )
-            children
+            children_
     else
-        children
+        children_
 
 
 injectButton : Html.Html msg -> List (Html.Html msg) -> List (Html.Html msg)
-injectButton btn children =
-    case children of
+injectButton btn children_ =
+    case children_ of
         head :: tail ->
             head :: btn :: tail
 
@@ -483,10 +482,10 @@ isDismissable configRec =
 
 -}
 link : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
-link attributes children =
+link attributes children_ =
     Html.a
         (class "alert-link" :: attributes)
-        children
+        children_
 
 
 {-| Alert h1 header with appropriate color styling
@@ -496,63 +495,63 @@ link attributes children =
 
 -}
 h1 : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
-h1 attributes children =
-    headingPrivate Html.h1 attributes children
+h1 attributes children_ =
+    headingPrivate Html.h1 attributes children_
 
 
 {-| Alert h2 header with appropriate color styling
 
 * `attributes` List of attributes
-* `children` List of child elements
+* `children_` List of child elements
 
 -}
 h2 : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
-h2 attributes children =
-    headingPrivate Html.h2 attributes children
+h2 attributes children_ =
+    headingPrivate Html.h2 attributes children_
 
 
 {-| Alert h3 header with appropriate color styling
 
 * `attributes` List of attributes
-* `children` List of child elements
+* `children_` List of child elements
 
 -}
 h3 : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
-h3 attributes children =
-    headingPrivate Html.h3 attributes children
+h3 attributes children_ =
+    headingPrivate Html.h3 attributes children_
 
 
 {-| Alert h3 header with appropriate color styling
 
 * `attributes` List of attributes
-* `children` List of child elements
+* `children_` List of child elements
 
 -}
 h4 : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
-h4 attributes children =
-    headingPrivate Html.h4 attributes children
+h4 attributes children_ =
+    headingPrivate Html.h4 attributes children_
 
 
 {-| Alert h5 header with appropriate color styling
 
 * `attributes` List of attributes
-* `children` List of child elements
+* `children_` List of child elements
 
 -}
 h5 : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
-h5 attributes children =
-    headingPrivate Html.h5 attributes children
+h5 attributes children_ =
+    headingPrivate Html.h5 attributes children_
 
 
 {-| Alert h6 header with appropriate color styling
 
 * `attributes` List of attributes
-* `children` List of child elements
+* `children_` List of child elements
 
 -}
 h6 : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
-h6 attributes children =
-    headingPrivate Html.h6 attributes children
+h6 attributes children_ =
+    headingPrivate Html.h6 attributes children_
 
 
 headingPrivate :
@@ -560,10 +559,10 @@ headingPrivate :
     -> List (Html.Attribute msg)
     -> List (Html.Html msg)
     -> Html.Html msg
-headingPrivate elemFn attributes children =
+headingPrivate elemFn attributes children_ =
     elemFn
         (class "alert-header" :: attributes)
-        children
+        children_
 
 
 {-| Subscription for handling animations. Don't forget this when configuring your alert to be dismissable with animation.

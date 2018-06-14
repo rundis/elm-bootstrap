@@ -33,8 +33,8 @@ type alias Option msg =
 {-| Use this function when you need to add custom Html attributes to the row container element.
 -}
 attrs : List (Html.Attribute msg) -> Option msg
-attrs attrs =
-    RowAttrs attrs
+attrs attrs_ =
+    RowAttrs attrs_
 
 
 

@@ -71,6 +71,7 @@ import Html.Events as Events
 import Json.Decode as Decode
 import Bootstrap.Internal.Button as ButtonInternal
 import Bootstrap.General.Internal exposing (ScreenSize(..))
+import Json.Decode as Decode
 
 
 {-| Opaque type reresenting available options for styling a button
@@ -167,20 +168,16 @@ checkboxButton checked options children =
 {-| When you need to customize a button element with standard Html.Attribute use this function to create it as a button option
 -}
 attrs : List (Html.Attribute msg) -> Option msg
-attrs attrs =
-    ButtonInternal.Attrs attrs
+attrs attrs_ =
+    ButtonInternal.Attrs attrs_
 
 
 {-| Option to fire a message when a button is clicked
 -}
 onClick : msg -> Option msg
 onClick message =
-    let
-        defaultOptions =
-            Events.defaultOptions
-    in
-        -- prevent default is needed for checkboxButton and radioButton. If False, the click event will fire twice
-        attrs [ Events.onWithOptions "click" { defaultOptions | preventDefault = True } (Decode.succeed message) ]
+    -- prevent default is needed for checkboxButton and radioButton. If False, the click event will fire twice
+    attrs [ Events.preventDefaultOn "click" (Decode.succeed (message, True)) ]
 
 
 {-| Option to make a button small
@@ -326,5 +323,5 @@ block =
 {-| Option to disable a button.
 -}
 disabled : Bool -> Option msg
-disabled disabled =
-    ButtonInternal.Disabled disabled
+disabled disabled_ =
+    ButtonInternal.Disabled disabled_

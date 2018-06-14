@@ -2,7 +2,7 @@ module Bootstrap.Pagination.Internal exposing (..)
 
 import Html
 import Html.Attributes exposing (class, href, tabindex)
-import Html.Events exposing (onWithOptions)
+import Html.Events exposing (custom)
 import Json.Decode as Decode
 
 
@@ -65,12 +65,11 @@ linkAttributes (ItemConfig itemConfig) { attrs } =
         ++ attrs
         ++ if itemConfig.status == Disabled then
             [ tabindex -1
-            , onWithOptions
-                "click"
-                { preventDefault = True
+            , custom "click"
+                { message = (\_ -> never)
+                , preventDefault = True
                 , stopPropagation = True
                 }
-                (Decode.fail "ignore")
             ]
            else
             []

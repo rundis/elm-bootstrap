@@ -245,5 +245,5 @@ disabled =
 {-| Use this function to supply any additional Hmtl.Attribute you need for your list items
 -}
 attrs : List (Html.Attribute msg) -> ItemOption msg
-attrs attrs =
-    Internal.Attrs attrs
+attrs attrs_ =
+    Internal.Attrs attrs_

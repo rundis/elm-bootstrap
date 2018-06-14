@@ -189,7 +189,7 @@ subscriptions model toMsg =
                     not wrap && currentIndex == size - 1
             in
                 if cycling == Active && hovering /= Hovered && interval /= 0 && not atEnd then
-                    Time.every (toFloat interval * Time.millisecond) (\_ -> toMsg <| StartTransition Next)
+                    Time.every (toFloat interval) (\_ -> toMsg <| StartTransition Next)
                 else
                     Sub.none
 
@@ -276,11 +276,11 @@ update message ((State tstage ({ currentIndex, size } as settings)) as model) =
                 Animating transition ->
                     State (Animating transition) settings
 
-        EndTransition size ->
+        EndTransition size_ ->
             case tstage of
                 NotAnimating ->
                     -- happens once on pageload to get the number of slides into the State
-                    State NotAnimating { settings | size = size }
+                    State NotAnimating { settings | size = size_ }
 
                 _ ->
                     State NotAnimating { settings | currentIndex = nextIndex tstage currentIndex size, size = size }
@@ -352,13 +352,13 @@ nextIndex stage currentIndex size =
         helper transition =
             case transition of
                 Next ->
-                    (currentIndex + 1) % size
+                    remainderBy (currentIndex + 1) size
 
                 Prev ->
-                    (currentIndex - 1) % size
+                    remainderBy (currentIndex - 1) size
 
                 Number m ->
-                    m % size
+                    remainderBy m size
     in
         case stage of
             Start transition ->
@@ -493,7 +493,7 @@ dirtyHack size =
           , Html.img
                 [ on "load" (Decode.succeed (EndTransition size))
                 , Attributes.src "http://package.elm-lang.org/assets/favicon.ico"
-                , Attributes.style [ ( "display", "none" ) ]
+                , Attributes.style "display" "none"
                 ]
                 []
           )

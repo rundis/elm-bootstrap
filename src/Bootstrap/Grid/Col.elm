@@ -169,8 +169,8 @@ type alias Option msg =
 {-| Use this function when you need to provide custom Html attributes to the column container element.
 -}
 attrs : List (Html.Attribute msg) -> ColOption msg
-attrs attrs =
-    ColAttrs attrs
+attrs attrs_ =
+    ColAttrs attrs_
 
 
 {-| You might find this function handy for aligning inline elements inside a column.

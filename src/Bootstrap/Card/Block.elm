@@ -184,8 +184,8 @@ title elemFn attributes children =
 
 -}
 align : Text.HAlign -> Option msg
-align align =
-    Internal.AlignedBlock align
+align halign =
+    Internal.AlignedBlock halign
 
 
 
@@ -252,7 +252,7 @@ textColor color =
 {-| When you need to customize a block item with standard Html.Attribute attributes use this function
 -}
 attrs : List (Html.Attribute msg) -> Option msg
-attrs attrs =
-    Internal.BlockAttrs attrs
+attrs attrs_ =
+    Internal.BlockAttrs attrs_
 
 

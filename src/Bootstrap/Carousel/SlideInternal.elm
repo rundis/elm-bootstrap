@@ -39,13 +39,13 @@ view (Config { attributes, content, caption }) =
                 Nothing ->
                     text ""
 
-                Just { attributes, children } ->
-                    div (attributes ++ [ class "carousel-caption d-none d-md-block" ]) children
+                Just rec ->
+                    div (rec.attributes ++ [ class "carousel-caption d-none d-md-block" ]) rec.children
     in
         div (attributes ++ [ class "carousel-item" ]) <|
             case content of
-                Image { attributes, src } ->
-                    [ Html.img (attributes ++ [ class "d-block img-fluid", Attributes.src src ]) []
+                Image rec ->
+                    [ Html.img (rec.attributes ++ [ class "d-block img-fluid", Attributes.src rec.src ]) []
                     , captionHtml
                     ]
 
