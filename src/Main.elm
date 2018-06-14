@@ -58,7 +58,8 @@ type alias Model =
     , popoverStateTop : Popover.State
     , popoverStateBottom : Popover.State
     , modalVisibility : Modal.Visibility
-    , activePageIdx : Int
+    , simplePaginationIdx : Int
+    , customPaginationIdx : Int
     }
 
 
@@ -80,7 +81,8 @@ init =
           , popoverStateBottom = Popover.initialState
           , popoverStateTop = Popover.initialState
           , modalVisibility = Modal.hidden
-          , activePageIdx = 1
+          , simplePaginationIdx = 0
+          , customPaginationIdx = 1
           }
         , navbarCmd
         )
@@ -104,6 +106,8 @@ type Msg
     | TogglePopoverRightMsg Popover.State
     | TogglePopoverBottomMsg Popover.State
     | TogglePopoverTopMsg Popover.State
+    | SimplePaginationSelect Int
+    | CustomPaginationSelect Int
 
 
 update : Msg -> Model -> ( Model, Cmd msg )
@@ -179,6 +183,16 @@ update msg ({ accordionState } as model) =
 
         TogglePopoverTopMsg state ->
             ( { model | popoverStateTop = state }
+            , Cmd.none
+            )
+
+        SimplePaginationSelect idx ->
+            ( { model | simplePaginationIdx = idx }
+            , Cmd.none
+            )
+
+        CustomPaginationSelect idx ->
+            ( { model | customPaginationIdx = idx }
             , Cmd.none
             )
 
@@ -828,9 +842,10 @@ simplePaginationList model =
             |> Pagination.align HAlign.centerXs
             |> Pagination.small
             |> Pagination.itemsList
-                { prevItem = Just <| Pagination.ListItem [] [ text "Previous" ]
+                { selectedMsg = SimplePaginationSelect
+                , prevItem = Just <| Pagination.ListItem [] [ text "Previous" ]
                 , nextItem = Just <| Pagination.ListItem [] [ text "Next" ]
-                , activeIdx = model.activePageIdx
+                , activeIdx = model.simplePaginationIdx
                 , data = [ 1, 2, 3, 4, 5 ] -- You'd typically generate this from your model somehow !
                 , itemFn = \idx _ -> Pagination.ListItem [] [ text <| toString (idx + 1) ]
                 , urlFn = \idx _ -> "#/pages/" ++ toString (idx + 1)
@@ -856,7 +871,7 @@ customPagination model =
                 |> Pagination.large
                 |> Pagination.items
                     ([ Item.item
-                        |> Item.span [ class "custom-page-item" ]
+                        |> Item.span [ class "custom-page-item", onClick <| CustomPaginationSelect 0 ]
                             [ span [ class "fa fa-fast-backward", attribute "aria-hidden" "true" ] []
                             , span [ class "sr-only" ] [ text "First page" ]
                             ]
@@ -869,8 +884,8 @@ customPagination model =
                         ++ (List.indexedMap
                                 (\idx item ->
                                     Item.item
-                                        |> Item.active ( idx == model.activePageIdx )
-                                        |> Item.span [ class "custom-page-item" ]
+                                        |> Item.active ( idx == model.customPaginationIdx )
+                                        |> Item.span [ class "custom-page-item", onClick <| CustomPaginationSelect idx ]
                                             [ span [ class <| "fa fa-" ++ item.icon, attribute "aria-hidden" "true" ] []
                                             , span [ class "sr-only" ] [ text item.name ]
                                             ]
@@ -883,7 +898,7 @@ customPagination model =
                                     , span [ class "sr-only" ] [ text "Next" ]
                                     ]
                            , Item.item
-                                |> Item.span [ class "custom-page-item" ]
+                                |> Item.span [ class "custom-page-item", onClick <| CustomPaginationSelect 2 ]
                                     [ span [ class "fa fa-fast-forward", attribute "aria-hidden" "true" ] []
                                     , span [ class "sr-only" ] [ text "Last page" ]
                                     ]

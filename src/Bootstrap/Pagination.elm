@@ -31,7 +31,8 @@ module Bootstrap.Pagination exposing
             |> Pagination HAlign.centerXs
             |> Pagination.large
             |> Pagination.itemsList
-                { prevItem = Just <| Pagination.ListItem [] [ text "Previous" ]
+                { selectedMsg = PaginationMsg
+                , prevItem = Just <| Pagination.ListItem [] [ text "Previous" ]
                 , nextItem = Just <| Pagination.ListItem [] [ text "Next" ]
                 , activeIdx = model.activePageIdx
                 , data = [ 1, 2, 3, 4, 5 ] -- You'd typically generate this from your model somehow !
@@ -49,6 +50,7 @@ module Bootstrap.Pagination exposing
     import Bootstrap.HAlign as HAlign
 
 
+    -- Not you'll also need to fill in the pagination logic yourselves (not shown for brevity)
     customPagination : Model -> Html Msg
     customPagination model =
         let
@@ -145,6 +147,7 @@ import Bootstrap.General.HAlign as General
 import Bootstrap.General.Internal exposing (hAlignClass)
 import Html
 import Html.Attributes exposing (class, attribute)
+import Html.Events exposing (onClick)
 
 
 {-| Opaque type holding the configuration options for a pagination widget.
@@ -248,7 +251,7 @@ items xs (Config configRec) =
 
 
 {-| Record type for providing configuration for a simple pagination list with default behaviours/
-
+- **selectedMsg** - A msg that you use to keep track of the activeIdx in your model
 - **prevItem** - When provided will render a previous item link before the individual page items.
 - **nextItem** - When provided will render a next item link after the individual page items.
 - **activeIdx** - Index of currently active item in the items list.
@@ -257,7 +260,8 @@ items xs (Config configRec) =
 - **urlFn** - Callback function to allow you to specify the href url for an individual pagination item
 -}
 type alias ListConfig a msg =
-    { prevItem : Maybe (ListItem msg)
+    { selectedMsg : (Int -> msg)
+    , prevItem : Maybe (ListItem msg)
     , nextItem : Maybe (ListItem msg)
     , activeIdx : Int
     , data : List a
@@ -284,7 +288,8 @@ type alias ListItem msg =
     viewPagination model =
         Pagination.defaultConfig
             |> Pagination.itemsList
-                { prevItem = Just <| Pagination.ListItem [] [ text "Previous" ]
+                { selectedMsg = PaginationMsg
+                , prevItem = Just <| Pagination.ListItem [] [ text "Previous" ]
                 , nextItem = Just <| Pagination.ListItem [] [ text "Next" ]
                 , activeIdx = model.activePageIdx
                 , data = [ 1, 2, 3, 4, 5 ] -- You'd typically generate this from your model somehow !
@@ -312,7 +317,7 @@ itemsList conf config =
                 Nothing
 
         nextItem =
-            if conf.activeIdx < (count - 2) then
+            if conf.activeIdx < (count - 1) then
                 byIdx <| conf.activeIdx + 1
             else
                 Nothing
@@ -322,15 +327,16 @@ itemsList conf config =
                 Item.item
                     |> Item.disabled (count < 2 || conf.activeIdx < 1)
                     |> Item.link
-                        ((Html.Attributes.href <|
-                            case prevItem of
-                                Just item ->
-                                    conf.urlFn (conf.activeIdx - 1) item
+                        ((case prevItem of
+                            Just item ->
+                                [ Html.Attributes.href <| conf.urlFn (conf.activeIdx - 1) item
+                                , onClick <| conf.selectedMsg (conf.activeIdx - 1)
+                                ]
 
-                                Nothing ->
-                                    "#"
+                            Nothing ->
+                                [ Html.Attributes.href "#" ]
                          )
-                            :: attributes
+                            ++ attributes
                         )
                         children
             )
@@ -345,7 +351,11 @@ itemsList conf config =
                             Item.item
                                 |> Item.disabled (idx == conf.activeIdx)
                                 |> Item.link
-                                    ((Html.Attributes.href <| conf.urlFn idx item) :: attributes)
+                                    ([ Html.Attributes.href <| conf.urlFn idx item
+                                     , onClick <| conf.selectedMsg idx
+                                     ]
+                                        ++ attributes
+                                    )
                                     children
                                 |> Just
                     )
@@ -356,15 +366,16 @@ itemsList conf config =
                         Item.item
                             |> Item.disabled (count < 2 || conf.activeIdx > (count - 2))
                             |> Item.link
-                                ((Html.Attributes.href <|
-                                    case nextItem of
-                                        Just item ->
-                                            conf.urlFn (conf.activeIdx + 1) item
+                                ((case nextItem of
+                                    Just item ->
+                                        [ Html.Attributes.href <| conf.urlFn (conf.activeIdx + 1) item
+                                        , onClick <| conf.selectedMsg (conf.activeIdx + 1)
+                                        ]
 
-                                        Nothing ->
-                                            "#"
+                                    Nothing ->
+                                        [ Html.Attributes.href "#" ]
                                  )
-                                    :: attributes
+                                    ++ attributes
                                 )
                                 children
                     )
