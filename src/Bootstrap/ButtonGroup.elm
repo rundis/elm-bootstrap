@@ -100,7 +100,7 @@ type CheckboxButtonItem msg
 
 {-| Create a group of related buttons
 
-    ButtonGroup.group
+    ButtonGroup.buttonGroup
         [ ButtonGroup.small ]
         [ ButtonGroup.button [ Button.primary ] [ text "Primary" ]
         , ButtonGroup.button [ Button.secondary ] [ text "Secondary" ]
