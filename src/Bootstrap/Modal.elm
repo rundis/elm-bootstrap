@@ -181,6 +181,7 @@ import Html.Events as Events
 import Bootstrap.General.Internal exposing (ScreenSize(..), screenSizeOption)
 import AnimationFrame
 import Json.Decode as Json
+import DOM
 
 
 {-| Visibility state for the modal
@@ -322,9 +323,18 @@ view visibility (Config ({ body, footer, options } as config)) =
     Html.div
         []
         ([ Html.div
-            ([ Attr.tabindex -1 ] ++ display visibility config)
+            ([ Attr.tabindex -1] ++ display visibility config)
             [ Html.div
-                (Attr.attribute "role" "document" :: modalAttributes options)
+                ([ Attr.attribute "role" "document"
+                 , Attr.class "elm-bootstrap-modal"
+                 ]
+                    ++ modalAttributes options
+                    ++ (if options.hideOnBackdropClick then
+                            [ Events.on "click" (containerClickDecoder config.closeMsg) ]
+                        else
+                            []
+                       )
+                )
                 [ Html.div
                     [ Attr.class "modal-content" ]
                     (List.filterMap
@@ -339,6 +349,18 @@ view visibility (Config ({ body, footer, options } as config)) =
          ]
             ++ backdrop visibility config
         )
+
+
+containerClickDecoder: msg -> Json.Decoder msg
+containerClickDecoder closeMsg =
+    DOM.target DOM.className
+        |> Json.andThen
+            (\c ->
+                if String.contains "elm-bootstrap-modal" c then
+                    Json.succeed closeMsg
+                else
+                    Json.fail "ignoring"
+            )
 
 
 display : Visibility -> ConfigRec msg -> List (Html.Attribute msg)
