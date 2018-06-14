@@ -123,7 +123,7 @@ bit of wiring involved when using them in your Elm Application.
 
 # Dropdown items
 
-@docs anchorItem, buttonItem, divider, header, DropdownItem
+@docs anchorItem, buttonItem, divider, header, customItem, DropdownItem
 
 
 # Split dropdown
