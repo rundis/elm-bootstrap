@@ -10,6 +10,7 @@ type ColOption msg
     | ColOffset Offset
     | ColPull Pull
     | ColPush Push
+    | ColOrder Order
     | ColAlign VAlign
     | ColAttrs (List (Html.Attribute msg))
 
@@ -44,11 +45,16 @@ type alias Push =
     }
 
 
+type alias Order =
+    { screenSize : ScreenSize
+    , moveCount : OrderCol
+    }
+
+
 type alias VAlign =
     { screenSize : ScreenSize
     , align : VerticalAlign
     }
-
 
 
 type ColumnCount
@@ -99,11 +105,27 @@ type MoveCount
     | Move12
 
 
+type OrderCol
+    = OrderFirst
+    | Order1
+    | Order2
+    | Order3
+    | Order4
+    | Order5
+    | Order6
+    | Order7
+    | Order8
+    | Order9
+    | Order10
+    | Order11
+    | Order12
+    | OrderLast
+
+
 type VerticalAlign
     = Top
     | Middle
     | Bottom
-
 
 
 type alias ColOptions msg =
@@ -128,6 +150,11 @@ type alias ColOptions msg =
     , pushMd : Maybe Push
     , pushLg : Maybe Push
     , pushXl : Maybe Push
+    , orderXs : Maybe Order
+    , orderSm : Maybe Order
+    , orderMd : Maybe Order
+    , orderLg : Maybe Order
+    , orderXl : Maybe Order
     , alignXs : Maybe VAlign
     , alignSm : Maybe VAlign
     , alignMd : Maybe VAlign
@@ -174,6 +201,11 @@ pull size count =
 push : ScreenSize -> MoveCount -> ColOption msg
 push size count =
     ColPush <| Push size count
+
+
+order : ScreenSize -> OrderCol -> ColOption msg
+order size count =
+    ColOrder <| Order size count
 
 
 rowVAlign : ScreenSize -> VerticalAlign -> RowOption msg
@@ -235,6 +267,13 @@ colAttributes modifiers =
                 , options.pushLg
                 , options.pushXl
                 ]
+            ++ orderToAttributes
+                [ options.orderXs
+                , options.orderSm
+                , options.orderMd
+                , options.orderLg
+                , options.orderXl
+                ]
             ++ vAlignsToAttributes "align-self-"
                 [ options.alignXs
                 , options.alignSm
@@ -286,6 +325,9 @@ applyColOption modifier options =
 
         ColPush push ->
             applyColPush push options
+
+        ColOrder order ->
+            applyColOrder order options
 
         ColAlign align ->
             applyColAlign align options
@@ -365,6 +407,25 @@ applyColPush push options =
 
         XL ->
             { options | pushXl = Just push }
+
+
+applyColOrder : Order -> ColOptions msg -> ColOptions msg
+applyColOrder order options =
+    case order.screenSize of
+        XS ->
+            { options | orderXs = Just order }
+
+        SM ->
+            { options | orderSm = Just order }
+
+        MD ->
+            { options | orderMd = Just order }
+
+        LG ->
+            { options | orderLg = Just order }
+
+        XL ->
+            { options | orderXl = Just order }
 
 
 applyColAlign : VAlign -> ColOptions msg -> ColOptions msg
@@ -460,6 +521,11 @@ defaultColOptions =
     , pushMd = Nothing
     , pushLg = Nothing
     , pushXl = Nothing
+    , orderXs = Nothing
+    , orderSm = Nothing
+    , orderMd = Nothing
+    , orderLg = Nothing
+    , orderXl = Nothing
     , alignXs = Nothing
     , alignSm = Nothing
     , alignMd = Nothing
@@ -551,6 +617,21 @@ pushesToAttributes pushes =
             |> List.filterMap identity
 
 
+orderToAttributes : List (Maybe Order) -> List (Html.Attribute msg)
+orderToAttributes orders =
+    let
+        order m =
+            case m of
+                Just { screenSize, moveCount } ->
+                    Just <| class <| "order" ++ screenSizeToPartialString screenSize ++ orderColOption moveCount
+
+                Nothing ->
+                    Nothing
+    in
+        List.map order orders
+            |> List.filterMap identity
+
+
 vAlignsToAttributes : String -> List (Maybe VAlign) -> List (Html.Attribute msg)
 vAlignsToAttributes prefix aligns =
     let
@@ -582,8 +663,6 @@ hAlignsToAttributes aligns =
             |> List.filterMap identity
 
 
-
-
 screenSizeToPartialString : ScreenSize -> String
 screenSizeToPartialString screenSize =
     case screenSizeOption screenSize of
@@ -592,7 +671,6 @@ screenSizeToPartialString screenSize =
 
         Nothing ->
             "-"
-
 
 
 columnCountOption : ColumnCount -> Maybe String
@@ -722,6 +800,52 @@ moveCountOption size =
 
         Move12 ->
             "12"
+
+
+orderColOption : OrderCol -> String
+orderColOption size =
+    case size of
+        OrderFirst ->
+            "first"
+
+        Order1 ->
+            "1"
+
+        Order2 ->
+            "2"
+
+        Order3 ->
+            "3"
+
+        Order4 ->
+            "4"
+
+        Order5 ->
+            "5"
+
+        Order6 ->
+            "6"
+
+        Order7 ->
+            "7"
+
+        Order8 ->
+            "8"
+
+        Order9 ->
+            "9"
+
+        Order10 ->
+            "10"
+
+        Order11 ->
+            "11"
+
+        Order12 ->
+            "12"
+
+        OrderLast ->
+            "last"
 
 
 verticalAlignOption : VerticalAlign -> String
