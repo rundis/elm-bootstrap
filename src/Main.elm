@@ -269,6 +269,11 @@ mainContent model =
                 |> Popover.view model.popoverStateRight
             ]
         , Grid.row
+            [ Row.centerXs, Row.attrs [ rowStyle ] ]
+            [Grid.col [Col.middleXs, Col.textAlign Text.alignXsCenter, Col.attrs [ colStyle ]]
+                [span [] [ text "Hello P"]]
+            ]
+        , Grid.row
             [ Row.bottomXs, Row.attrs [ rowStyle ] ]
             [ Grid.col
                 [ Col.xs2

@@ -2,6 +2,8 @@ module Bootstrap.Grid.Internal exposing (..)
 
 import Html
 import Html.Attributes exposing (class)
+import Bootstrap.Text as Text
+import Bootstrap.Internal.Text as TextInternal
 import Bootstrap.General.Internal exposing (ScreenSize(..), HAlign, HorizontalAlign(..), hAlignClass, screenSizeOption)
 
 
@@ -13,6 +15,7 @@ type ColOption msg
     | ColOrder Order
     | ColAlign VAlign
     | ColAttrs (List (Html.Attribute msg))
+    | TextAlign Text.HAlign
 
 
 type RowOption msg
@@ -130,6 +133,7 @@ type VerticalAlign
 
 type alias ColOptions msg =
     { attributes : List (Html.Attribute msg)
+    , textAlign : Maybe Text.HAlign
     , widthXs : Maybe Width
     , widthSm : Maybe Width
     , widthMd : Maybe Width
@@ -281,6 +285,11 @@ colAttributes modifiers =
                 , options.alignLg
                 , options.alignXl
                 ]
+            ++ case options.textAlign of
+                Just a ->
+                    [TextInternal.textAlignClass a]
+                Nothing ->
+                    []
             ++ options.attributes
 
 
@@ -331,6 +340,9 @@ applyColOption modifier options =
 
         ColAlign align ->
             applyColAlign align options
+
+        TextAlign align ->
+            { options | textAlign = Just align }
 
 
 applyColWidth : Width -> ColOptions msg -> ColOptions msg
@@ -501,6 +513,7 @@ applyRowHAlign align options =
 defaultColOptions : ColOptions msg
 defaultColOptions =
     { attributes = []
+    , textAlign = Nothing
     , widthXs = Nothing
     , widthSm = Nothing
     , widthMd = Nothing

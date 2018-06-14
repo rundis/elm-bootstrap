@@ -150,13 +150,14 @@ module Bootstrap.Grid.Col exposing (..)
 
 # Misc
 
-@docs attrs, Option
+@docs attrs, textAlign, Option
 
 -}
 
 import Html
 import Bootstrap.Grid.Internal as Internal exposing (..)
 import Bootstrap.General.Internal exposing (ScreenSize(..))
+import Bootstrap.Text as Text
 
 
 {-| Opaque type representing valid Column options
@@ -171,6 +172,15 @@ attrs : List (Html.Attribute msg) -> ColOption msg
 attrs attrs =
     ColAttrs attrs
 
+
+{-| You might find this function handy for aligning inline elements inside a column.
+
+    Grid.col [ Col.textAlign Text.alignXsCenter ]
+
+-}
+textAlign : Text.HAlign -> ColOption msg
+textAlign align =
+    TextAlign align
 
 
 {- *********** Aligns ******************* -}
