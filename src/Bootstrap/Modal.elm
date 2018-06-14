@@ -63,7 +63,7 @@ module Bootstrap.Modal
                 |> Modal.h5 [] [ text "Modal header" ]
                 |> Modal.body []
                     [ Grid.containerFluid []
-                        [ Grid.row
+                        [ Grid.row []
                             [ Grid.col
                                 [ Col.xs6 ]
                                 [ text "Col 1" ]
