@@ -2,6 +2,7 @@ module Bootstrap.AlertTest exposing (..)
 
 import Bootstrap.Alert as Alert
 import Html
+import Html.Attributes
 import Test exposing (Test, test, describe)
 import Expect
 import Test.Html.Query as Query
@@ -115,4 +116,19 @@ alertWithHeaders =
             , test "Expect h4" <| \() -> expectH "h4"
             , test "Expect h5" <| \() -> expectH "h5"
             , test "Expect h6" <| \() -> expectH "h6"
+            ]
+
+
+alertWithAttributes : Test
+alertWithAttributes =
+    let
+        html =
+            Alert.simpleInfo [ Html.Attributes.class "my-class" ] []
+    in
+        describe "Alert with attributes"
+            [ test "Expect has passed class" <|
+                \() ->
+                    html
+                        |> Query.fromHtml
+                        |> Query.has [ classes [ "my-class" ] ]
             ]
