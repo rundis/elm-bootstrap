@@ -66,7 +66,7 @@ module Bootstrap.Accordion
                         Accordion.header [] <| Accordion.toggle [] [ text "Card 1" ]
                     , blocks =
                         [ Accordion.block []
-                            [ Card.text [] [ text "Lorem ipsum etc" ] ]
+                            [ Block.text [] [ text "Lorem ipsum etc" ] ]
                         ]
                     }
                 , Accordion.card
@@ -76,7 +76,7 @@ module Bootstrap.Accordion
                         Accordion.header [] <| Accordion.toggle [] [ text "Card 2" ]
                     , blocks =
                         [ Accordion.block []
-                            [ Card.text [] [ text "Lorem ipsum etc" ] ]
+                            [ Block.text [] [ text "Lorem ipsum etc" ] ]
                         ]
                     }
                 ]
