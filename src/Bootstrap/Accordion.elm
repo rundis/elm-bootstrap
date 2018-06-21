@@ -401,14 +401,18 @@ headerH6 =
     headerPrivate Html.h6
 
 
-{-| Add elements before the toggle element in a accordion card header
+{-| Add elements before the toggle element in a accordion card header. Order matters if you're using
+both prependHeader and appendHeader. Specifically, it should be toggle |> appendHeader |>
+prependHeader.
 -}
 prependHeader : List (Html.Html msg) -> Header msg -> Header msg
 prependHeader elements (Header header_) =
     Header { header_ | childrenPreToggle = elements ++ header_.childrenPreToggle }
 
 
-{-| Add elements after the toggle element in a accordion card header
+{-| Add elements after the toggle element in a accordion card header. Order matters if you're using
+both prependHeader and appendHeader. Specifically, it should be toggle |> appendHeader |>
+prependHeader.
 -}
 appendHeader : List (Html.Html msg) -> Header msg -> Header msg
 appendHeader elements (Header header_) =
