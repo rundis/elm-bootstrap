@@ -653,20 +653,29 @@ accordion { accordionState } =
         , Accordion.config AccordionMsg
             |> Accordion.withAnimation
             |> Accordion.onlyOneOpen
-            |> Accordion.cards [ cardOne, cardTwo, cardThree ]
+            |> Accordion.cards [ cardOne accordionState, cardTwo, cardThree ]
             |> Accordion.view accordionState
         ]
 
 
-cardOne : Accordion.Card Msg
-cardOne =
+cardOne : Accordion.State -> Accordion.Card Msg
+cardOne state =
     Accordion.card
         { id = "card1"
         , options = []
         , header =
             Accordion.headerH3 []
-                (Accordion.toggle [] [ span [ class "fa fa-car" ] [],  text " Card With container" ])
-                |> Accordion.prependHeader [ span [ class "fa fa-car" ] [] ]
+                (Accordion.toggle []
+                    [ span [ class "fa fa-car" ] []
+                    , text " Card With container"
+                    ]
+                )
+                |> Accordion.appendHeader
+                    [ if Accordion.isOpen "card1" state then
+                        span [ class "fa fa-chevron-down" ] []
+                      else
+                        span [ class "fa fa-chevron-up" ] []
+                    ]
         , blocks =
             [ Accordion.block []
                 [ Block.titleH4 [] [ text "Some title" ]

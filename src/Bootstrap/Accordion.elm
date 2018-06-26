@@ -4,6 +4,7 @@ module Bootstrap.Accordion
         , cards
         , withAnimation
         , onlyOneOpen
+        , isOpen
         , toggle
         , block
         , listGroup
@@ -93,7 +94,7 @@ module Bootstrap.Accordion
 
 
 ## Accordion
-@docs view, config, cards, withAnimation, onlyOneOpen, Config, initialState, initialStateCardOpen, State
+@docs view, config, cards, withAnimation, onlyOneOpen, isOpen, Config, initialState, initialStateCardOpen, State
 
 ## Contents
 @docs card, block, listGroup, header, toggle, headerH1, headerH2, headerH3, headerH4, headerH5, headerH6, appendHeader, prependHeader, Card, CardBlock, Header, Toggle
@@ -277,6 +278,19 @@ onlyOneOpen (Config config) =
     Config
         { config | onlyOneOpen = True }
 
+
+{-| Check if given card is open/expanded (or when animating, on it's way to become open/expanded).
+
+**NOTE: If you give a non-existing id it will return False (:**
+-}
+isOpen : String -> State -> Bool
+isOpen id (State cardStates) =
+    case Dict.get id cardStates of
+        Just {visibility} ->
+            (visibility == Shown || visibility == StartDown)
+
+        Nothing ->
+            False
 
 
 {-| Create an interactive accordion element
