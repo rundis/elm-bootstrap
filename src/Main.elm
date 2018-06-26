@@ -73,7 +73,7 @@ init =
           , dropdownState = Dropdown.initialState
           , splitDropState = Dropdown.initialState
           , tabState = Tab.initialState
-          , accordionState = Accordion.initialState
+          , accordionState = Accordion.initialStateCardOpen "card1"
           , navbarState = navbarState
           , navMsgCounter = 0
           , popoverStateLeft = Popover.initialState
@@ -652,7 +652,8 @@ accordion { accordionState } =
         [ h1 [] [ text "Accordion" ]
         , Accordion.config AccordionMsg
             |> Accordion.withAnimation
-            |> Accordion.cards [ cardOne, cardTwo ]
+            |> Accordion.onlyOneOpen
+            |> Accordion.cards [ cardOne, cardTwo, cardThree ]
             |> Accordion.view accordionState
         ]
 
@@ -664,7 +665,7 @@ cardOne =
         , options = []
         , header =
             Accordion.headerH3 []
-                (Accordion.toggle [] [ text " Card With container" ])
+                (Accordion.toggle [] [ span [ class "fa fa-car" ] [],  text " Card With container" ])
                 |> Accordion.prependHeader [ span [ class "fa fa-car" ] [] ]
         , blocks =
             [ Accordion.block []
@@ -687,6 +688,26 @@ cardTwo =
         , header =
             Accordion.header [] <|
                 Accordion.toggle [] [ text "Card 2" ]
+        , blocks =
+            [ Accordion.block []
+                [ Block.titleH4 [] [ text "Some other title" ]
+                , Block.text [] [ text "Different content, lorem ipsum etc" ]
+                ]
+            , Accordion.block [ Block.align Text.alignXsCenter ]
+                [ Block.titleH5 [] [ text "Another block title" ]
+                , Block.text [] [ text "Even more content, lorem ipsum etc" ]
+                ]
+            ]
+        }
+
+cardThree : Accordion.Card Msg
+cardThree =
+    Accordion.card
+        { id = "card3"
+        , options = []
+        , header =
+            Accordion.header [] <|
+                Accordion.toggle [] [ text "Card 3" ]
         , blocks =
             [ Accordion.block []
                 [ Block.titleH4 [] [ text "Some other title" ]

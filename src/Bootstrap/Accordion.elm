@@ -3,6 +3,7 @@ module Bootstrap.Accordion
         ( view
         , cards
         , withAnimation
+        , onlyOneOpen
         , toggle
         , block
         , listGroup
@@ -92,7 +93,7 @@ module Bootstrap.Accordion
 
 
 ## Accordion
-@docs view, config, cards, withAnimation,  Config, initialState, initialStateCardOpen, State
+@docs view, config, cards, withAnimation, onlyOneOpen, Config, initialState, initialStateCardOpen, State
 
 ## Contents
 @docs card, block, listGroup, header, toggle, headerH1, headerH2, headerH3, headerH4, headerH5, headerH6, appendHeader, prependHeader, Card, CardBlock, Header, Toggle
@@ -127,6 +128,7 @@ type Config msg
     = Config
         { toMsg : State -> msg
         , withAnimation : Bool
+        , onlyOneOpen : Bool
         , cards : List (Card msg)
         }
 
@@ -160,9 +162,7 @@ type alias CardState =
 type Visibility
     = Hidden
     | StartDown
-    | AnimatingDown
     | StartUp
-    | AnimatingUp
     | Shown
 
 
@@ -221,10 +221,10 @@ subscriptions (State cardStates) toMsg =
                 (\id state ->
                     case state.visibility of
                         StartDown ->
-                            { state | visibility = AnimatingDown }
+                            { state | visibility = Shown }
 
                         StartUp ->
-                            { state | visibility = AnimatingUp }
+                            { state | visibility = Hidden }
 
                         _ ->
                             state
@@ -236,7 +236,7 @@ subscriptions (State cardStates) toMsg =
             Dict.toList cardStates
                 |> List.any
                     (\( _, state ) ->
-                        List.member state.visibility [ StartDown, StartUp ]
+                        List.member state.visibility [ StartDown, StartUp]
                     )
     in
         if needsSub then
@@ -253,6 +253,7 @@ config toMsg =
     Config
         { toMsg = toMsg
         , withAnimation = False
+        , onlyOneOpen = False
         , cards = []
         }
 
@@ -266,6 +267,16 @@ withAnimation : Config msg -> Config msg
 withAnimation (Config config) =
     Config
         { config | withAnimation = True }
+
+
+
+{-| Set option for only allowing one (or zero) open cards at any one time.
+-}
+onlyOneOpen : Config msg -> Config msg
+onlyOneOpen (Config config) =
+    Config
+        { config | onlyOneOpen = True }
+
 
 
 {-| Create an interactive accordion element
@@ -523,24 +534,44 @@ clickHandler :
     -> Json.Decoder Float
     -> Card msg
     -> Json.Decoder msg
-clickHandler state (Config { toMsg, withAnimation }) decoder (Card { id }) =
+clickHandler ((State cardStates) as state) (Config { toMsg, withAnimation, onlyOneOpen }) decoder (Card { id }) =
     let
-        updState h =
-            mapCardState
-                id
-                (\cardState ->
-                    { height = Just h
-                    , visibility = visibilityTransition withAnimation cardState.visibility
+        currentCardState =
+            Dict.get id cardStates
+                |> Maybe.withDefault
+                    { visibility = Hidden
+                    , height = Nothing
                     }
+
+        initStates =
+            Dict.insert id currentCardState cardStates
+
+        updOthersHidden h =
+            Dict.map
+                (\i c ->
+                    if i == id then
+                        { height = Just h
+                        , visibility = visibilityTransition withAnimation c.visibility
+                        }
+                    else if c.visibility == Shown && withAnimation == True && onlyOneOpen == True then
+                        { c | visibility = StartUp }
+
+                    else if c.visibility == Shown && withAnimation == False && onlyOneOpen == True then
+                        { c | visibility = Hidden }
+
+                    else
+                        c
                 )
-                state
+                initStates
+                |> State
+
     in
         decoder
             |> Json.andThen
                 (\v ->
                     Json.succeed <|
                         toMsg <|
-                            updState v
+                            updOthersHidden v
                 )
 
 
@@ -551,18 +582,12 @@ visibilityTransition withAnimation visibility =
             StartDown
 
         ( True, StartDown ) ->
-            AnimatingDown
-
-        ( True, AnimatingDown ) ->
             Shown
 
         ( True, Shown ) ->
             StartUp
 
         ( True, StartUp ) ->
-            AnimatingUp
-
-        ( True, AnimatingUp ) ->
             Hidden
 
         ( False, Hidden ) ->
@@ -577,7 +602,7 @@ visibilityTransition withAnimation visibility =
 
 heightDecoder : Json.Decoder Float
 heightDecoder =
-    DOM.target <|
+    Json.field "currentTarget" <|
         DOM.parentElement <|
             DOM.nextSibling <|
                 DOM.childNode 0 <|
@@ -600,7 +625,7 @@ animationAttributes :
     -> Config msg
     -> Card msg
     -> List (Html.Attribute msg)
-animationAttributes state config ((Card { id }) as card) =
+animationAttributes state (Config {withAnimation}) ((Card { id }) as card) =
     let
         cardState =
             getOrInitCardState id state
@@ -608,72 +633,52 @@ animationAttributes state config ((Card { id }) as card) =
         pixelHeight =
             Maybe.map (\v -> (toString v) ++ "px") cardState.height
                 |> Maybe.withDefault "0"
+
+        styles = transitionStyle withAnimation
     in
         case cardState.visibility of
             Hidden ->
-                [ style [ ( "overflow", "hidden" ), ( "height", "0" ) ] ]
+                [ styles "0px" ]
 
             StartDown ->
-                [ style [ ( "overflow", "hidden" ), ( "height", "0" ) ] ]
-
-            AnimatingDown ->
-                [ transitionStyle pixelHeight
-                , on "transitionend" <|
-                    transitionHandler state config card
-                ]
-
-            AnimatingUp ->
-                [ transitionStyle "0px"
-                , on "transitionend" <|
-                    transitionHandler state config card
-                ]
+                [ styles "0px" ]
 
             StartUp ->
-                [ style [ ( "height", pixelHeight ) ] ]
+                [ styles pixelHeight ]
 
             Shown ->
                 case cardState.height of
                     Just x ->
-                        [ style [ ( "height", "100%" ) ] ]
+                        [ styles pixelHeight ]
 
                     Nothing ->
-                        []
+                        [ styles "100%" ]
 
 
-transitionHandler :
-    State
-    -> Config msg
-    -> Card msg
-    -> Json.Decoder msg
-transitionHandler state (Config { toMsg, withAnimation }) (Card { id }) =
-    mapCardState id
-        (\cardState ->
-            { cardState
-                | visibility =
-                    visibilityTransition withAnimation cardState.visibility
-            }
-        )
-        state
-        |> toMsg
-        |> Json.succeed
 
 
-transitionStyle : String -> Html.Attribute msg
-transitionStyle height =
+
+transitionStyle : Bool -> String -> Html.Attribute msg
+transitionStyle withAnimation height =
     style
-        [ ( "position", "relative" )
-        , ( "height", height )
-        , ( "overflow", "hidden" )
-        , ( "-webkit-transition-timing-function", "ease" )
-        , ( "-o-transition-timing-function", "ease" )
-        , ( "transition-timing-function", "ease" )
-        , ( "-webkit-transition-duration", "0.35s" )
-        , ( "-o-transition-duration", "0.35s" )
-        , ( "transition-duration", "0.35s" )
-        , ( "-webkit-transition-property", "height" )
-        , ( "-o-transition-property", "height" )
-        , ( "transition-property", "height" )
-        ]
+        ([ ( "position", "relative" )
+         , ( "height", height )
+         , ( "overflow", "hidden" )
+         ]
+            ++ if withAnimation == True then
+                [ ( "-webkit-transition-timing-function", "ease" )
+                , ( "-o-transition-timing-function", "ease" )
+                , ( "transition-timing-function", "ease" )
+                , ( "-webkit-transition-duration", "0.35s" )
+                , ( "-o-transition-duration", "0.35s" )
+                , ( "transition-duration", "0.35s" )
+                , ( "-webkit-transition-property", "height" )
+                , ( "-o-transition-property", "height" )
+                , ( "transition-property", "height" )
+                ]
+               else
+                []
+        )
 
 
 getOrInitCardState : String -> State -> CardState
