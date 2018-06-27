@@ -22,12 +22,26 @@ badge =
                     html
                         |> Query.fromHtml
                         |> Query.has [ tag "span", text "X" ]
-            , test "expect default classes" <|
-                \() ->
-                    html
-                        |> Query.fromHtml
-                        |> Query.has [ classes [ "badge", "badge-danger" ] ]
+            , describe "All options" <|
+                List.map
+                    (\( constructor, class ) ->
+                        test ("Option " ++ class) <|
+                            \() ->
+                                constructor [] [ Html.text "X" ]
+                                    |> Query.fromHtml
+                                    |> Query.has [ classes [ "badge", class ] ]
+                    )
+                    [ ( Badge.badgePrimary, "badge-primary" )
+                    , ( Badge.badgeSecondary, "badge-secondary" )
+                    , ( Badge.badgeSuccess, "badge-success" )
+                    , ( Badge.badgeInfo, "badge-info" )
+                    , ( Badge.badgeWarning, "badge-warning" )
+                    , ( Badge.badgeDanger, "badge-danger" )
+                    , ( Badge.badgeLight, "badge-light" )
+                    , ( Badge.badgeDark, "badge-dark" )
+                    ]
             ]
+
 
 pill : Test
 pill =
