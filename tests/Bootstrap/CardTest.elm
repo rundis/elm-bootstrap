@@ -133,19 +133,23 @@ group =
     let
         html =
             Card.group <| cardList 3
+
+        keyedHtml =
+            Card.keyedGroup <| keyedCardList [ "id1", "id2", "id3" ]
     in
         describe "Card group"
             [ test "expect classes" <|
                 \() ->
-                    html
-                        |> Query.fromHtml
-                        |> Query.has [ class "card-group" ]
+                    expectClasses html "card-group"
+            , test "expect classes (keyed)" <|
+                \() ->
+                    expectClasses keyedHtml "card-group"
             , test "expect 3 cards" <|
                 \() ->
-                    html
-                        |> Query.fromHtml
-                        |> Query.findAll [ class "card" ]
-                        |> Query.count (Expect.equal 3)
+                    expectThreeItems html
+            , test "expect 3 cards (keyed)" <|
+                \() ->
+                    expectThreeItems keyedHtml
             ]
 
 
@@ -154,19 +158,23 @@ deck =
     let
         html =
             Card.deck <| cardList 3
+
+        keyedHtml =
+            Card.keyedDeck <| keyedCardList [ "id1", "id2", "id3" ]
     in
         describe "Card deck"
             [ test "expect classes" <|
                 \() ->
-                    html
-                        |> Query.fromHtml
-                        |> Query.has [ class "card-deck" ]
+                    expectClasses html "card-deck"
+            , test "expect classes (keyed)" <|
+                \() ->
+                    expectClasses keyedHtml "card-deck"
             , test "expect 3 cards" <|
                 \() ->
-                    html
-                        |> Query.fromHtml
-                        |> Query.findAll [ class "card" ]
-                        |> Query.count (Expect.equal 3)
+                    expectThreeItems html
+            , test "expect 3 cards (keyed)" <|
+                \() ->
+                    expectThreeItems keyedHtml
             ]
 
 
@@ -175,19 +183,23 @@ columns =
     let
         html =
             Card.columns <| cardList 3
+
+        keyedHtml =
+            Card.keyedColumns <| keyedCardList [ "id1", "id2", "id3" ]
     in
         describe "Card columns with everything in it"
             [ test "expect classes" <|
                 \() ->
-                    html
-                        |> Query.fromHtml
-                        |> Query.has [ class "card-columns" ]
+                    expectClasses html "card-columns"
+            , test "expect classes (keyed)" <|
+                \() ->
+                    expectClasses keyedHtml "card-columns"
             , test "expect 3 cards" <|
                 \() ->
-                    html
-                        |> Query.fromHtml
-                        |> Query.findAll [ class "card" ]
-                        |> Query.count (Expect.equal 3)
+                    expectThreeItems html
+            , test "expect 3 cards (keyed)" <|
+                \() ->
+                    expectThreeItems keyedHtml
             ]
 
 
@@ -197,14 +209,34 @@ cardList count =
         Card.config []
 
 
+expectClasses : Html.Html msg -> String -> Expect.Expectation
+expectClasses html nodeClass =
+    html
+        |> Query.fromHtml
+        |> Query.has [ class nodeClass ]
+
+
+expectThreeItems : Html.Html msg -> Expect.Expectation
+expectThreeItems html =
+    html
+        |> Query.fromHtml
+        |> Query.findAll [ class "card" ]
+        |> Query.count (Expect.equal 3)
+
+
+keyedCardList : List String -> List ( String, Card.Config msg )
+keyedCardList ids =
+    List.map (\id -> ( id, Card.config [] )) ids
+
+
 listGroup : Test
 listGroup =
     let
         html =
             Card.config []
                 |> Card.listGroup
-                    [ ListGroup.li [ ListGroup.success ] [ Html.text "Cras justo odio" ]
-                    , ListGroup.li [ ListGroup.info ] [ Html.text "Dapibus ac facilisis in" ]
+                    [ ListGroup.li [ ListGroup.success ] [ Html.text "item1" ]
+                    , ListGroup.li [ ListGroup.info ] [ Html.text "item2" ]
                     ]
                 |> Card.view
     in
