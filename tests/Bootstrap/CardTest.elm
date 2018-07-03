@@ -2,6 +2,7 @@ module Bootstrap.CardTest exposing (..)
 
 import Bootstrap.Card as Card
 import Bootstrap.Card.Block as Block
+import Bootstrap.ListGroup as ListGroup
 import Bootstrap.Text as Text
 import Html
 import Html.Attributes as Attr
@@ -194,3 +195,24 @@ cardList : Int -> List (Card.Config msg)
 cardList count =
     List.repeat count <|
         Card.config []
+
+
+listGroup : Test
+listGroup =
+    let
+        html =
+            Card.config []
+                |> Card.listGroup
+                    [ ListGroup.li [ ListGroup.success ] [ Html.text "Cras justo odio" ]
+                    , ListGroup.li [ ListGroup.info ] [ Html.text "Dapibus ac facilisis in" ]
+                    ]
+                |> Card.view
+    in
+    describe "Card with list group"
+        [ test "expect two list items" <|
+            \() ->
+                html
+                    |> Query.fromHtml
+                    |> Query.findAll [ tag "li" ]
+                    |> Query.count (Expect.equal 2)
+        ]
