@@ -81,7 +81,7 @@ cardFullMonty : Test
 cardFullMonty =
     let
         html =
-            Card.config [ Card.outlineInfo ]
+            Card.config [ Card.outlineInfo, Card.attrs [ Attr.class "my-class" ], Card.textColor Text.dark ]
                 |> Card.headerH1 [] [ Html.text "Header" ]
                 |> Card.footer [] [ Html.text "Footer" ]
                 |> Card.imgTop [ Attr.src "/imgtop.jpg" ] []
@@ -125,6 +125,16 @@ cardFullMonty =
                         |> Query.fromHtml
                         |> Query.find [ class "card-body" ]
                         |> Query.has [ text "cardblock" ]
+            , test "expect custom attribute" <|
+                \() ->
+                    html
+                        |> Query.fromHtml
+                        |> Query.has [ class "my-class" ]
+            , test "expect dark color" <|
+                \() ->
+                    html
+                        |> Query.fromHtml
+                        |> Query.has [ class "text-dark" ]
             ]
 
 
