@@ -430,7 +430,7 @@ prependHeader elements (Header header) =
 -}
 appendHeader : List (Html.Html msg) -> Header msg -> Header msg
 appendHeader elements (Header header) =
-    Header { header | childrenPostToggle = header.childrenPreToggle ++ elements }
+    Header { header | childrenPostToggle = header.childrenPostToggle ++ elements }
 
 
 headerPrivate :
