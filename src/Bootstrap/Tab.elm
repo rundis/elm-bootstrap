@@ -367,6 +367,16 @@ view state ((Config { items }) as config) =
                 ]
 
 
+viewWithAction : State -> Config msg -> (String -> msg -> msg) -> Html.Html msg
+viewWithAction state ((Config { items }) as config) action =
+    case getActiveItem state config of
+        Nothing ->
+            view state config
+
+        Just (Item currentItem) ->
+            Html.map (action currentItem.id) <| view state config
+
+
 getActiveItem : State -> Config msg -> Maybe (Item msg)
 getActiveItem (State { activeTab }) (Config { items }) =
     case activeTab of

@@ -1,23 +1,21 @@
 # Elm Bootstrap [![Travis build Status](https://travis-ci.org/rundis/elm-bootstrap.svg?branch=master)]
 
-
+This is a minor (intended to be temporary) change to rundis/elm-bootstrap which allows you to do an
+action on Tab selection instead of just Tab click.
 
 Elm Bootstrap is a comprehensive library package that aims to make it pleasant and reasonably type safe to use [Twitter Bootstrap 4](https://getbootstrap.com/) CSS Framework in Elm applications.
 
-
 Twitter Bootstrap is one of the most popular CSS (with some JS) frameworks for building responsive, mobile first web sites. Version 4 is fully embracing flexbox, which provides much better control and flexibility.
 
-
 ### What's in it for me?
+
 * A reasonably type safe API for using Bootstrap
 * Some boilerplate is being handled for you
 * Interactive elements like Navbar, Dropdowns, Accordion, Modal, Popups, Dismissable Alerts, Tabs and Carousel
 * Horizontally AND vertically center stuff without tearing your hair out
 
-
-
-
 ## Documentation
+
 * User documentation - Check out the [Docs Site](http://elm-bootstrap.info/). If need/prefer https
 you'll need to go [here](https://elm-bootstrap.surge.sh/).
 * API documentation - is up on [Elm Package](http://package.elm-lang.org/packages/rundis/elm-bootstrap/latest).
