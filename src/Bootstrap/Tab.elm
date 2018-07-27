@@ -1,6 +1,7 @@
 module Bootstrap.Tab
     exposing
         ( view
+        , viewWithAction
         , config
         , items
         , withAnimation
@@ -78,7 +79,7 @@ module Bootstrap.Tab
 
 
 # Tabs
-@docs view, config, items, initialState, customInitialState, Config, State
+@docs view, viewWithAction, config, items, initialState, customInitialState, Config, State
 
 # Options
 @docs pills, withAnimation, justified, fill, center, right, attrs, useHash, Option
@@ -365,6 +366,39 @@ view state ((Config { items }) as config) =
                         items
                     )
                 ]
+
+{-| Creates a tab control which keeps track of the selected tab item and displays the corresponding
+tab pane for you, plus performs an action when a tab is selected
+
+    Tab.viewWithAction model.tabState
+        <| Tab.items
+            [ Tab.item
+                { id = "tabItem1"
+                , link = Tab.link [] [ text "Tab 1" ]
+                , pane = Tab.pane [] [ text "Tab 1 Content" ]
+                }
+            , Tab.item
+                { id = "tabItem2"
+                , link = Tab.link [] [ text "Tab 2" ]
+                , pane = Tab.pane [] [ text "Tab 2 Content" ]
+                }
+            ]
+        <| Tab.config TabMsg
+        <| loadTabContent -- an action to perform when a tab is selected
+
+
+    loadTabContent : String -> Msg -> Msg
+    loadTabContent tagURL _ =
+        Msg.FetchContent tagURL
+-}
+viewWithAction : State -> Config msg -> (String -> msg -> msg) -> Html.Html msg
+viewWithAction state ((Config { items }) as config) action =
+    case getActiveItem state config of
+        Nothing ->
+            view state config
+
+        Just (Item currentItem) ->
+            Html.map (action currentItem.id) <| view state config
 
 
 getActiveItem : State -> Config msg -> Maybe (Item msg)
