@@ -74,7 +74,7 @@ To support dismissable alerts you must keep track of the alerts visibility in yo
 
     init : (Model, Cmd Msg)
     init =
-        ( { alertVisibility : Alert.shownn} )
+        { alertVisibility = Alert.shown } ! []
 
     update : Msg -> Model -> ( Model, Cmd Msg )
     update msg model =

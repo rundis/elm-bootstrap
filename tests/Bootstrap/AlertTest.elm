@@ -1,12 +1,17 @@
 module Bootstrap.AlertTest exposing (..)
 
 import Bootstrap.Alert as Alert
+import Expect
 import Html
 import Html.Attributes
-import Test exposing (Test, test, describe)
-import Expect
+import Test exposing (Test, describe, test)
+import Test.Html.Event as Event
 import Test.Html.Query as Query
-import Test.Html.Selector exposing (text, tag, class, classes)
+import Test.Html.Selector exposing (attribute, class, classes, tag, text)
+
+
+type Msg
+    = AlertMsg Alert.Visibility
 
 
 simpleAlerts : Test
@@ -66,6 +71,72 @@ simpleAlerts =
                 \() ->
                     expectRoled "dark"
             ]
+
+
+alertWithOptions : Test
+alertWithOptions =
+    let
+        html alertType =
+            Alert.config
+                |> alertType
+                |> Alert.view Alert.shown
+
+        expectWithOption alertType nodeClass =
+            html alertType
+                |> Query.fromHtml
+                |> Query.has [ class nodeClass ]
+    in
+    describe "Alert with options" <|
+        [ test "Expect primary" <|
+            \() -> expectWithOption Alert.primary "alert-primary"
+        , test "Expect secondary" <|
+            \() -> expectWithOption Alert.secondary "alert-secondary"
+        , test "Expect success" <|
+            \() -> expectWithOption Alert.success "alert-success"
+        , test "Expect info" <|
+            \() -> expectWithOption Alert.info "alert-info"
+        , test "Expect warning" <|
+            \() -> expectWithOption Alert.warning "alert-warning"
+        , test "Expect danger" <|
+            \() -> expectWithOption Alert.danger "alert-danger"
+        , test "Expect dark" <|
+            \() -> expectWithOption Alert.dark "alert-dark"
+        , test "Expect light" <|
+            \() -> expectWithOption Alert.light "alert-light"
+        ]
+
+
+alertIsDismissable : Test
+alertIsDismissable =
+    let
+        html =
+            Alert.config
+                |> Alert.dismissable AlertMsg
+                |> Alert.info
+                |> Alert.children [ Html.text "X" ]
+                |> Alert.view Alert.shown
+
+        htmlWithAnimation =
+            Alert.config
+                |> Alert.dismissableWithAnimation AlertMsg
+                |> Alert.info
+                |> Alert.view Alert.shown
+    in
+    describe "Alert is dismissable"
+        [ test "Expect close message on click" <|
+            \() ->
+                html
+                    |> Query.fromHtml
+                    |> Query.find [ tag "button" ]
+                    |> Event.simulate Event.click
+                    |> Event.expect (AlertMsg Alert.closed)
+        , test "Expect dismissable with animation contains button with aria-label" <|
+            \() ->
+                htmlWithAnimation
+                    |> Query.fromHtml
+                    |> Query.find [ tag "button" ]
+                    |> Query.has [ attribute <| Html.Attributes.attribute "aria-label" "close" ]
+        ]
 
 
 alertWithLink : Test
@@ -132,3 +203,19 @@ alertWithAttributes =
                         |> Query.fromHtml
                         |> Query.has [ classes [ "my-class" ] ]
             ]
+
+
+alertClosed : Test
+alertClosed =
+    let
+        html =
+            Alert.config
+                |> Alert.view Alert.closed
+    in
+    describe "Closed alert"
+        [ test "Expect display:none" <|
+            \() ->
+                html
+                    |> Query.fromHtml
+                    |> Query.has [ Test.Html.Selector.style [ ( "display", "none" ) ] ]
+        ]

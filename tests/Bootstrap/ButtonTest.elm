@@ -3,16 +3,21 @@ module Bootstrap.ButtonTest exposing (..)
 import Bootstrap.Button as Button
 import Html
 import Html.Attributes as Attr
-import Test exposing (Test, test, describe)
+import Test exposing (Test, describe, test)
+import Test.Html.Event as Event
 import Test.Html.Query as Query
 import Test.Html.Selector exposing (text, tag, class, classes, attribute)
+
+
+type Msg
+    = Msg
 
 
 vanillaButton : Test
 vanillaButton =
     let
         html =
-            Button.button [] [ Html.text "Click" ]
+            Button.button [ Button.onClick Msg ] [ Html.text "Click" ]
     in
         describe "Plain button"
             [ test "expect button and text" <|
@@ -25,6 +30,12 @@ vanillaButton =
                     html
                         |> Query.fromHtml
                         |> Query.has [ class "btn" ]
+            , test "expect event" <|
+                \() ->
+                    html
+                        |> Query.fromHtml
+                        |> Event.simulate Event.click
+                        |> Event.expect Msg
             ]
 
 
@@ -65,6 +76,7 @@ roledButtons =
                 , Button.button [ Button.warning ] [ Html.text "warning" ]
                 , Button.button [ Button.danger ] [ Html.text "danger" ]
                 , Button.button [ Button.roleLink ] [ Html.text "link" ]
+                , Button.button [ Button.disabled True ] [ Html.text "disabled" ]
                 ]
     in
         describe "Roled buttons"
@@ -110,6 +122,12 @@ roledButtons =
                         |> Query.fromHtml
                         |> Query.find [ class "btn-link" ]
                         |> Query.has [ text "link" ]
+            , test "expect disabled" <|
+                \() ->
+                    html
+                        |> Query.fromHtml
+                        |> Query.find [ class "disabled", attribute <| Attr.disabled True ]
+                        |> Query.has [ text "disabled" ]
             ]
 
 

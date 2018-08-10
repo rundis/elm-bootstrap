@@ -38,7 +38,7 @@ groupWithOptions : Test
 groupWithOptions =
     let
         html =
-            ButtonGroup.buttonGroup [ ButtonGroup.small, ButtonGroup.vertical ]
+            ButtonGroup.buttonGroup [ ButtonGroup.small, ButtonGroup.vertical, ButtonGroup.attrs [ Attr.class "my-class" ] ]
                 [ ButtonGroup.button [ Button.primary ] [ Html.text "First" ] ]
     in
         describe "Optioned group"
@@ -51,6 +51,7 @@ groupWithOptions =
                                 [ "btn-group"
                                 , "btn-group-sm"
                                 , "btn-group-vertical"
+                                , "my-class"
                                 ]
                             ]
             , test "Expect button classes" <|
