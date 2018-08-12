@@ -1,6 +1,7 @@
 module Bootstrap.Tab
     exposing
         ( view
+        , view_
         , config
         , items
         , withAnimation
@@ -78,7 +79,7 @@ module Bootstrap.Tab
 
 
 # Tabs
-@docs view, config, items, initialState, customInitialState, Config, State
+@docs view, view_, config, items, initialState, customInitialState, Config, State
 
 # Options
 @docs pills, withAnimation, justified, fill, center, right, attrs, useHash, Option
@@ -367,6 +368,50 @@ view state ((Config { items }) as config) =
                 ]
 
 
+{-| Just like `view`, plus allows you to construct a Msg with the Tab's `id`
+
+    Tab.view_ tabState
+        ( Tab.config Msg.TabMsg -- TabMsg gets ignored
+            |> Tab.items (List.map (tab listOfThings) tags)
+            |> Tab.left
+        )
+        Msg.FetchThings -- makes an API call when clicking the Tab to fetch 'things'
+
+
+    listOfThings things tag =
+        Tab.item
+            { id = tag.url
+            , link = Tab.link [] [ text tag.name ]
+            , pane = Tab.pane [] [ renderThings things tag ]
+            }
+-}
+view_ : State -> Config msg -> (String -> State -> msg) -> Html.Html msg
+view_ state ((Config { items }) as config) strToMsg =
+    case (getActiveItem state config) of
+        Nothing ->
+            Html.div []
+                [ Html.ul (tabAttributes config) []
+                , Html.div [ class "tab-content" ] []
+                ]
+
+        Just (Item currentItem) ->
+            Html.div []
+                [ Html.ul
+                    (tabAttributes config)
+                    (List.map
+                        (\(Item { id, link }) -> renderLink_ id (id == currentItem.id) link config strToMsg)
+                        items
+                    )
+                , Html.div
+                    [ class "tab-content" ]
+                    (List.map
+                        (\(Item { id, pane }) ->
+                            renderTabPane id (id == currentItem.id) pane state config
+                        )
+                        items
+                    )
+                ]
+
 getActiveItem : State -> Config msg -> Maybe (Item msg)
 getActiveItem (State { activeTab }) (Config { items }) =
     case activeTab of
@@ -409,6 +454,40 @@ renderLink id active (Link { attributes, children }) (Config { toMsg, withAnimat
                <|
                 Json.succeed <|
                     toMsg <|
+                        State
+                            { activeTab = Just id
+                            , visibility = visibilityTransition (withAnimation && not active) Hidden
+                            }
+             ]
+                ++ attributes
+            )
+            children
+        ]
+
+renderLink_ :
+    String
+    -> Bool
+    -> Link msg
+    -> Config msg
+    -> (String -> State -> msg)
+    -> Html.Html msg
+renderLink_ id active (Link { attributes, children }) (Config { toMsg, withAnimation, useHash }) strToMsg =
+    Html.li
+        [ class "nav-item" ]
+        [ Html.a
+            ([ classList
+                [ ( "nav-link", True )
+                , ( "active", active )
+                ]
+             , href <| "#" ++ id
+             , onWithOptions
+                "click"
+                { stopPropagation = False
+                , preventDefault = active || not useHash
+                }
+               <|
+                Json.succeed <|
+                    strToMsg id <|
                         State
                             { activeTab = Just id
                             , visibility = visibilityTransition (withAnimation && not active) Hidden
