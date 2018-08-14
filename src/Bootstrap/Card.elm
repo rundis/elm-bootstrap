@@ -1,12 +1,52 @@
-module Bootstrap.Card exposing
-    ( view, Config
-    , header, headerH1, headerH2, headerH3, headerH4, headerH5, headerH6, Header
-    , Footer, footer
-    , imgTop, imgBottom, ImageTop, ImageBottom
-    , config, align, primary, secondary, success, info, warning, danger, light, dark, outlinePrimary, outlineSecondary, outlineSuccess, outlineInfo, outlineWarning, outlineDanger, outlineLight, outlineDark, textColor, attrs, Option
-    , block, listGroup
-    , group, deck, columns, keyedGroup, keyedDeck, keyedColumns
-    )
+module Bootstrap.Card
+    exposing
+        ( view
+        , Config
+        , header
+        , headerH1
+        , headerH2
+        , headerH3
+        , headerH4
+        , headerH5
+        , headerH6
+        , Header
+        , Footer
+        , footer
+        , imgTop
+        , imgBottom
+        , ImageTop
+        , ImageBottom
+        , config
+        , align
+        , primary
+        , secondary
+        , success
+        , info
+        , warning
+        , danger
+        , light
+        , dark
+        , outlinePrimary
+        , outlineSecondary
+        , outlineSuccess
+        , outlineInfo
+        , outlineWarning
+        , outlineDanger
+        , outlineLight
+        , outlineDark
+        , textColor
+        , attrs
+        , Option
+        , block
+        , listGroup
+        , customListGroup
+        , group
+        , deck
+        , columns
+        , keyedGroup
+        , keyedDeck
+        , keyedColumns
+        )
 
 {-| A card is a flexible and extensible content container. It includes options for headers and footers, a wide variety of content, contextual background colors, and powerful display options.
 
@@ -518,6 +558,21 @@ listGroup items (Config conf) =
             | blocks =
                 conf.blocks
                     ++ [ Internal.listGroup items ]
+        }
+
+
+{-| Use this function if you want to use ListGroup.custom
+-}
+customListGroup :
+    List (ListGroup.CustomItem msg)
+    -> Config msg
+    -> Config msg
+customListGroup items (Config conf) =
+    Config
+        { conf
+            | blocks =
+                conf.blocks
+                    ++ [ Internal.customListGroup items ]
         }
 
 
