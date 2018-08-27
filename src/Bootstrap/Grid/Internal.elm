@@ -285,11 +285,12 @@ colAttributes modifiers =
                 , options.alignLg
                 , options.alignXl
                 ]
-            ++ case options.textAlign of
+            ++ (case options.textAlign of
                 Just a ->
                     [TextInternal.textAlignClass a]
                 Nothing ->
                     []
+                )
             ++ options.attributes
 
 
@@ -335,8 +336,8 @@ applyColOption modifier options =
         ColPush push_ ->
             applyColPush push_ options
 
-        ColOrder order ->
-            applyColOrder order options
+        ColOrder order_ ->
+            applyColOrder order_ options
 
         ColAlign align ->
             applyColAlign align options
@@ -422,22 +423,22 @@ applyColPush push_ options =
 
 
 applyColOrder : Order -> ColOptions msg -> ColOptions msg
-applyColOrder order options =
-    case order.screenSize of
+applyColOrder order_ options =
+    case order_.screenSize of
         XS ->
-            { options | orderXs = Just order }
+            { options | orderXs = Just order_ }
 
         SM ->
-            { options | orderSm = Just order }
+            { options | orderSm = Just order_ }
 
         MD ->
-            { options | orderMd = Just order }
+            { options | orderMd = Just order_ }
 
         LG ->
-            { options | orderLg = Just order }
+            { options | orderLg = Just order_ }
 
         XL ->
-            { options | orderXl = Just order }
+            { options | orderXl = Just order_ }
 
 
 applyColAlign : VAlign -> ColOptions msg -> ColOptions msg
@@ -633,7 +634,7 @@ pushesToAttributes pushes =
 orderToAttributes : List (Maybe Order) -> List (Html.Attribute msg)
 orderToAttributes orders =
     let
-        order m =
+        order_ m =
             case m of
                 Just { screenSize, moveCount } ->
                     Just <| class <| "order" ++ screenSizeToPartialString screenSize ++ orderColOption moveCount
@@ -641,7 +642,7 @@ orderToAttributes orders =
                 Nothing ->
                     Nothing
     in
-        List.map order orders
+        List.map order_ orders
             |> List.filterMap identity
 
 

@@ -117,7 +117,7 @@ To support dismissable alerts you must keep track of the alerts visibility in yo
 
 -}
 
-import AnimationFrame
+import Browser.Events
 import Html
 import Html.Attributes exposing (class, classList, type_, attribute, style)
 import Html.Events exposing (onClick, on)
@@ -400,7 +400,7 @@ viewAttributes visibility configRec =
 
         visibiltyAttributes =
             if visibility == Closed then
-                [ style [ ( "display", "none" ) ] ]
+                [ style "display" "none" ]
             else
                 []
 
@@ -576,7 +576,7 @@ subscriptions : Visibility -> (Visibility -> msg) -> Sub msg
 subscriptions visibility animateMsg =
     case visibility of
         StartClose ->
-            AnimationFrame.times (\_ -> animateMsg FadeClose)
+            Browser.Events.onAnimationFrame (\_ -> animateMsg FadeClose)
 
         _ ->
             Sub.none

@@ -279,19 +279,19 @@ responsiveXl =
 
 -}
 simpleTable : ( THead msg, TBody msg ) -> Html.Html msg
-simpleTable ( thead, tbody ) =
+simpleTable ( thead_, tbody_ ) =
     table
         { options = []
-        , thead = thead
-        , tbody = tbody
+        , thead = thead_
+        , tbody = tbody_
         }
 
 
 {-| When you need to customize a table element with a standard Html.Attribute, use this function to create it as a [`TableOption`](#TableOption)
 -}
 attr : Html.Attribute msg -> TableOption msg
-attr attr =
-    TableAttr attr
+attr attr_ =
+    TableAttr attr_
 
 
 {-| Create a customizable table
@@ -309,20 +309,20 @@ table :
     , tbody : TBody msg
     }
     -> Html.Html msg
-table { options, thead, tbody } =
+table rec =
     let
         classOptions =
-            List.filter (\opt -> not (isResponsive opt)) options
+            List.filter (\opt -> not (isResponsive opt)) rec.options
 
         isInversed =
-            List.any (\opt -> opt == Inversed) options
+            List.any (\opt -> opt == Inversed) rec.options
     in
         Html.table
             (tableAttributes classOptions)
-            [ maybeMapInversedTHead isInversed thead |> renderTHead
-            , maybeMapInversedTBody isInversed tbody |> renderTBody
+            [ maybeMapInversedTHead isInversed rec.thead |> renderTHead
+            , maybeMapInversedTBody isInversed rec.tbody |> renderTBody
             ]
-            |> maybeWrapResponsive options
+            |> maybeWrapResponsive rec.options
 
 
 isResponsive : TableOption msg -> Bool
@@ -336,24 +336,24 @@ isResponsive option =
 
 
 maybeMapInversedTHead : Bool -> THead msg -> THead msg
-maybeMapInversedTHead isTableInversed (THead thead) =
+maybeMapInversedTHead isTableInversed (THead thead_) =
     let
         isHeadInversed =
-            List.any (\opt -> opt == InversedHead) thead.options
+            List.any (\opt -> opt == InversedHead) thead_.options
     in
         (if (isTableInversed || isHeadInversed) then
-            { thead | rows = List.map mapInversedRow thead.rows }
+            { thead_ | rows = List.map mapInversedRow thead_.rows }
          else
-            thead
+            thead_
         )
             |> THead
 
 
 maybeMapInversedTBody : Bool -> TBody msg -> TBody msg
-maybeMapInversedTBody isTableInversed tbody =
-    case ( isTableInversed, tbody ) of
+maybeMapInversedTBody isTableInversed tbody_ =
+    case ( isTableInversed, tbody_ ) of
         ( False, _ ) ->
-            tbody
+            tbody_
 
         ( True, TBody body ) ->
             TBody { body | rows = List.map mapInversedRow body.rows }
@@ -415,7 +415,7 @@ mapInversedCell cell =
 
 
 maybeWrapResponsive : List (TableOption msg) -> Html.Html msg -> Html.Html msg
-maybeWrapResponsive options table =
+maybeWrapResponsive options table_ =
     let
         responsiveClass =
             List.filter isResponsive options
@@ -436,9 +436,9 @@ maybeWrapResponsive options table =
                 |> class
     in
         if (List.any isResponsive options) then
-            Html.div [ responsiveClass ] [ table ]
+            Html.div [ responsiveClass ] [ table_ ]
         else
-            table
+            table_
 
 
 {-| Option to inverse thead element. Dark background and light text color
@@ -458,8 +458,8 @@ defaultHead =
 {-| When you need to customize a thead element with a standard Html.Attribute, use this function to create a [`TableHeadOption`](#TableHeadOption)
 -}
 headAttr : Html.Attribute msg -> TableHeadOption msg
-headAttr attr =
-    HeadAttr attr
+headAttr attr_ =
+    HeadAttr attr_
 
 
 {-| Create a default thead with one row of cells (typically th elements)
@@ -652,8 +652,8 @@ rowDark =
 {-| When you need to customize a tr element with standard Html.Attribute attributes, use this function
 -}
 rowAttr : Html.Attribute msg -> RowOption msg
-rowAttr attr =
-    RowAttr attr
+rowAttr attr_ =
+    RowAttr attr_
 
 
 {-| Create a table row
@@ -700,8 +700,8 @@ keyedTr options keyedCells =
 {-| When you need to customize a td or th with standard Html.Attribute attributes, use this function
 -}
 cellAttr : Html.Attribute msg -> CellOption msg
-cellAttr attr =
-    CellAttr attr
+cellAttr attr_ =
+    CellAttr attr_
 
 
 {-| Option to style an individual cell with the active color
@@ -865,8 +865,8 @@ tableClass option =
         Reflow ->
             Just <| class "table-reflow"
 
-        TableAttr attr ->
-            Just attr
+        TableAttr attr_ ->
+            Just attr_
 
 
 theadAttributes : List (TableHeadOption msg) -> List (Html.Attribute msg)
@@ -883,8 +883,8 @@ theadAttribute option =
         DefaultHead ->
             class <| "thead-default"
 
-        HeadAttr attr ->
-            attr
+        HeadAttr attr_ ->
+            attr_
 
 
 rowAttributes : List (RowOption msg) -> List (Html.Attribute msg)
@@ -895,20 +895,20 @@ rowAttributes options =
 rowClass : RowOption msg -> Html.Attribute msg
 rowClass option =
     case option of
-        RoledRow (Roled role) ->
-            Role.toClass "table" role
+        RoledRow (Roled role_) ->
+            Role.toClass "table" role_
 
         RoledRow Active ->
             class "table-active"
 
-        InversedRow (Roled role) ->
-            Role.toClass "bg" role
+        InversedRow (Roled role_) ->
+            Role.toClass "bg" role_
 
         InversedRow Active ->
             class "bg-active"
 
-        RowAttr attr ->
-            attr
+        RowAttr attr_ ->
+            attr_
 
 
 cellAttributes : List (CellOption msg) -> List (Html.Attribute msg)
@@ -931,5 +931,5 @@ cellAttribute option =
         InversedCell Active ->
             class "bg-active"
 
-        CellAttr attr ->
-            attr
+        CellAttr attr_ ->
+            attr_

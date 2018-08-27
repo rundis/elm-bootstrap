@@ -90,7 +90,7 @@ import Html
 import Html.Attributes exposing (class, classList, style, attribute)
 import Html.Events
 import Json.Decode as Json
-import DOM
+import Bootstrap.Utilities.DomHelper as DomHelper
 
 
 {-| Opaque representation of the view configuration for a Popover
@@ -114,7 +114,7 @@ type State
 
 
 type alias DOMState =
-    { rect : DOM.Rectangle
+    { rect : DomHelper.Area
     , offsetWidth : Float
     , offsetHeight : Float
     }
@@ -164,58 +164,55 @@ is determined by it's view state.
 * `config` - The view configuration for the popover
 -}
 view : State -> Config msg -> Html.Html msg
-view state ((Config { triggerElement }) as config) =
+view state ((Config { triggerElement }) as conf) =
     Html.div
-        [ style
-            [ ( "position", "relative" )
-            , ( "display", "inline-block" )
-            ]
+        [ style "position" "relative"
+        , style "display" "inline-block"
         ]
         [ triggerElement
-        , popoverView state config
+        , popoverView state conf
         ]
 
 
 popoverView : State -> Config msg -> Html.Html msg
-popoverView (State { isActive, domState }) (Config config) =
+popoverView (State { isActive, domState }) (Config conf) =
     let
         px f =
-            (toString f) ++ "px"
+            (String.fromFloat f) ++ "px"
 
         pos =
-            calculatePos config.direction domState
+            calculatePos conf.direction domState
 
         styles =
             if isActive then
-                [ ( "left", px pos.left )
-                , ( "top", px pos.top )
-                , ( "display", "inline-block" )
-                , ( "width", px domState.offsetWidth )
+                [ style "left" <| px pos.left
+                , style "top" <| px pos.top
+                , style "display" "inline-block"
+                , style "width" <| px domState.offsetWidth
                 ]
             else
-                [ ( "left", "-5000px" )
-                , ( "top", "-5000px" )
+                [ style "left" "-5000px"
+                , style "top" "-5000px"
                 ]
 
         arrowStyles =
-            [ Maybe.map (\t -> ( "top", px t )) pos.arrowTop
-            , Maybe.map (\l -> ( "left", px l )) pos.arrowLeft
+            [ Maybe.map (\t -> style "top" <| px t ) pos.arrowTop
+            , Maybe.map (\l -> style "left" <| px l ) pos.arrowLeft
             ]
                 |> List.filterMap identity
     in
         Html.div
-            [ classList
+            ([ classList
                 [ ( "popover", True )
                 , ( "fade", True )
                 , ( "show", isActive )
-                , positionClass config.direction
+                , positionClass conf.direction
                 ]
-            , style styles
-            , directionAttr config.direction
-            ]
-            ([ Just <| Html.div [ class "arrow", style arrowStyles ] []
-             , Maybe.map (\(Title t) -> t) config.title
-             , Maybe.map (\(Content c) -> c) config.content
+            , directionAttr conf.direction
+            ] ++ styles)
+            ([ Just <| Html.div (class "arrow" :: arrowStyles) []
+             , Maybe.map (\(Title t) -> t) conf.title
+             , Maybe.map (\(Content c) -> c) conf.content
              ]
                 |> List.filterMap identity
             )
@@ -326,9 +323,9 @@ content :
     -> List (Html.Html msg)
     -> Config msg
     -> Config msg
-content attributes children (Config config) =
+content attributes children (Config conf) =
     Config
-        { config
+        { conf
             | content =
                 Html.div (class "popover-body" :: attributes) children
                     |> Content
@@ -440,9 +437,9 @@ titlePrivate :
     -> List (Html.Html msg)
     -> Config msg
     -> Config msg
-titlePrivate elemFn attributes children (Config config) =
+titlePrivate elemFn attributes children (Config conf) =
     Config
-        { config
+        { conf
             | title =
                 elemFn (class "popover-header" :: attributes) children
                     |> Title
@@ -453,51 +450,51 @@ titlePrivate elemFn attributes children (Config config) =
 {-| Show popover to the right of the triggering element.
 -}
 right : Config msg -> Config msg
-right (Config config) =
-    Config { config | direction = Right }
+right (Config conf) =
+    Config { conf | direction = Right }
 
 
 {-| Show popover to the left of the triggering element.
 -}
 left : Config msg -> Config msg
-left (Config config) =
-    Config { config | direction = Left }
+left (Config conf) =
+    Config { conf | direction = Left }
 
 
 {-| Show popover above the triggering element.
 -}
 top : Config msg -> Config msg
-top (Config config) =
-    Config { config | direction = Top }
+top (Config conf) =
+    Config { conf | direction = Top }
 
 
 {-| Show popover below the triggering element.
 -}
 bottom : Config msg -> Config msg
-bottom (Config config) =
-    Config { config | direction = Bottom }
+bottom (Config conf) =
+    Config { conf | direction = Bottom }
 
 
 stateDecoder : Json.Decoder DOMState
 stateDecoder =
     Json.map3 DOMState
         (trigger [ "target" ])
-        (popper [ "target" ] DOM.offsetWidth)
-        (popper [ "target" ] DOM.offsetHeight)
+        (popper [ "target" ] DomHelper.offsetWidth)
+        (popper [ "target" ] DomHelper.offsetHeight)
 
 
-trigger : List String -> Json.Decoder DOM.Rectangle
+trigger : List String -> Json.Decoder DomHelper.Area
 trigger path =
     Json.oneOf
         [ Json.at path isTrigger
             |> Json.andThen
                 (\res ->
                     if res then
-                        Json.at path DOM.boundingClientRect
+                        Json.at path DomHelper.boundingArea
                     else
                         Json.fail ""
                 )
-        , Json.at (path ++ [ "parentElement" ]) DOM.className
+        , Json.at (path ++ [ "parentElement" ]) DomHelper.className
             |> Json.andThen
                 (\_ -> trigger (path ++ [ "parentElement" ]))
         , Json.fail "No trigger found"
@@ -506,7 +503,7 @@ trigger path =
 
 isTrigger : Json.Decoder Bool
 isTrigger =
-    DOM.className
+    DomHelper.className
         |> Json.andThen
             (\class ->
                 if String.contains "popover-trigger" class then
@@ -527,7 +524,7 @@ popper path decoder =
                     else
                         Json.fail ""
                 )
-        , Json.at (path ++ [ "parentElement" ]) DOM.className
+        , Json.at (path ++ [ "parentElement" ]) DomHelper.className
             |> Json.andThen
                 (\_ -> popper (path ++ [ "parentElement" ]) decoder)
         , Json.fail "No popover found"
@@ -536,7 +533,7 @@ popper path decoder =
 
 isPopover : Json.Decoder Bool
 isPopover =
-    DOM.className
+    DomHelper.className
         |> Json.andThen
             (\class ->
                 if String.contains "popover" class then

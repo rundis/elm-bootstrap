@@ -45,7 +45,7 @@ import Json.Decode as Decode
 import Bootstrap.Carousel.Slide as Slide
 import Bootstrap.Carousel.SlideInternal as SlideInternal
 import Time
-import AnimationFrame
+import Browser.Events
 
 
 --- Model ---
@@ -195,7 +195,7 @@ subscriptions model toMsg =
 
         State (Start transition) _ ->
             -- request an animation frame to trigger the start of css transitions
-            AnimationFrame.times (\_ -> toMsg SetAnimating)
+            Browser.Events.onAnimationFrame (\_ -> toMsg SetAnimating)
 
         State (Animating transition) _ ->
             -- don't trigger new animations when already animating

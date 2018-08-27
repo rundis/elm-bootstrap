@@ -61,15 +61,18 @@ itemAttributes (ItemConfig config) =
 
 linkAttributes : ItemConfig msg -> Link msg -> List (Html.Attribute msg)
 linkAttributes (ItemConfig itemConfig) { attrs } =
-    [ class "page-link" ]
+    [ class "page-link", class "disabled" ]
         ++ attrs
         ++ if itemConfig.status == Disabled then
             [ tabindex -1
-            , custom "click"
-                { message = (\_ -> never)
-                , preventDefault = True
-                , stopPropagation = True
-                }
+            {-  TODO: How to handle this in 0.19 ??
+            , custom "click" <|
+                Decode.succeed
+                    { message = never
+                    , preventDefault = True
+                    , stopPropagation = True
+                    }
+            -}
             ]
            else
             []

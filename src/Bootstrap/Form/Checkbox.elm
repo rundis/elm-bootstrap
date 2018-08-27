@@ -172,8 +172,8 @@ indeterminate =
 {-| Option to disable the checkbox
 -}
 disabled : Bool -> Option msg
-disabled disabled =
-    Disabled disabled
+disabled disabled_ =
+    Disabled disabled_
 
 
 {-| Use this option to display checkboxes inline.
@@ -211,8 +211,8 @@ id theId =
 {-| Use this function to handle any Html.Attribute option you wish for your select
 -}
 attrs : List (Html.Attribute msg) -> Option msg
-attrs attrs =
-    Attrs attrs
+attrs attrs_ =
+    Attrs attrs_
 
 
 applyModifier : Option msg -> Options msg -> Options msg
@@ -239,8 +239,8 @@ applyModifier modifier options =
         Validation validation ->
             { options | validation = Just validation }
 
-        Attrs attrs ->
-            { options | attributes = options.attributes ++ attrs }
+        Attrs attrs_ ->
+            { options | attributes = options.attributes ++ attrs_ }
 
 
 toAttributes : Options msg -> List (Html.Attribute msg)

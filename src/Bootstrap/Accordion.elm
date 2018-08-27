@@ -108,15 +108,15 @@ module Bootstrap.Accordion
 
 import Html
 import Html.Attributes exposing (class, href, style)
-import Html.Events exposing (onClick, on, onWithOptions, Options)
+import Html.Events exposing (onClick, on, custom)
 import Json.Decode as Json
-import DOM
 import Dict exposing (Dict)
-import AnimationFrame
+import Browser.Events
 import Bootstrap.Card as Card
 import Bootstrap.Card.Block as Block
 import Bootstrap.Card.Internal as CardInternal
 import Bootstrap.ListGroup as ListGroup
+import Bootstrap.Utilities.DomHelper as DomHelper
 
 
 {-| Opaque type that defines the view configuration information of your accordion
@@ -125,14 +125,14 @@ import Bootstrap.ListGroup as ListGroup
 * The [`withAnimtion`](#withAnimation) function allows you to define that the contents of cards should animate up/down
 * The [`cards`](#cards) function defines the  List of cards to be displayed
 -}
-type Config msg
-    = Config
-        { toMsg : State -> msg
-        , withAnimation : Bool
-        , onlyOneOpen : Bool
-        , cards : List (Card msg)
-        }
+type Config msg = Config (ConfigRec msg)
 
+type alias ConfigRec msg =
+    { toMsg : State -> msg
+    , withAnimation : Bool
+    , onlyOneOpen : Bool
+    , cards : List (Card msg)
+    }
 
 {-| Opaque representation of the view state for the accordion
 -}
@@ -241,7 +241,7 @@ subscriptions (State cardStates) toMsg =
                     )
     in
         if needsSub then
-            AnimationFrame.times (\_ -> toMsg updState)
+            Browser.Events.onAnimationFrame (\_ -> toMsg updState)
         else
             Sub.none
 
@@ -265,18 +265,18 @@ config toMsg =
 when using this option.
 -}
 withAnimation : Config msg -> Config msg
-withAnimation (Config config) =
+withAnimation (Config configRec) =
     Config
-        { config | withAnimation = True }
+        { configRec | withAnimation = True }
 
 
 
 {-| Set option for only allowing one (or zero) open cards at any one time.
 -}
 onlyOneOpen : Config msg -> Config msg
-onlyOneOpen (Config config) =
+onlyOneOpen (Config configRec) =
     Config
-        { config | onlyOneOpen = True }
+        { configRec | onlyOneOpen = True }
 
 
 {-| Check if given card is open/expanded (or when animating, on it's way to become open/expanded).
@@ -312,18 +312,18 @@ view :
     State
     -> Config msg
     -> Html.Html msg
-view state ((Config { cards }) as config) =
+view state (Config configRec) =
     Html.div
         []
-        (List.map (renderCard state config) cards)
+        (List.map (renderCard state configRec) configRec.cards)
 
 
 {-| Define the cards that your accordion should consist of
 -}
 cards : List (Card msg) -> Config msg -> Config msg
-cards cards (Config config) =
+cards cards_ (Config configRec) =
     Config
-        { config | cards = cards }
+        { configRec | cards = cards_ }
 
 
 {-| Creates a card item for use in an accordion
@@ -341,12 +341,12 @@ card :
     , header : Header msg
     }
     -> Card msg
-card { id, options, header, blocks } =
+card rec =
     Card
-        { id = id
-        , options = options
-        , header = header
-        , blocks = blocks
+        { id = rec.id
+        , options = rec.options
+        , header = rec.header
+        , blocks = rec.blocks
         }
 
 
@@ -422,15 +422,15 @@ headerH6 =
 {-| Add elements before the toggle element in a accordion card header
 -}
 prependHeader : List (Html.Html msg) -> Header msg -> Header msg
-prependHeader elements (Header header) =
-    Header { header | childrenPreToggle = elements ++ header.childrenPreToggle }
+prependHeader elements (Header header_) =
+    Header { header_ | childrenPreToggle = elements ++ header_.childrenPreToggle }
 
 
 {-| Add elements after the toggle element in a accordion card header
 -}
 appendHeader : List (Html.Html msg) -> Header msg -> Header msg
-appendHeader elements (Header header) =
-    Header { header | childrenPostToggle = header.childrenPostToggle ++ elements }
+appendHeader elements (Header header_) =
+    Header { header_ | childrenPostToggle = header_.childrenPostToggle ++ elements }
 
 
 headerPrivate :
@@ -438,11 +438,11 @@ headerPrivate :
     -> List (Html.Attribute msg)
     -> Toggle msg
     -> Header msg
-headerPrivate elemFn attributes toggle =
+headerPrivate elemFn attributes toggle_ =
     Header
         { elemFn = elemFn
         , attributes = attributes
-        , toggle = toggle
+        , toggle = toggle_
         , childrenPreToggle = []
         , childrenPostToggle = []
         }
@@ -485,57 +485,52 @@ listGroup =
 
 renderCard :
     State
-    -> Config msg
+    -> ConfigRec msg
     -> Card msg
     -> Html.Html msg
-renderCard state config ((Card { options }) as card) =
+renderCard state configRec ((Card { options }) as card_) =
     Html.div
         (CardInternal.cardAttributes options ++ [ class "card" ])
-        [ renderCardHeader state config card
-        , renderCardBlock state config card
+        [ renderCardHeader state configRec card_
+        , renderCardBlock state configRec card_
         ]
 
 
 renderCardHeader :
     State
-    -> Config msg
+    -> ConfigRec msg
     -> Card msg
     -> Html.Html msg
-renderCardHeader state config ((Card { header }) as card) =
+renderCardHeader state configRec ((Card cardRec) as card_) =
     let
-        (Header { elemFn, attributes, toggle, childrenPreToggle, childrenPostToggle }) =
-            header
+        (Header headerRec) =
+            cardRec.header
     in
-        elemFn
-            (attributes ++ [ class "card-header" ])
-            (childrenPreToggle
-                ++ [ renderToggle state config card ]
-                ++ childrenPostToggle
+        headerRec.elemFn
+            (headerRec.attributes ++ [ class "card-header" ])
+            (headerRec.childrenPreToggle
+                ++ [ renderToggle state configRec card_ ]
+                ++ headerRec.childrenPostToggle
             )
 
 
 renderToggle :
     State
-    -> Config msg
+    -> ConfigRec msg
     -> Card msg
     -> Html.Html msg
-renderToggle state config ((Card { id, header }) as card) =
+renderToggle state configRec ((Card cardRec) as card_) =
     let
-        (Header { toggle }) =
-            header
+        (Header headerRec) =
+            cardRec.header
 
         (Toggle { attributes, children }) =
-            toggle
+            headerRec.toggle
     in
         Html.a
-            ([ href <| "#" ++ id
-             , onWithOptions
-                "click"
-                { stopPropagation = False
-                , preventDefault = True
-                }
-               <|
-                clickHandler state config heightDecoder card
+            ([ href <| "#" ++ cardRec.id
+             , custom "click" <|
+                    clickHandler state configRec heightDecoder card_
              ]
                 ++ attributes
             )
@@ -544,11 +539,15 @@ renderToggle state config ((Card { id, header }) as card) =
 
 clickHandler :
     State
-    -> Config msg
+    -> ConfigRec msg
     -> Json.Decoder Float
     -> Card msg
-    -> Json.Decoder msg
-clickHandler ((State cardStates) as state) (Config { toMsg, withAnimation, onlyOneOpen }) decoder (Card { id }) =
+    -> Json.Decoder
+        { message : msg
+        , stopPropagation : Bool
+        , preventDefault : Bool
+        }
+clickHandler ((State cardStates) as state) configRec decoder (Card { id }) =
     let
         currentCardState =
             Dict.get id cardStates
@@ -565,12 +564,12 @@ clickHandler ((State cardStates) as state) (Config { toMsg, withAnimation, onlyO
                 (\i c ->
                     if i == id then
                         { height = Just h
-                        , visibility = visibilityTransition withAnimation c.visibility
+                        , visibility = visibilityTransition configRec.withAnimation c.visibility
                         }
-                    else if c.visibility == Shown && withAnimation == True && onlyOneOpen == True then
+                    else if c.visibility == Shown && configRec.withAnimation == True && configRec.onlyOneOpen == True then
                         { c | visibility = StartUp }
 
-                    else if c.visibility == Shown && withAnimation == False && onlyOneOpen == True then
+                    else if c.visibility == Shown && configRec.withAnimation == False && configRec.onlyOneOpen == True then
                         { c | visibility = Hidden }
 
                     else
@@ -583,15 +582,18 @@ clickHandler ((State cardStates) as state) (Config { toMsg, withAnimation, onlyO
         decoder
             |> Json.andThen
                 (\v ->
-                    Json.succeed <|
-                        toMsg <|
-                            updOthersHidden v
+                    Json.succeed
+                        { message = configRec.toMsg <| updOthersHidden v
+                        , stopPropagation = True
+                        , preventDefault = True
+                        }
+
                 )
 
 
 visibilityTransition : Bool -> Visibility -> Visibility
-visibilityTransition withAnimation visibility =
-    case ( withAnimation, visibility ) of
+visibilityTransition withAnimation_ visibility =
+    case ( withAnimation_, visibility ) of
         ( True, Hidden ) ->
             StartDown
 
@@ -617,82 +619,81 @@ visibilityTransition withAnimation visibility =
 heightDecoder : Json.Decoder Float
 heightDecoder =
     Json.field "currentTarget" <|
-        DOM.parentElement <|
-            DOM.nextSibling <|
-                DOM.childNode 0 <|
-                    DOM.offsetHeight
+        DomHelper.parentElement <|
+            DomHelper.nextSibling <|
+                DomHelper.childNode 0 <|
+                    DomHelper.offsetHeight
 
 
 renderCardBlock :
     State
-    -> Config msg
+    -> ConfigRec msg
     -> Card msg
     -> Html.Html msg
-renderCardBlock state config ((Card { id, blocks }) as card) =
+renderCardBlock state configRec ((Card { id, blocks }) as card_) =
     Html.div
-        ([ Html.Attributes.id id ] ++ animationAttributes state config card)
+        ([ Html.Attributes.id id ] ++ animationAttributes state configRec card_)
         [ Html.div [] (CardInternal.renderBlocks blocks) ]
 
 
 animationAttributes :
     State
-    -> Config msg
+    -> ConfigRec msg
     -> Card msg
     -> List (Html.Attribute msg)
-animationAttributes state (Config {withAnimation}) ((Card { id }) as card) =
+animationAttributes state configRec (Card { id }) =
     let
         cardState =
             getOrInitCardState id state
 
         pixelHeight =
-            Maybe.map (\v -> (toString v) ++ "px") cardState.height
+            Maybe.map (\v -> (String.fromFloat v) ++ "px") cardState.height
                 |> Maybe.withDefault "0"
 
-        styles = transitionStyle withAnimation
+        styles = transitionStyle configRec.withAnimation
     in
         case cardState.visibility of
             Hidden ->
-                [ styles "0px" ]
+                styles "0px"
 
             StartDown ->
-                [ styles "0px" ]
+                 styles "0px"
 
             StartUp ->
-                [ styles pixelHeight ]
+                 styles pixelHeight
 
             Shown ->
                 case cardState.height of
                     Just x ->
-                        [ styles pixelHeight ]
+                        styles pixelHeight
 
                     Nothing ->
-                        [ styles "100%" ]
+                        styles "100%"
 
 
 
 
 
-transitionStyle : Bool -> String -> Html.Attribute msg
-transitionStyle withAnimation height =
-    style
-        ([ ( "position", "relative" )
-         , ( "height", height )
-         , ( "overflow", "hidden" )
-         ]
-            ++ if withAnimation == True then
-                [ ( "-webkit-transition-timing-function", "ease" )
-                , ( "-o-transition-timing-function", "ease" )
-                , ( "transition-timing-function", "ease" )
-                , ( "-webkit-transition-duration", "0.35s" )
-                , ( "-o-transition-duration", "0.35s" )
-                , ( "transition-duration", "0.35s" )
-                , ( "-webkit-transition-property", "height" )
-                , ( "-o-transition-property", "height" )
-                , ( "transition-property", "height" )
-                ]
-               else
-                []
-        )
+transitionStyle : Bool -> String -> List (Html.Attribute msg)
+transitionStyle withAnimation_ height =
+    [ style "position" "relative"
+    , style "height" height
+    , style "overflow"  "hidden"
+    ]
+        ++ if withAnimation_ == True then
+            [ style "-webkit-transition-timing-function" "ease"
+            , style "-o-transition-timing-function" "ease"
+            , style "transition-timing-function" "ease"
+            , style "-webkit-transition-duration" "0.35s"
+            , style "-o-transition-duration" "0.35s"
+            , style "transition-duration" "0.35s"
+            , style "-webkit-transition-property" "height"
+            , style "-o-transition-property" "height"
+            , style "transition-property" "height"
+            ]
+           else
+            []
+
 
 
 getOrInitCardState : String -> State -> CardState

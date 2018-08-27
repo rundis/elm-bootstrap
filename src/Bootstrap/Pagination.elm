@@ -302,7 +302,7 @@ itemsList : ListConfig a msg -> Config msg -> Config msg
 itemsList conf config =
     let
         byIdx idx =
-            List.indexedMap (,) conf.data
+            List.indexedMap Tuple.pair conf.data
                 |> List.filter (\( i, item ) -> i == idx)
                 |> List.map Tuple.second
                 |> List.head
@@ -383,7 +383,7 @@ itemsList conf config =
                ]
         )
             |> List.filterMap identity
-            |> (flip items) config
+            |> (\xs -> items xs config)
 
 
 {-| Takes a pagination config and renders it to std Elm Html.
@@ -413,8 +413,8 @@ listAttributes config =
     [ class "pagination" ]
         ++ sizeClass config.size
         ++ (case config.hAlign of
-                Just align ->
-                    [ hAlignClass align ]
+                Just align_ ->
+                    [ hAlignClass align_ ]
 
                 Nothing ->
                     []
@@ -423,8 +423,8 @@ listAttributes config =
 
 
 sizeClass : Size -> List (Html.Attribute msg)
-sizeClass size =
-    case size of
+sizeClass size_ =
+    case size_ of
         Large ->
             [ class "pagination-lg" ]
 

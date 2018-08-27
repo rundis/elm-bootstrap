@@ -141,11 +141,10 @@ import Bootstrap.Button as Button
 import Bootstrap.Internal.Button as ButtonInternal
 import Html
 import Html.Attributes exposing (class, classList, type_, id, href, style)
-import Html.Events exposing (onClick, on, onWithOptions)
-import Mouse
-import AnimationFrame
+import Html.Events exposing (onClick, on)
+import Browser.Events
 import Json.Decode as Json
-import DOM
+import Bootstrap.Utilities.DomHelper as DomHelper
 
 
 {-| Opaque type representing the view state of a Dropdown. You need to store this state
@@ -156,8 +155,8 @@ type State
 
 type alias StateRec =
     { status : DropdownStatus
-    , toggleSize : DOM.Rectangle
-    , menuSize : DOM.Rectangle
+    , toggleSize : DomHelper.Area
+    , menuSize : DomHelper.Area
     }
 
 
@@ -233,8 +232,8 @@ initialState : State
 initialState =
     State
         { status = Closed
-        , toggleSize = DOM.Rectangle 0 0 0 0
-        , menuSize = DOM.Rectangle 0 0 0 0
+        , toggleSize = DomHelper.Area 0 0 0 0
+        , menuSize = DomHelper.Area 0 0 0 0
         }
 
 
@@ -270,15 +269,15 @@ dropLeft =
 {-| Use this function when you need the customize the Dropdown root div with additional Html.Attribute (s).
 -}
 attrs : List (Html.Attribute msg) -> DropdownOption msg
-attrs attrs =
-    Attrs attrs
+attrs attrs_ =
+    Attrs attrs_
 
 
 {-| Use this function when you need the customize the Dropdown menu with additional Html.Attribute (s).
 -}
 menuAttrs : List (Html.Attribute msg) -> DropdownOption msg
-menuAttrs attrs =
-    MenuAttrs attrs
+menuAttrs attrs_ =
+    MenuAttrs attrs_
 
 
 {-| Creates a Dropdown button. You can think of this as the view function.
@@ -365,38 +364,37 @@ dropdownMenu :
     -> Html.Html msg
 dropdownMenu (State {status, menuSize} as state) config items =
     let
-        wrapperStyle =
+        wrapperStyles =
             if status == Closed then
-                [ ( "height", "0" )
-                , ( "overflow", "hidden" )
-                , ( "position", "relative" )
+                [ style "height" "0"
+                , style "overflow" "hidden"
+                , style "position" "relative"
                 ]
             else
-                [ ( "position", "relative" ) ]
+                [ style "position" "relative"  ]
     in
         Html.div
-            [ style wrapperStyle ]
+            wrapperStyles
             [ Html.div
                 ([ classList
                     [ ( "dropdown-menu", True )
                     , ( "dropdown-menu-right", config.hasMenuRight )
                     , ( "show", True )
                     ]
-                 , menuStyle state config
-                 ]
+                 ] ++ menuStyles state config
                     ++ config.menuAttrs
                 )
                 (List.map (\(DropdownItem x) -> x) items)
             ]
 
 
-menuStyle : State -> Options msg -> Html.Attribute msg
-menuStyle (State {status, toggleSize, menuSize}) config =
+menuStyles : State -> Options msg -> List (Html.Attribute msg)
+menuStyles (State {status, toggleSize, menuSize}) config =
     let
         default
-            = [ ( "top", "0" ), ( "left", "0" ) ]
+            = [ style "top" "0" , style "left" "0" ]
         px n =
-            toString n ++ "px"
+            String.fromFloat n ++ "px"
 
         translate x y z =
             "translate3d("
@@ -404,19 +402,18 @@ menuStyle (State {status, toggleSize, menuSize}) config =
                 ++ px y ++ ","
                 ++ px z ++ ")"
     in
-        style <|
-         case (config.isDropUp, config.dropDirection) of
-            (True, _) ->
-                default ++ [("transform", translate -toggleSize.width -menuSize.height 0)]
+     case (config.isDropUp, config.dropDirection) of
+        (True, _) ->
+            default ++ [style "transform" <| translate -toggleSize.width -menuSize.height 0]
 
-            (_, Just Dropright) ->
-                default
+        (_, Just Dropright) ->
+            default
 
-            (_, Just Dropleft) ->
-                default ++ [("transform", translate (-toggleSize.width - menuSize.width) 0 0)]
+        (_, Just Dropleft) ->
+            default ++ [ style "transform" <| translate (-toggleSize.width - menuSize.width) 0 0]
 
-            _ ->
-                default ++ [("transform", translate -toggleSize.width toggleSize.height 0)]
+        _ ->
+            default ++ [style "transform" <| translate -toggleSize.width toggleSize.height 0]
 
 
 
@@ -556,14 +553,14 @@ applyModifier option options =
         Dropup ->
             { options | isDropUp = True }
 
-        Attrs attrs ->
-            { options | attributes = attrs }
+        Attrs attrs_ ->
+            { options | attributes = attrs_ }
 
         DropToDir dir ->
             { options | dropDirection = Just dir }
 
-        MenuAttrs attrs ->
-            { options | menuAttrs = attrs }
+        MenuAttrs attrs_ ->
+            { options | menuAttrs = attrs_ }
 
 
 {-| Creates an `a` element appropriate for use in dropdowns
@@ -645,12 +642,12 @@ subscriptions : State -> (State -> msg) -> Sub msg
 subscriptions (State {status} as state) toMsg =
     case status of
         Open ->
-            AnimationFrame.times
+            Browser.Events.onAnimationFrame
                 (\_ -> toMsg <| updateStatus ListenClicks state)
 
         ListenClicks ->
-            Mouse.clicks
-                (\_ -> toMsg <| updateStatus Closed state)
+            Browser.Events.onClick
+                (Json.succeed <| toMsg <| updateStatus Closed state)
 
         Closed ->
             Sub.none
@@ -672,14 +669,14 @@ clickHandler toMsg (State {status} as state) =
             )
 
 
-sizeDecoder : Json.Decoder (DOM.Rectangle, DOM.Rectangle)
+sizeDecoder : Json.Decoder (DomHelper.Area, DomHelper.Area)
 sizeDecoder =
-    Json.map2 (,)
-        (toggler [ "target" ] DOM.boundingClientRect)
+    Json.map2 Tuple.pair
+        (toggler [ "target" ] DomHelper.boundingArea)
         (toggler [ "target" ]
-            (DOM.nextSibling <|
-                DOM.childNode 0 <|
-                    DOM.boundingClientRect
+            (DomHelper.nextSibling <|
+                DomHelper.childNode 0 <|
+                    DomHelper.boundingArea
             )
         )
 
@@ -696,7 +693,7 @@ toggler path decoder =
                     else
                         Json.fail ""
                 )
-        , Json.at (path ++ [ "parentElement" ]) DOM.className
+        , Json.at (path ++ [ "parentElement" ]) DomHelper.className
             |> Json.andThen
                 (\_ -> toggler (path ++ [ "parentElement" ]) decoder)
         , Json.fail "No toggler found"
@@ -705,7 +702,7 @@ toggler path decoder =
 
 isToggle : Json.Decoder Bool
 isToggle =
-    DOM.className
+    DomHelper.className
         |> Json.andThen
             (\class ->
                 if String.contains "dropdown-toggle" class then

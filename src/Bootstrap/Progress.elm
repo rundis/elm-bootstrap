@@ -129,8 +129,8 @@ value val =
 {-| Option to specify the height (in pixels) for the progress bar
 -}
 height : Int -> Option msg
-height height =
-    Height <| Just height
+height height_ =
+    Height <| Just height_
 
 
 {-| Option to specify a text label for a progress bar
@@ -196,16 +196,16 @@ striped =
 {-| Option to specify one ore more custom Html.Attribute for the progress bar
 -}
 attrs : List (Attribute msg) -> Option msg
-attrs attrs =
-    Attrs attrs
+attrs attrs_ =
+    Attrs attrs_
 
 
 {-| Option to specify one ore more custom Html.Attribute for the progress bar wrapper/container
 (say you need to add a on click handler or something like that)
 -}
 wrapperAttrs : List (Attribute msg) -> Option msg
-wrapperAttrs attrs =
-    WrapperAttrs attrs
+wrapperAttrs attrs_ =
+    WrapperAttrs attrs_
 
 
 
@@ -213,39 +213,39 @@ applyOption : Option msg -> Options msg -> Options msg
 applyOption modifier (Options options) =
     Options <|
         case modifier of
-            Value value ->
-                { options | value = value }
+            Value value_ ->
+                { options | value = value_ }
 
-            Height height ->
-                { options | height = height }
+            Height height_ ->
+                { options | height = height_ }
 
-            Label label ->
-                { options | label = label }
+            Label label_ ->
+                { options | label = label_ }
 
-            Roled role ->
-                { options | role = role }
+            Roled role_ ->
+                { options | role = role_ }
 
-            Striped striped ->
-                { options | striped = striped }
+            Striped striped_ ->
+                { options | striped = striped_ }
 
-            Animated animated ->
-                { options | animated = animated }
+            Animated animated_ ->
+                { options | animated = animated_ }
 
-            Attrs attrs ->
-                { options | attributes = attrs }
+            Attrs attrs_ ->
+                { options | attributes = attrs_ }
 
-            WrapperAttrs attrs ->
-                { options | wrapperAttributes = attrs }
+            WrapperAttrs attrs_ ->
+                { options | wrapperAttributes = attrs_ }
 
 
 toAttributes : Options msg -> List (Attribute msg)
 toAttributes (Options options) =
     List.concat
         [ [ attribute "role" "progressbar"
-          , attribute "aria-value-now" <| toString options.value
+          , attribute "aria-value-now" <| String.fromFloat options.value
           , attribute "aria-valuemin" "0"
           , attribute "aria-valuemax" "100"
-          , style [ ( "width", toString options.value ++ "%" ) ]
+          , style "width" <| String.fromFloat options.value ++ "%"
           , classList
                 [ ( "progress-bar", True )
                 , ( "progress-bar-striped", options.striped || options.animated )
@@ -253,14 +253,14 @@ toAttributes (Options options) =
                 ]
           ]
         , case options.height of
-            Just height ->
-                [ style [ ( "height", toString height ++ "px" ) ] ]
+            Just height_ ->
+                [ style "height" <| String.fromInt height_ ++ "px" ]
 
             Nothing ->
                 []
         , case options.role of
-            Just role ->
-                [ roleClass role ]
+            Just role_ ->
+                [ roleClass role_ ]
 
             Nothing ->
                 []

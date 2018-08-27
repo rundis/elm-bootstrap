@@ -137,15 +137,15 @@ large =
 {-| Options/shorthand for setting the id of a select
 -}
 id : String -> Option msg
-id id =
-    Id id
+id id_ =
+    Id id_
 
 
 {-| Use this function to handle any Html.Attribute option you wish for your select
 -}
 attrs : List (Html.Attribute msg) -> Option msg
-attrs attrs =
-    Attrs attrs
+attrs attrs_ =
+    Attrs attrs_
 
 
 {-| Shorthand for assigning an onChange handler for a select
@@ -177,8 +177,8 @@ customEventOnChange tagger =
 {-| Shorthand for setting the disabled attribute of a select
 -}
 disabled : Bool -> Option msg
-disabled disabled =
-    Disabled disabled
+disabled disabled_ =
+    Disabled disabled_
 
 
 toAttributes : List (Option msg) -> List (Html.Attribute msg)
@@ -218,11 +218,11 @@ defaultOptions =
 applyModifier : Option msg -> Options msg -> Options msg
 applyModifier modifier options =
     case modifier of
-        Size size ->
-            { options | size = Just size }
+        Size size_ ->
+            { options | size = Just size_ }
 
-        Id id ->
-            { options | id = Just id }
+        Id id_ ->
+            { options | id = Just id_ }
 
         Custom ->
             { options | custom = True }
@@ -230,18 +230,18 @@ applyModifier modifier options =
         Disabled val ->
             { options | disabled = val }
 
-        OnChange onChange ->
-            { options | onChange = Just onChange }
+        OnChange onChange_ ->
+            { options | onChange = Just onChange_ }
 
-        Validation validation ->
-            { options | validation = Just validation }
+        Validation validation_ ->
+            { options | validation = Just validation_ }
 
-        Attrs attrs ->
-            { options | attributes = options.attributes ++ attrs }
+        Attrs attrs_ ->
+            { options | attributes = options.attributes ++ attrs_ }
 
 
 sizeAttribute : Bool -> ScreenSize -> Maybe (Html.Attribute msg)
-sizeAttribute isCustom size =
+sizeAttribute isCustom size_ =
     let
         prefix =
             if isCustom then
@@ -251,8 +251,8 @@ sizeAttribute isCustom size =
     in
         Maybe.map
             (\s -> Attributes.class <| prefix ++ s)
-            (screenSizeOption size)
+            (screenSizeOption size_)
 
 validationAttribute : FormInternal.Validation -> Html.Attribute msg
-validationAttribute validation =
-    Attributes.class <| FormInternal.validationToString validation
+validationAttribute validation_ =
+    Attributes.class <| FormInternal.validationToString validation_

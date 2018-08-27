@@ -179,9 +179,9 @@ import Html
 import Html.Attributes as Attr
 import Html.Events as Events
 import Bootstrap.General.Internal exposing (ScreenSize(..), screenSizeOption)
-import AnimationFrame
+import Browser.Events
 import Json.Decode as Json
-import DOM
+import Bootstrap.Utilities.DomHelper as DomHelper
 
 
 {-| Visibility state for the modal
@@ -227,7 +227,7 @@ subscriptions : Visibility -> (Visibility -> msg) -> Sub msg
 subscriptions visibility animateMsg =
     case visibility of
         StartClose ->
-            AnimationFrame.times (\_ -> animateMsg FadeClose)
+            Browser.Events.onAnimationFrame (\_ -> animateMsg FadeClose)
 
         _ ->
             Sub.none
@@ -353,7 +353,7 @@ view visibility (Config conf) =
 
 containerClickDecoder: msg -> Json.Decoder msg
 containerClickDecoder closeMsg =
-    DOM.target DOM.className
+    DomHelper.target DomHelper.className
         |> Json.andThen
             (\c ->
                 if String.contains "elm-bootstrap-modal" c then
