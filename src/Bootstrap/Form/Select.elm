@@ -22,7 +22,7 @@ module Bootstrap.Form.Select
 @docs select, custom, item, Item
 
 # Options
-@docs id, small, large, id, disabled, onChange, attrs, Option
+@docs id, small, large, disabled, onChange, attrs, Option
 
 # Validation
 @docs success, danger

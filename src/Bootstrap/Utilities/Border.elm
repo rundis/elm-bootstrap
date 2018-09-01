@@ -1,4 +1,9 @@
-module Bootstrap.Utilities.Border exposing (..)
+module Bootstrap.Utilities.Border exposing
+    ( all, top, bottom, left, right
+    , none, topNone, bottomNone, leftNone, rightNone
+    , primary, secondary, info, success, warning, danger, light, dark
+    , rounded, roundedTop, roundedBottom, roundedLeft, roundedRight, roundedNone, circle
+    )
 
 {-| Use border utilities to quickly style the border and border-radius of an element. Great for images, buttons, or any other element.
 

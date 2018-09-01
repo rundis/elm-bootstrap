@@ -1,4 +1,12 @@
-module Bootstrap.Utilities.Flex exposing (..)
+module Bootstrap.Utilities.Flex exposing
+    ( block, blockSm, blockMd, blockLg, blockXl
+    , inline, inlineSm, inlineMd, inlineLg, inlineXl
+    , row, rowSm, rowMd, rowLg, rowXl, rowReverse, rowReverseSm, rowReverseMd, rowReverseLg, rowReverseXl, col, colSm, colMd, colLg, colXl, colReverse, colReverseSm, colReverseMd, colReverseLg, colReverseXl
+    , justifyStart, justifyStartSm, justifyStartMd, justifyStartLg, justifyStartXl, justifyEnd, justifyEndSm, justifyEndMd, justifyEndLg, justifyEndXl, justifyCenter, justifyCenterSm, justifyCenterMd, justifyCenterLg, justifyCenterXl, justifyBetween, justifyBetweenSm, justifyBetweenMd, justifyBetweenLg, justifyBetweenXl, justifyAround, justifyAroundSm, justifyAroundMd, justifyAroundLg, justifyAroundXl
+    , alignItemsStart, alignItemsStartSm, alignItemsStartMd, alignItemsStartLg, alignItemsStartXl, alignItemsEnd, alignItemsEndSm, alignItemsEndMd, alignItemsEndLg, alignItemsEndXl, alignItemsCenter, alignItemsCenterSm, alignItemsCenterMd, alignItemsCenterLg, alignItemsCenterXl, alignItemsBaseline, alignItemsBaselineSm, alignItemsBaselineMd, alignItemsBaselineLg, alignItemsBaselineXl, alignItemsStretch, alignItemsStretchSm, alignItemsStretchMd, alignItemsStretchLg, alignItemsStretchXl
+    , wrap, wrapSm, wrapMd, wrapLg, wrapXl, wrapReverse, wrapReverseSm, wrapReverseMd, wrapReverseLg, wrapReverseXl, nowrap, nowrapSm, nowrapMd, nowrapLg, nowrapXl
+    , alignSelfStart, alignSelfStartSm, alignSelfStartMd, alignSelfStartLg, alignSelfStartXl, alignSelfEnd, alignSelfEndSm, alignSelfEndMd, alignSelfEndLg, alignSelfEndXl, alignSelfCenter, alignSelfCenterSm, alignSelfCenterMd, alignSelfCenterLg, alignSelfCenterXl, alignSelfBaseline, alignSelfBaselineSm, alignSelfBaselineMd, alignSelfBaselineLg, alignSelfBaselineXl, alignSelfStretch, alignSelfStretchSm, alignSelfStretchMd, alignSelfStretchLg, alignSelfStretchXl
+    )
 
 {-| Quickly manage the layout, alignment, and sizing of grid columns, navigation, components, and more with a full suite of responsive flexbox utilities. For more complex implementations, custom CSS may be necessary.
 

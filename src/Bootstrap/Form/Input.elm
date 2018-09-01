@@ -109,7 +109,6 @@ type alias Options msg =
     Input.text
         [ Input.id "myinput"
         , Input.small
-        , Input.defaultValue "Hello"
         , Input.onInput MyInputMsg
         ]
 
