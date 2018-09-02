@@ -20,7 +20,7 @@ module Bootstrap.Form.Textarea
 
 
 # Options
-@docs id, rows, value, defaultValue, disabled, onInput, attrs, Option
+@docs id, rows, value, disabled, onInput, attrs, Option
 
 # Validation
 @docs success, danger

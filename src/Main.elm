@@ -24,10 +24,10 @@ import Bootstrap.Table as Table
 import Bootstrap.Progress as Progress
 import Bootstrap.Popover as Popover
 import Bootstrap.Text as Text
+import Browser
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Color
 import Bootstrap.Grid.Col as Col
 import Bootstrap.Grid.Row as Row
 import Bootstrap.Pagination as Pagination
@@ -35,10 +35,10 @@ import Bootstrap.Pagination.Item as Item
 import Bootstrap.General.HAlign as HAlign
 
 
-main : Program Never Model Msg
+main : Program () Model Msg
 main =
-    Html.program
-        { init = init
+    Browser.element
+        { init = \flags -> init
         , update = update
         , view = view
         , subscriptions = subscriptions
@@ -238,7 +238,7 @@ popoverButton state msg =
 
 mainContent : Model -> Html Msg
 mainContent model =
-    div [ style [ ( "margin-top", "60px" ) ] ]
+    div [ style "margin-top" "60px" ]
         [ navbar model
         , simpleForm
         , gridForm
@@ -269,15 +269,15 @@ mainContent model =
                 |> Popover.view model.popoverStateRight
             ]
         , Grid.row
-            [ Row.centerXs, Row.attrs [ rowStyle ] ]
-            [Grid.col [Col.middleXs, Col.textAlign Text.alignXsCenter, Col.attrs [ colStyle ]]
+            [ Row.centerXs, Row.attrs rowStyles ]
+            [Grid.col [Col.middleXs, Col.textAlign Text.alignXsCenter, Col.attrs colStyles ]
                 [span [] [ text "Hello P"]]
             ]
         , Grid.row
-            [ Row.bottomXs, Row.attrs [ rowStyle ] ]
+            [ Row.bottomXs, Row.attrs rowStyles ]
             [ Grid.col
                 [ Col.xs2
-                , Col.attrs [ colStyle ]
+                , Col.attrs colStyles
                 ]
                 [ span [ class "fa fa-car" ] []
                 , text " Col 1 Row 1"
@@ -289,13 +289,13 @@ mainContent model =
                 ]
             , Grid.col
                 [ Col.topXs
-                , Col.attrs [ colStyle ]
+                , Col.attrs colStyles
                 ]
                 []
             , Grid.col
                 [ Col.xs5
                 , Col.middleXs
-                , Col.attrs [ colStyle ]
+                , Col.attrs colStyles
                 ]
                 [ text "Col 3 Row 1"
                 , Fieldset.config
@@ -311,11 +311,11 @@ mainContent model =
                     |> Fieldset.view
                 ]
             , Grid.col
-                [ Col.attrs [ colStyle ] ]
+                [ Col.attrs colStyles ]
                 [ text "Col 4 Row 1" ]
             ]
         , Grid.row
-            [ Row.middleXs, Row.attrs [ rowStyle ] ]
+            [ Row.middleXs, Row.attrs rowStyles ]
             [ Grid.col
                 [ Col.xs5 ]
                 [ Button.linkButton
@@ -328,9 +328,9 @@ mainContent model =
                 ]
             ]
         , Grid.row
-            [ Row.topXs, Row.attrs [ rowStyle ] ]
+            [ Row.topXs, Row.attrs rowStyles ]
             [ Grid.col
-                [ Col.xs5, Col.attrs [ colStyle ] ]
+                [ Col.xs5, Col.attrs colStyles ]
                 [ Dropdown.dropdown
                     model.dropdownState
                     { options = [ Dropdown.alignMenuRight ]
@@ -356,7 +356,7 @@ mainContent model =
                     }
                 ]
             , Grid.col
-                [ Col.xs5, Col.attrs [ colStyle ] ]
+                [ Col.xs5, Col.attrs colStyles ]
                 [ Dropdown.splitDropdown
                     model.splitDropState
                     { options = [ Dropdown.dropUp, Dropdown.alignMenuRight ]
@@ -384,7 +384,7 @@ mainContent model =
                     }
                 ]
             , Grid.col
-                [ Col.attrs [ colStyle ] ]
+                [ Col.attrs colStyles ]
                 [ text model.dummy ]
             ]
         , accordion model
@@ -405,7 +405,7 @@ navbar model =
         |> Navbar.withAnimation
         |> Navbar.container
         |> Navbar.fixTop
-        |> Navbar.darkCustom Color.brown
+        |> Navbar.darkCustom { red = 193, green = 125, blue = 17 }
         |> Navbar.collapseMedium
         |> Navbar.brand [ href "#" ] [ text "Logo" ]
         |> Navbar.items
@@ -882,8 +882,8 @@ simplePaginationList model =
                 , nextItem = Just <| Pagination.ListItem [] [ text "Next" ]
                 , activeIdx = model.simplePaginationIdx
                 , data = [ 1, 2, 3, 4, 5 ] -- You'd typically generate this from your model somehow !
-                , itemFn = \idx _ -> Pagination.ListItem [] [ text <| toString (idx + 1) ]
-                , urlFn = \idx _ -> "#/pages/" ++ toString (idx + 1)
+                , itemFn = \idx _ -> Pagination.ListItem [] [ text <| Debug.toString (idx + 1) ]
+                , urlFn = \idx _ -> "#/pages/" ++ Debug.toString (idx + 1)
                 }
             |> Pagination.view
         ]
@@ -943,18 +943,18 @@ customPagination model =
             ]
 
 
-rowStyle : Attribute Msg
-rowStyle =
-    style
+rowStyles : List (Attribute Msg)
+rowStyles =
+    List.map (\( k, v ) -> style k v)
         [ ( "min-height", "8rem" )
         , ( "background-color", "rgba(255, 0, 0, 0.1)" )
         , ( "border", "1 px solid black" )
         ]
 
 
-colStyle : Attribute Msg
-colStyle =
-    style
+colStyles : List (Attribute Msg)
+colStyles =
+    List.map (\( k, v ) -> style k v)
         [ ( "padding-top", ".75rem" )
         , ( "padding-bottom", ".75rem" )
         , ( "background-color", "rgba(86, 61, 124, 0.15)" )

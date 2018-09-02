@@ -32,7 +32,7 @@ module Bootstrap.Form.Radio
 @docs success, danger
 
 # Composing
-@docs radioList, create, createCustom, Radio
+@docs radioList, create, createCustom
 
 -}
 

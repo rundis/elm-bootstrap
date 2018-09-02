@@ -1,4 +1,7 @@
-module Bootstrap.Utilities.Display exposing (..)
+module Bootstrap.Utilities.Display exposing
+    ( none, noneSm, noneMd, noneLg, noneXl
+    , block, blockSm, blockMd, blockLg, blockXl, inline, inlineSm, inlineMd, inlineLg, inlineXl, inlineBlock, inlineBlockSm, inlineBlockMd, inlineBlockLg, inlineBlockXl, table, tableSm, tableMd, tableLg, tableXl, tableCell, tableCellSm, tableCellMd, tableCellLg, tableCellXl, tableRow, tableRowSm, tableRowMd, tableRowLg, tableRowXl
+    )
 
 {-| Quickly and responsively toggle the display value of components and more with these display utilities.
 

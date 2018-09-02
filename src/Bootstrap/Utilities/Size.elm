@@ -1,4 +1,4 @@
-module Bootstrap.Utilities.Size exposing (..)
+module Bootstrap.Utilities.Size exposing (h25, h50, h75, h100, w25, w50, w75, w100)
 
 {-| Easily make an element as wide or as tall (relative to its parent) with our width and height utilities.
 

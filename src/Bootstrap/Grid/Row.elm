@@ -1,4 +1,8 @@
-module Bootstrap.Grid.Row exposing (..)
+module Bootstrap.Grid.Row exposing
+    ( topXs, topSm, topMd, topLg, topXl, middleXs, middleSm, middleMd, middleLg, middleXl, bottomXs, bottomSm, bottomMd, bottomLg, bottomXl
+    , leftXs, leftSm, leftMd, leftLg, leftXl, centerXs, centerSm, centerMd, centerLg, centerXl, rightXs, rightSm, rightMd, rightLg, rightXl, aroundXs, aroundSm, aroundMd, aroundLg, aroundXl, betweenXs, betweenSm, betweenMd, betweenLg, betweenXl
+    , attrs, Option
+    )
 
 {-| Functions for creating grid row options.
 
