@@ -2,21 +2,17 @@ module Bootstrap.CDN exposing (stylesheet, fontAwesome)
 
 {-| A helper module for easily embedding CSS when you want to work with the library using the Elm Reactor.
 
-
 @docs stylesheet, fontAwesome
-
-
 
 -}
 
 import Html exposing (Html, node)
-import Html.Attributes exposing (rel, href)
+import Html.Attributes exposing (href, rel)
 
 
 {-| Allows you to embed the Bootstrap CSS as a node in your view.
 
     import Bootstrap.CDN
-
 
     view : Model -> Html Msg
     view model =
@@ -26,6 +22,7 @@ import Html.Attributes exposing (rel, href)
             , navbar model
             , mainContent model
             ]
+
 -}
 stylesheet : Html msg
 stylesheet =

@@ -1,37 +1,32 @@
-module Bootstrap.Form.Textarea
-    exposing
-        ( textarea
-        , id
-        , rows
-        , value
-        , disabled
-        , onInput
-        , attrs
-        , success
-        , danger
-        , Option
-        )
+module Bootstrap.Form.Textarea exposing
+    ( textarea
+    , id, rows, value, disabled, onInput, attrs, Option
+    , success, danger
+    )
 
 {-| This module allows you to create textarea elements.
 
 
 # Creating
+
 @docs textarea
 
 
 # Options
+
 @docs id, rows, value, disabled, onInput, attrs, Option
 
-# Validation
-@docs success, danger
 
+# Validation
+
+@docs success, danger
 
 -}
 
+import Bootstrap.Form.FormInternal as FormInternal
 import Html
 import Html.Attributes as Attributes
 import Html.Events as Events
-import Bootstrap.Form.FormInternal as FormInternal
 
 
 {-| Opaque type representing a composable input
@@ -105,8 +100,6 @@ value value_ =
     Value value_
 
 
-
-
 {-| Shorthand for assigning an onInput handler for a textarea
 -}
 onInput : (String -> msg) -> Option msg
@@ -153,18 +146,18 @@ toAttributes modifiers =
         options =
             List.foldl applyModifier defaultOptions modifiers
     in
-        [ Attributes.class "form-control"
-        , Attributes.disabled options.disabled
-        ]
-            ++ ([ Maybe.map Attributes.id options.id
-                , Maybe.map Attributes.rows options.rows
-                , Maybe.map Attributes.value options.value
-                , Maybe.map Events.onInput options.onInput
-                , Maybe.map validationAttribute options.validation
-                ]
-                    |> List.filterMap identity
-               )
-            ++ options.attributes
+    [ Attributes.class "form-control"
+    , Attributes.disabled options.disabled
+    ]
+        ++ ([ Maybe.map Attributes.id options.id
+            , Maybe.map Attributes.rows options.rows
+            , Maybe.map Attributes.value options.value
+            , Maybe.map Events.onInput options.onInput
+            , Maybe.map validationAttribute options.validation
+            ]
+                |> List.filterMap identity
+           )
+        ++ options.attributes
 
 
 defaultOptions : Options msg
@@ -193,7 +186,6 @@ applyModifier modifier options =
 
         Value value_ ->
             { options | value = Just value_ }
-
 
         OnInput onInput_ ->
             { options | onInput = Just onInput_ }

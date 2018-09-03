@@ -7,23 +7,25 @@ module Bootstrap.Utilities.Display exposing
 
 
 # Flexibily responsive display
+
 You may combine hiding and display functions to control when an element is displayed accross breakposints.
 
-
-** To hide only for xs:**
+\*\* To hide only for xs:\*\*
 
     div [ Display.none, Display.blockSm ] [ text "Can't see me in XS" ]
 
-** To show only for sm:**
+\*\* To show only for sm:\*\*
 
     div [ Display.none, Display.blockSm, Display.noneMd ] [ text "Only see me in MD" ]
 
 
-
 # Hiding elements
+
 @docs none, noneSm, noneMd, noneLg, noneXl
 
+
 # Displaying elements
+
 @docs block, blockSm, blockMd, blockLg, blockXl, inline, inlineSm, inlineMd, inlineLg, inlineXl, inlineBlock, inlineBlockSm, inlineBlockMd, inlineBlockLg, inlineBlockXl, table, tableSm, tableMd, tableLg, tableXl, tableCell, tableCellSm, tableCellMd, tableCellLg, tableCellXl, tableRow, tableRowSm, tableRowMd, tableRowLg, tableRowXl
 
 -}
@@ -32,9 +34,8 @@ import Html exposing (Attribute)
 import Html.Attributes exposing (class)
 
 
-
-
-{-| Display as block element. -}
+{-| Display as block element.
+-}
 block : Attribute msg
 block =
     class "d-block"
@@ -45,6 +46,7 @@ block =
 blockSm : Attribute msg
 blockSm =
     class "d-sm-block"
+
 
 {-| Display as block element from MD breakpoint and up.
 -}
@@ -67,7 +69,8 @@ blockXl =
     class "d-xl-block"
 
 
-{-| Display as inline element. -}
+{-| Display as inline element.
+-}
 inline : Attribute msg
 inline =
     class "d-inline"
@@ -78,6 +81,7 @@ inline =
 inlineSm : Attribute msg
 inlineSm =
     class "d-sm-inline"
+
 
 {-| Display as inline element from MD breakpoint and up.
 -}
@@ -100,7 +104,8 @@ inlineXl =
     class "d-xl-inline"
 
 
-{-| Display as inline block element. -}
+{-| Display as inline block element.
+-}
 inlineBlock : Attribute msg
 inlineBlock =
     class "d-inline-block"
@@ -111,6 +116,7 @@ inlineBlock =
 inlineBlockSm : Attribute msg
 inlineBlockSm =
     class "d-sm-inline-block"
+
 
 {-| Display as inline block element from MD breakpoint and up.
 -}
@@ -133,8 +139,8 @@ inlineBlockXl =
     class "d-xl-inline-block"
 
 
-
-{-| Display as table element. -}
+{-| Display as table element.
+-}
 table : Attribute msg
 table =
     class "d-table"
@@ -145,6 +151,7 @@ table =
 tableSm : Attribute msg
 tableSm =
     class "d-sm-table"
+
 
 {-| Display as table element from MD breakpoint and up.
 -}
@@ -167,7 +174,8 @@ tableXl =
     class "d-xl-table"
 
 
-{-| Display as table cell element. -}
+{-| Display as table cell element.
+-}
 tableCell : Attribute msg
 tableCell =
     class "d-table-cell"
@@ -178,6 +186,7 @@ tableCell =
 tableCellSm : Attribute msg
 tableCellSm =
     class "d-sm-table-cell"
+
 
 {-| Display as table cell element from MD breakpoint and up.
 -}
@@ -199,7 +208,9 @@ tableCellXl : Attribute msg
 tableCellXl =
     class "d-xl-table-cell"
 
-{-| Display as table row element. -}
+
+{-| Display as table row element.
+-}
 tableRow : Attribute msg
 tableRow =
     class "d-table-row"
@@ -210,6 +221,7 @@ tableRow =
 tableRowSm : Attribute msg
 tableRowSm =
     class "d-sm-table-row"
+
 
 {-| Display as table row element from MD breakpoint and up.
 -}
@@ -232,7 +244,8 @@ tableRowXl =
     class "d-xl-table-row"
 
 
-{-| Hide element. -}
+{-| Hide element.
+-}
 none : Attribute msg
 none =
     class "d-none"
@@ -243,6 +256,7 @@ none =
 noneSm : Attribute msg
 noneSm =
     class "d-sm-none"
+
 
 {-| Hidden from MD breakpoint and up.
 -}

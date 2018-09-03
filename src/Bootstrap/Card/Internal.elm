@@ -1,11 +1,10 @@
-module Bootstrap.Card.Internal exposing (..)
+module Bootstrap.Card.Internal exposing (BlockItem(..), BlockOption(..), BlockOptions, CardBlock(..), CardOption(..), CardOptions, RoleOption(..), applyBlockModifier, applyModifier, block, blockAttributes, cardAttributes, defaultBlockOptions, defaultOptions, listGroup, renderBlock, renderBlocks)
 
-import Html
-import Html.Attributes exposing (class)
-import Bootstrap.Internal.Text as Text
 import Bootstrap.Internal.ListGroup as ListGroup
 import Bootstrap.Internal.Role as Role
-
+import Bootstrap.Internal.Text as Text
+import Html
+import Html.Attributes exposing (class)
 
 
 type CardOption msg
@@ -18,8 +17,6 @@ type CardOption msg
 type RoleOption
     = Roled Role.Role
     | Outlined Role.Role
-
-
 
 
 type alias CardOptions msg =
@@ -103,29 +100,29 @@ blockAttributes modifiers =
         options =
             List.foldl applyBlockModifier defaultBlockOptions modifiers
     in
-        [ class "card-body" ]
-            ++ (case options.aligned of
-                    Just align ->
-                        [ Text.textAlignClass align ]
+    [ class "card-body" ]
+        ++ (case options.aligned of
+                Just align ->
+                    [ Text.textAlignClass align ]
 
-                    Nothing ->
-                        []
-               )
-            ++ (case options.coloring of
-                    Just role ->
-                        [ Role.toClass "bg" role ]
+                Nothing ->
+                    []
+           )
+        ++ (case options.coloring of
+                Just role ->
+                    [ Role.toClass "bg" role ]
 
-                    Nothing ->
-                        []
-               )
-            ++ (case options.textColoring of
-                    Just color ->
-                        [ Text.textColorClass color ]
+                Nothing ->
+                    []
+           )
+        ++ (case options.textColoring of
+                Just color ->
+                    [ Text.textColorClass color ]
 
-                    Nothing ->
-                        []
-               )
-            ++ options.attributes
+                Nothing ->
+                    []
+           )
+        ++ options.attributes
 
 
 defaultBlockOptions : BlockOptions msg
@@ -159,32 +156,32 @@ cardAttributes modifiers =
         options =
             List.foldl applyModifier defaultOptions modifiers
     in
-        [ class "card" ]
-            ++ (case options.coloring of
-                    Just (Roled role) ->
-                        [ Role.toClass "bg" role ]
+    [ class "card" ]
+        ++ (case options.coloring of
+                Just (Roled role) ->
+                    [ Role.toClass "bg" role ]
 
-                    Just (Outlined role) ->
-                        [ Role.toClass "border" role ]
+                Just (Outlined role) ->
+                    [ Role.toClass "border" role ]
 
-                    Nothing ->
-                        []
-               )
-            ++ (case options.textColoring of
-                    Just color ->
-                        [ Text.textColorClass color ]
+                Nothing ->
+                    []
+           )
+        ++ (case options.textColoring of
+                Just color ->
+                    [ Text.textColorClass color ]
 
-                    Nothing ->
-                        []
-               )
-            ++ (case options.aligned of
-                    Just align ->
-                        [ Text.textAlignClass align ]
+                Nothing ->
+                    []
+           )
+        ++ (case options.aligned of
+                Just align ->
+                    [ Text.textAlignClass align ]
 
-                    Nothing ->
-                        []
-               )
-            ++ options.attributes
+                Nothing ->
+                    []
+           )
+        ++ options.attributes
 
 
 defaultOptions : CardOptions msg

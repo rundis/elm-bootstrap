@@ -1,17 +1,15 @@
-module Bootstrap.Utilities.DomHelper
-    exposing (
-        parentElement,
-        target,
-        currentTarget,
-        offsetHeight,
-        offsetWidth,
-        childNode,
-        nextSibling,
-        className,
-        boundingArea,
-        Area
+module Bootstrap.Utilities.DomHelper exposing
+    ( Area
+    , boundingArea
+    , childNode
+    , className
+    , currentTarget
+    , nextSibling
+    , offsetHeight
+    , offsetWidth
+    , parentElement
+    , target
     )
-
 
 import Json.Decode as Decode
 
@@ -22,6 +20,7 @@ type alias Area =
     , width : Float
     , height : Float
     }
+
 
 boundingArea : Decode.Decoder Area
 boundingArea =
@@ -59,10 +58,10 @@ parentElement decoder =
     Decode.field "parentElement" decoder
 
 
-
 target : Decode.Decoder a -> Decode.Decoder a
 target decoder =
     Decode.field "target" decoder
+
 
 currentTarget : Decode.Decoder a -> Decode.Decoder a
 currentTarget decoder =
@@ -75,6 +74,7 @@ offsetParent x decoder =
         [ Decode.field "offsetParent" <| Decode.null x
         , Decode.field "offsetParent" decoder
         ]
+
 
 offsetTop : Decode.Decoder Float
 offsetTop =
@@ -100,6 +100,7 @@ offsetWidth : Decode.Decoder Float
 offsetWidth =
     Decode.field "offsetWidth" Decode.float
 
+
 offsetHeight : Decode.Decoder Float
 offsetHeight =
     Decode.field "offsetHeight" Decode.float
@@ -113,6 +114,7 @@ childNode idx =
 nextSibling : Decode.Decoder a -> Decode.Decoder a
 nextSibling decoder =
     Decode.field "nextSibling" decoder
+
 
 className : Decode.Decoder String
 className =

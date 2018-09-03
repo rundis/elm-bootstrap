@@ -1,4 +1,4 @@
-module Bootstrap.Carousel.SlideInternal exposing (..)
+module Bootstrap.Carousel.SlideInternal exposing (Config(..), SlideContent(..), addAttributes, view)
 
 {-| Config type
 -}
@@ -30,6 +30,7 @@ addAttributes newAttributes (Config settings) =
 {-| Convert a slide config to html
 
 Not exposed because it does not make sense to have a standalone slide outside of a carousel.
+
 -}
 view : Config msg -> Html.Html msg
 view (Config { attributes, content, caption }) =
@@ -42,14 +43,14 @@ view (Config { attributes, content, caption }) =
                 Just rec ->
                     div (rec.attributes ++ [ class "carousel-caption d-none d-md-block" ]) rec.children
     in
-        div (attributes ++ [ class "carousel-item" ]) <|
-            case content of
-                Image rec ->
-                    [ Html.img (rec.attributes ++ [ class "d-block img-fluid", Attributes.src rec.src ]) []
-                    , captionHtml
-                    ]
+    div (attributes ++ [ class "carousel-item" ]) <|
+        case content of
+            Image rec ->
+                [ Html.img (rec.attributes ++ [ class "d-block img-fluid", Attributes.src rec.src ]) []
+                , captionHtml
+                ]
 
-                Custom { html } ->
-                    [ html
-                    , captionHtml
-                    ]
+            Custom { html } ->
+                [ html
+                , captionHtml
+                ]

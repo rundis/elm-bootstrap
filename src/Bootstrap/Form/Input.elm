@@ -1,56 +1,35 @@
-module Bootstrap.Form.Input
-    exposing
-        ( text
-        , password
-        , datetimeLocal
-        , date
-        , month
-        , time
-        , week
-        , number
-        , email
-        , url
-        , search
-        , tel
-        , color
-        , small
-        , large
-        , id
-        , value
-        , placeholder
-        , onInput
-        , disabled
-        , readonly
-        , attrs
-        , success
-        , danger
-        , Option
-        )
+module Bootstrap.Form.Input exposing
+    ( text, password, datetimeLocal, date, month, time, week, number, email, url, search, tel, color
+    , id, small, large, value, disabled, readonly, onInput, placeholder, attrs, Option
+    , success, danger
+    )
 
 {-| This module allows you to create Bootstrap styled HTML 5 inputs.
 
 
 # Input types
+
 @docs text, password, datetimeLocal, date, month, time, week, number, email, url, search, tel, color
 
 
-
-
 # Options
+
 @docs id, small, large, value, disabled, readonly, onInput, placeholder, attrs, Option
 
-# Validation
-You can indicate success or invalid input using these functions.
-@docs success, danger
 
+# Validation
+
+You can indicate success or invalid input using these functions.
+
+@docs success, danger
 
 -}
 
+import Bootstrap.Form.FormInternal as FormInternal
+import Bootstrap.General.Internal exposing (ScreenSize(..), screenSizeOption)
 import Html
 import Html.Attributes as Attributes
 import Html.Events as Events
-import Bootstrap.General.Internal exposing (ScreenSize(..), screenSizeOption)
-import Bootstrap.Form.FormInternal as FormInternal
 
 
 {-| Opaque type representing a composable input
@@ -209,7 +188,7 @@ input tipe options =
 
 create : InputType -> List (Option msg) -> Input msg
 create tipe options =
-    Input { options = (Type tipe) :: options }
+    Input { options = Type tipe :: options }
 
 
 view : Input msg -> Html.Html msg
@@ -274,12 +253,12 @@ disabled : Bool -> Option msg
 disabled disabled_ =
     Disabled disabled_
 
+
 {-| Shorthand for setting the readonly attribute of an input
 -}
 readonly : Bool -> Option msg
 readonly readonly_ =
     Readonly readonly_
-
 
 
 {-| Option to add a success marker icon for your input.
@@ -302,21 +281,21 @@ toAttributes modifiers =
         options =
             List.foldl applyModifier defaultOptions modifiers
     in
-        [ Attributes.class "form-control"
-        , Attributes.disabled options.disabled
-        , Attributes.readonly options.readonly
-        , typeAttribute options.tipe
-        ]
-            ++ ([ Maybe.map Attributes.id options.id
-                , Maybe.andThen sizeAttribute options.size
-                , Maybe.map Attributes.value options.value
-                , Maybe.map Attributes.placeholder options.placeholder
-                , Maybe.map Events.onInput options.onInput
-                , Maybe.map validationAttribute options.validation
-                ]
-                    |> List.filterMap identity
-               )
-            ++ options.attributes
+    [ Attributes.class "form-control"
+    , Attributes.disabled options.disabled
+    , Attributes.readonly options.readonly
+    , typeAttribute options.tipe
+    ]
+        ++ ([ Maybe.map Attributes.id options.id
+            , Maybe.andThen sizeAttribute options.size
+            , Maybe.map Attributes.value options.value
+            , Maybe.map Attributes.placeholder options.placeholder
+            , Maybe.map Events.onInput options.onInput
+            , Maybe.map validationAttribute options.validation
+            ]
+                |> List.filterMap identity
+           )
+        ++ options.attributes
 
 
 defaultOptions : Options msg
@@ -363,7 +342,6 @@ applyModifier modifier options =
 
         Readonly val ->
             { options | readonly = val }
-
 
         Attrs attrs_ ->
             { options | attributes = options.attributes ++ attrs_ }

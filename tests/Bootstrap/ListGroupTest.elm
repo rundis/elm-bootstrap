@@ -1,12 +1,12 @@
-module Bootstrap.ListGroupTest exposing (..)
+module Bootstrap.ListGroupTest exposing (contextual, contextualListGroup, customListGroup, vanillaListGroup)
 
 import Bootstrap.ListGroup as ListGroup
+import Expect
 import Html exposing (text)
 import Html.Attributes as Attr exposing (href)
-import Test exposing (Test, test, describe)
-import Expect
+import Test exposing (Test, describe, test)
 import Test.Html.Query as Query
-import Test.Html.Selector as Selector exposing (tag, class, classes, attribute, disabled)
+import Test.Html.Selector as Selector exposing (attribute, class, classes, disabled, tag)
 
 
 vanillaListGroup : Test
@@ -59,10 +59,10 @@ vanillaListGroup =
                         |> Query.has [ class "disabled", Selector.disabled True ]
             ]
     in
-        describe "basic ListGroup"
-            [ describe "vanilla ListGroup" (tests vanilla)
-            , describe "keyed ListGroup" (tests keyed)
-            ]
+    describe "basic ListGroup"
+        [ describe "vanilla ListGroup" (tests vanilla)
+        , describe "keyed ListGroup" (tests keyed)
+        ]
 
 
 customListGroup : Test
@@ -127,12 +127,12 @@ customListGroup =
         keyedButtons =
             ListGroup.keyedCustom buttonItems
     in
-        describe "custom ListGroup"
-            [ describe "anchors" (tests "a" anchors)
-            , describe "keyed anchors" (tests "a" keyedAnchors)
-            , describe "buttons" (tests "button" buttons)
-            , describe "keyed buttons" (tests "button" keyedButtons)
-            ]
+    describe "custom ListGroup"
+        [ describe "anchors" (tests "a" anchors)
+        , describe "keyed anchors" (tests "a" keyedAnchors)
+        , describe "buttons" (tests "button" buttons)
+        , describe "keyed buttons" (tests "button" keyedButtons)
+        ]
 
 
 contextual : String -> Html.Html msg -> Test
@@ -216,7 +216,7 @@ contextualListGroup =
                 , ListGroup.button [ ListGroup.dark ] [ text "dark" ]
                 ]
     in
-        describe "contextual ListGroup"
-            [ contextual "ListGroup with contextual items" contextualList
-            , contextual "custom ListGroup with contextual items" contextualButtonList
-            ]
+    describe "contextual ListGroup"
+        [ contextual "ListGroup with contextual items" contextualList
+        , contextual "custom ListGroup with contextual items" contextualButtonList
+        ]

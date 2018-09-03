@@ -1,4 +1,4 @@
-module Bootstrap.GridTest exposing (..)
+module Bootstrap.GridTest exposing (orderClass)
 
 import Bootstrap.Grid exposing (..)
 import Bootstrap.Grid.Col exposing (..)

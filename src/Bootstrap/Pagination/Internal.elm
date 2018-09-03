@@ -1,4 +1,4 @@
-module Bootstrap.Pagination.Internal exposing (..)
+module Bootstrap.Pagination.Internal exposing (Item(..), ItemConfig(..), Link, Status(..), itemAttributes, linkAttributes, viewItem)
 
 import Html
 import Html.Attributes exposing (class, href, tabindex)
@@ -21,7 +21,7 @@ type Item msg
 
 
 type alias Link msg =
-    { htmlFn : (List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg)
+    { htmlFn : List (Html.Attribute msg) -> List (Html.Html msg) -> Html.Html msg
     , attrs : List (Html.Attribute msg)
     , children : List (Html.Html msg)
     }
@@ -47,15 +47,16 @@ itemAttributes : ItemConfig msg -> List (Html.Attribute msg)
 itemAttributes (ItemConfig config) =
     [ class <|
         "page-item"
-            ++ case config.status of
-                Default ->
-                    ""
+            ++ (case config.status of
+                    Default ->
+                        ""
 
-                Active ->
-                    " active"
+                    Active ->
+                        " active"
 
-                Disabled ->
-                    " disabled"
+                    Disabled ->
+                        " disabled"
+               )
     ]
 
 
@@ -63,16 +64,19 @@ linkAttributes : ItemConfig msg -> Link msg -> List (Html.Attribute msg)
 linkAttributes (ItemConfig itemConfig) { attrs } =
     [ class "page-link", class "disabled" ]
         ++ attrs
-        ++ if itemConfig.status == Disabled then
-            [ tabindex -1
-            {-  TODO: How to handle this in 0.19 ??
-            , custom "click" <|
-                Decode.succeed
-                    { message = never
-                    , preventDefault = True
-                    , stopPropagation = True
-                    }
-            -}
-            ]
-           else
-            []
+        ++ (if itemConfig.status == Disabled then
+                [ tabindex -1
+
+                {- TODO: How to handle this in 0.19 ??
+                   , custom "click" <|
+                       Decode.succeed
+                           { message = never
+                           , preventDefault = True
+                           , stopPropagation = True
+                           }
+                -}
+                ]
+
+            else
+                []
+           )

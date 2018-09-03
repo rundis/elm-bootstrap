@@ -1,4 +1,4 @@
-module Bootstrap.FormTest exposing (..)
+module Bootstrap.FormTest exposing (inputGroupWithPredecessorsAndSuccessors)
 
 import Bootstrap.Form.InputGroup as InputGroup
 import Expect

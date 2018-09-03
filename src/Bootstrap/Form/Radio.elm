@@ -1,45 +1,38 @@
-module Bootstrap.Form.Radio
-    exposing
-        ( radio
-        , custom
-        , radioList
-        , create
-        , createCustom
-        , checked
-        , name
-        , inline
-        , disabled
-        , onClick
-        , attrs
-        , success
-        , danger
-        , id
-        , Option
-        , Radio
-        )
+module Bootstrap.Form.Radio exposing
+    ( radio, custom, Radio
+    , id, checked, name, inline, onClick, disabled, attrs, Option
+    , success, danger
+    , radioList, create, createCustom
+    )
 
 {-| This module allows you to create Bootstrap styled radios.
 
 
 # Creating
+
 @docs radio, custom, Radio
 
+
 # Options
+
 @docs id, checked, name, inline, onClick, disabled, attrs, Option
 
 
 # Validation
+
 @docs success, danger
 
+
 # Composing
+
 @docs radioList, create, createCustom
 
 -}
 
+import Bootstrap.Form.FormInternal as FormInternal
 import Html
 import Html.Attributes as Attributes
 import Html.Events as Events
-import Bootstrap.Form.FormInternal as FormInternal
 
 
 {-| Opaque composable type representing a Radio.
@@ -133,9 +126,9 @@ This function is a convenient helper to create a list of radios
             "Radio 3"
         ]
 
+  - `groupName` - Name of the radios, all radios will get the same name
+  - `radios` - List of radios.
 
-* `groupName` - Name of the radios, all radios will get the same name
-* `radios` - List of radios.
 -}
 radioList :
     String
@@ -174,34 +167,33 @@ view (Radio radio_) =
     let
         opts =
             List.foldl applyModifier defaultOptions radio_.options
-
     in
-        Html.div
-            [ Attributes.classList
-                [ ( "form-check", not opts.custom )
-                , ( "form-check-inline", not opts.custom && opts.inline )
-                , ( "custom-control", opts.custom )
-                , ( "custom-radio", opts.custom )
-                , ( "custom-control-inline", opts.inline && opts.custom )
-                ]
+    Html.div
+        [ Attributes.classList
+            [ ( "form-check", not opts.custom )
+            , ( "form-check-inline", not opts.custom && opts.inline )
+            , ( "custom-control", opts.custom )
+            , ( "custom-radio", opts.custom )
+            , ( "custom-control-inline", opts.inline && opts.custom )
             ]
-            [ Html.input (toAttributes opts) []
-            , Html.label
-                ([ Attributes.classList
-                    [ ( "form-check-label", not opts.custom )
-                    , ( "custom-control-label", opts.custom )
-                    ]
-                 ]
-                    ++ case opts.id of
+        ]
+        [ Html.input (toAttributes opts) []
+        , Html.label
+            ([ Attributes.classList
+                [ ( "form-check-label", not opts.custom )
+                , ( "custom-control-label", opts.custom )
+                ]
+             ]
+                ++ (case opts.id of
                         Just v ->
                             [ Attributes.for v ]
 
                         Nothing ->
                             []
-                )
-                [ Html.text radio_.label ]
-            ]
-
+                   )
+            )
+            [ Html.text radio_.label ]
+        ]
 
 
 {-| Shorthand for assigning an onClick handler for a radio.
@@ -236,6 +228,7 @@ inline =
 
 A single radio doesn't make much sense, typically you would have several. To automatically
 unselect one radio, when selecting another you need to have the same name for each radio in a group.
+
 -}
 name : String -> Option msg
 name name_ =
@@ -257,7 +250,6 @@ NOTE: You have to use this for custom checkboxes.
 id : String -> Option msg
 id theId =
     Id theId
-
 
 
 {-| Option to color a radio with success.

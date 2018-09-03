@@ -1,29 +1,11 @@
-module Bootstrap.ButtonGroup
-    exposing
-        ( buttonGroup
-        , linkButtonGroup
-        , radioButtonGroup
-        , checkboxButtonGroup
-        , button
-        , linkButton
-        , radioButton
-        , checkboxButton
-        , ButtonItem
-        , LinkButtonItem
-        , RadioButtonItem
-        , CheckboxButtonItem
-        , buttonGroupItem
-        , linkButtonGroupItem
-        , radioButtonGroupItem
-        , checkboxButtonGroupItem
-        , toolbar
-        , small
-        , large
-        , vertical
-        , attrs
-        , Option
-        , GroupItem
-        )
+module Bootstrap.ButtonGroup exposing
+    ( button, linkButton, radioButton, checkboxButton
+    , buttonGroup, linkButtonGroup, radioButtonGroup, checkboxButtonGroup
+    , ButtonItem, LinkButtonItem, RadioButtonItem, CheckboxButtonItem
+    , small, large, vertical, attrs, Option
+    , toolbar, buttonGroupItem, linkButtonGroupItem, radioButtonGroupItem
+    , checkboxButtonGroupItem, GroupItem
+    )
 
 {-| Group a series of buttons together on a single line with the button group.
 
@@ -47,10 +29,10 @@ module Bootstrap.ButtonGroup
 
 -}
 
-import Html
-import Html.Attributes as Attributes exposing (class, classList, attribute)
 import Bootstrap.Button as Button
 import Bootstrap.General.Internal exposing (ScreenSize(..), screenSizeOption)
+import Html
+import Html.Attributes as Attributes exposing (attribute, class, classList)
 
 
 {-| Opaque type representing the possible styling options for a button group
@@ -201,12 +183,14 @@ checkboxButtonGroupItem options items =
 
     ButtonGroup.toolbar []
         [ ButtonGroup.groupItem []
-            [] -- should contain a list of button items
+            []
 
+        -- should contain a list of button items
         , ButtonGroup.groupItem
             [ Button.attrs [ class "ml-2" ] ]
-            [] -- should contain a list of button items
+            []
 
+        -- should contain a list of button items
         ]
 
   - `attributes` List of attributes to customize the toolbar element
@@ -291,24 +275,24 @@ groupAttributes toggle modifiers =
         options =
             List.foldl applyModifier defaultOptions modifiers
     in
-        [ attribute "role" "group"
-        , classList
-            [ ( "btn-group", True )
-            , ( "btn-group-toggle", toggle )
-            , ( "btn-group-vertical", options.vertical )
-            ]
-
-        -- data-toggle is needed to display radio buttons correctly (by hiding the actual radio input)
-        , attribute "data-toggle" "buttons"
+    [ attribute "role" "group"
+    , classList
+        [ ( "btn-group", True )
+        , ( "btn-group-toggle", toggle )
+        , ( "btn-group-vertical", options.vertical )
         ]
-            ++ (case (options.size |> Maybe.andThen screenSizeOption) of
-                    Just s ->
-                        [ class <| "btn-group-" ++ s ]
 
-                    Nothing ->
-                        []
-               )
-            ++ options.attributes
+    -- data-toggle is needed to display radio buttons correctly (by hiding the actual radio input)
+    , attribute "data-toggle" "buttons"
+    ]
+        ++ (case options.size |> Maybe.andThen screenSizeOption of
+                Just s ->
+                    [ class <| "btn-group-" ++ s ]
+
+                Nothing ->
+                    []
+           )
+        ++ options.attributes
 
 
 applyModifier : Option msg -> Options msg -> Options msg

@@ -1,38 +1,37 @@
-module Main exposing (..)
+module Main exposing (Model, Msg(..), accordion, cardOne, cardThree, cardTwo, cards, colStyles, customPagination, gridForm, init, listGroup, listGroup2, main, mainContent, modal, modalBody, navbar, popoverButton, popoverContent, progressBars, rowStyles, simpleForm, simplePaginationList, subscriptions, tables, tabs, update, view)
 
-import Bootstrap.Text as Text
+import Bootstrap.Accordion as Accordion
+import Bootstrap.Badge as Badge
 import Bootstrap.Button as Button
 import Bootstrap.CDN as CDN
-import Bootstrap.Dropdown as Dropdown
-import Bootstrap.Grid as Grid
-import Bootstrap.Modal as Modal
-import Bootstrap.Navbar as Navbar
-import Bootstrap.Tab as Tab
-import Bootstrap.Accordion as Accordion
-import Bootstrap.ListGroup as ListGroup
-import Bootstrap.Badge as Badge
-import Bootstrap.Form as Form
-import Bootstrap.Form.Checkbox as Chk
-import Bootstrap.Form.Radio as Radio
-import Bootstrap.Form.Input as Input
-import Bootstrap.Form.InputGroup as InputGrp
-import Bootstrap.Form.Select as Select
-import Bootstrap.Form.Fieldset as Fieldset
 import Bootstrap.Card as Card
 import Bootstrap.Card.Block as Block
-import Bootstrap.Table as Table
-import Bootstrap.Progress as Progress
+import Bootstrap.Dropdown as Dropdown
+import Bootstrap.Form as Form
+import Bootstrap.Form.Checkbox as Chk
+import Bootstrap.Form.Fieldset as Fieldset
+import Bootstrap.Form.Input as Input
+import Bootstrap.Form.InputGroup as InputGrp
+import Bootstrap.Form.Radio as Radio
+import Bootstrap.Form.Select as Select
+import Bootstrap.General.HAlign as HAlign
+import Bootstrap.Grid as Grid
+import Bootstrap.Grid.Col as Col
+import Bootstrap.Grid.Row as Row
+import Bootstrap.ListGroup as ListGroup
+import Bootstrap.Modal as Modal
+import Bootstrap.Navbar as Navbar
+import Bootstrap.Pagination as Pagination
+import Bootstrap.Pagination.Item as Item
 import Bootstrap.Popover as Popover
+import Bootstrap.Progress as Progress
+import Bootstrap.Tab as Tab
+import Bootstrap.Table as Table
 import Bootstrap.Text as Text
 import Browser
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Bootstrap.Grid.Col as Col
-import Bootstrap.Grid.Row as Row
-import Bootstrap.Pagination as Pagination
-import Bootstrap.Pagination.Item as Item
-import Bootstrap.General.HAlign as HAlign
 
 
 main : Program () Model Msg
@@ -69,23 +68,23 @@ init =
         ( navbarState, navbarCmd ) =
             Navbar.initialState NavbarMsg
     in
-        ( { dummy = "init"
-          , dropdownState = Dropdown.initialState
-          , splitDropState = Dropdown.initialState
-          , tabState = Tab.initialState
-          , accordionState = Accordion.initialStateCardOpen "card1"
-          , navbarState = navbarState
-          , navMsgCounter = 0
-          , popoverStateLeft = Popover.initialState
-          , popoverStateRight = Popover.initialState
-          , popoverStateBottom = Popover.initialState
-          , popoverStateTop = Popover.initialState
-          , modalVisibility = Modal.hidden
-          , simplePaginationIdx = 0
-          , customPaginationIdx = 1
-          }
-        , navbarCmd
-        )
+    ( { dummy = "init"
+      , dropdownState = Dropdown.initialState
+      , splitDropState = Dropdown.initialState
+      , tabState = Tab.initialState
+      , accordionState = Accordion.initialStateCardOpen "card1"
+      , navbarState = navbarState
+      , navMsgCounter = 0
+      , popoverStateLeft = Popover.initialState
+      , popoverStateRight = Popover.initialState
+      , popoverStateBottom = Popover.initialState
+      , popoverStateTop = Popover.initialState
+      , modalVisibility = Modal.hidden
+      , simplePaginationIdx = 0
+      , customPaginationIdx = 1
+      }
+    , navbarCmd
+    )
 
 
 type Msg
@@ -270,8 +269,8 @@ mainContent model =
             ]
         , Grid.row
             [ Row.centerXs, Row.attrs rowStyles ]
-            [Grid.col [Col.middleXs, Col.textAlign Text.alignXsCenter, Col.attrs colStyles ]
-                [span [] [ text "Hello P"]]
+            [ Grid.col [ Col.middleXs, Col.textAlign Text.alignXsCenter, Col.attrs colStyles ]
+                [ span [] [ text "Hello P" ] ]
             ]
         , Grid.row
             [ Row.bottomXs, Row.attrs rowStyles ]
@@ -673,6 +672,7 @@ cardOne state =
                 |> Accordion.appendHeader
                     [ if Accordion.isOpen "card1" state then
                         span [ class "fa fa-chevron-down" ] []
+
                       else
                         span [ class "fa fa-chevron-up" ] []
                     ]
@@ -708,6 +708,7 @@ cardTwo =
                 ]
             ]
         }
+
 
 cardThree : Accordion.Card Msg
 cardThree =
@@ -898,49 +899,48 @@ customPagination model =
             , { icon = "train", name = "Train" }
             ]
     in
-        div []
-            [ h1 [] [ text "Pagination" ]
-            , Pagination.defaultConfig
-                |> Pagination.ariaLabel "Pagination"
-                |> Pagination.align HAlign.centerXs
-                |> Pagination.large
-                |> Pagination.items
-                    ([ Item.item
-                        |> Item.span [ class "custom-page-item", onClick <| CustomPaginationSelect 0 ]
-                            [ span [ class "fa fa-fast-backward", attribute "aria-hidden" "true" ] []
-                            , span [ class "sr-only" ] [ text "First page" ]
-                            ]
-                     , Item.item
-                        |> Item.span [ class "custom-page-item" ]
-                            [ span [ class "fa fa-arrow-left", attribute "aria-hidden" "true" ] []
-                            , span [ class "sr-only" ] [ text "Previous" ]
-                            ]
-                     ]
-                        ++ (List.indexedMap
-                                (\idx item ->
-                                    Item.item
-                                        |> Item.active ( idx == model.customPaginationIdx )
-                                        |> Item.span [ class "custom-page-item", onClick <| CustomPaginationSelect idx ]
-                                            [ span [ class <| "fa fa-" ++ item.icon, attribute "aria-hidden" "true" ] []
-                                            , span [ class "sr-only" ] [ text item.name ]
-                                            ]
-                                )
-                                myData
-                           )
-                        ++ [ Item.item
-                                |> Item.span [ class "custom-page-item" ]
-                                    [ span [ class "fa fa-arrow-right", attribute "aria-hidden" "true" ] []
-                                    , span [ class "sr-only" ] [ text "Next" ]
+    div []
+        [ h1 [] [ text "Pagination" ]
+        , Pagination.defaultConfig
+            |> Pagination.ariaLabel "Pagination"
+            |> Pagination.align HAlign.centerXs
+            |> Pagination.large
+            |> Pagination.items
+                ([ Item.item
+                    |> Item.span [ class "custom-page-item", onClick <| CustomPaginationSelect 0 ]
+                        [ span [ class "fa fa-fast-backward", attribute "aria-hidden" "true" ] []
+                        , span [ class "sr-only" ] [ text "First page" ]
+                        ]
+                 , Item.item
+                    |> Item.span [ class "custom-page-item" ]
+                        [ span [ class "fa fa-arrow-left", attribute "aria-hidden" "true" ] []
+                        , span [ class "sr-only" ] [ text "Previous" ]
+                        ]
+                 ]
+                    ++ List.indexedMap
+                        (\idx item ->
+                            Item.item
+                                |> Item.active (idx == model.customPaginationIdx)
+                                |> Item.span [ class "custom-page-item", onClick <| CustomPaginationSelect idx ]
+                                    [ span [ class <| "fa fa-" ++ item.icon, attribute "aria-hidden" "true" ] []
+                                    , span [ class "sr-only" ] [ text item.name ]
                                     ]
-                           , Item.item
-                                |> Item.span [ class "custom-page-item", onClick <| CustomPaginationSelect 2 ]
-                                    [ span [ class "fa fa-fast-forward", attribute "aria-hidden" "true" ] []
-                                    , span [ class "sr-only" ] [ text "Last page" ]
-                                    ]
-                           ]
-                    )
-                |> Pagination.view
-            ]
+                        )
+                        myData
+                    ++ [ Item.item
+                            |> Item.span [ class "custom-page-item" ]
+                                [ span [ class "fa fa-arrow-right", attribute "aria-hidden" "true" ] []
+                                , span [ class "sr-only" ] [ text "Next" ]
+                                ]
+                       , Item.item
+                            |> Item.span [ class "custom-page-item", onClick <| CustomPaginationSelect 2 ]
+                                [ span [ class "fa fa-fast-forward", attribute "aria-hidden" "true" ] []
+                                , span [ class "sr-only" ] [ text "Last page" ]
+                                ]
+                       ]
+                )
+            |> Pagination.view
+        ]
 
 
 rowStyles : List (Attribute Msg)

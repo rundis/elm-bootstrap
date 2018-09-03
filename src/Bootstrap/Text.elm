@@ -1,32 +1,7 @@
-module Bootstrap.Text
-    exposing
-        ( alignXsLeft
-        , alignXsCenter
-        , alignXsRight
-        , alignSmLeft
-        , alignSmCenter
-        , alignSmRight
-        , alignMdLeft
-        , alignMdCenter
-        , alignMdRight
-        , alignLgLeft
-        , alignLgCenter
-        , alignLgRight
-        , alignXlLeft
-        , alignXlCenter
-        , alignXlRight
-        , white
-        , primary
-        , secondary
-        , success
-        , info
-        , warning
-        , danger
-        , light
-        , dark
-        , HAlign
-        , Color
-        )
+module Bootstrap.Text exposing
+    ( alignXsLeft, alignXsCenter, alignXsRight, alignSmLeft, alignSmCenter, alignSmRight, alignMdLeft, alignMdCenter, alignMdRight, alignLgLeft, alignLgCenter, alignLgRight, alignXlLeft, alignXlCenter, alignXlRight, HAlign
+    , white, primary, secondary, success, info, warning, danger, light, dark, Color
+    )
 
 {-| Utilities for text options. Currently only exposing helpers used by Bootstrap.Card for horizontal alignment and text coloring
 
@@ -43,8 +18,8 @@ module Bootstrap.Text
 -}
 
 import Bootstrap.General.Internal exposing (ScreenSize(..), screenSizeOption)
-import Bootstrap.Internal.Text as TextInternal exposing (TextAlignDir(..))
 import Bootstrap.Internal.Role as Role
+import Bootstrap.Internal.Text as TextInternal exposing (TextAlignDir(..))
 
 
 {-| Opaque type representing a horizontal alignment option

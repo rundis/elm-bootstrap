@@ -1,9 +1,7 @@
-module Bootstrap.General.Internal exposing (..)
-
+module Bootstrap.General.Internal exposing (HAlign, HorizontalAlign(..), ScreenSize(..), hAlignClass, horizontalAlignOption, screenSizeOption)
 
 import Html
 import Html.Attributes exposing (class)
-
 
 
 type alias HAlign =
@@ -20,15 +18,12 @@ type HorizontalAlign
     | Between
 
 
-
 type ScreenSize
     = XS
     | SM
     | MD
     | LG
     | XL
-
-
 
 
 hAlignClass : HAlign -> Html.Attribute msg
@@ -40,6 +35,7 @@ hAlignClass { align, screenSize } =
                )
             ++ horizontalAlignOption align
         )
+
 
 horizontalAlignOption : HorizontalAlign -> String
 horizontalAlignOption align =

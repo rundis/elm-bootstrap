@@ -1,28 +1,35 @@
-module Bootstrap.Carousel.Slide exposing (Config, SlideContent, config, caption, customContent, image)
+module Bootstrap.Carousel.Slide exposing
+    ( Config, config, caption
+    , SlideContent, image, customContent
+    )
 
 {-| A slide is used as part of a carousel
 
-    Slide.config [ ]
-           (Slide.image [ Attributes.alt "slide 1" ] "https://...")
-       |> Slide.caption []
-           [ h3 [] [ text "First slide label" ]
-           , p [] []
-           ]
+    Slide.config []
+        (Slide.image [ Attributes.alt "slide 1" ] "https://...")
+        |> Slide.caption []
+            [ h3 [] [ text "First slide label" ]
+            , p [] []
+            ]
+
 
 # Slide
+
 @docs Config, config, caption
 
+
 # Content
+
 @docs SlideContent, image, customContent
+
 -}
 
+import Bootstrap.Carousel.SlideInternal as SlideInternal exposing (Config(..), SlideContent(..))
 import Html exposing (div, text)
 import Html.Attributes as Attributes exposing (class)
-import Bootstrap.Carousel.SlideInternal as SlideInternal exposing (Config(..), SlideContent(..))
 
 
 {-| Opaque type that defines the view configuration information of your slide
-
 -}
 type alias Config msg =
     SlideInternal.Config msg
@@ -48,6 +55,7 @@ config attributes content =
 {-| Add a caption to your slide
 
 The captions are automatically hidden on small devices.
+
 -}
 caption : List (Html.Attribute msg) -> List (Html.Html msg) -> Config msg -> Config msg
 caption attributes children (Config settings) =
@@ -56,8 +64,9 @@ caption attributes children (Config settings) =
 
 {-| Populate a slide with an image.
 
-* `attributes` List of attributes
-* `src` the `src` attribute for the image
+  - `attributes` List of attributes
+  - `src` the `src` attribute for the image
+
 -}
 image : List (Html.Attribute msg) -> String -> SlideContent msg
 image attributes src =

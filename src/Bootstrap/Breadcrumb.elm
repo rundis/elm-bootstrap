@@ -1,9 +1,4 @@
-module Bootstrap.Breadcrumb
-    exposing
-        ( container
-        , item
-        , Item
-        )
+module Bootstrap.Breadcrumb exposing (Item, item, container)
 
 {-| Indicate the current page's location within a navigational hierarchy that automatically adds separators via CSS.
 
@@ -63,7 +58,7 @@ toListItems items =
             []
 
         [ Item attributes children ] ->
-            [ Html.li (attributes ++ [ (Html.Attributes.attribute "aria-current" "page"), Html.Attributes.class "breadcrumb-item active" ]) children ]
+            [ Html.li (attributes ++ [ Html.Attributes.attribute "aria-current" "page", Html.Attributes.class "breadcrumb-item active" ]) children ]
 
         (Item attributes children) :: rest ->
-            [ Html.li (attributes ++ [ Html.Attributes.class "breadcrumb-item" ]) children ] ++ (toListItems rest)
+            [ Html.li (attributes ++ [ Html.Attributes.class "breadcrumb-item" ]) children ] ++ toListItems rest

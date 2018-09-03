@@ -1,40 +1,34 @@
-module Bootstrap.Form.Select
-    exposing
-        ( select
-        , custom
-        , item
-        , id
-        , small
-        , large
-        , disabled
-        , onChange
-        , attrs
-        , success
-        , danger
-        , Option
-        , Item
-        )
+module Bootstrap.Form.Select exposing
+    ( select, custom, item, Item
+    , id, small, large, disabled, onChange, attrs, Option
+    , success, danger
+    )
 
 {-| This module allows you to create Bootstrap styled `select` elements.
 
 
 # Creating
+
 @docs select, custom, item, Item
 
+
 # Options
+
 @docs id, small, large, disabled, onChange, attrs, Option
 
+
 # Validation
+
 @docs success, danger
 
 -}
 
+import Bootstrap.Form.FormInternal as FormInternal
+import Bootstrap.General.Internal exposing (ScreenSize(..), screenSizeOption)
 import Html
 import Html.Attributes as Attributes
 import Html.Events as Events
 import Json.Decode as Json
-import Bootstrap.General.Internal exposing (ScreenSize (..), screenSizeOption)
-import Bootstrap.Form.FormInternal as FormInternal
 
 
 {-| Opaque type representing a composable HTML select
@@ -81,8 +75,8 @@ type alias Options msg =
         [ Select.id "myselect"
         , Select.onChange MySelectMsg
         ]
-        [ Select.item [ value "1"] [ text "Item 1" ]
-        , Select.item [ value "2"] [ text "Item 2" ]
+        [ Select.item [ value "1" ] [ text "Item 1" ]
+        , Select.item [ value "2" ] [ text "Item 2" ]
         ]
 
 -}
@@ -154,6 +148,7 @@ onChange : (String -> msg) -> Option msg
 onChange toMsg =
     OnChange toMsg
 
+
 {-| Option to add a success marker icon for your select.
 -}
 success : Option msg
@@ -166,7 +161,6 @@ success =
 danger : Option msg
 danger =
     Validation FormInternal.Danger
-
 
 
 customEventOnChange : (String -> msg) -> Html.Attribute msg
@@ -187,20 +181,20 @@ toAttributes modifiers =
         options =
             List.foldl applyModifier defaultOptions modifiers
     in
-        [ Attributes.classList
-            [ ( "form-control", not options.custom )
-            , ( "custom-select", options.custom )
-            ]
-        , Attributes.disabled options.disabled
+    [ Attributes.classList
+        [ ( "form-control", not options.custom )
+        , ( "custom-select", options.custom )
         ]
-            ++ ([ Maybe.map Attributes.id options.id
-                , Maybe.andThen (sizeAttribute options.custom) options.size
-                , Maybe.map customEventOnChange options.onChange
-                , Maybe.map validationAttribute options.validation
-                ]
-                    |> List.filterMap identity
-               )
-            ++ options.attributes
+    , Attributes.disabled options.disabled
+    ]
+        ++ ([ Maybe.map Attributes.id options.id
+            , Maybe.andThen (sizeAttribute options.custom) options.size
+            , Maybe.map customEventOnChange options.onChange
+            , Maybe.map validationAttribute options.validation
+            ]
+                |> List.filterMap identity
+           )
+        ++ options.attributes
 
 
 defaultOptions : Options msg
@@ -246,12 +240,14 @@ sizeAttribute isCustom size_ =
         prefix =
             if isCustom then
                 "custom-select-"
+
             else
                 "form-control-"
     in
-        Maybe.map
-            (\s -> Attributes.class <| prefix ++ s)
-            (screenSizeOption size_)
+    Maybe.map
+        (\s -> Attributes.class <| prefix ++ s)
+        (screenSizeOption size_)
+
 
 validationAttribute : FormInternal.Validation -> Html.Attribute msg
 validationAttribute validation_ =

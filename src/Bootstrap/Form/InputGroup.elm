@@ -1,32 +1,9 @@
-module Bootstrap.Form.InputGroup
-    exposing
-        ( view
-        , config
-        , predecessors
-        , successors
-        , text
-        , password
-        , datetimeLocal
-        , date
-        , month
-        , time
-        , week
-        , number
-        , email
-        , url
-        , search
-        , tel
-        , button
-        , dropdown
-        , splitDropdown
-        , span
-        , large
-        , small
-        , attrs
-        , Config
-        , Input
-        , Addon
-        )
+module Bootstrap.Form.InputGroup exposing
+    ( view, config, predecessors, successors, text, button, dropdown, splitDropdown, span, Config, Input, Addon
+    , password, datetimeLocal, date, month, time, week, number, email, url, search, tel
+    , large, small
+    , attrs
+    )
 
 {-| Easily extend form input controls by adding text and buttons.
 
@@ -66,12 +43,12 @@ module Bootstrap.Form.InputGroup
 
 -}
 
+import Bootstrap.Button as Button
+import Bootstrap.Dropdown as Dropdown
+import Bootstrap.Form.Input as Input
+import Bootstrap.General.Internal exposing (ScreenSize(..), screenSizeOption)
 import Html
 import Html.Attributes as Attributes
-import Bootstrap.General.Internal exposing (ScreenSize(..), screenSizeOption)
-import Bootstrap.Button as Button
-import Bootstrap.Form.Input as Input
-import Bootstrap.Dropdown as Dropdown
 
 
 {-| Opaque representation of the view configuration for an input group.
@@ -115,7 +92,7 @@ config input_ =
 
 
 {-| Create the view representation for an Input group based on
-a [´configuration`](#Config)
+a [´configuration\`](#Config)
 -}
 view : Config msg -> Html.Html msg
 view (Config conf) =
@@ -123,21 +100,21 @@ view (Config conf) =
         (Input input_) =
             conf.input
     in
-        Html.div
-            ([ Attributes.class "input-group" ]
-                ++ ([ Maybe.andThen sizeAttribute conf.size ]
-                        |> List.filterMap identity
-                   )
-                ++ conf.attributes
-            )
-            (List.map
-                (\(Addon e) -> Html.div [ Attributes.class "input-group-prepend" ] [ e ])
-                conf.predecessors
-                ++ [ input_ ]
-                ++ List.map
-                    (\(Addon e) -> Html.div [ Attributes.class "input-group-append" ] [ e ])
-                    conf.successors
-            )
+    Html.div
+        ([ Attributes.class "input-group" ]
+            ++ ([ Maybe.andThen sizeAttribute conf.size ]
+                    |> List.filterMap identity
+               )
+            ++ conf.attributes
+        )
+        (List.map
+            (\(Addon e) -> Html.div [ Attributes.class "input-group-prepend" ] [ e ])
+            conf.predecessors
+            ++ [ input_ ]
+            ++ List.map
+                (\(Addon e) -> Html.div [ Attributes.class "input-group-append" ] [ e ])
+                conf.successors
+        )
 
 
 {-| Specify a list of add-ons to display before the input.

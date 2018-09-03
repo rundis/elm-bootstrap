@@ -1,30 +1,12 @@
-module Bootstrap.Modal
-    exposing
-        ( view
-        , hidden
-        , shown
-        , hiddenAnimated
-        , Visibility
-        , config
-        , header
-        , body
-        , footer
-        , small
-        , large
-        , hideOnBackdropClick
-        , withAnimation
-        , subscriptions
-        , h1
-        , h2
-        , h3
-        , h4
-        , h5
-        , h6
-        , Header
-        , Body
-        , Footer
-        , Config
-        )
+module Bootstrap.Modal exposing
+    ( view, config, Config
+    , hidden, shown, Visibility
+    , small, large, hideOnBackdropClick
+    , header, h1, h2, h3, h4, h5, h6, Header
+    , body, Body
+    , footer, Footer
+    , withAnimation, subscriptions, hiddenAnimated
+    )
 
 {-| Modals are streamlined, but flexible dialog prompts. They support a number of use cases from user notifications to completely custom content and feature a handful of helpful subcomponents, sizes, and more.
 
@@ -148,7 +130,6 @@ is a few more things you must wire-up and keep in mind.
 
     -- Animations for modal doesn't work without a subscription.
     -- DON´T forget this !
-
     subscriptions : Model -> Sub msg
     subscriptions model =
         Sub.batch
@@ -175,13 +156,13 @@ is a few more things you must wire-up and keep in mind.
 
 -}
 
+import Bootstrap.General.Internal exposing (ScreenSize(..), screenSizeOption)
+import Bootstrap.Utilities.DomHelper as DomHelper
+import Browser.Events
 import Html
 import Html.Attributes as Attr
 import Html.Events as Events
-import Bootstrap.General.Internal exposing (ScreenSize(..), screenSizeOption)
-import Browser.Events
 import Json.Decode as Json
-import Bootstrap.Utilities.DomHelper as DomHelper
 
 
 {-| Visibility state for the modal
@@ -323,7 +304,7 @@ view visibility (Config conf) =
     Html.div
         []
         ([ Html.div
-            ([ Attr.tabindex -1] ++ display visibility conf)
+            ([ Attr.tabindex -1 ] ++ display visibility conf)
             [ Html.div
                 ([ Attr.attribute "role" "document"
                  , Attr.class "elm-bootstrap-modal"
@@ -331,6 +312,7 @@ view visibility (Config conf) =
                     ++ modalAttributes conf.options
                     ++ (if conf.options.hideOnBackdropClick then
                             [ Events.on "click" (containerClickDecoder conf.closeMsg) ]
+
                         else
                             []
                        )
@@ -351,13 +333,14 @@ view visibility (Config conf) =
         )
 
 
-containerClickDecoder: msg -> Json.Decoder msg
+containerClickDecoder : msg -> Json.Decoder msg
 containerClickDecoder closeMsg =
     DomHelper.target DomHelper.className
         |> Json.andThen
             (\c ->
                 if String.contains "elm-bootstrap-modal" c then
                     Json.succeed closeMsg
+
                 else
                     Json.fail "ignoring"
             )
@@ -368,7 +351,7 @@ display visibility conf =
     case visibility of
         Show ->
             [ Attr.style "pointer-events" "none"
-            , Attr.style  "display" "block"
+            , Attr.style "display" "block"
             , Attr.classList
                 [ ( "modal", True )
                 , ( "fade", isFade conf )
@@ -701,10 +684,12 @@ backdrop visibility conf =
                         , ( "show", True )
                         ]
                     ]
-                        ++ if conf.options.hideOnBackdropClick then
-                            [ Events.onClick <| getCloseMsg conf ]
-                           else
-                            []
+                        ++ (if conf.options.hideOnBackdropClick then
+                                [ Events.onClick <| getCloseMsg conf ]
+
+                            else
+                                []
+                           )
 
                 StartClose ->
                     [ Attr.classList
@@ -730,4 +715,4 @@ backdrop visibility conf =
                         ]
                     ]
     in
-        [ Html.div attributes [] ]
+    [ Html.div attributes [] ]

@@ -1,10 +1,10 @@
-module Bootstrap.Grid.Internal exposing (..)
+module Bootstrap.Grid.Internal exposing (ColOption(..), ColOptions, ColumnCount(..), MoveCount(..), Offset, OffsetCount(..), Order, OrderCol(..), Pull, Push, RowOption(..), RowOptions, VAlign, VerticalAlign(..), Width, applyColAlign, applyColOffset, applyColOption, applyColOrder, applyColPull, applyColPush, applyColWidth, applyRowHAlign, applyRowOption, applyRowVAlign, colAttributes, colVAlign, colWidthClass, colWidthsToAttributes, columnCountOption, defaultColOptions, defaultRowOptions, hAlignsToAttributes, moveCountOption, offset, offsetClass, offsetCountOption, offsetsToAttributes, order, orderColOption, orderToAttributes, pull, pullsToAttributes, push, pushesToAttributes, rowAttributes, rowHAlign, rowVAlign, screenSizeToPartialString, vAlignClass, vAlignsToAttributes, verticalAlignOption, width)
 
+import Bootstrap.General.Internal exposing (HAlign, HorizontalAlign(..), ScreenSize(..), hAlignClass, screenSizeOption)
+import Bootstrap.Internal.Text as TextInternal
+import Bootstrap.Text as Text
 import Html
 import Html.Attributes exposing (class)
-import Bootstrap.Text as Text
-import Bootstrap.Internal.Text as TextInternal
-import Bootstrap.General.Internal exposing (ScreenSize(..), HAlign, HorizontalAlign(..), hAlignClass, screenSizeOption)
 
 
 type ColOption msg
@@ -240,58 +240,60 @@ colAttributes modifiers =
             )
                 == 0
     in
-        colWidthsToAttributes
-            [ if shouldAddDefaultXs then
-                Just <| Width XS Col
-              else
-                options.widthXs
-            , options.widthSm
-            , options.widthMd
-            , options.widthLg
-            , options.widthXl
+    colWidthsToAttributes
+        [ if shouldAddDefaultXs then
+            Just <| Width XS Col
+
+          else
+            options.widthXs
+        , options.widthSm
+        , options.widthMd
+        , options.widthLg
+        , options.widthXl
+        ]
+        ++ offsetsToAttributes
+            [ options.offsetXs
+            , options.offsetSm
+            , options.offsetMd
+            , options.offsetLg
+            , options.offsetXl
             ]
-            ++ offsetsToAttributes
-                [ options.offsetXs
-                , options.offsetSm
-                , options.offsetMd
-                , options.offsetLg
-                , options.offsetXl
-                ]
-            ++ pullsToAttributes
-                [ options.pullXs
-                , options.pullSm
-                , options.pullMd
-                , options.pullLg
-                , options.pullXl
-                ]
-            ++ pushesToAttributes
-                [ options.pushXs
-                , options.pushSm
-                , options.pushMd
-                , options.pushLg
-                , options.pushXl
-                ]
-            ++ orderToAttributes
-                [ options.orderXs
-                , options.orderSm
-                , options.orderMd
-                , options.orderLg
-                , options.orderXl
-                ]
-            ++ vAlignsToAttributes "align-self-"
-                [ options.alignXs
-                , options.alignSm
-                , options.alignMd
-                , options.alignLg
-                , options.alignXl
-                ]
-            ++ (case options.textAlign of
+        ++ pullsToAttributes
+            [ options.pullXs
+            , options.pullSm
+            , options.pullMd
+            , options.pullLg
+            , options.pullXl
+            ]
+        ++ pushesToAttributes
+            [ options.pushXs
+            , options.pushSm
+            , options.pushMd
+            , options.pushLg
+            , options.pushXl
+            ]
+        ++ orderToAttributes
+            [ options.orderXs
+            , options.orderSm
+            , options.orderMd
+            , options.orderLg
+            , options.orderXl
+            ]
+        ++ vAlignsToAttributes "align-self-"
+            [ options.alignXs
+            , options.alignSm
+            , options.alignMd
+            , options.alignLg
+            , options.alignXl
+            ]
+        ++ (case options.textAlign of
                 Just a ->
-                    [TextInternal.textAlignClass a]
+                    [ TextInternal.textAlignClass a ]
+
                 Nothing ->
                     []
-                )
-            ++ options.attributes
+           )
+        ++ options.attributes
 
 
 rowAttributes : List (RowOption msg) -> List (Html.Attribute msg)
@@ -300,22 +302,22 @@ rowAttributes modifiers =
         options =
             List.foldl applyRowOption defaultRowOptions modifiers
     in
-        [ class "row" ]
-            ++ vAlignsToAttributes "align-items-"
-                [ options.vAlignXs
-                , options.vAlignSm
-                , options.vAlignMd
-                , options.vAlignLg
-                , options.vAlignXl
-                ]
-            ++ hAlignsToAttributes
-                [ options.hAlignXs
-                , options.hAlignSm
-                , options.hAlignMd
-                , options.hAlignLg
-                , options.hAlignXl
-                ]
-            ++ options.attributes
+    [ class "row" ]
+        ++ vAlignsToAttributes "align-items-"
+            [ options.vAlignXs
+            , options.vAlignSm
+            , options.vAlignMd
+            , options.vAlignLg
+            , options.vAlignXl
+            ]
+        ++ hAlignsToAttributes
+            [ options.hAlignXs
+            , options.hAlignSm
+            , options.hAlignMd
+            , options.hAlignLg
+            , options.hAlignXl
+            ]
+        ++ options.attributes
 
 
 applyColOption : ColOption msg -> ColOptions msg -> ColOptions msg
@@ -570,8 +572,8 @@ colWidthsToAttributes widths =
         width_ w =
             Maybe.map colWidthClass w
     in
-        List.map width_ widths
-            |> List.filterMap identity
+    List.map width_ widths
+        |> List.filterMap identity
 
 
 colWidthClass : Width -> Html.Attribute msg
@@ -592,8 +594,8 @@ offsetsToAttributes offsets =
         offset_ m =
             Maybe.map offsetClass m
     in
-        List.map offset_ offsets
-            |> List.filterMap identity
+    List.map offset_ offsets
+        |> List.filterMap identity
 
 
 offsetClass : Offset -> Html.Attribute msg
@@ -612,8 +614,8 @@ pullsToAttributes pulls =
                 Nothing ->
                     Nothing
     in
-        List.map pull_ pulls
-            |> List.filterMap identity
+    List.map pull_ pulls
+        |> List.filterMap identity
 
 
 pushesToAttributes : List (Maybe Pull) -> List (Html.Attribute msg)
@@ -627,8 +629,8 @@ pushesToAttributes pushes =
                 Nothing ->
                     Nothing
     in
-        List.map push_ pushes
-            |> List.filterMap identity
+    List.map push_ pushes
+        |> List.filterMap identity
 
 
 orderToAttributes : List (Maybe Order) -> List (Html.Attribute msg)
@@ -642,8 +644,8 @@ orderToAttributes orders =
                 Nothing ->
                     Nothing
     in
-        List.map order_ orders
-            |> List.filterMap identity
+    List.map order_ orders
+        |> List.filterMap identity
 
 
 vAlignsToAttributes : String -> List (Maybe VAlign) -> List (Html.Attribute msg)
@@ -652,8 +654,8 @@ vAlignsToAttributes prefix aligns =
         align a =
             Maybe.map (vAlignClass prefix) a
     in
-        List.map align aligns
-            |> List.filterMap identity
+    List.map align aligns
+        |> List.filterMap identity
 
 
 vAlignClass : String -> VAlign -> Html.Attribute msg
@@ -673,8 +675,8 @@ hAlignsToAttributes aligns =
         align a =
             Maybe.map hAlignClass a
     in
-        List.map align aligns
-            |> List.filterMap identity
+    List.map align aligns
+        |> List.filterMap identity
 
 
 screenSizeToPartialString : ScreenSize -> String

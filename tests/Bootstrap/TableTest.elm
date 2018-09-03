@@ -1,12 +1,12 @@
-module Bootstrap.TableTest exposing (..)
+module Bootstrap.TableTest exposing (defaultTable, defaultTbody, defaultThead, styledTable, styledTdOrRowInBody, styledThOrRowInHead, styledThead, superSimple)
 
 import Bootstrap.Table as Table
+import Expect
 import Html
 import Html.Attributes as Attr
-import Test exposing (Test, test, describe)
-import Expect
+import Test exposing (Test, describe, test)
 import Test.Html.Query as Query
-import Test.Html.Selector exposing (text, tag, class, classes, attribute)
+import Test.Html.Selector exposing (attribute, class, classes, tag, text)
 
 
 superSimple : Test
@@ -30,43 +30,43 @@ superSimple =
                     ]
                 )
     in
-        describe "Super simple table"
-            [ test "expect class" <|
-                \() ->
-                    html
-                        |> Query.fromHtml
-                        |> Query.has [ class "table" ]
-            , test "expect thead" <|
-                \() ->
-                    html
-                        |> Query.fromHtml
-                        |> Query.children []
-                        |> Query.first
-                        |> Query.has [ tag "thead" ]
-            , test "expect ths" <|
-                \() ->
-                    html
-                        |> Query.fromHtml
-                        |> Query.find [ tag "thead" ]
-                        |> Query.children [ tag "tr" ]
-                        |> Query.first
-                        |> Query.children []
-                        |> Query.each (Query.has [ tag "th" ])
-            , test "expect tbody" <|
-                \() ->
-                    html
-                        |> Query.fromHtml
-                        |> Query.children []
-                        |> Query.index 1
-                        |> Query.has [ tag "tbody" ]
-            , test "expect tds" <|
-                \() ->
-                    html
-                        |> Query.fromHtml
-                        |> Query.find [ tag "tbody" ]
-                        |> Query.findAll [ tag "td" ]
-                        |> Query.count (Expect.equal 4)
-            ]
+    describe "Super simple table"
+        [ test "expect class" <|
+            \() ->
+                html
+                    |> Query.fromHtml
+                    |> Query.has [ class "table" ]
+        , test "expect thead" <|
+            \() ->
+                html
+                    |> Query.fromHtml
+                    |> Query.children []
+                    |> Query.first
+                    |> Query.has [ tag "thead" ]
+        , test "expect ths" <|
+            \() ->
+                html
+                    |> Query.fromHtml
+                    |> Query.find [ tag "thead" ]
+                    |> Query.children [ tag "tr" ]
+                    |> Query.first
+                    |> Query.children []
+                    |> Query.each (Query.has [ tag "th" ])
+        , test "expect tbody" <|
+            \() ->
+                html
+                    |> Query.fromHtml
+                    |> Query.children []
+                    |> Query.index 1
+                    |> Query.has [ tag "tbody" ]
+        , test "expect tds" <|
+            \() ->
+                html
+                    |> Query.fromHtml
+                    |> Query.find [ tag "tbody" ]
+                    |> Query.findAll [ tag "td" ]
+                    |> Query.count (Expect.equal 4)
+        ]
 
 
 styledTable : Test
@@ -80,22 +80,21 @@ styledTable =
                 , Table.hover
                 ]
     in
-        describe "Styled table"
-            [ test "expect class" <|
-                \() ->
-                    html
-                        |> Query.fromHtml
-                        |> Query.has
-                            [ classes
-                                [ "table", "table-bordered", "table-hover", "table-sm", "table-dark" ]
-                            ]
-            , test "expect wrapped in div when responsive" <|
-                \() ->
-                    defaultTable [ Table.responsive ]
-                        |> Query.fromHtml
-                        |> Query.has [ class "table-responsive", tag "div" ]
-            ]
-
+    describe "Styled table"
+        [ test "expect class" <|
+            \() ->
+                html
+                    |> Query.fromHtml
+                    |> Query.has
+                        [ classes
+                            [ "table", "table-bordered", "table-hover", "table-sm", "table-dark" ]
+                        ]
+        , test "expect wrapped in div when responsive" <|
+            \() ->
+                defaultTable [ Table.responsive ]
+                    |> Query.fromHtml
+                    |> Query.has [ class "table-responsive", tag "div" ]
+        ]
 
 
 styledThead : Test
@@ -108,20 +107,20 @@ styledThead =
                 , tbody = defaultTbody
                 }
     in
-        describe "Styled thead "
-            [ test "expect inversed" <|
-                \() ->
-                    tblHtml Table.inversedHead
-                        |> Query.fromHtml
-                        |> Query.find [ tag "thead" ]
-                        |> Query.has [ class "thead-dark" ]
-            , test "expect default" <|
-                \() ->
-                    tblHtml Table.defaultHead
-                        |> Query.fromHtml
-                        |> Query.find [ tag "thead" ]
-                        |> Query.has [ class "thead-default" ]
-            ]
+    describe "Styled thead "
+        [ test "expect inversed" <|
+            \() ->
+                tblHtml Table.inversedHead
+                    |> Query.fromHtml
+                    |> Query.find [ tag "thead" ]
+                    |> Query.has [ class "thead-dark" ]
+        , test "expect default" <|
+            \() ->
+                tblHtml Table.defaultHead
+                    |> Query.fromHtml
+                    |> Query.find [ tag "thead" ]
+                    |> Query.has [ class "thead-default" ]
+        ]
 
 
 styledTdOrRowInBody : Test
@@ -146,36 +145,36 @@ styledTdOrRowInBody =
                         ]
                 }
     in
-        describe "Styled cell in body "
-            [ test "expect td active class and custom attribute" <|
-                \() ->
-                    html []
-                        |> Query.fromHtml
-                        |> Query.find [ tag "td" ]
-                        |> Query.has [ class "table-active", attribute <| Attr.attribute "align" "left" ]
-            , test "expect td active bg class when table inversed" <|
-                \() ->
-                    html [ Table.inversed ]
-                        |> Query.fromHtml
-                        |> Query.find [ tag "td" ]
-                        |> Query.has [ class "bg-active" ]
-            , test "expect tr success class and custom attribute" <|
-                \() ->
-                    html []
-                        |> Query.fromHtml
-                        |> Query.find [ tag "tbody" ]
-                        |> Query.children []
-                        |> Query.first
-                        |> Query.has [ class "table-success", attribute <| Attr.attribute "align" "left" ]
-            , test "expect tr success bg class when table inversed" <|
-                \() ->
-                    html [ Table.inversed ]
-                        |> Query.fromHtml
-                        |> Query.find [ tag "tbody" ]
-                        |> Query.children []
-                        |> Query.first
-                        |> Query.has [ class "bg-success" ]
-            ]
+    describe "Styled cell in body "
+        [ test "expect td active class and custom attribute" <|
+            \() ->
+                html []
+                    |> Query.fromHtml
+                    |> Query.find [ tag "td" ]
+                    |> Query.has [ class "table-active", attribute <| Attr.attribute "align" "left" ]
+        , test "expect td active bg class when table inversed" <|
+            \() ->
+                html [ Table.inversed ]
+                    |> Query.fromHtml
+                    |> Query.find [ tag "td" ]
+                    |> Query.has [ class "bg-active" ]
+        , test "expect tr success class and custom attribute" <|
+            \() ->
+                html []
+                    |> Query.fromHtml
+                    |> Query.find [ tag "tbody" ]
+                    |> Query.children []
+                    |> Query.first
+                    |> Query.has [ class "table-success", attribute <| Attr.attribute "align" "left" ]
+        , test "expect tr success bg class when table inversed" <|
+            \() ->
+                html [ Table.inversed ]
+                    |> Query.fromHtml
+                    |> Query.find [ tag "tbody" ]
+                    |> Query.children []
+                    |> Query.first
+                    |> Query.has [ class "bg-success" ]
+        ]
 
 
 styledThOrRowInHead : Test
@@ -199,42 +198,42 @@ styledThOrRowInHead =
                         [ Table.tr [] [ Table.td [] [] ] ]
                 }
     in
-        describe "Styled cell in head"
-            [ test "expect th active class" <|
-                \() ->
-                    html [] []
-                        |> Query.fromHtml
-                        |> Query.find [ tag "th" ]
-                        |> Query.has [ class "table-active" ]
-            , test "expect th active bg class when table inversed" <|
-                \() ->
-                    html [ Table.inversed ] []
-                        |> Query.fromHtml
-                        |> Query.find [ tag "th" ]
-                        |> Query.has [ class "bg-active" ]
-            , test "expect th active bg class when thead inversed" <|
-                \() ->
-                    html [] [ Table.inversedHead ]
-                        |> Query.fromHtml
-                        |> Query.find [ tag "th" ]
-                        |> Query.has [ class "bg-active" ]
-            , test "expect tr info class" <|
-                \() ->
-                    html [] []
-                        |> Query.fromHtml
-                        |> Query.find [ tag "thead" ]
-                        |> Query.children []
-                        |> Query.first
-                        |> Query.has [ class "table-info" ]
-            , test "expect tr info bg class when table inversed" <|
-                \() ->
-                    html [] [ Table.inversedHead ]
-                        |> Query.fromHtml
-                        |> Query.find [ tag "thead" ]
-                        |> Query.children []
-                        |> Query.first
-                        |> Query.has [ class "bg-info" ]
-            ]
+    describe "Styled cell in head"
+        [ test "expect th active class" <|
+            \() ->
+                html [] []
+                    |> Query.fromHtml
+                    |> Query.find [ tag "th" ]
+                    |> Query.has [ class "table-active" ]
+        , test "expect th active bg class when table inversed" <|
+            \() ->
+                html [ Table.inversed ] []
+                    |> Query.fromHtml
+                    |> Query.find [ tag "th" ]
+                    |> Query.has [ class "bg-active" ]
+        , test "expect th active bg class when thead inversed" <|
+            \() ->
+                html [] [ Table.inversedHead ]
+                    |> Query.fromHtml
+                    |> Query.find [ tag "th" ]
+                    |> Query.has [ class "bg-active" ]
+        , test "expect tr info class" <|
+            \() ->
+                html [] []
+                    |> Query.fromHtml
+                    |> Query.find [ tag "thead" ]
+                    |> Query.children []
+                    |> Query.first
+                    |> Query.has [ class "table-info" ]
+        , test "expect tr info bg class when table inversed" <|
+            \() ->
+                html [] [ Table.inversedHead ]
+                    |> Query.fromHtml
+                    |> Query.find [ tag "thead" ]
+                    |> Query.children []
+                    |> Query.first
+                    |> Query.has [ class "bg-info" ]
+        ]
 
 
 defaultTable : List (Table.TableOption msg) -> Html.Html msg

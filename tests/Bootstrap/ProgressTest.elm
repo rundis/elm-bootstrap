@@ -1,13 +1,13 @@
-module Bootstrap.ProgressTest exposing (..)
+module Bootstrap.ProgressTest exposing (options, progressMulti, vanillaProgress)
 
 import Bootstrap.Progress as Progress
+import Expect
+import Fuzz
 import Html
 import Html.Attributes as Attr
-import Test exposing (Test, test, describe, fuzz)
-import Fuzz
-import Expect
+import Test exposing (Test, describe, fuzz, test)
 import Test.Html.Query as Query
-import Test.Html.Selector exposing (text, tag, class, classes, attribute)
+import Test.Html.Selector exposing (attribute, class, classes, tag, text)
 
 
 vanillaProgress : Test
@@ -16,32 +16,32 @@ vanillaProgress =
         html =
             Progress.progress [ Progress.value 30 ]
     in
-        describe "Plain progress bar"
-            [ test "expect div with progress class" <|
-                \() ->
-                    html
-                        |> Query.fromHtml
-                        |> Query.has [ tag "div", class "progress" ]
-            , test "expect div with progress-bar class and progressbar role" <|
-                \() ->
-                    html
-                        |> Query.fromHtml
-                        |> Query.has [ tag "div", class "progress-bar", attribute <| Attr.attribute "role" "progressbar" ]
-            , test "expect minimum = 0, maximum = 100" <|
-                \() ->
-                    html
-                        |> Query.fromHtml
-                        |> Query.has
-                            [ attribute <| Attr.attribute "aria-valuemin" "0"
-                            , attribute <| Attr.attribute "aria-valuemax" "100"
-                            ]
-            , fuzz (Fuzz.floatRange 0 100) "expect the progress value is present" <|
-                \progressValue ->
-                    Progress.progress [ Progress.value progressValue ]
-                        |> Query.fromHtml
-                        |> Query.find [ tag "div", class "progress-bar" ]
-                        |> Query.has [ attribute <| Attr.attribute "aria-value-now" (toString progressValue) ]
-            ]
+    describe "Plain progress bar"
+        [ test "expect div with progress class" <|
+            \() ->
+                html
+                    |> Query.fromHtml
+                    |> Query.has [ tag "div", class "progress" ]
+        , test "expect div with progress-bar class and progressbar role" <|
+            \() ->
+                html
+                    |> Query.fromHtml
+                    |> Query.has [ tag "div", class "progress-bar", attribute <| Attr.attribute "role" "progressbar" ]
+        , test "expect minimum = 0, maximum = 100" <|
+            \() ->
+                html
+                    |> Query.fromHtml
+                    |> Query.has
+                        [ attribute <| Attr.attribute "aria-valuemin" "0"
+                        , attribute <| Attr.attribute "aria-valuemax" "100"
+                        ]
+        , fuzz (Fuzz.floatRange 0 100) "expect the progress value is present" <|
+            \progressValue ->
+                Progress.progress [ Progress.value progressValue ]
+                    |> Query.fromHtml
+                    |> Query.find [ tag "div", class "progress-bar" ]
+                    |> Query.has [ attribute <| Attr.attribute "aria-value-now" (toString progressValue) ]
+        ]
 
 
 progressMulti : Test
@@ -54,14 +54,14 @@ progressMulti =
                 , [ Progress.value 40, Progress.danger, Progress.label "Danger" ]
                 ]
     in
-        describe "Progress containing multiple progress bars"
-            [ test "expect three progressbars" <|
-                \() ->
-                    html
-                        |> Query.fromHtml
-                        |> Query.findAll [ tag "div", class "progress-bar" ]
-                        |> Query.count (Expect.equal 3)
-            ]
+    describe "Progress containing multiple progress bars"
+        [ test "expect three progressbars" <|
+            \() ->
+                html
+                    |> Query.fromHtml
+                    |> Query.findAll [ tag "div", class "progress-bar" ]
+                    |> Query.count (Expect.equal 3)
+        ]
 
 
 options : Test
@@ -82,8 +82,7 @@ options =
                 Progress.progress [ Progress.label label ]
                     |> Query.fromHtml
                     --|> Query.has [ text (toString label) ]
-                    |>
-                        Query.hasNot [ text (toString label) ]
+                    |> Query.hasNot [ text (toString label) ]
         , test "expect a custom label" <|
             \() ->
                 Progress.progress [ Progress.customLabel [ Html.div [ Attr.class "custom-label" ] [] ] ]

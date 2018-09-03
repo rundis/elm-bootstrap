@@ -1,34 +1,11 @@
-module Bootstrap.Button
-    exposing
-        ( button
-        , linkButton
-        , radioButton
-        , checkboxButton
-        , attrs
-        , onClick
-        , small
-        , large
-        , primary
-        , secondary
-        , success
-        , info
-        , warning
-        , danger
-        , light
-        , dark
-        , roleLink
-        , block
-        , disabled
-        , outlinePrimary
-        , outlineSecondary
-        , outlineSuccess
-        , outlineInfo
-        , outlineWarning
-        , outlineDanger
-        , outlineLight
-        , outlineDark
-        , Option
-        )
+module Bootstrap.Button exposing
+    ( button, linkButton, radioButton, checkboxButton
+    , attrs, onClick, disabled, Option
+    , primary, secondary, success, info, warning, danger, light, dark, roleLink
+    , outlinePrimary, outlineSecondary, outlineSuccess, outlineInfo, outlineWarning, outlineDanger, outlineLight, outlineDark
+    , small, large
+    , block
+    )
 
 {-| Use Bootstrap’s custom button styles for actions in forms, dialogs, and more. Includes support for a handful of contextual variations and sizes.
 You can also group a series of buttons together on a single line with the button group.
@@ -65,12 +42,11 @@ You can also group a series of buttons together on a single line with the button
 
 -}
 
+import Bootstrap.General.Internal exposing (ScreenSize(..))
+import Bootstrap.Internal.Button as ButtonInternal
 import Html
 import Html.Attributes as Attributes exposing (class, classList)
 import Html.Events as Events
-import Json.Decode as Decode
-import Bootstrap.Internal.Button as ButtonInternal
-import Bootstrap.General.Internal exposing (ScreenSize(..))
 import Json.Decode as Decode
 
 
@@ -138,12 +114,12 @@ radioButton checked options children =
             -- hides the radio input element, only showing the bootstrap button
             Attributes.attribute "data-toggle" "button"
     in
-        Html.label
-            (classList [ ( "active", checked ) ]
-                :: hideRadio
-                :: ButtonInternal.buttonAttributes options
-            )
-            (Html.input [ Attributes.type_ "radio", Attributes.checked checked, Attributes.autocomplete False ] [] :: children)
+    Html.label
+        (classList [ ( "active", checked ) ]
+            :: hideRadio
+            :: ButtonInternal.buttonAttributes options
+        )
+        (Html.input [ Attributes.type_ "radio", Attributes.checked checked, Attributes.autocomplete False ] [] :: children)
 
 
 {-| Create a checkbox input that appears as a button
@@ -177,7 +153,7 @@ attrs attrs_ =
 onClick : msg -> Option msg
 onClick message =
     -- prevent default is needed for checkboxButton and radioButton. If False, the click event will fire twice
-    attrs [ Events.preventDefaultOn "click" (Decode.succeed (message, True)) ]
+    attrs [ Events.preventDefaultOn "click" (Decode.succeed ( message, True )) ]
 
 
 {-| Option to make a button small

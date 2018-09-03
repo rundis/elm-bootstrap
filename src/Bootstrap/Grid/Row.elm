@@ -23,9 +23,9 @@ module Bootstrap.Grid.Row exposing
 
 -}
 
-import Html
+import Bootstrap.General.Internal exposing (HorizontalAlign(..), ScreenSize(..))
 import Bootstrap.Grid.Internal as Internal exposing (..)
-import Bootstrap.General.Internal exposing (ScreenSize(..), HorizontalAlign(..))
+import Html
 
 
 {-| Opaque type representing valid row options

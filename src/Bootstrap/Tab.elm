@@ -1,46 +1,22 @@
-module Bootstrap.Tab
-    exposing
-        ( view
-        , config
-        , items
-        , withAnimation
-        , pills
-        , item
-        , link
-        , pane
-        , initialState
-        , customInitialState
-        , subscriptions
-        , justified
-        , fill
-        , right
-        , center
-        , attrs
-        , useHash
-        , Config
-        , State
-        , Item
-        , Link
-        , Pane
-        , Option
-        )
+module Bootstrap.Tab exposing
+    ( view, config, items, initialState, customInitialState, Config, State
+    , pills, withAnimation, justified, fill, center, right, attrs, useHash, Option
+    , item, link, pane, Item, Link, Pane
+    , subscriptions
+    )
 
 {-| Use tabs to create tabbable regions. Tabs uses view state, so there is a little bit of wiring needed to use them.
 
     -- example with animation, you can drop the subscription part when not using animations
-
     type alias Model =
         { tabState : Tab.State }
 
-
     init : ( Model, Cmd Msg )
     init =
-        ( { tabState : Tab.initalState}, Cmd.none )
-
+        ( { tabState = Tab.initalState }, Cmd.none )
 
     type Msg
         = TabMsg Tab.State
-
 
     update : Msg -> Model -> ( Model, Cmd msg )
     update msg model =
@@ -53,7 +29,8 @@ module Bootstrap.Tab
     view : Model -> Html msg
     view model =
         Tab.config TabMsg
-            |> Tab.withAnimation -- remember to wire up subscriptions when using this option
+            |> Tab.withAnimation
+            -- remember to wire up subscriptions when using this option
             |> Tab.right
             |> Tab.items
                 [ Tab.item
@@ -69,26 +46,28 @@ module Bootstrap.Tab
                 ]
             |> Tab.view model.tabState
 
-
     subscriptions : Model -> Sub Msg
     subscriptions model =
         Tab.subscriptions model.tabState TabMsg
 
 
-
-
 # Tabs
+
 @docs view, config, items, initialState, customInitialState, Config, State
 
+
 # Options
+
 @docs pills, withAnimation, justified, fill, center, right, attrs, useHash, Option
 
+
 # Tab items
+
 @docs item, link, pane, Item, Link, Pane
 
 
-
 # With animations
+
 @docs subscriptions
 
 -}
@@ -138,26 +117,27 @@ type alias Options msg =
 
 {-| Configuration for a tabs control
 
-* `toMsg` Message constructor function used for transitioning view state
-* `options` Customization options for the tabs control
-* `withAnimation` Option to enable a simple fade in animation for tabs.
-* `items` List of tab items
+  - `toMsg` Message constructor function used for transitioning view state
+  - `options` Customization options for the tabs control
+  - `withAnimation` Option to enable a simple fade in animation for tabs.
+  - `items` List of tab items
 
 **NOTE** When using animations you must also remember to set up [`subscriptions`](#subscriptions)
 
 -}
-type Config msg = Config (ConfigRec msg)
+type Config msg
+    = Config (ConfigRec msg)
 
 
 type alias ConfigRec msg =
-   { toMsg : State -> msg
-   , items : List (Item msg)
-   , withAnimation : Bool
-   , layout : Maybe TabLayout
-   , isPill : Bool
-   , attributes : List (Html.Attribute msg)
-   , useHash : Bool
-   }
+    { toMsg : State -> msg
+    , items : List (Item msg)
+    , withAnimation : Bool
+    , layout : Maybe TabLayout
+    , isPill : Bool
+    , attributes : List (Html.Attribute msg)
+    , useHash : Bool
+    }
 
 
 {-| Opaque type representing a tab item
@@ -194,8 +174,10 @@ type Pane msg
     subscriptions model =
         Sub.batch
             [ Tab.subscriptions model.tabState TabMsg
+
             --  ...other subscriptions you might have
             ]
+
 -}
 subscriptions : State -> (State -> msg) -> Sub msg
 subscriptions (State state) toMsg =
@@ -221,6 +203,7 @@ initialState =
 {-| Use this function if you want to initialize your tabs control with a specific tab selected.
 
 **NOTE: ** Should you specify an id not found, the first tab item will be displayd by default
+
 -}
 customInitialState : String -> State
 customInitialState id =
@@ -325,7 +308,8 @@ useHash use (Config configRec) =
 {-| Creates a tab control which keeps track of the selected tab item and displays the corresponding tab pane for you
 
     Tab.config TabMsg
-        |> Tab.withAnimation -- remember to wire up subscriptions when using this option
+        |> Tab.withAnimation
+        -- remember to wire up subscriptions when using this option
         |> Tab.right
         |> Tab.items
             [ Tab.item
@@ -340,10 +324,11 @@ useHash use (Config configRec) =
                 }
             ]
         |> Tab.view model.tabState
+
 -}
 view : State -> Config msg -> Html.Html msg
 view state (Config configRec) =
-    case (getActiveItem state configRec) of
+    case getActiveItem state configRec of
         Nothing ->
             Html.div []
                 [ Html.ul (tabAttributes configRec) []
@@ -404,7 +389,8 @@ renderLink id active (Link { attributes, children }) configRec =
                 ]
              , href <| "#" ++ id
              , custom
-                "click" <|
+                "click"
+               <|
                 Json.succeed
                     { stopPropagation = False
                     , preventDefault = active || not configRec.useHash
@@ -415,7 +401,6 @@ renderLink id active (Link { attributes, children }) configRec =
                                 , visibility = visibilityTransition (configRec.withAnimation && not active) Hidden
                                 }
                     }
-
              ]
                 ++ attributes
             )
@@ -435,12 +420,13 @@ renderTabPane id active (Pane { attributes, children }) state configRec =
         displayAttrs =
             if active then
                 activeTabAttributes state configRec
+
             else
                 [ style "display" "none" ]
     in
-        Html.div
-            ([ Attributes.id id, class "tab-pane" ] ++ displayAttrs ++ attributes)
-            children
+    Html.div
+        ([ Attributes.id id, class "tab-pane" ] ++ displayAttrs ++ attributes)
+        children
 
 
 activeTabAttributes :
@@ -453,10 +439,10 @@ activeTabAttributes (State { visibility }) configRec =
             [ style "display" "none" ]
 
         Start ->
-            [ style "display" "block" , style "opacity" "0"]
+            [ style "display" "block", style "opacity" "0" ]
 
         Showing ->
-            [ style "display" "block"] ++ transitionStyles 1
+            [ style "display" "block" ] ++ transitionStyles 1
 
 
 visibilityTransition : Bool -> Visibility -> Visibility
@@ -528,9 +514,10 @@ applyModifier option options =
 
 {-| Create a composable tab item
 
-* `id` A unique id for the tab item
-* `link` The link/menu for the tab item
-* `pane` The content part of a tab item
+  - `id` A unique id for the tab item
+  - `link` The link/menu for the tab item
+  - `pane` The content part of a tab item
+
 -}
 item :
     { id : String
@@ -548,8 +535,9 @@ item rec =
 
 {-| Creates a composable tab menu item
 
-* `attributes`  List of attributes
-* `children` List of child elements
+  - `attributes` List of attributes
+  - `children` List of child elements
+
 -}
 link : List (Html.Attribute msg) -> List (Html.Html msg) -> Link msg
 link attributes children =
@@ -561,8 +549,9 @@ link attributes children =
 
 {-| Creates a composable tab menu pane
 
-* `attributes`  List of attributes
-* `children` List of child elements
+  - `attributes` List of attributes
+  - `children` List of child elements
+
 -}
 pane : List (Html.Attribute msg) -> List (Html.Html msg) -> Pane msg
 pane attributes children =

@@ -1,24 +1,20 @@
-module Bootstrap.Form.Fieldset
-    exposing
-        ( view
-        , config
-        , asGroup
-        , disabled
-        , children
-        , attrs
-        , legend
-        , Config
-        )
+module Bootstrap.Form.Fieldset exposing
+    ( Config, view, config
+    , asGroup, disabled, children, legend, attrs
+    )
 
 {-| Fieldset is a handy block level element you can use to group form elements.
 Fieldset comes with the added benefit of disabling all child controls when we set it's disabled attribute.
 
+
 # General
+
 @docs Config, view, config
 
-# Customization
-@docs asGroup, disabled, children, legend, attrs
 
+# Customization
+
+@docs asGroup, disabled, children, legend, attrs
 
 -}
 
@@ -112,16 +108,17 @@ of several optional elements.
         |> Fieldset.asGroup
         |> Fieldset.legend [] [ text "Radio buttons" ]
         |> Fieldset.children
-            ( Radio.radioList "myradios"
+            (Radio.radioList "myradios"
                 [ Radio.create [] "Option one"
                 , Radio.create [] "Option two"
-                , Radio.create [ Radio.disabled True] "I'm disabled"
+                , Radio.create [ Radio.disabled True ] "I'm disabled"
                 ]
             )
         |> Fieldset.view
+
 -}
 view : Config msg -> Html.Html msg
-view (Config ({options} as rec)) =
+view (Config ({ options } as rec)) =
     Html.fieldset
         ([ classList [ ( "form-group", options.isGroup ) ]
          , Attributes.disabled options.disabled
