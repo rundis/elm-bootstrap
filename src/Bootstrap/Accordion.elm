@@ -314,7 +314,7 @@ view :
     -> Html.Html msg
 view state ((Config { cards }) as config) =
     Html.div
-        []
+        [ class "accordion" ]
         (List.map (renderCard state config) cards)
 
 
