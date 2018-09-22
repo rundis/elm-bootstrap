@@ -492,7 +492,7 @@ dirtyHack size =
         [ ( "dirtyHack"
           , Html.img
                 [ on "load" (Decode.succeed (EndTransition size))
-                , Attributes.src "http://package.elm-lang.org/assets/favicon.ico"
+                , Attributes.src "https://package.elm-lang.org/assets/favicon.ico"
                 , Attributes.style [ ( "display", "none" ) ]
                 ]
                 []
