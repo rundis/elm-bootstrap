@@ -75,7 +75,7 @@ module Bootstrap.Tab exposing
 import Browser.Events
 import Html
 import Html.Attributes as Attributes exposing (class, classList, href, style)
-import Html.Events exposing (custom, on)
+import Html.Events exposing (custom, on, onClick)
 import Json.Decode as Json
 
 
@@ -380,32 +380,41 @@ renderLink :
     -> ConfigRec msg
     -> Html.Html msg
 renderLink id active (Link { attributes, children }) configRec =
+    let
+        commonClasses =
+            [ ( "nav-link", True ), ( "active", active ) ]
+
+        clickHandler =
+            onClick <|
+                configRec.toMsg <|
+                    State
+                        { activeTab = Just id
+                        , visibility = visibilityTransition (configRec.withAnimation && not active) Hidden
+                        }
+
+        linkItem =
+            if configRec.useHash then
+                Html.a
+                    ([ classList commonClasses
+                     , clickHandler
+                     , href <| "#" ++ id
+                     ]
+                        ++ attributes
+                    )
+                    children
+
+            else
+                Html.button
+                    ([ classList <| commonClasses ++ [ ( "btn", True ), ( "btn-link", True ) ]
+                     , clickHandler
+                     ]
+                        ++ attributes
+                    )
+                    children
+    in
     Html.li
         [ class "nav-item" ]
-        [ Html.a
-            ([ classList
-                [ ( "nav-link", True )
-                , ( "active", active )
-                ]
-             , href <| "#" ++ id
-             , custom
-                "click"
-               <|
-                Json.succeed
-                    { stopPropagation = False
-                    , preventDefault = active || not configRec.useHash
-                    , message =
-                        configRec.toMsg <|
-                            State
-                                { activeTab = Just id
-                                , visibility = visibilityTransition (configRec.withAnimation && not active) Hidden
-                                }
-                    }
-             ]
-                ++ attributes
-            )
-            children
-        ]
+        [ linkItem ]
 
 
 renderTabPane :
