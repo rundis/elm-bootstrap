@@ -257,7 +257,7 @@ simple role_ attributes children_ =
 
 {-| Configure alert to use primary colors.
 -}
-primary : msg -> Config msg
+primary : Config msg -> Config msg
 primary conf =
     role Primary config
 
