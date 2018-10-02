@@ -32,7 +32,7 @@ module Bootstrap.Carousel exposing
 import Bootstrap.Carousel.Slide as Slide
 import Bootstrap.Carousel.SlideInternal as SlideInternal
 import Browser.Events
-import Html exposing (a, div, span, text)
+import Html exposing (a, div, span, text, button)
 import Html.Attributes as Attributes exposing (attribute, class, classList, href)
 import Html.Events exposing (on, onClick, onMouseEnter, onMouseLeave)
 import Html.Keyed as Keyed
@@ -354,13 +354,13 @@ nextIndex stage currentIndex size =
         helper transition =
             case transition of
                 Next ->
-                    remainderBy (currentIndex + 1) size
+                    modBy size (currentIndex + 1)
 
                 Prev ->
-                    remainderBy (currentIndex - 1) size
+                    modBy size (currentIndex - 1)
 
                 Number m ->
-                    remainderBy m size
+                    modBy size m
     in
     case stage of
         Start transition ->
@@ -501,7 +501,7 @@ dirtyHack size =
         [ ( "dirtyHack"
           , Html.img
                 [ on "load" (Decode.succeed (EndTransition size))
-                , Attributes.src "http://package.elm-lang.org/assets/favicon.ico"
+                , Attributes.src "https://package.elm-lang.org/assets/favicon.ico"
                 , Attributes.style "display" "none"
                 ]
                 []
@@ -604,7 +604,7 @@ transitionClasses index currentIndex newIndex tstage =
 
 controlPrev : Html.Html Msg
 controlPrev =
-    a [ class "carousel-control-prev", attribute "role" "button", onClick (StartTransition Prev) ]
+    button [ class "btn btn-link carousel-control-prev", onClick (StartTransition Prev) ]
         [ span [ class "carousel-control-prev-icon", attribute "aria-hidden" "true" ] []
         , span [ class "sr-only" ] [ text "Previous" ]
         ]
@@ -612,7 +612,7 @@ controlPrev =
 
 controlNext : Html.Html Msg
 controlNext =
-    a [ class "carousel-control-next", attribute "role" "button", onClick (StartTransition Next) ]
+    button [ class "btn btn-link carousel-control-next", attribute "role" "button", onClick (StartTransition Next) ]
         [ span [ class "carousel-control-next-icon", attribute "aria-hidden" "true" ] []
         , span [ class "sr-only" ] [ text "Next" ]
         ]
