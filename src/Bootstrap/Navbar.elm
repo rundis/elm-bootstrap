@@ -1,51 +1,13 @@
-module Bootstrap.Navbar
-    exposing
-        ( view
-        , config
-        , initialState
-        , subscriptions
-        , withAnimation
-        , fixTop
-        , fixBottom
-        , dark
-        , light
-        , primary
-        , secondary
-        , success
-        , info
-        , warning
-        , danger
-        , lightCustom
-        , darkCustom
-        , lightCustomClass
-        , darkCustomClass
-        , brand
-        , items
-        , customItems
-        , itemLink
-        , itemLinkActive
-        , textItem
-        , formItem
-        , customItem
-        , container
-        , collapseSmall
-        , collapseMedium
-        , collapseLarge
-        , collapseExtraLarge
-        , attrs
-        , dropdown
-        , dropdownItem
-        , dropdownDivider
-        , dropdownHeader
-        , dropdownToggle
-        , Item
-        , CustomItem
-        , Brand
-        , State
-        , Config
-        , DropdownToggle
-        , DropdownItem
-        )
+module Bootstrap.Navbar exposing
+    ( view, config, Config
+    , withAnimation, primary, secondary, success, info, warning, danger, light, dark, fixTop, fixBottom, lightCustom, darkCustom, lightCustomClass, darkCustomClass, collapseSmall, collapseMedium, collapseLarge, collapseExtraLarge, container, attrs
+    , brand, Brand
+    , items, itemLink, itemLinkActive, Item
+    , dropdown, dropdownToggle, dropdownItem, dropdownDivider, dropdownHeader, DropdownToggle, DropdownItem
+    , customItems, textItem, formItem, customItem, CustomItem
+    , initialState, State
+    , subscriptions
+    )
 
 {-| The navbar is a wrapper that positions branding, navigation, and other elements in a concise header.
 The navbar is designed to be responsive by default and made interactive with a tiny sprinkle of Elm.
@@ -54,30 +16,26 @@ The navbar is designed to be responsive by default and made interactive with a t
 
 
     -- You need to keep track of the view state for the navbar in your model
-
     type alias Model =
         { navbarState : Navbar.State }
 
 
     -- The navbar needs to know the initial window size, so the inital state for a navbar requires a command to be run by the Elm runtime
-
     initialState : ( Model, Cmd Msg )
     initialState =
         let
             ( navbarState, navbarCmd ) =
                 Navbar.initialState NavbarMsg
         in
-            ( { navbarState = navbarState }, navbarCmd )
+        ( { navbarState = navbarState }, navbarCmd )
 
 
     -- Define a message for the navbar
-
     type Msg
         = NavbarMsg Navbar.State
 
 
     -- You need to handle navbar messages in your update function to step the navbar state forward
-
     update : Msg -> Model -> ( Model, Cmd Msg )
     update msg model =
         case msg of
@@ -97,7 +55,6 @@ The navbar is designed to be responsive by default and made interactive with a t
 
 
     -- If you use animations as above or you use dropdowns in your navbar you need to configure subscriptions too
-
     subscriptions : Model -> Sub Msg
     subscriptions model =
         Navbar.subscriptions model.navbarState NavbarMsg
@@ -144,19 +101,18 @@ The navbar is designed to be responsive by default and made interactive with a t
 
 -}
 
-import Html
-import Html.Attributes exposing (class, classList, style, type_, id, href)
-import Html.Events exposing (onClick, on, onWithOptions)
 import Bootstrap.General.Internal exposing (ScreenSize(..), screenSizeOption)
 import Bootstrap.Internal.Role as RoleInternal
-import Color
+import Bootstrap.Utilities.DomHelper as DomHelper
+import Browser.Dom
+import Browser.Events
+import Color exposing (Color)
 import Dict
+import Html
+import Html.Attributes exposing (class, classList, href, id, style, type_)
+import Html.Events exposing (custom, on, onClick)
 import Json.Decode as Json
-import DOM
-import AnimationFrame
-import Window
 import Task
-import Mouse
 
 
 {-| Opaque type representing the view state of the navbar and any navbar dropdown menus
@@ -168,7 +124,7 @@ type State
 type alias VisibilityState =
     { visibility : Visibility
     , height : Maybe Float
-    , windowSize : Maybe Window.Size
+    , windowWidth : Maybe Float
     , dropdowns : Dict.Dict String DropdownStatus
     }
 
@@ -239,7 +195,7 @@ type LinkModifier
 
 type BackgroundColor
     = Roled RoleInternal.Role
-    | Custom Color.Color
+    | Custom Color
     | Class String
 
 
@@ -297,9 +253,9 @@ and store the state in your main model.
             ( navbarState, navCmd ) =
                 Navbar.initialState NavbarMsg
         in
-            ( { navbarState = navbarState }
-            , navCmd
-            )
+        ( { navbarState = navbarState }
+        , navCmd
+        )
 
 The Cmd part is needed, because the navbar as implemented currently needs the window size.
 Hopefully a smoother solution can be devised in the future.
@@ -312,20 +268,20 @@ initialState toMsg =
             State
                 { visibility = Hidden
                 , height = Nothing
-                , windowSize = Nothing
+                , windowWidth = Nothing
                 , dropdowns = Dict.empty
                 }
     in
-        ( state, initWindowSize toMsg state )
+    ( state, initWindowSize toMsg state )
 
 
 initWindowSize : (State -> msg) -> State -> Cmd msg
 initWindowSize toMsg state =
-    Window.size
+    Browser.Dom.getViewport
         |> Task.perform
-            (\size ->
+            (\vp ->
                 toMsg <|
-                    mapState (\s -> { s | windowSize = Just size }) state
+                    mapState (\s -> { s | windowWidth = Just vp.viewport.width }) state
             )
 
 
@@ -348,25 +304,25 @@ subscriptions ((State { visibility }) as state) toMsg =
                 (\s -> { s | visibility = v })
                 state
     in
-        Sub.batch
-            [ case visibility of
-                StartDown ->
-                    AnimationFrame.times
-                        (\_ -> toMsg <| updState AnimatingDown)
+    Sub.batch
+        [ case visibility of
+            StartDown ->
+                Browser.Events.onAnimationFrame
+                    (\_ -> toMsg <| updState AnimatingDown)
 
-                StartUp ->
-                    AnimationFrame.times
-                        (\_ -> toMsg <| updState AnimatingUp)
+            StartUp ->
+                Browser.Events.onAnimationFrame
+                    (\_ -> toMsg <| updState AnimatingUp)
 
-                _ ->
-                    Sub.none
-            , Window.resizes
-                (\size ->
-                    mapState (\s -> { s | windowSize = Just size }) state
-                        |> toMsg
-                )
-            , dropdownSubscriptions state toMsg
-            ]
+            _ ->
+                Sub.none
+        , Browser.Events.onResize
+            (\x _ ->
+                mapState (\s -> { s | windowWidth = Just <| toFloat x }) state
+                    |> toMsg
+            )
+        , dropdownSubscriptions state toMsg
+        ]
 
 
 dropdownSubscriptions : State -> (State -> msg) -> Sub msg
@@ -394,18 +350,18 @@ dropdownSubscriptions ((State { dropdowns }) as state) toMsg =
             Dict.toList dropdowns
                 |> List.any (\( _, status ) -> status == s)
     in
-        Sub.batch
-            [ if needsSub Open then
-                AnimationFrame.times
-                    (\_ -> toMsg updState)
-              else
-                Sub.none
-            , if needsSub ListenClicks then
-                Mouse.clicks
-                    (\_ -> toMsg updState)
-              else
-                Sub.none
-            ]
+    Sub.batch
+        [ if needsSub Open then
+            Browser.Events.onAnimationFrame (\_ -> toMsg updState)
+
+          else
+            Sub.none
+        , if needsSub ListenClicks then
+            Browser.Events.onClick <| Json.succeed <| toMsg updState
+
+          else
+            Sub.none
+        ]
 
 
 {-| Creates a default navbar view configuration. Providing a starting point
@@ -430,23 +386,23 @@ config toMsg =
 
 
 updateConfig : (ConfigRec msg -> ConfigRec msg) -> Config msg -> Config msg
-updateConfig mapper (Config config) =
-    Config <| mapper config
+updateConfig mapper (Config conf) =
+    Config <| mapper conf
 
 
 updateOptions : (Options msg -> Options msg) -> Config msg -> Config msg
-updateOptions mapper (Config config) =
-    Config { config | options = mapper config.options }
+updateOptions mapper (Config conf) =
+    Config { conf | options = mapper conf.options }
 
 
 {-| The main view function for displaying a navbar.
 
     Navbar.config NavbarMsg
         |> Navbar.withAnimation
-        |> Navbar.brand [ href "#"] [ text "Brand"]
+        |> Navbar.brand [ href "#" ] [ text "Brand" ]
         |> Navbar.items
-            [ Navbar.itemLink [href "#"] [ text "Item 1"]
-            , Navbar.itemLink [href "#"] [ text "Item 2"]
+            [ Navbar.itemLink [ href "#" ] [ text "Item 1" ]
+            , Navbar.itemLink [ href "#" ] [ text "Item 2" ]
             ]
         |> Navbar.customItems
             [ Navbar.textItem [] [ text "Some text" ] ]
@@ -460,27 +416,27 @@ view :
     State
     -> Config msg
     -> Html.Html msg
-view state ((Config { options, brand, items, customItems }) as config) =
+view state ((Config configRec) as conf) =
     Html.nav
-        (navbarAttributes options)
-        (maybeBrand brand
+        (navbarAttributes configRec.options)
+        (maybeBrand configRec.brand
             ++ [ Html.button
                     [ class <|
                         "navbar-toggler"
-                            ++ (Maybe.map (\_ -> " navbar-toggler-right") brand
+                            ++ (Maybe.map (\_ -> " navbar-toggler-right") configRec.brand
                                     |> Maybe.withDefault ""
                                )
 
                     -- navbar-toggler-right"
                     , type_ "button"
-                    , toggleHandler state config
+                    , toggleHandler state configRec
                     ]
                     [ Html.span [ class "navbar-toggler-icon" ] [] ]
                ]
             ++ [ Html.div
-                    (menuAttributes state config)
-                    [ Html.div (menuWrapperAttributes state config)
-                        ([ renderNav state config items ] ++ renderCustom customItems)
+                    (menuAttributes state configRec)
+                    [ Html.div (menuWrapperAttributes state configRec)
+                        ([ renderNav state configRec configRec.items ] ++ renderCustom configRec.customItems)
                     ]
                ]
         )
@@ -492,8 +448,8 @@ view state ((Config { options, brand, items, customItems }) as config) =
 
 -}
 withAnimation : Config msg -> Config msg
-withAnimation config =
-    updateConfig (\conf -> { conf | withAnimation = True }) config
+withAnimation config_ =
+    updateConfig (\conf -> { conf | withAnimation = True }) config_
 
 
 {-| Option to fix the menu to the top of the viewport
@@ -502,8 +458,8 @@ withAnimation config =
 
 -}
 fixTop : Config msg -> Config msg
-fixTop config =
-    updateOptions (\opts -> { opts | fix = Just Top }) config
+fixTop conf =
+    updateOptions (\opts -> { opts | fix = Just Top }) conf
 
 
 
@@ -513,15 +469,15 @@ fixTop config =
 {-| Option to fix the menu to the bottom of the viewport
 -}
 fixBottom : Config msg -> Config msg
-fixBottom config =
-    updateOptions (\opts -> { opts | fix = Just Bottom }) config
+fixBottom conf =
+    updateOptions (\opts -> { opts | fix = Just Bottom }) conf
 
 
 {-| Use this option when you want a fixed width menu (typically because your main content is also configured to be fixed width)
 -}
 container : Config msg -> Config msg
-container config =
-    updateOptions (\opts -> { opts | isContainer = True }) config
+container conf =
+    updateOptions (\opts -> { opts | isContainer = True }) conf
 
 
 {-| Use a light background color (with a dark text)
@@ -580,16 +536,16 @@ danger =
     scheme Dark <| Roled RoleInternal.Danger
 
 
-{-| Option to color menu using a dark custom background color
+{-| Option to color menu using a dark custom background color (see avh4/elm-color)
 -}
-darkCustom : Color.Color -> Config msg -> Config msg
+darkCustom : Color -> Config msg -> Config msg
 darkCustom color =
     scheme Dark <| Custom color
 
 
-{-| Option to color menu using a light custom background color
+{-| Option to color menu using a light custom background color (see avh4/elm-color)
 -}
-lightCustom : Color.Color -> Config msg -> Config msg
+lightCustom : Color -> Config msg -> Config msg
 lightCustom color =
     scheme Light <| Custom color
 
@@ -609,7 +565,7 @@ lightCustomClass classString =
 
 
 scheme : LinkModifier -> BackgroundColor -> Config msg -> Config msg
-scheme modifier bgColor config =
+scheme modifier bgColor conf =
     updateOptions
         (\opt ->
             { opt
@@ -620,7 +576,7 @@ scheme modifier bgColor config =
                         }
             }
         )
-        config
+        conf
 
 
 {-| Collapse the menu at the small media breakpoint
@@ -652,22 +608,23 @@ collapseExtraLarge =
 
 
 toggleAt : ScreenSize -> Config msg -> Config msg
-toggleAt size config =
-    updateOptions (\opt -> { opt | toggleAt = size }) config
+toggleAt size conf =
+    updateOptions (\opt -> { opt | toggleAt = size }) conf
 
 
 {-| Add a custom Html.Attribute to the navbar element using this function
 -}
 attrs : List (Html.Attribute msg) -> Config msg -> Config msg
-attrs attrs config =
-    updateOptions (\opt -> { opt | attributes = opt.attributes ++ attrs }) config
+attrs attrs_ conf =
+    updateOptions (\opt -> { opt | attributes = opt.attributes ++ attrs_ }) conf
 
 
 {-| Create a brand element for your navbar
 
     Navbar.brand
-        [ href "#" ] -- (and perhaps use onWithOptions for custom handling of clicks !)
-        [ img [src "assets/logo.svg" ] [ text "MyCompany" ] ]
+        [ href "#" ]
+        -- (and perhaps use onWithOptions for custom handling of clicks !)
+        [ img [ src "assets/logo.svg" ] [ text "MyCompany" ] ]
         config
 
   - `attributes` List of attributes
@@ -680,7 +637,7 @@ brand :
     -> List (Html.Html msg)
     -> Config msg
     -> Config msg
-brand attributes children config =
+brand attributes children config_ =
     updateConfig
         (\conf ->
             { conf
@@ -692,7 +649,7 @@ brand attributes children config =
                         |> Just
             }
         )
-        config
+        config_
 
 
 {-| Configure your navbar with a list of navigation links and/or dropdowns.
@@ -701,8 +658,8 @@ brand attributes children config =
 
 -}
 items : List (Item msg) -> Config msg -> Config msg
-items items config =
-    updateConfig (\conf -> { conf | items = items }) config
+items items_ config_ =
+    updateConfig (\conf -> { conf | items = items_ }) config_
 
 
 {-| You can add custom items to a navbar too. These are placed after any navigation items.
@@ -711,8 +668,8 @@ items items config =
 
 -}
 customItems : List (CustomItem msg) -> Config msg -> Config msg
-customItems items config =
-    updateConfig (\conf -> { conf | customItems = items }) config
+customItems items_ config_ =
+    updateConfig (\conf -> { conf | customItems = items_ }) config_
 
 
 {-| Create a menu item (as an `a` element)
@@ -794,8 +751,8 @@ customItem elem =
     CustomItem elem
 
 
-toggleHandler : State -> Config msg -> Html.Attribute msg
-toggleHandler ((State { height }) as state) (Config { withAnimation, toMsg }) =
+toggleHandler : State -> ConfigRec msg -> Html.Attribute msg
+toggleHandler ((State { height }) as state) configRec =
     let
         updState h =
             mapState
@@ -803,23 +760,23 @@ toggleHandler ((State { height }) as state) (Config { withAnimation, toMsg }) =
                     { s
                         | height = Just h
                         , visibility =
-                            visibilityTransition withAnimation s.visibility
+                            visibilityTransition configRec.withAnimation s.visibility
                     }
                 )
                 state
     in
-        heightDecoder
-            |> Json.andThen
-                (\v ->
-                    Json.succeed <|
-                        toMsg <|
-                            (if v > 0 then
-                                updState v
-                             else
-                                updState <| Maybe.withDefault 0 height
-                            )
-                )
-            |> on "click"
+    heightDecoder
+        |> Json.andThen
+            (\v ->
+                Json.succeed <|
+                    configRec.toMsg <|
+                        if v > 0 then
+                            updState v
+
+                        else
+                            updState <| Maybe.withDefault 0 height
+            )
+        |> on "click"
 
 
 heightDecoder : Json.Decoder Float
@@ -828,7 +785,7 @@ heightDecoder =
         tagDecoder =
             Json.map2 (\tag val -> ( tag, val ))
                 (Json.field "tagName" Json.string)
-                (Json.value)
+                Json.value
 
         fromNavDec =
             Json.oneOf
@@ -837,7 +794,7 @@ heightDecoder =
                 ]
 
         fromButtonDec =
-            DOM.parentElement <| fromNavDec
+            DomHelper.parentElement <| fromNavDec
 
         resToDec res =
             case res of
@@ -845,131 +802,131 @@ heightDecoder =
                     Json.succeed v
 
                 Result.Err err ->
-                    Json.fail err
+                    Json.fail (Json.errorToString err)
     in
-        (DOM.target <|
-            DOM.parentElement <|
-                tagDecoder
-        )
-            |> Json.andThen
-                (\( tag, val ) ->
-                    case tag of
-                        "NAV" ->
-                            Json.decodeValue
-                                fromNavDec
-                                val
-                                |> resToDec
+    (DomHelper.target <|
+        DomHelper.parentElement <|
+            tagDecoder
+    )
+        |> Json.andThen
+            (\( tag, val ) ->
+                case tag of
+                    "NAV" ->
+                        Json.decodeValue
+                            fromNavDec
+                            val
+                            |> resToDec
 
-                        "BUTTON" ->
-                            Json.decodeValue
-                                fromButtonDec
-                                val
-                                |> resToDec
+                    "BUTTON" ->
+                        Json.decodeValue
+                            fromButtonDec
+                            val
+                            |> resToDec
 
-                        _ ->
-                            Json.succeed 0
-                )
+                    _ ->
+                        Json.succeed 0
+            )
 
 
-menuAttributes : State -> Config msg -> List (Html.Attribute msg)
-menuAttributes ((State { visibility, height }) as state) ((Config { withAnimation, toMsg, options }) as config) =
+menuAttributes : State -> ConfigRec msg -> List (Html.Attribute msg)
+menuAttributes ((State { visibility, height }) as state) configRec =
     let
         defaults =
             [ class "collapse navbar-collapse" ]
     in
-        case visibility of
-            Hidden ->
-                case height of
-                    Nothing ->
-                        if not withAnimation || shouldHideMenu state config then
-                            defaults
-                        else
-                            [ style
-                                [ ( "display", "block" )
-                                , ( "height", "0" )
-                                , ( "overflow", "hidden" )
-                                , ( "width", "100%" )
-                                ]
-                            ]
-
-                    Just _ ->
+    case visibility of
+        Hidden ->
+            case height of
+                Nothing ->
+                    if not configRec.withAnimation || shouldHideMenu state configRec then
                         defaults
 
-            StartDown ->
-                [ transitionStyle Nothing ]
+                    else
+                        [ style "display" "block"
+                        , style "height" "0"
+                        , style "overflow" "hidden"
+                        , style "width" "100%"
+                        ]
 
-            AnimatingDown ->
-                [ transitionStyle height
-                , on "transitionend" <|
-                    transitionHandler state config
-                ]
+                Just _ ->
+                    defaults
 
-            AnimatingUp ->
-                [ transitionStyle Nothing
-                , on "transitionend" <|
-                    transitionHandler state config
-                ]
+        StartDown ->
+            transitionStyle Nothing
 
-            StartUp ->
-                [ transitionStyle height ]
+        AnimatingDown ->
+            transitionStyle height
+                ++ [ on "transitionend" <|
+                        transitionHandler state configRec
+                   ]
 
-            Shown ->
-                defaults ++ [ class "show" ]
+        AnimatingUp ->
+            transitionStyle Nothing
+                ++ [ on "transitionend" <|
+                        transitionHandler state configRec
+                   ]
+
+        StartUp ->
+            transitionStyle height
+
+        Shown ->
+            defaults ++ [ class "show" ]
 
 
-menuWrapperAttributes : State -> Config msg -> List (Html.Attribute msg)
-menuWrapperAttributes ((State { visibility, height }) as state) ((Config { withAnimation }) as config) =
+menuWrapperAttributes : State -> ConfigRec msg -> List (Html.Attribute msg)
+menuWrapperAttributes ((State { visibility, height }) as state) confRec =
     let
         styleBlock =
-            [ style [ ( "display", "block" ), ( "width", "100%" ) ] ]
+            [ style "display" "block", style "width" "100%" ]
 
         display =
             case height of
                 Nothing ->
-                    if not withAnimation || shouldHideMenu state config then
+                    if not confRec.withAnimation || shouldHideMenu state confRec then
                         "flex"
+
                     else
                         "block"
 
                 Just _ ->
                     "flex"
     in
-        case visibility of
-            Hidden ->
-                [ style [ ( "display", display ), ( "width", "100%" ) ] ]
+    case visibility of
+        Hidden ->
+            [ style "display" display, style "width" "100%" ]
 
-            StartDown ->
-                styleBlock
+        StartDown ->
+            styleBlock
 
-            AnimatingDown ->
-                styleBlock
+        AnimatingDown ->
+            styleBlock
 
-            AnimatingUp ->
-                styleBlock
+        AnimatingUp ->
+            styleBlock
 
-            StartUp ->
-                styleBlock
+        StartUp ->
+            styleBlock
 
-            Shown ->
-                if not withAnimation || shouldHideMenu state config then
-                    [ class "collapse navbar-collapse show" ]
-                else
-                    [ style [ ( "display", "block" ) ] ]
+        Shown ->
+            if not confRec.withAnimation || shouldHideMenu state confRec then
+                [ class "collapse navbar-collapse show" ]
+
+            else
+                [ style "display" "block" ]
 
 
-shouldHideMenu : State -> Config msg -> Bool
-shouldHideMenu (State { windowSize }) (Config { options }) =
+shouldHideMenu : State -> ConfigRec msg -> Bool
+shouldHideMenu (State { windowWidth }) { options } =
     let
         winMedia =
-            case windowSize of
+            case windowWidth of
                 Just s ->
                     toScreenSize s
 
                 Nothing ->
                     XS
-
     in
-        sizeToComparable winMedia > sizeToComparable options.toggleAt
+    sizeToComparable winMedia > sizeToComparable options.toggleAt
 
 
 sizeToComparable : ScreenSize -> number
@@ -991,56 +948,59 @@ sizeToComparable size =
             5
 
 
-toScreenSize : Window.Size -> ScreenSize
-toScreenSize { width } =
-    if width <= 576 then
+toScreenSize : Float -> ScreenSize
+toScreenSize windowWidth =
+    if windowWidth <= 576 then
         XS
-    else if width <= 768 then
+
+    else if windowWidth <= 768 then
         SM
-    else if width <= 992 then
+
+    else if windowWidth <= 992 then
         MD
-    else if width <= 1200 then
+
+    else if windowWidth <= 1200 then
         LG
+
     else
         XL
 
 
-transitionHandler : State -> Config msg -> Json.Decoder msg
-transitionHandler state (Config { toMsg, withAnimation }) =
+transitionHandler : State -> ConfigRec msg -> Json.Decoder msg
+transitionHandler state configRec =
     mapState
         (\s ->
             { s
                 | visibility =
-                    visibilityTransition withAnimation s.visibility
+                    visibilityTransition configRec.withAnimation s.visibility
             }
         )
         state
-        |> toMsg
+        |> configRec.toMsg
         |> Json.succeed
 
 
-transitionStyle : Maybe Float -> Html.Attribute msg
+transitionStyle : Maybe Float -> List (Html.Attribute msg)
 transitionStyle maybeHeight =
     let
         pixelHeight =
-            Maybe.map (\v -> (toString v) ++ "px") maybeHeight
+            Maybe.map (\v -> String.fromFloat v ++ "px") maybeHeight
                 |> Maybe.withDefault "0"
     in
-        style
-            [ ( "position", "relative" )
-            , ( "height", pixelHeight )
-            , ( "width", "100%" )
-            , ( "overflow", "hidden" )
-            , ( "-webkit-transition-timing-function", "ease" )
-            , ( "-o-transition-timing-function", "ease" )
-            , ( "transition-timing-function", "ease" )
-            , ( "-webkit-transition-duration", "0.35s" )
-            , ( "-o-transition-duration", "0.35s" )
-            , ( "transition-duration", "0.35s" )
-            , ( "-webkit-transition-property", "height" )
-            , ( "-o-transition-property", "height" )
-            , ( "transition-property", "height" )
-            ]
+    [ style "position" "relative"
+    , style "height" pixelHeight
+    , style "width" "100%"
+    , style "overflow" "hidden"
+    , style "-webkit-transition-timing-function" "ease"
+    , style "-o-transition-timing-function" "ease"
+    , style "transition-timing-function" "ease"
+    , style "-webkit-transition-duration" "0.35s"
+    , style "-o-transition-duration" "0.35s"
+    , style "transition-duration" "0.35s"
+    , style "-webkit-transition-property" "height"
+    , style "-o-transition-property" "height"
+    , style "transition-property" "height"
+    ]
 
 
 mapState : (VisibilityState -> VisibilityState) -> State -> State
@@ -1049,8 +1009,8 @@ mapState mapper (State state) =
 
 
 maybeBrand : Maybe (Brand msg) -> List (Html.Html msg)
-maybeBrand brand =
-    case brand of
+maybeBrand brand_ =
+    case brand_ of
         Just (Brand b) ->
             [ b ]
 
@@ -1060,20 +1020,20 @@ maybeBrand brand =
 
 renderNav :
     State
-    -> Config msg
+    -> ConfigRec msg
     -> List (Item msg)
     -> Html.Html msg
-renderNav state config navItems =
+renderNav state configRec navItems =
     Html.ul
         [ class "navbar-nav mr-auto" ]
         (List.map
             (\item ->
                 case item of
-                    Item item ->
-                        renderItemLink item
+                    Item item_ ->
+                        renderItemLink item_
 
-                    NavDropdown dropdown ->
-                        renderDropdown state config dropdown
+                    NavDropdown dropdown_ ->
+                        renderDropdown state configRec dropdown_
             )
             navItems
         )
@@ -1094,8 +1054,8 @@ renderItemLink { attributes, children } =
 
 
 renderCustom : List (CustomItem msg) -> List (Html.Html msg)
-renderCustom items =
-    List.map (\(CustomItem item) -> item) items
+renderCustom items_ =
+    List.map (\(CustomItem item) -> item) items_
 
 
 navbarAttributes : Options msg -> List (Html.Attribute msg)
@@ -1107,8 +1067,8 @@ navbarAttributes options =
     ]
         ++ expandOption options.toggleAt
         ++ (case options.scheme of
-                Just scheme ->
-                    schemeAttributes scheme
+                Just scheme_ ->
+                    schemeAttributes scheme_
 
                 Nothing ->
                     []
@@ -1133,21 +1093,21 @@ expandOption size =
                             |> Maybe.withDefault ""
                        )
     in
-        case size of
-            XS ->
-                [ toClass SM ]
+    case size of
+        XS ->
+            [ toClass SM ]
 
-            SM ->
-                [ toClass MD ]
+        SM ->
+            [ toClass MD ]
 
-            MD ->
-                [ toClass LG ]
+        MD ->
+            [ toClass LG ]
 
-            LG ->
-                [ toClass XL ]
+        LG ->
+            [ toClass XL ]
 
-            _ ->
-                []
+        _ ->
+            []
 
 
 fixOption : Fix -> String
@@ -1185,24 +1145,15 @@ backgroundColorOption bgClass =
             RoleInternal.toClass "bg" role
 
         Custom color ->
-            style [ ( "background-color", toRGBString color ) ]
+            style "background-color" <| Color.toCssString color
 
         Class classString ->
             class classString
 
 
-toRGBString : Color.Color -> String
-toRGBString color =
-    let
-        { red, green, blue } =
-            Color.toRgb color
-    in
-        "RGB(" ++ toString red ++ "," ++ toString green ++ "," ++ toString blue ++ ")"
-
-
 visibilityTransition : Bool -> Visibility -> Visibility
-visibilityTransition withAnimation visibility =
-    case ( withAnimation, visibility ) of
+visibilityTransition withAnimation_ visibility =
+    case ( withAnimation_, visibility ) of
         ( True, Hidden ) ->
             StartDown
 
@@ -1249,8 +1200,8 @@ dropdown :
     , items : List (DropdownItem msg)
     }
     -> Item msg
-dropdown config =
-    Dropdown config |> NavDropdown
+dropdown conf =
+    Dropdown conf |> NavDropdown
 
 
 {-| Function to construct a toggle for a [`dropdown`](#dropdown)
@@ -1284,7 +1235,6 @@ dropdownItem attributes children =
 
 {-| Creates a divider element appropriate for use in dropdowns.
 Handy when you want to visually separate groups of menu items in a dropdown menu
-
 -}
 dropdownDivider : DropdownItem msg
 dropdownDivider =
@@ -1308,10 +1258,10 @@ dropdownHeader children =
 
 renderDropdown :
     State
-    -> Config msg
+    -> ConfigRec msg
     -> Dropdown msg
     -> Html.Html msg
-renderDropdown state ((Config { options }) as config) (Dropdown { id, toggle, items }) =
+renderDropdown state configRec (Dropdown ddRec) =
     let
         needsDropup =
             Maybe.map
@@ -1323,48 +1273,49 @@ renderDropdown state ((Config { options }) as config) (Dropdown { id, toggle, it
                         Top ->
                             False
                 )
-                options.fix
+                configRec.options.fix
                 |> Maybe.withDefault False
 
         isShown =
-            getOrInitDropdownStatus id state /= Closed
+            getOrInitDropdownStatus ddRec.id state /= Closed
     in
-        Html.li
+    Html.li
+        [ classList
+            [ ( "nav-item", True )
+            , ( "dropdown", True )
+            , ( "shown", isShown )
+            , ( "dropup", needsDropup )
+            ]
+        ]
+        [ renderDropdownToggle state ddRec.id configRec ddRec.toggle
+        , Html.div
             [ classList
-                [ ( "nav-item", True )
-                , ( "dropdown", True )
-                , ( "shown", isShown )
-                , ( "dropup", needsDropup )
+                [ ( "dropdown-menu", True )
+                , ( "show", isShown )
                 ]
             ]
-            [ renderDropdownToggle state id config toggle
-            , Html.div
-                [ classList
-                    [ ( "dropdown-menu", True )
-                    , ( "show", isShown )
-                    ]
-                ]
-                (List.map (\(DropdownItem item) -> item) items)
-            ]
+            (List.map (\(DropdownItem item) -> item) ddRec.items)
+        ]
 
 
 renderDropdownToggle :
     State
     -> String
-    -> Config msg
+    -> ConfigRec msg
     -> DropdownToggle msg
     -> Html.Html msg
-renderDropdownToggle state id config (DropdownToggle { attributes, children }) =
+renderDropdownToggle state id configRec (DropdownToggle { attributes, children }) =
     Html.a
         ([ class "nav-link dropdown-toggle"
          , href "#"
-         , onWithOptions
+         , custom
             "click"
-            { stopPropagation = False
-            , preventDefault = True
-            }
            <|
-            Json.succeed (toggleOpen state id config)
+            Json.succeed
+                { stopPropagation = False
+                , preventDefault = True
+                , message = toggleOpen state id configRec
+                }
          ]
             ++ attributes
         )
@@ -1374,9 +1325,9 @@ renderDropdownToggle state id config (DropdownToggle { attributes, children }) =
 toggleOpen :
     State
     -> String
-    -> Config msg
+    -> ConfigRec msg
     -> msg
-toggleOpen state id (Config { toMsg }) =
+toggleOpen state id { toMsg } =
     let
         currStatus =
             getOrInitDropdownStatus id state
@@ -1392,12 +1343,12 @@ toggleOpen state id (Config { toMsg }) =
                 Closed ->
                     Open
     in
-        mapState
-            (\s ->
-                { s | dropdowns = Dict.insert id newStatus s.dropdowns }
-            )
-            state
-            |> toMsg
+    mapState
+        (\s ->
+            { s | dropdowns = Dict.insert id newStatus s.dropdowns }
+        )
+        state
+        |> toMsg
 
 
 getOrInitDropdownStatus : String -> State -> DropdownStatus

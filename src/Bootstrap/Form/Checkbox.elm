@@ -1,35 +1,26 @@
-module Bootstrap.Form.Checkbox
-    exposing
-        ( checkbox
-        , custom
-        , checked
-        , inline
-        , indeterminate
-        , disabled
-        , onCheck
-        , attrs
-        , id
-        , success
-        , danger
-        , Option
-        )
+module Bootstrap.Form.Checkbox exposing
+    ( checkbox, custom
+    , id, checked, inline, indeterminate, disabled, onCheck, attrs, success, danger, Option
+    )
 
 {-| This module allows you to create Bootstrap styled checkboxes.
 
 
 # Creating
+
 @docs checkbox, custom
 
-# Options
-@docs id, checked, inline, indeterminate, disabled, onCheck, attrs, success, danger, Option
 
+# Options
+
+@docs id, checked, inline, indeterminate, disabled, onCheck, attrs, success, danger, Option
 
 -}
 
+import Bootstrap.Form.FormInternal as FormInternal
 import Html
 import Html.Attributes as Attributes
 import Html.Events as Events
-import Bootstrap.Form.FormInternal as FormInternal
 
 
 {-| Opaque composable type representing a Checkbox.
@@ -114,31 +105,32 @@ view (Checkbox chk) =
         opts =
             List.foldl applyModifier defaultOptions chk.options
     in
-        Html.div
-            [ Attributes.classList
-                [ ( "form-check", not opts.custom )
-                , ( "form-check-inline", not opts.custom && opts.inline )
-                , ( "custom-control", opts.custom )
-                , ( "custom-checkbox", opts.custom )
-                , ( "custom-control-inline", opts.inline && opts.custom )
-                ]
+    Html.div
+        [ Attributes.classList
+            [ ( "form-check", not opts.custom )
+            , ( "form-check-inline", not opts.custom && opts.inline )
+            , ( "custom-control", opts.custom )
+            , ( "custom-checkbox", opts.custom )
+            , ( "custom-control-inline", opts.inline && opts.custom )
             ]
-            [ Html.input (toAttributes opts) []
-            , Html.label
-                ([ Attributes.classList
-                    [ ( "form-check-label", not opts.custom )
-                    , ( "custom-control-label", opts.custom )
-                    ]
-                 ]
-                    ++ case opts.id of
+        ]
+        [ Html.input (toAttributes opts) []
+        , Html.label
+            ([ Attributes.classList
+                [ ( "form-check-label", not opts.custom )
+                , ( "custom-control-label", opts.custom )
+                ]
+             ]
+                ++ (case opts.id of
                         Just v ->
                             [ Attributes.for v ]
 
                         Nothing ->
                             []
-                )
-                [ Html.text chk.label ]
-            ]
+                   )
+            )
+            [ Html.text chk.label ]
+        ]
 
 
 {-| Shorthand for assigning an onCheck handler for a checkbox.
@@ -155,6 +147,7 @@ checked isCheck =
     Value <|
         if isCheck then
             On
+
         else
             Off
 
@@ -163,6 +156,7 @@ checked isCheck =
 
 **Note**: A checkbox can't be both indeterminate and checked, so if you set both
 the last one provided in the list of options to the checkbox function "wins".
+
 -}
 indeterminate : Option msg
 indeterminate =
@@ -172,8 +166,8 @@ indeterminate =
 {-| Option to disable the checkbox
 -}
 disabled : Bool -> Option msg
-disabled disabled =
-    Disabled disabled
+disabled disabled_ =
+    Disabled disabled_
 
 
 {-| Use this option to display checkboxes inline.
@@ -188,7 +182,6 @@ inline =
 success : Option msg
 success =
     Validation FormInternal.Success
-
 
 
 {-| Option to color a checkbox with danger.
@@ -211,8 +204,8 @@ id theId =
 {-| Use this function to handle any Html.Attribute option you wish for your select
 -}
 attrs : List (Html.Attribute msg) -> Option msg
-attrs attrs =
-    Attrs attrs
+attrs attrs_ =
+    Attrs attrs_
 
 
 applyModifier : Option msg -> Options msg -> Options msg
@@ -239,8 +232,8 @@ applyModifier modifier options =
         Validation validation ->
             { options | validation = Just validation }
 
-        Attrs attrs ->
-            { options | attributes = options.attributes ++ attrs }
+        Attrs attrs_ ->
+            { options | attributes = options.attributes ++ attrs_ }
 
 
 toAttributes : Options msg -> List (Html.Attribute msg)

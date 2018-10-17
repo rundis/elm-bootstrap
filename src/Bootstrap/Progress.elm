@@ -1,41 +1,31 @@
-module Bootstrap.Progress
-    exposing
-        ( progress
-        , progressMulti
-        , value
-        , height
-        , label
-        , customLabel
-        , success
-        , info
-        , warning
-        , danger
-        , striped
-        , animated
-        , attrs
-        , wrapperAttrs
-        , Option
-        )
+module Bootstrap.Progress exposing
+    ( progress
+    , value, height, label, customLabel, success, info, warning, danger, striped, animated, attrs, wrapperAttrs, Option
+    , progressMulti
+    )
 
 {-| You can use the custom progress elment for displaying simple or complex progress bars.
 It doesn't use the HTML5 `<progress>` element, ensuring you can stack progress bars, animate them, and place text labels over them.
 
 
 # Progress bar
+
 @docs progress
 
 
 ## Options
+
 @docs value, height, label, customLabel, success, info, warning, danger, striped, animated, attrs, wrapperAttrs, Option
 
 
 # Stacking multiple
+
 @docs progressMulti
 
 -}
 
-import Html exposing (Html, Attribute)
-import Html.Attributes as Attributes exposing (class, classList, style, attribute)
+import Html exposing (Attribute, Html)
+import Html.Attributes as Attributes exposing (attribute, class, classList, style)
 
 
 {-| Opaque type representing available display options for the progress bar
@@ -78,9 +68,10 @@ type Options msg
         , Progress.value 30
         ]
 
-* `options` List of options
+  - `options` List of options
 
 **NOTE: ** If you have duplicate options, the last one "wins"
+
 -}
 progress : List (Option msg) -> Html msg
 progress modifiers =
@@ -88,9 +79,9 @@ progress modifiers =
         (Options options) =
             List.foldl applyOption defaultOptions modifiers
     in
-        Html.div
-            ( class "progress" :: options.wrapperAttributes)
-            [ renderBar modifiers ]
+    Html.div
+        (class "progress" :: options.wrapperAttributes)
+        [ renderBar modifiers ]
 
 
 {-| Create a progress containing multiple progress bars next to each other
@@ -114,9 +105,9 @@ renderBar modifiers =
         ((Options opts) as options) =
             List.foldl applyOption defaultOptions modifiers
     in
-        Html.div
-            (toAttributes options)
-            opts.label
+    Html.div
+        (toAttributes options)
+        opts.label
 
 
 {-| Option to specify the progress amount for a bar in percent. Should be a value between 0 and 100
@@ -129,13 +120,14 @@ value val =
 {-| Option to specify the height (in pixels) for the progress bar
 -}
 height : Int -> Option msg
-height height =
-    Height <| Just height
+height height_ =
+    Height <| Just height_
 
 
 {-| Option to specify a text label for a progress bar
 
 The label will only display when you have set a [`value`](#value)
+
 -}
 label : String -> Option msg
 label text =
@@ -180,6 +172,7 @@ danger =
 {-| Option to make the progress bar animated
 
 **NOTE: ** Giving this option will automatically also make the background [`striped`](#striped)
+
 -}
 animated : Option msg
 animated =
@@ -196,56 +189,55 @@ striped =
 {-| Option to specify one ore more custom Html.Attribute for the progress bar
 -}
 attrs : List (Attribute msg) -> Option msg
-attrs attrs =
-    Attrs attrs
+attrs attrs_ =
+    Attrs attrs_
 
 
 {-| Option to specify one ore more custom Html.Attribute for the progress bar wrapper/container
 (say you need to add a on click handler or something like that)
 -}
 wrapperAttrs : List (Attribute msg) -> Option msg
-wrapperAttrs attrs =
-    WrapperAttrs attrs
-
+wrapperAttrs attrs_ =
+    WrapperAttrs attrs_
 
 
 applyOption : Option msg -> Options msg -> Options msg
 applyOption modifier (Options options) =
     Options <|
         case modifier of
-            Value value ->
-                { options | value = value }
+            Value value_ ->
+                { options | value = value_ }
 
-            Height height ->
-                { options | height = height }
+            Height height_ ->
+                { options | height = height_ }
 
-            Label label ->
-                { options | label = label }
+            Label label_ ->
+                { options | label = label_ }
 
-            Roled role ->
-                { options | role = role }
+            Roled role_ ->
+                { options | role = role_ }
 
-            Striped striped ->
-                { options | striped = striped }
+            Striped striped_ ->
+                { options | striped = striped_ }
 
-            Animated animated ->
-                { options | animated = animated }
+            Animated animated_ ->
+                { options | animated = animated_ }
 
-            Attrs attrs ->
-                { options | attributes = attrs }
+            Attrs attrs_ ->
+                { options | attributes = attrs_ }
 
-            WrapperAttrs attrs ->
-                { options | wrapperAttributes = attrs }
+            WrapperAttrs attrs_ ->
+                { options | wrapperAttributes = attrs_ }
 
 
 toAttributes : Options msg -> List (Attribute msg)
 toAttributes (Options options) =
     List.concat
         [ [ attribute "role" "progressbar"
-          , attribute "aria-value-now" <| toString options.value
+          , attribute "aria-value-now" <| String.fromFloat options.value
           , attribute "aria-valuemin" "0"
           , attribute "aria-valuemax" "100"
-          , style [ ( "width", toString options.value ++ "%" ) ]
+          , style "width" <| String.fromFloat options.value ++ "%"
           , classList
                 [ ( "progress-bar", True )
                 , ( "progress-bar-striped", options.striped || options.animated )
@@ -253,14 +245,14 @@ toAttributes (Options options) =
                 ]
           ]
         , case options.height of
-            Just height ->
-                [ style [ ( "height", toString height ++ "px" ) ] ]
+            Just height_ ->
+                [ style "height" <| String.fromInt height_ ++ "px" ]
 
             Nothing ->
                 []
         , case options.role of
-            Just role ->
-                [ roleClass role ]
+            Just role_ ->
+                [ roleClass role_ ]
 
             Nothing ->
                 []

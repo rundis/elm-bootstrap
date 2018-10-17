@@ -1,16 +1,15 @@
-module Bootstrap.Internal.Text
-    exposing
-        ( textAlignClass
-        , textColorClass
-        , TextAlignDir(..)
-        , HAlign
-        , Color(..)
-        )
+module Bootstrap.Internal.Text exposing
+    ( Color(..)
+    , HAlign
+    , TextAlignDir(..)
+    , textAlignClass
+    , textColorClass
+    )
 
-import Html
-import Html.Attributes
 import Bootstrap.General.Internal exposing (ScreenSize(..), screenSizeOption)
 import Bootstrap.Internal.Role as Role
+import Html
+import Html.Attributes
 
 
 type alias HAlign =

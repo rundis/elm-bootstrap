@@ -1,14 +1,4 @@
-module Bootstrap.Pagination.Item
-    exposing
-        ( item
-        , link
-        , span
-        , attrs
-        , active
-        , disabled
-        , ItemConfig
-        , Item
-        )
+module Bootstrap.Pagination.Item exposing (item, link, span, active, disabled, attrs, ItemConfig, Item)
 
 {-| When you need more control over pagination items you would use the functions in this module.
 
@@ -41,6 +31,7 @@ item =
         , attrs = []
         }
 
+
 {-| Customize the (li) element container for a pagination item.
 -}
 attrs : List (Html.Attribute msg) -> ItemConfig msg -> ItemConfig msg
@@ -56,8 +47,10 @@ active isActive ((Internal.ItemConfig rec) as config) =
     if isActive then
         Internal.ItemConfig
             { rec | status = Active }
+
     else
         config
+
 
 {-| Set this item as disabled. For links it will also set tabindex to -1 and override the clickhandler.
 -}
@@ -66,8 +59,10 @@ disabled isDisabled ((Internal.ItemConfig rec) as config) =
     if isDisabled then
         Internal.ItemConfig
             { rec | status = Disabled }
+
     else
         config
+
 
 {-| Create a pagination link (a) element.
 -}
@@ -81,6 +76,7 @@ link attributes children config =
         { config = config
         , link = Internal.Link Html.a attributes children
         }
+
 
 {-| Create a pagination span element.
 -}

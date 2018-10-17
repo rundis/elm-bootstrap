@@ -1,24 +1,20 @@
-module Bootstrap.Form.Fieldset
-    exposing
-        ( view
-        , config
-        , asGroup
-        , disabled
-        , children
-        , attrs
-        , legend
-        , Config
-        )
+module Bootstrap.Form.Fieldset exposing
+    ( Config, view, config
+    , asGroup, disabled, children, legend, attrs
+    )
 
 {-| Fieldset is a handy block level element you can use to group form elements.
 Fieldset comes with the added benefit of disabling all child controls when we set it's disabled attribute.
 
+
 # General
+
 @docs Config, view, config
 
-# Customization
-@docs asGroup, disabled, children, legend, attrs
 
+# Customization
+
+@docs asGroup, disabled, children, legend, attrs
 
 -}
 
@@ -78,8 +74,8 @@ disabled isDisabled =
 {-| When you need to customize a fieldset with standard Html.Attribute attributes use this function
 -}
 attrs : List (Html.Attribute msg) -> Config msg -> Config msg
-attrs attrs =
-    mapOptions (\opts -> { opts | attributes = opts.attributes ++ attrs })
+attrs attrs_ =
+    mapOptions (\opts -> { opts | attributes = opts.attributes ++ attrs_ })
 
 
 {-| Provide a legend for a set of fields
@@ -89,10 +85,10 @@ legend :
     -> List (Html.Html msg)
     -> Config msg
     -> Config msg
-legend attributes children =
+legend attributes children_ =
     mapConfig
         (\conf ->
-            { conf | legend = Just <| Html.legend attributes children }
+            { conf | legend = Just <| Html.legend attributes children_ }
         )
 
 
@@ -101,8 +97,8 @@ children :
     List (Html.Html msg)
     -> Config msg
     -> Config msg
-children children =
-    mapConfig (\conf -> { conf | children = children })
+children children_ =
+    mapConfig (\conf -> { conf | children = children_ })
 
 
 {-| View a fieldset standalone. To create a fieldset you start off with a basic configuration which you can compose
@@ -112,25 +108,26 @@ of several optional elements.
         |> Fieldset.asGroup
         |> Fieldset.legend [] [ text "Radio buttons" ]
         |> Fieldset.children
-            ( Radio.radioList "myradios"
+            (Radio.radioList "myradios"
                 [ Radio.create [] "Option one"
                 , Radio.create [] "Option two"
-                , Radio.create [ Radio.disabled True] "I'm disabled"
+                , Radio.create [ Radio.disabled True ] "I'm disabled"
                 ]
             )
         |> Fieldset.view
+
 -}
 view : Config msg -> Html.Html msg
-view (Config { options, legend, children }) =
+view (Config ({ options } as rec)) =
     Html.fieldset
         ([ classList [ ( "form-group", options.isGroup ) ]
          , Attributes.disabled options.disabled
          ]
             ++ options.attributes
         )
-        (Maybe.map (\e -> [ e ]) legend
+        (Maybe.map (\e -> [ e ]) rec.legend
             |> Maybe.withDefault []
-            |> (flip List.append) children
+            |> (\xs -> List.append xs rec.children)
         )
 
 
@@ -146,5 +143,5 @@ mapOptions :
     (Options msg -> Options msg)
     -> Config msg
     -> Config msg
-mapOptions mapper (Config ({ options } as config)) =
-    { config | options = mapper options } |> Config
+mapOptions mapper (Config ({ options } as conf)) =
+    { conf | options = mapper options } |> Config

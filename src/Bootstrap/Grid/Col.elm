@@ -1,4 +1,32 @@
-module Bootstrap.Grid.Col exposing (..)
+module Bootstrap.Grid.Col exposing
+    ( topXs, topSm, topMd, topLg, topXl, middleXs, middleSm, middleMd, middleLg, middleXl, bottomXs, bottomSm, bottomMd, bottomLg, bottomXl
+    , xs, xs1, xs2, xs3, xs4, xs5, xs6, xs7, xs8, xs9, xs10, xs11, xs12, xsAuto
+    , sm, sm1, sm2, sm3, sm4, sm5, sm6, sm7, sm8, sm9, sm10, sm11, sm12, smAuto
+    , md, md1, md2, md3, md4, md5, md6, md7, md8, md9, md10, md11, md12, mdAuto
+    , lg, lg1, lg2, lg3, lg4, lg5, lg6, lg7, lg8, lg9, lg10, lg11, lg12, lgAuto
+    , xl, xl1, xl2, xl3, xl4, xl5, xl6, xl7, xl8, xl9, xl10, xl11, xl12, xlAuto
+    , offsetXs1, offsetXs2, offsetXs3, offsetXs4, offsetXs5, offsetXs6, offsetXs7, offsetXs8, offsetXs9, offsetXs10, offsetXs11
+    , offsetSm0, offsetSm1, offsetSm2, offsetSm3, offsetSm4, offsetSm5, offsetSm6, offsetSm7, offsetSm8, offsetSm9, offsetSm10, offsetSm11
+    , offsetMd0, offsetMd1, offsetMd2, offsetMd3, offsetMd4, offsetMd5, offsetMd6, offsetMd7, offsetMd8, offsetMd9, offsetMd10, offsetMd11
+    , offsetLg0, offsetLg1, offsetLg2, offsetLg3, offsetLg4, offsetLg5, offsetLg6, offsetLg7, offsetLg8, offsetLg9, offsetLg10, offsetLg11
+    , offsetXl0, offsetXl1, offsetXl2, offsetXl3, offsetXl4, offsetXl5, offsetXl6, offsetXl7, offsetXl8, offsetXl9, offsetXl10, offsetXl11
+    , pullXs0, pullXs1, pullXs2, pullXs3, pullXs4, pullXs5, pullXs6, pullXs7, pullXs8, pullXs9, pullXs10, pullXs11, pullXs12
+    , pullSm0, pullSm1, pullSm2, pullSm3, pullSm4, pullSm5, pullSm6, pullSm7, pullSm8, pullSm9, pullSm10, pullSm11, pullSm12
+    , pullMd0, pullMd1, pullMd2, pullMd3, pullMd4, pullMd5, pullMd6, pullMd7, pullMd8, pullMd9, pullMd10, pullMd11, pullMd12
+    , pullLg0, pullLg1, pullLg2, pullLg3, pullLg4, pullLg5, pullLg6, pullLg7, pullLg8, pullLg9, pullLg10, pullLg11, pullLg12
+    , pullXl0, pullXl1, pullXl2, pullXl3, pullXl4, pullXl5, pullXl6, pullXl7, pullXl8, pullXl9, pullXl10, pullXl11, pullXl12
+    , pushXs0, pushXs1, pushXs2, pushXs3, pushXs4, pushXs5, pushXs6, pushXs7, pushXs8, pushXs9, pushXs10, pushXs11, pushXs12
+    , pushSm0, pushSm1, pushSm2, pushSm3, pushSm4, pushSm5, pushSm6, pushSm7, pushSm8, pushSm9, pushSm10, pushSm11, pushSm12
+    , pushMd0, pushMd1, pushMd2, pushMd3, pushMd4, pushMd5, pushMd6, pushMd7, pushMd8, pushMd9, pushMd10, pushMd11, pushMd12
+    , pushLg0, pushLg1, pushLg2, pushLg3, pushLg4, pushLg5, pushLg6, pushLg7, pushLg8, pushLg9, pushLg10, pushLg11, pushLg12
+    , pushXl0, pushXl1, pushXl2, pushXl3, pushXl4, pushXl5, pushXl6, pushXl7, pushXl8, pushXl9, pushXl10, pushXl11, pushXl12
+    , orderXsFirst, orderXs1, orderXs2, orderXs3, orderXs4, orderXs5, orderXs6, orderXs7, orderXs8, orderXs9, orderXs10, orderXs11, orderXs12, orderXsLast
+    , orderSmFirst, orderSm1, orderSm2, orderSm3, orderSm4, orderSm5, orderSm6, orderSm7, orderSm8, orderSm9, orderSm10, orderSm11, orderSm12, orderSmLast
+    , orderMdFirst, orderMd1, orderMd2, orderMd3, orderMd4, orderMd5, orderMd6, orderMd7, orderMd8, orderMd9, orderMd10, orderMd11, orderMd12, orderMdLast
+    , orderLgFirst, orderLg1, orderLg2, orderLg3, orderLg4, orderLg5, orderLg6, orderLg7, orderLg8, orderLg9, orderLg10, orderLg11, orderLg12, orderLgLast
+    , orderXlFirst, orderXl1, orderXl2, orderXl3, orderXl4, orderXl5, orderXl6, orderXl7, orderXl8, orderXl9, orderXl10, orderXl11, orderXl12, orderXlLast
+    , attrs, textAlign, Option
+    )
 
 {-| Functions for creating grid column options.
 
@@ -154,10 +182,10 @@ module Bootstrap.Grid.Col exposing (..)
 
 -}
 
-import Html
-import Bootstrap.Grid.Internal as Internal exposing (..)
 import Bootstrap.General.Internal exposing (ScreenSize(..))
+import Bootstrap.Grid.Internal as Internal exposing (..)
 import Bootstrap.Text as Text
+import Html
 
 
 {-| Opaque type representing valid Column options
@@ -169,8 +197,8 @@ type alias Option msg =
 {-| Use this function when you need to provide custom Html attributes to the column container element.
 -}
 attrs : List (Html.Attribute msg) -> ColOption msg
-attrs attrs =
-    ColAttrs attrs
+attrs attrs_ =
+    ColAttrs attrs_
 
 
 {-| You might find this function handy for aligning inline elements inside a column.
@@ -181,6 +209,7 @@ attrs attrs =
 textAlign : Text.HAlign -> ColOption msg
 textAlign align =
     TextAlign align
+
 
 
 {- *********** Aligns ******************* -}

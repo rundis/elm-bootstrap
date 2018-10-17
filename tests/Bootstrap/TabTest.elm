@@ -1,12 +1,12 @@
-module Bootstrap.TabTest exposing (..)
+module Bootstrap.TabTest exposing (horizontalAlignment, pillsAndAttributes, simpleTabs)
 
 import Bootstrap.Tab as Tab
-import Html exposing (text, h4, p)
-import Html.Attributes as Attributes
-import Test exposing (Test, test, describe)
 import Expect
+import Html exposing (h4, p, text)
+import Html.Attributes as Attributes
+import Test exposing (Test, describe, test)
 import Test.Html.Query as Query
-import Test.Html.Selector as Selector exposing (tag, class, classes, attribute)
+import Test.Html.Selector as Selector exposing (attribute, class, classes, tag)
 
 
 simpleTabs : Test
@@ -46,52 +46,52 @@ simpleTabs =
                 |> Query.fromHtml
                 |> Query.find [ class "tab-content" ]
     in
-        describe "Simple tab"
-            [ describe "nav"
-                [ test "Expect 2 nav-items" <|
-                    \() ->
-                        nav
-                            |> Query.findAll [ class "nav-item" ]
-                            |> Query.count (Expect.equal 2)
-                , test "Expect item1 to have href='#tabItem1'" <|
-                    \() ->
-                        nav
-                            |> Query.findAll [ tag "a" ]
-                            |> Query.index 0
-                            |> Query.has [ attribute <| Attributes.attribute "href" "#tabItem1" ]
-                , test "Expect links to have children" <|
-                    \() ->
-                        nav
-                            |> Query.findAll [ tag "a" ]
-                            |> Query.index 0
-                            |> Query.has [ Selector.text "Tab 1" ]
-                ]
-            , describe "content"
-                [ test "Expect 2 tab-panes" <|
-                    \() ->
-                        content
-                            |> Query.findAll [ class "tab-pane" ]
-                            |> Query.count (Expect.equal 2)
-                , test "Expect 2 mt-3 (custom attributes work)" <|
-                    \() ->
-                        content
-                            |> Query.findAll [ class "mt-3" ]
-                            |> Query.count (Expect.equal 2)
-                , test "Expect pane to have children" <|
-                    \() ->
-                        content
-                            |> Query.findAll [ class "tab-pane" ]
-                            |> Query.index 0
-                            |> Query.find [ tag "h4" ]
-                            |> Query.has [ Selector.text "Tab 1 Heading" ]
-                , test "Expect pane to have id attribute" <|
-                    \() ->
-                        content
-                            |> Query.findAll [ class "tab-pane" ]
-                            |> Query.index 0
-                            |> Query.has [ attribute <| Attributes.attribute "id" "tabItem1" ]
-                ]
+    describe "Simple tab"
+        [ describe "nav"
+            [ test "Expect 2 nav-items" <|
+                \() ->
+                    nav
+                        |> Query.findAll [ class "nav-item" ]
+                        |> Query.count (Expect.equal 2)
+            , test "Expect item1 to have href='#tabItem1'" <|
+                \() ->
+                    nav
+                        |> Query.findAll [ tag "a" ]
+                        |> Query.index 0
+                        |> Query.has [ attribute <| Attributes.attribute "href" "#tabItem1" ]
+            , test "Expect links to have children" <|
+                \() ->
+                    nav
+                        |> Query.findAll [ tag "a" ]
+                        |> Query.index 0
+                        |> Query.has [ Selector.text "Tab 1" ]
             ]
+        , describe "content"
+            [ test "Expect 2 tab-panes" <|
+                \() ->
+                    content
+                        |> Query.findAll [ class "tab-pane" ]
+                        |> Query.count (Expect.equal 2)
+            , test "Expect 2 mt-3 (custom attributes work)" <|
+                \() ->
+                    content
+                        |> Query.findAll [ class "mt-3" ]
+                        |> Query.count (Expect.equal 2)
+            , test "Expect pane to have children" <|
+                \() ->
+                    content
+                        |> Query.findAll [ class "tab-pane" ]
+                        |> Query.index 0
+                        |> Query.find [ tag "h4" ]
+                        |> Query.has [ Selector.text "Tab 1 Heading" ]
+            , test "Expect pane to have id attribute" <|
+                \() ->
+                    content
+                        |> Query.findAll [ class "tab-pane" ]
+                        |> Query.index 0
+                        |> Query.has [ attribute <| Attributes.attribute "id" "tabItem1" ]
+            ]
+        ]
 
 
 pillsAndAttributes : Test
@@ -103,20 +103,20 @@ pillsAndAttributes =
                 |> Tab.attrs [ Attributes.name "myTabs" ]
                 |> Tab.view Tab.initialState
     in
-        describe "pills"
-            [ test "Expect nav-pills class" <|
-                \() ->
-                    html
-                        |> Query.fromHtml
-                        |> Query.find [ tag "ul" ]
-                        |> Query.has [ class "nav-pills" ]
-            , test "Expect custom name attribute" <|
-                \() ->
-                    html
-                        |> Query.fromHtml
-                        |> Query.find [ tag "ul" ]
-                        |> Query.has [ attribute <| Attributes.attribute "name" "myTabs" ]
-            ]
+    describe "pills"
+        [ test "Expect nav-pills class" <|
+            \() ->
+                html
+                    |> Query.fromHtml
+                    |> Query.find [ tag "ul" ]
+                    |> Query.has [ class "nav-pills" ]
+        , test "Expect custom name attribute" <|
+            \() ->
+                html
+                    |> Query.fromHtml
+                    |> Query.find [ tag "ul" ]
+                    |> Query.has [ attribute <| Attributes.attribute "name" "myTabs" ]
+        ]
 
 
 horizontalAlignment : Test
@@ -135,9 +135,9 @@ horizontalAlignment =
                         |> Query.find [ class "nav-tabs" ]
                         |> Query.has [ class className ]
     in
-        describe "alignment"
-            [ alignmentTest Tab.center "justify-content-center"
-            , alignmentTest Tab.right "justify-content-end"
-            , alignmentTest Tab.justified "nav-justified"
-            , alignmentTest Tab.fill "nav-fill"
-            ]
+    describe "alignment"
+        [ alignmentTest Tab.center "justify-content-center"
+        , alignmentTest Tab.right "justify-content-end"
+        , alignmentTest Tab.justified "nav-justified"
+        , alignmentTest Tab.fill "nav-fill"
+        ]

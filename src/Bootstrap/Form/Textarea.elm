@@ -1,38 +1,32 @@
-module Bootstrap.Form.Textarea
-    exposing
-        ( textarea
-        , id
-        , rows
-        , value
-        , defaultValue
-        , disabled
-        , onInput
-        , attrs
-        , success
-        , danger
-        , Option
-        )
+module Bootstrap.Form.Textarea exposing
+    ( textarea
+    , id, rows, value, disabled, onInput, attrs, Option
+    , success, danger
+    )
 
 {-| This module allows you to create textarea elements.
 
 
 # Creating
+
 @docs textarea
 
 
 # Options
-@docs id, rows, value, defaultValue, disabled, onInput, attrs, Option
+
+@docs id, rows, value, disabled, onInput, attrs, Option
+
 
 # Validation
-@docs success, danger
 
+@docs success, danger
 
 -}
 
+import Bootstrap.Form.FormInternal as FormInternal
 import Html
 import Html.Attributes as Attributes
 import Html.Events as Events
-import Bootstrap.Form.FormInternal as FormInternal
 
 
 {-| Opaque type representing a composable input
@@ -48,7 +42,6 @@ type Option msg
     | Rows Int
     | Disabled
     | Value String
-    | DefaultValue String
     | OnInput (String -> msg)
     | Validation FormInternal.Validation
     | Attrs (List (Html.Attribute msg))
@@ -59,7 +52,6 @@ type alias Options msg =
     , rows : Maybe Int
     , disabled : Bool
     , value : Maybe String
-    , defaultValue : Maybe String
     , onInput : Maybe (String -> msg)
     , validation : Maybe FormInternal.Validation
     , attributes : List (Html.Attribute msg)
@@ -83,36 +75,29 @@ textarea =
 {-| Options/shorthand for setting the id of a textarea
 -}
 id : String -> Option msg
-id id =
-    Id id
+id id_ =
+    Id id_
 
 
 {-| Option/shorthand to set the rows attribute of a textarea
 -}
 rows : Int -> Option msg
-rows rows =
-    Rows rows
+rows rows_ =
+    Rows rows_
 
 
 {-| Use this function to handle any Html.Attribute option you wish for your textarea
 -}
 attrs : List (Html.Attribute msg) -> Option msg
-attrs attrs =
-    Attrs attrs
+attrs attrs_ =
+    Attrs attrs_
 
 
 {-| Shorthand for setting the value attribute of a textarea
 -}
 value : String -> Option msg
-value value =
-    Value value
-
-
-{-| Shorthand for setting the defaultValue attribute of a textarea
--}
-defaultValue : String -> Option msg
-defaultValue value =
-    DefaultValue value
+value value_ =
+    Value value_
 
 
 {-| Shorthand for assigning an onInput handler for a textarea
@@ -161,19 +146,18 @@ toAttributes modifiers =
         options =
             List.foldl applyModifier defaultOptions modifiers
     in
-        [ Attributes.class "form-control"
-        , Attributes.disabled options.disabled
-        ]
-            ++ ([ Maybe.map Attributes.id options.id
-                , Maybe.map Attributes.rows options.rows
-                , Maybe.map Attributes.value options.value
-                , Maybe.map Attributes.defaultValue options.defaultValue
-                , Maybe.map Events.onInput options.onInput
-                , Maybe.map validationAttribute options.validation
-                ]
-                    |> List.filterMap identity
-               )
-            ++ options.attributes
+    [ Attributes.class "form-control"
+    , Attributes.disabled options.disabled
+    ]
+        ++ ([ Maybe.map Attributes.id options.id
+            , Maybe.map Attributes.rows options.rows
+            , Maybe.map Attributes.value options.value
+            , Maybe.map Events.onInput options.onInput
+            , Maybe.map validationAttribute options.validation
+            ]
+                |> List.filterMap identity
+           )
+        ++ options.attributes
 
 
 defaultOptions : Options msg
@@ -182,7 +166,6 @@ defaultOptions =
     , rows = Nothing
     , disabled = False
     , value = Nothing
-    , defaultValue = Nothing
     , onInput = Nothing
     , validation = Nothing
     , attributes = []
@@ -192,29 +175,26 @@ defaultOptions =
 applyModifier : Option msg -> Options msg -> Options msg
 applyModifier modifier options =
     case modifier of
-        Id id ->
-            { options | id = Just id }
+        Id id_ ->
+            { options | id = Just id_ }
 
-        Rows rows ->
-            { options | rows = Just rows }
+        Rows rows_ ->
+            { options | rows = Just rows_ }
 
         Disabled ->
             { options | disabled = True }
 
-        Value value ->
-            { options | value = Just value }
+        Value value_ ->
+            { options | value = Just value_ }
 
-        DefaultValue value ->
-            { options | defaultValue = Just value }
-
-        OnInput onInput ->
-            { options | onInput = Just onInput }
+        OnInput onInput_ ->
+            { options | onInput = Just onInput_ }
 
         Validation validation ->
             { options | validation = Just validation }
 
-        Attrs attrs ->
-            { options | attributes = options.attributes ++ attrs }
+        Attrs attrs_ ->
+            { options | attributes = options.attributes ++ attrs_ }
 
 
 validationAttribute : FormInternal.Validation -> Html.Attribute msg

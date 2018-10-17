@@ -1,10 +1,9 @@
-module Bootstrap.Internal.Button
-    exposing
-        ( buttonAttributes
-        , Option(..)
-        , Role(..)
-        , RoledButton(..)
-        )
+module Bootstrap.Internal.Button exposing
+    ( Option(..)
+    , Role(..)
+    , RoledButton(..)
+    , buttonAttributes
+    )
 
 import Bootstrap.General.Internal exposing (ScreenSize(..), screenSizeOption)
 import Html
@@ -51,31 +50,31 @@ buttonAttributes modifiers =
         options =
             List.foldl applyModifier defaultOptions modifiers
     in
-        [ classList
-            [ ( "btn", True )
-            , ( "btn-block", options.block )
-            , ( "disabled", options.disabled )
-            ]
-        , Attributes.disabled options.disabled
+    [ classList
+        [ ( "btn", True )
+        , ( "btn-block", options.block )
+        , ( "disabled", options.disabled )
         ]
-            ++ (case (options.size |> Maybe.andThen screenSizeOption) of
-                    Just s ->
-                        [ class <| "btn-" ++ s ]
+    , Attributes.disabled options.disabled
+    ]
+        ++ (case options.size |> Maybe.andThen screenSizeOption of
+                Just s ->
+                    [ class <| "btn-" ++ s ]
 
-                    Nothing ->
-                        []
-               )
-            ++ (case options.coloring of
-                    Just (Roled role) ->
-                        [ class <| "btn-" ++ roleClass role ]
+                Nothing ->
+                    []
+           )
+        ++ (case options.coloring of
+                Just (Roled role) ->
+                    [ class <| "btn-" ++ roleClass role ]
 
-                    Just (Outlined role) ->
-                        [ class <| "btn-outline-" ++ roleClass role ]
+                Just (Outlined role) ->
+                    [ class <| "btn-outline-" ++ roleClass role ]
 
-                    Nothing ->
-                        []
-               )
-            ++ options.attributes
+                Nothing ->
+                    []
+           )
+        ++ options.attributes
 
 
 defaultOptions : Options msg

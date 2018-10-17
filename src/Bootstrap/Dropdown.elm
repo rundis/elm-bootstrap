@@ -1,41 +1,21 @@
-module Bootstrap.Dropdown
-    exposing
-        ( dropdown
-        , splitDropdown
-        , initialState
-        , toggle
-        , splitToggle
-        , dropUp
-        , dropRight
-        , dropLeft
-        , alignMenuRight
-        , anchorItem
-        , buttonItem
-        , customItem
-        , divider
-        , header
-        , attrs
-        , menuAttrs
-        , subscriptions
-        , State
-        , DropdownItem
-        , DropdownToggle
-        , SplitDropdownToggle
-        , SplitToggleConfig
-        , DropdownOption
-        )
+module Bootstrap.Dropdown exposing
+    ( dropdown, toggle, DropdownToggle
+    , dropUp, dropLeft, dropRight, alignMenuRight, attrs, menuAttrs, DropdownOption
+    , anchorItem, buttonItem, divider, header, customItem, DropdownItem
+    , splitDropdown, splitToggle, SplitToggleConfig, SplitDropdownToggle
+    , subscriptions, initialState, State
+    )
 
 {-| Dropdowns are toggleable, contextual overlays for displaying lists of links and more. They’re toggled by clicking, not by hovering; this is an intentional design decision.
 
 **Wiring needed**
 
-    import Bootstrap.Dropdown as Dropdown
     import Bootstrap.Button as Button
+    import Bootstrap.Dropdown as Dropdown
 
 
     -- .. etc
     -- Model
-
     type alias Model =
         { myDrop1State : Dropdown.State
         , myDrop1State : Dropdown.State
@@ -43,14 +23,12 @@ module Bootstrap.Dropdown
 
 
     -- Msg
-
     type Msg
         = MyDrop1Msg Dropdown.State
         | MyDrop2Msg Dropdown.State
 
 
     -- init
-
     init : ( Model, Cmd Msg )
     init =
         ( { myDrop1State = Dropdown.initialState
@@ -61,7 +39,6 @@ module Bootstrap.Dropdown
 
 
     -- update
-
     update : Msg -> Model -> ( Model, Cmd msg )
     update msg model =
         case msg of
@@ -77,7 +54,6 @@ module Bootstrap.Dropdown
 
 
     -- ... and cases for the drop down actions
-
     subscriptions : Model -> Sub Msg
     subscriptions model =
         Sub.batch
@@ -139,13 +115,12 @@ bit of wiring involved when using them in your Elm Application.
 
 import Bootstrap.Button as Button
 import Bootstrap.Internal.Button as ButtonInternal
+import Bootstrap.Utilities.DomHelper as DomHelper
+import Browser.Events
 import Html
-import Html.Attributes exposing (class, classList, type_, id, href, style)
-import Html.Events exposing (onClick, on, onWithOptions)
-import Mouse
-import AnimationFrame
+import Html.Attributes exposing (class, classList, href, id, style, type_)
+import Html.Events exposing (on, onClick)
 import Json.Decode as Json
-import DOM
 
 
 {-| Opaque type representing the view state of a Dropdown. You need to store this state
@@ -154,10 +129,11 @@ in your model and it's initialized by [`initialState`](#initialState)
 type State
     = State StateRec
 
+
 type alias StateRec =
     { status : DropdownStatus
-    , toggleSize : DOM.Rectangle
-    , menuSize : DOM.Rectangle
+    , toggleSize : DomHelper.Area
+    , menuSize : DomHelper.Area
     }
 
 
@@ -233,8 +209,8 @@ initialState : State
 initialState =
     State
         { status = Closed
-        , toggleSize = DOM.Rectangle 0 0 0 0
-        , menuSize = DOM.Rectangle 0 0 0 0
+        , toggleSize = DomHelper.Area 0 0 0 0
+        , menuSize = DomHelper.Area 0 0 0 0
         }
 
 
@@ -254,11 +230,13 @@ alignMenuRight : DropdownOption msg
 alignMenuRight =
     AlignMenuRight
 
+
 {-| Show menu to the right of the button.
 -}
 dropRight : DropdownOption msg
 dropRight =
     DropToDir <| Dropright
+
 
 {-| Show menu to the left of the button.
 -}
@@ -270,15 +248,15 @@ dropLeft =
 {-| Use this function when you need the customize the Dropdown root div with additional Html.Attribute (s).
 -}
 attrs : List (Html.Attribute msg) -> DropdownOption msg
-attrs attrs =
-    Attrs attrs
+attrs attrs_ =
+    Attrs attrs_
 
 
 {-| Use this function when you need the customize the Dropdown menu with additional Html.Attribute (s).
 -}
 menuAttrs : List (Html.Attribute msg) -> DropdownOption msg
-menuAttrs attrs =
-    MenuAttrs attrs
+menuAttrs attrs_ =
+    MenuAttrs attrs_
 
 
 {-| Creates a Dropdown button. You can think of this as the view function.
@@ -312,7 +290,7 @@ dropdown :
         , items : List (DropdownItem msg)
         }
     -> Html.Html msg
-dropdown ((State {status}) as state) { toggleMsg, toggleButton, items, options } =
+dropdown ((State { status }) as state) { toggleMsg, toggleButton, items, options } =
     let
         (DropdownToggle buttonFn) =
             toggleButton
@@ -320,11 +298,11 @@ dropdown ((State {status}) as state) { toggleMsg, toggleButton, items, options }
         config =
             toConfig options
     in
-        Html.div
-            (dropdownAttributes status config)
-            [ buttonFn toggleMsg state
-            , dropdownMenu state config items
-            ]
+    Html.div
+        (dropdownAttributes status config)
+        [ buttonFn toggleMsg state
+        , dropdownMenu state config items
+        ]
 
 
 dropdownAttributes : DropdownStatus -> Options msg -> List (Html.Attribute msg)
@@ -345,17 +323,17 @@ dropDir maybeDir =
         toAttrs dir =
             [ class <|
                 "drop"
-                    ++ case dir of
-                        Dropleft ->
-                            "left"
+                    ++ (case dir of
+                            Dropleft ->
+                                "left"
 
-                        Dropright ->
-                            "right"
+                            Dropright ->
+                                "right"
+                       )
             ]
     in
-        Maybe.map toAttrs maybeDir
-            |> Maybe.withDefault []
-
+    Maybe.map toAttrs maybeDir
+        |> Maybe.withDefault []
 
 
 dropdownMenu :
@@ -363,61 +341,64 @@ dropdownMenu :
     -> Options msg
     -> List (DropdownItem msg)
     -> Html.Html msg
-dropdownMenu (State {status, menuSize} as state) config items =
+dropdownMenu ((State { status, menuSize }) as state) config items =
     let
-        wrapperStyle =
+        wrapperStyles =
             if status == Closed then
-                [ ( "height", "0" )
-                , ( "overflow", "hidden" )
-                , ( "position", "relative" )
+                [ style "height" "0"
+                , style "overflow" "hidden"
+                , style "position" "relative"
                 ]
+
             else
-                [ ( "position", "relative" ) ]
+                [ style "position" "relative" ]
     in
-        Html.div
-            [ style wrapperStyle ]
-            [ Html.div
-                ([ classList
-                    [ ( "dropdown-menu", True )
-                    , ( "dropdown-menu-right", config.hasMenuRight )
-                    , ( "show", True )
-                    ]
-                 , menuStyle state config
-                 ]
-                    ++ config.menuAttrs
-                )
-                (List.map (\(DropdownItem x) -> x) items)
-            ]
+    Html.div
+        wrapperStyles
+        [ Html.div
+            ([ classList
+                [ ( "dropdown-menu", True )
+                , ( "dropdown-menu-right", config.hasMenuRight )
+                , ( "show", True )
+                ]
+             ]
+                ++ menuStyles state config
+                ++ config.menuAttrs
+            )
+            (List.map (\(DropdownItem x) -> x) items)
+        ]
 
 
-menuStyle : State -> Options msg -> Html.Attribute msg
-menuStyle (State {status, toggleSize, menuSize}) config =
+menuStyles : State -> Options msg -> List (Html.Attribute msg)
+menuStyles (State { status, toggleSize, menuSize }) config =
     let
-        default
-            = [ ( "top", "0" ), ( "left", "0" ) ]
+        default =
+            [ style "top" "0", style "left" "0" ]
+
         px n =
-            toString n ++ "px"
+            String.fromFloat n ++ "px"
 
         translate x y z =
             "translate3d("
-                ++ px x ++ ","
-                ++ px y ++ ","
-                ++ px z ++ ")"
+                ++ px x
+                ++ ","
+                ++ px y
+                ++ ","
+                ++ px z
+                ++ ")"
     in
-        style <|
-         case (config.isDropUp, config.dropDirection) of
-            (True, _) ->
-                default ++ [("transform", translate -toggleSize.width -menuSize.height 0)]
+    case ( config.isDropUp, config.dropDirection ) of
+        ( True, _ ) ->
+            default ++ [ style "transform" <| translate -toggleSize.width -menuSize.height 0 ]
 
-            (_, Just Dropright) ->
-                default
+        ( _, Just Dropright ) ->
+            default
 
-            (_, Just Dropleft) ->
-                default ++ [("transform", translate (-toggleSize.width - menuSize.width) 0 0)]
+        ( _, Just Dropleft ) ->
+            default ++ [ style "transform" <| translate (-toggleSize.width - menuSize.width) 0 0 ]
 
-            _ ->
-                default ++ [("transform", translate -toggleSize.width toggleSize.height 0)]
-
+        _ ->
+            default ++ [ style "transform" <| translate -toggleSize.width toggleSize.height 0 ]
 
 
 {-| Function to construct a toggle for a [`dropdown`](#dropdown)
@@ -471,7 +452,7 @@ splitDropdown :
         , items : List (DropdownItem msg)
         }
     -> Html.Html msg
-splitDropdown ((State {status}) as state) { toggleMsg, toggleButton, items, options } =
+splitDropdown ((State { status }) as state) { toggleMsg, toggleButton, items, options } =
     let
         (SplitDropdownToggle buttonsFn) =
             toggleButton
@@ -479,11 +460,11 @@ splitDropdown ((State {status}) as state) { toggleMsg, toggleButton, items, opti
         config =
             toConfig options
     in
-        Html.div
-            (dropdownAttributes status config)
-            (buttonsFn toggleMsg state
-                ++ [ dropdownMenu state config items ]
-            )
+    Html.div
+        (dropdownAttributes status config)
+        (buttonsFn toggleMsg state
+            ++ [ dropdownMenu state config items ]
+        )
 
 
 {-| Function to construct a split button toggle for a [`splitDropdown`](#splitDropdown)
@@ -556,14 +537,14 @@ applyModifier option options =
         Dropup ->
             { options | isDropUp = True }
 
-        Attrs attrs ->
-            { options | attributes = attrs }
+        Attrs attrs_ ->
+            { options | attributes = attrs_ }
 
         DropToDir dir ->
             { options | dropDirection = Just dir }
 
-        MenuAttrs attrs ->
-            { options | menuAttrs = attrs }
+        MenuAttrs attrs_ ->
+            { options | menuAttrs = attrs_ }
 
 
 {-| Creates an `a` element appropriate for use in dropdowns
@@ -642,26 +623,25 @@ automatically closed when you click outside them.
 
 -}
 subscriptions : State -> (State -> msg) -> Sub msg
-subscriptions (State {status} as state) toMsg =
+subscriptions ((State { status }) as state) toMsg =
     case status of
         Open ->
-            AnimationFrame.times
+            Browser.Events.onAnimationFrame
                 (\_ -> toMsg <| updateStatus ListenClicks state)
 
         ListenClicks ->
-            Mouse.clicks
-                (\_ -> toMsg <| updateStatus Closed state)
+            Browser.Events.onClick
+                (Json.succeed <| toMsg <| updateStatus Closed state)
 
         Closed ->
             Sub.none
 
 
-
 clickHandler : (State -> msg) -> State -> Json.Decoder msg
-clickHandler toMsg (State {status} as state) =
+clickHandler toMsg ((State { status }) as state) =
     sizeDecoder
         |> Json.andThen
-            (\(b,m) ->
+            (\( b, m ) ->
                 Json.succeed <|
                     toMsg <|
                         State
@@ -672,17 +652,16 @@ clickHandler toMsg (State {status} as state) =
             )
 
 
-sizeDecoder : Json.Decoder (DOM.Rectangle, DOM.Rectangle)
+sizeDecoder : Json.Decoder ( DomHelper.Area, DomHelper.Area )
 sizeDecoder =
-    Json.map2 (,)
-        (toggler [ "target" ] DOM.boundingClientRect)
+    Json.map2 Tuple.pair
+        (toggler [ "target" ] DomHelper.boundingArea)
         (toggler [ "target" ]
-            (DOM.nextSibling <|
-                DOM.childNode 0 <|
-                    DOM.boundingClientRect
+            (DomHelper.nextSibling <|
+                DomHelper.childNode 0 <|
+                    DomHelper.boundingArea
             )
         )
-
 
 
 toggler : List String -> Json.Decoder a -> Json.Decoder a
@@ -693,10 +672,11 @@ toggler path decoder =
                 (\res ->
                     if res then
                         Json.at path decoder
+
                     else
                         Json.fail ""
                 )
-        , Json.at (path ++ [ "parentElement" ]) DOM.className
+        , Json.at (path ++ [ "parentElement" ]) DomHelper.className
             |> Json.andThen
                 (\_ -> toggler (path ++ [ "parentElement" ]) decoder)
         , Json.fail "No toggler found"
@@ -705,15 +685,15 @@ toggler path decoder =
 
 isToggle : Json.Decoder Bool
 isToggle =
-    DOM.className
+    DomHelper.className
         |> Json.andThen
             (\class ->
                 if String.contains "dropdown-toggle" class then
                     Json.succeed True
+
                 else
                     Json.succeed False
             )
-
 
 
 toggleOpen : (State -> msg) -> State -> msg
@@ -722,6 +702,7 @@ toggleOpen toMsg ((State { status }) as state) =
         updateStatus
             (nextStatus status)
             state
+
 
 nextStatus : DropdownStatus -> DropdownStatus
 nextStatus status =
@@ -738,4 +719,4 @@ nextStatus status =
 
 updateStatus : DropdownStatus -> State -> State
 updateStatus status (State stateRec) =
-    State {stateRec | status = status }
+    State { stateRec | status = status }

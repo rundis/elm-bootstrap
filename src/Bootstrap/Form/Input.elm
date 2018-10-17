@@ -1,57 +1,35 @@
-module Bootstrap.Form.Input
-    exposing
-        ( text
-        , password
-        , datetimeLocal
-        , date
-        , month
-        , time
-        , week
-        , number
-        , email
-        , url
-        , search
-        , tel
-        , color
-        , small
-        , large
-        , id
-        , value
-        , defaultValue
-        , placeholder
-        , onInput
-        , disabled
-        , readonly
-        , attrs
-        , success
-        , danger
-        , Option
-        )
+module Bootstrap.Form.Input exposing
+    ( text, password, datetimeLocal, date, month, time, week, number, email, url, search, tel, color
+    , id, small, large, value, disabled, readonly, onInput, placeholder, attrs, Option
+    , success, danger
+    )
 
 {-| This module allows you to create Bootstrap styled HTML 5 inputs.
 
 
 # Input types
+
 @docs text, password, datetimeLocal, date, month, time, week, number, email, url, search, tel, color
 
 
-
-
 # Options
-@docs id, small, large, value, defaultValue, disabled, readonly, onInput, placeholder, attrs, Option
+
+@docs id, small, large, value, disabled, readonly, onInput, placeholder, attrs, Option
+
 
 # Validation
-You can indicate success or invalid input using these functions.
-@docs success, danger
 
+You can indicate success or invalid input using these functions.
+
+@docs success, danger
 
 -}
 
+import Bootstrap.Form.FormInternal as FormInternal
+import Bootstrap.General.Internal exposing (ScreenSize(..), screenSizeOption)
 import Html
 import Html.Attributes as Attributes
 import Html.Events as Events
-import Bootstrap.General.Internal exposing (ScreenSize(..), screenSizeOption)
-import Bootstrap.Form.FormInternal as FormInternal
 
 
 {-| Opaque type representing a composable input
@@ -68,7 +46,6 @@ type Option msg
     | Type InputType
     | Disabled Bool
     | Value String
-    | DefaultValue String
     | OnInput (String -> msg)
     | Validation FormInternal.Validation
     | Placeholder String
@@ -98,7 +75,6 @@ type alias Options msg =
     , size : Maybe ScreenSize
     , disabled : Bool
     , value : Maybe String
-    , defaultValue : Maybe String
     , placeholder : Maybe String
     , onInput : Maybe (String -> msg)
     , validation : Maybe FormInternal.Validation
@@ -112,7 +88,6 @@ type alias Options msg =
     Input.text
         [ Input.id "myinput"
         , Input.small
-        , Input.defaultValue "Hello"
         , Input.onInput MyInputMsg
         ]
 
@@ -213,7 +188,7 @@ input tipe options =
 
 create : InputType -> List (Option msg) -> Input msg
 create tipe options =
-    Input { options = (Type tipe) :: options }
+    Input { options = Type tipe :: options }
 
 
 view : Input msg -> Html.Html msg
@@ -240,36 +215,29 @@ large =
 {-| Options/shorthand for setting the id of an input
 -}
 id : String -> Option msg
-id id =
-    Id id
+id id_ =
+    Id id_
 
 
 {-| Use this function to handle any Html.Attribute option you wish for your input
 -}
 attrs : List (Html.Attribute msg) -> Option msg
-attrs attrs =
-    Attrs attrs
+attrs attrs_ =
+    Attrs attrs_
 
 
 {-| Shorthand for setting the value attribute of an input
 -}
 value : String -> Option msg
-value value =
-    Value value
-
-
-{-| Shorthand for setting the defaultValue attribute of an input
--}
-defaultValue : String -> Option msg
-defaultValue value =
-    DefaultValue value
+value value_ =
+    Value value_
 
 
 {-| Shorthand for setting the placeholder attribute of an input
 -}
 placeholder : String -> Option msg
-placeholder value =
-    Placeholder value
+placeholder value_ =
+    Placeholder value_
 
 
 {-| Shorthand for assigning an onInput handler for an input
@@ -282,15 +250,15 @@ onInput toMsg =
 {-| Shorthand for setting the disabled attribute of an input
 -}
 disabled : Bool -> Option msg
-disabled disabled =
-    Disabled disabled
+disabled disabled_ =
+    Disabled disabled_
+
 
 {-| Shorthand for setting the readonly attribute of an input
 -}
 readonly : Bool -> Option msg
-readonly readonly =
-    Readonly readonly
-
+readonly readonly_ =
+    Readonly readonly_
 
 
 {-| Option to add a success marker icon for your input.
@@ -313,22 +281,21 @@ toAttributes modifiers =
         options =
             List.foldl applyModifier defaultOptions modifiers
     in
-        [ Attributes.class "form-control"
-        , Attributes.disabled options.disabled
-        , Attributes.readonly options.readonly
-        , typeAttribute options.tipe
-        ]
-            ++ ([ Maybe.map Attributes.id options.id
-                , Maybe.andThen sizeAttribute options.size
-                , Maybe.map Attributes.value options.value
-                , Maybe.map Attributes.defaultValue options.defaultValue
-                , Maybe.map Attributes.placeholder options.placeholder
-                , Maybe.map Events.onInput options.onInput
-                , Maybe.map validationAttribute options.validation
-                ]
-                    |> List.filterMap identity
-               )
-            ++ options.attributes
+    [ Attributes.class "form-control"
+    , Attributes.disabled options.disabled
+    , Attributes.readonly options.readonly
+    , typeAttribute options.tipe
+    ]
+        ++ ([ Maybe.map Attributes.id options.id
+            , Maybe.andThen sizeAttribute options.size
+            , Maybe.map Attributes.value options.value
+            , Maybe.map Attributes.placeholder options.placeholder
+            , Maybe.map Events.onInput options.onInput
+            , Maybe.map validationAttribute options.validation
+            ]
+                |> List.filterMap identity
+           )
+        ++ options.attributes
 
 
 defaultOptions : Options msg
@@ -338,7 +305,6 @@ defaultOptions =
     , size = Nothing
     , disabled = False
     , value = Nothing
-    , defaultValue = Nothing
     , placeholder = Nothing
     , onInput = Nothing
     , validation = Nothing
@@ -350,11 +316,11 @@ defaultOptions =
 applyModifier : Option msg -> Options msg -> Options msg
 applyModifier modifier options =
     case modifier of
-        Size size ->
-            { options | size = Just size }
+        Size size_ ->
+            { options | size = Just size_ }
 
-        Id id ->
-            { options | id = Just id }
+        Id id_ ->
+            { options | id = Just id_ }
 
         Type tipe ->
             { options | tipe = tipe }
@@ -362,27 +328,23 @@ applyModifier modifier options =
         Disabled val ->
             { options | disabled = val }
 
-        Value value ->
-            { options | value = Just value }
+        Value value_ ->
+            { options | value = Just value_ }
 
-        DefaultValue value ->
-            { options | defaultValue = Just value }
+        Placeholder value_ ->
+            { options | placeholder = Just value_ }
 
-        Placeholder value ->
-            { options | placeholder = Just value }
+        OnInput onInput_ ->
+            { options | onInput = Just onInput_ }
 
-        OnInput onInput ->
-            { options | onInput = Just onInput }
-
-        Validation validation ->
-            { options | validation = Just validation }
+        Validation validation_ ->
+            { options | validation = Just validation_ }
 
         Readonly val ->
             { options | readonly = val }
 
-
-        Attrs attrs ->
-            { options | attributes = options.attributes ++ attrs }
+        Attrs attrs_ ->
+            { options | attributes = options.attributes ++ attrs_ }
 
 
 sizeAttribute : ScreenSize -> Maybe (Html.Attribute msg)

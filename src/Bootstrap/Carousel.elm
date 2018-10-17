@@ -1,51 +1,44 @@
-module Bootstrap.Carousel
-    exposing
-        ( Msg
-        , State
-        , Config
-        , StateOptions
-        , initialState
-        , initialStateWithOptions
-        , defaultStateOptions
-        , update
-        , view
-        , subscriptions
-        , Cycling
-        , config
-        , slides
-        , withControls
-        , withIndicators
-        , next
-        , prev
-        , toSlide
-        , pause
-        , cycle
-        )
+module Bootstrap.Carousel exposing
+    ( State, StateOptions, initialState, initialStateWithOptions, defaultStateOptions, Cycling
+    , update, Msg, next, prev, toSlide, pause, cycle
+    , Config, config, view, slides, withControls, withIndicators
+    , subscriptions
+    )
 
 {-| A carousel is a slideshow for cycling through a series of content.
 
+
 # Model
+
 @docs State, StateOptions, initialState, initialStateWithOptions, defaultStateOptions, Cycling
 
+
 # Update
+
 @docs update, Msg, next, prev, toSlide, pause, cycle
 
+
 # View
+
 @docs Config, config, view, slides, withControls, withIndicators
 
+
 # Subscriptions
+
 @docs subscriptions
+
 -}
 
-import Html exposing (div, text, span, a)
-import Html.Attributes as Attributes exposing (class, classList, attribute, href)
-import Html.Events exposing (onClick, on, onMouseEnter, onMouseLeave)
-import Html.Keyed as Keyed
-import Json.Decode as Decode
 import Bootstrap.Carousel.Slide as Slide
 import Bootstrap.Carousel.SlideInternal as SlideInternal
+import Browser.Events
+import Html exposing (a, button, div, span, text)
+import Html.Attributes as Attributes exposing (attribute, class, classList, href)
+import Html.Events exposing (on, onClick, onMouseEnter, onMouseLeave)
+import Html.Keyed as Keyed
+import Json.Decode as Decode
 import Time
-import AnimationFrame
+
 
 
 --- Model ---
@@ -71,9 +64,10 @@ type alias StateSettings =
 
 {-| Our state can be in three stages of animating
 
-* `NotAnimating`: No animation is happening. A new animation can be started
-* `Start`: Used to trigger proper css animations, Is swapped to Animating on the next animation frame. No new animation can be started
-* `Animating`: A transition is in progress. No new animation can be started.
+  - `NotAnimating`: No animation is happening. A new animation can be started
+  - `Start`: Used to trigger proper css animations, Is swapped to Animating on the next animation frame. No new animation can be started
+  - `Animating`: A transition is in progress. No new animation can be started.
+
 -}
 type TransitionStage a
     = Start a
@@ -91,9 +85,10 @@ type Transition
 
 {-| when to start automatically cycling the slides
 
-* `Paused`: frozen on the current slide
-* `Active`: immediately start cycling
-* `WaitForUser`: Wait for the user to perform one transition, then cycle automatically
+  - `Paused`: frozen on the current slide
+  - `Active`: immediately start cycling
+  - `WaitForUser`: Wait for the user to perform one transition, then cycle automatically
+
 -}
 type Cycling
     = Paused
@@ -143,7 +138,8 @@ defaultStateOptions =
             , pauseOnHover = False
         }
 
-    init = initialStateWithOptions myOptions
+    init =
+        initialStateWithOptions myOptions
 
 -}
 initialStateWithOptions : StateOptions -> State
@@ -155,6 +151,7 @@ initialStateWithOptions options =
         , hovering =
             if options.pauseOnHover then
                 NotHovered
+
             else
                 IgnoreHover
         , keyboard = options.keyboard
@@ -176,8 +173,9 @@ initialState =
     subscriptions model =
         Carousel.subscriptions model.carouselState CarouselMsg
 
-* `state` The current view state of the carousel
-* `toMsg` Message constructor function that is used to step the view state forward
+  - `state` The current view state of the carousel
+  - `toMsg` Message constructor function that is used to step the view state forward
+
 -}
 subscriptions : State -> (Msg -> msg) -> Sub msg
 subscriptions model toMsg =
@@ -188,14 +186,15 @@ subscriptions model toMsg =
                 atEnd =
                     not wrap && currentIndex == size - 1
             in
-                if cycling == Active && hovering /= Hovered && interval /= 0 && not atEnd then
-                    Time.every (toFloat interval * Time.millisecond) (\_ -> toMsg <| StartTransition Next)
-                else
-                    Sub.none
+            if cycling == Active && hovering /= Hovered && interval /= 0 && not atEnd then
+                Time.every (toFloat interval) (\_ -> toMsg <| StartTransition Next)
+
+            else
+                Sub.none
 
         State (Start transition) _ ->
             -- request an animation frame to trigger the start of css transitions
-            AnimationFrame.times (\_ -> toMsg SetAnimating)
+            Browser.Events.onAnimationFrame (\_ -> toMsg SetAnimating)
 
         State (Animating transition) _ ->
             -- don't trigger new animations when already animating
@@ -221,7 +220,7 @@ type Msg
 
 Typically called from your main update function
 
-    update : Msg -> Model -> (Model, Cmd Msg)
+    update : Msg -> Model -> ( Model, Cmd Msg )
     update message model =
         case message of
             CarouselMsg submsg ->
@@ -253,17 +252,18 @@ update message ((State tstage ({ currentIndex, size } as settings)) as model) =
                         _ ->
                             settings
             in
-                case tstage of
-                    NotAnimating ->
-                        if nextIndex (Start transition) currentIndex size /= currentIndex then
-                            State (Start transition) newSettings
-                        else
-                            -- don't do anything if animating to the current index
-                            State tstage newSettings
+            case tstage of
+                NotAnimating ->
+                    if nextIndex (Start transition) currentIndex size /= currentIndex then
+                        State (Start transition) newSettings
 
-                    _ ->
-                        -- don't start another animation when one is running
+                    else
+                        -- don't do anything if animating to the current index
                         State tstage newSettings
+
+                _ ->
+                    -- don't start another animation when one is running
+                    State tstage newSettings
 
         SetAnimating ->
             case tstage of
@@ -276,18 +276,17 @@ update message ((State tstage ({ currentIndex, size } as settings)) as model) =
                 Animating transition ->
                     State (Animating transition) settings
 
-        EndTransition size ->
+        EndTransition size_ ->
             case tstage of
                 NotAnimating ->
                     -- happens once on pageload to get the number of slides into the State
-                    State NotAnimating { settings | size = size }
+                    State NotAnimating { settings | size = size_ }
 
                 _ ->
                     State NotAnimating { settings | currentIndex = nextIndex tstage currentIndex size, size = size }
 
 
 {-| Move the carousel to the next slide.
-
 
 Useful for implementing custom behavior, like transitioning when some key is pressed
 
@@ -306,6 +305,7 @@ Useful for implementing custom behavior, like transitioning when some key is pre
                     )
 
 When the transition is invalid, nothing will happen.
+
 -}
 next : State -> State
 next =
@@ -315,6 +315,7 @@ next =
 {-| Move the carousel to the previous slide.
 
 When the transition is invalid, nothing will happen.
+
 -}
 prev : State -> State
 prev =
@@ -324,6 +325,7 @@ prev =
 {-| Move the carousel to the nth slide
 
 When the transition is invalid, nothing will happen.
+
 -}
 toSlide : Int -> State -> State
 toSlide n =
@@ -352,23 +354,23 @@ nextIndex stage currentIndex size =
         helper transition =
             case transition of
                 Next ->
-                    (currentIndex + 1) % size
+                    modBy size (currentIndex + 1)
 
                 Prev ->
-                    (currentIndex - 1) % size
+                    modBy size (currentIndex - 1)
 
                 Number m ->
-                    m % size
+                    modBy size m
     in
-        case stage of
-            Start transition ->
-                helper transition
+    case stage of
+        Start transition ->
+            helper transition
 
-            Animating transition ->
-                helper transition
+        Animating transition ->
+            helper transition
 
-            NotAnimating ->
-                currentIndex
+        NotAnimating ->
+            currentIndex
 
 
 
@@ -431,8 +433,9 @@ withControls (Config settings) =
             ]
         |> Carousel.view model.carouselState
 
-* `state` The current view state
-* `config` The configuration for the display of the carousel
+  - `state` The current view state
+  - `config` The configuration for the display of the carousel
+
 -}
 view : State -> Config msg -> Html.Html msg
 view ((State tstage { hovering, currentIndex, wrap }) as model) (Config settings) =
@@ -443,6 +446,7 @@ view ((State tstage { hovering, currentIndex, wrap }) as model) (Config settings
         indicatorsHtml =
             if settings.indicators then
                 indicators size (nextIndex tstage currentIndex size)
+
             else
                 text ""
 
@@ -454,35 +458,40 @@ view ((State tstage { hovering, currentIndex, wrap }) as model) (Config settings
             if settings.controls then
                 if wrap || (currentIndex /= 0 && currentIndex /= size - 1) then
                     [ controlPrev, controlNext ]
+
                 else if currentIndex == 0 then
                     [ controlNext ]
+
                 else
                     [ controlPrev ]
+
             else
                 []
 
         defaultCarouselAttributes =
             [ class "carousel slide"
-              -- catch the transitionend event, to end an ongoing transition
+
+            -- catch the transitionend event, to end an ongoing transition
             , on "transitionend" (Decode.succeed (settings.toMsg (EndTransition size)))
             ]
                 ++ (if hovering /= IgnoreHover then
                         [ onMouseEnter (settings.toMsg <| SetHover Hovered)
                         , onMouseLeave (settings.toMsg <| SetHover NotHovered)
                         ]
+
                     else
                         []
                    )
     in
-        div (settings.attributes ++ defaultCarouselAttributes)
-            (slidesHtml
-                :: List.map (Html.map settings.toMsg) ([ dirtyHack size, indicatorsHtml ] ++ controlsHtml)
-            )
+    div (settings.attributes ++ defaultCarouselAttributes)
+        (slidesHtml
+            :: List.map (Html.map settings.toMsg) ([ dirtyHack size, indicatorsHtml ] ++ controlsHtml)
+        )
 
 
 {-| In the State, we need to store the number of slides (the size), but we can't
-   have access to the number of slides outside of the view. Here, we trigger a browser
-   event (on page load, effectively) to get the number of slides into the update function, where it is stored in the State
+have access to the number of slides outside of the view. Here, we trigger a browser
+event (on page load, effectively) to get the number of slides into the update function, where it is stored in the State
 -}
 dirtyHack : Int -> Html.Html Msg
 dirtyHack size =
@@ -492,8 +501,8 @@ dirtyHack size =
         [ ( "dirtyHack"
           , Html.img
                 [ on "load" (Decode.succeed (EndTransition size))
-                , Attributes.src "http://package.elm-lang.org/assets/favicon.ico"
-                , Attributes.style [ ( "display", "none" ) ]
+                , Attributes.src "https://package.elm-lang.org/assets/favicon.ico"
+                , Attributes.style "display" "none"
                 ]
                 []
           )
@@ -508,9 +517,9 @@ viewSlide ((State tstage { currentIndex, size }) as model) index slide =
         newIndex =
             nextIndex tstage currentIndex size
     in
-        slide
-            |> SlideInternal.addAttributes [ classList (transitionClasses index currentIndex newIndex tstage) ]
-            |> SlideInternal.view
+    slide
+        |> SlideInternal.addAttributes [ classList (transitionClasses index currentIndex newIndex tstage) ]
+        |> SlideInternal.view
 
 
 {-| Get the proper class names for a slide based on the current
@@ -528,26 +537,28 @@ transitionClassNames currentIndex transition =
         rightPrev =
             { directionalClassName = base ++ "-right", orderClassName = base ++ "-prev" }
     in
-        case transition of
-            Next ->
+    case transition of
+        Next ->
+            leftNext
+
+        Number n ->
+            if n > currentIndex then
                 leftNext
 
-            Number n ->
-                if n > currentIndex then
-                    leftNext
-                else
-                    rightPrev
-
-            Prev ->
+            else
                 rightPrev
+
+        Prev ->
+            rightPrev
 
 
 {-| Determine the correct classes for a slide
 
-* `index` the index of the slide that is rendered
-* `currentIndex` the current index of the carousel
-* `newIndex` index that the carousel animates to
-* `tstage` transition stage of the current animation
+  - `index` the index of the slide that is rendered
+  - `currentIndex` the current index of the carousel
+  - `newIndex` index that the carousel animates to
+  - `tstage` transition stage of the current animation
+
 -}
 transitionClasses : Int -> Int -> Int -> TransitionStage Transition -> List ( String, Bool )
 transitionClasses index currentIndex newIndex tstage =
@@ -565,9 +576,10 @@ transitionClasses index currentIndex newIndex tstage =
                     { directionalClassName } =
                         transitionClassNames currentIndex transition
                 in
-                    [ ( "active", True )
-                    , ( directionalClassName, True )
-                    ]
+                [ ( "active", True )
+                , ( directionalClassName, True )
+                ]
+
     else if index == newIndex then
         case tstage of
             NotAnimating ->
@@ -582,16 +594,17 @@ transitionClasses index currentIndex newIndex tstage =
                     { directionalClassName, orderClassName } =
                         transitionClassNames currentIndex transition
                 in
-                    [ ( directionalClassName, True )
-                    , ( orderClassName, True )
-                    ]
+                [ ( directionalClassName, True )
+                , ( orderClassName, True )
+                ]
+
     else
         []
 
 
 controlPrev : Html.Html Msg
 controlPrev =
-    a [ class "carousel-control-prev", attribute "role" "button", onClick (StartTransition Prev) ]
+    button [ class "btn btn-link carousel-control-prev", onClick (StartTransition Prev) ]
         [ span [ class "carousel-control-prev-icon", attribute "aria-hidden" "true" ] []
         , span [ class "sr-only" ] [ text "Previous" ]
         ]
@@ -599,7 +612,7 @@ controlPrev =
 
 controlNext : Html.Html Msg
 controlNext =
-    a [ class "carousel-control-next", attribute "role" "button", onClick (StartTransition Next) ]
+    button [ class "btn btn-link carousel-control-next", attribute "role" "button", onClick (StartTransition Next) ]
         [ span [ class "carousel-control-next-icon", attribute "aria-hidden" "true" ] []
         , span [ class "sr-only" ] [ text "Next" ]
         ]
@@ -619,4 +632,4 @@ indicators size activeIndex =
             List.range 0 (size - 1)
                 |> List.map item
     in
-        Html.ol [ class "carousel-indicators" ] items
+    Html.ol [ class "carousel-indicators" ] items

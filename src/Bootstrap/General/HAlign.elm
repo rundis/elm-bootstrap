@@ -1,32 +1,4 @@
-module Bootstrap.General.HAlign
-    exposing
-        ( leftXs
-        , leftSm
-        , leftMd
-        , leftLg
-        , leftXl
-        , centerXs
-        , centerSm
-        , centerMd
-        , centerLg
-        , centerXl
-        , rightXs
-        , rightSm
-        , rightMd
-        , rightLg
-        , rightXl
-        , aroundXs
-        , aroundSm
-        , aroundMd
-        , aroundLg
-        , aroundXl
-        , betweenXs
-        , betweenSm
-        , betweenMd
-        , betweenLg
-        , betweenXl
-        , HAlign
-        )
+module Bootstrap.General.HAlign exposing (leftXs, leftSm, leftMd, leftLg, leftXl, centerXs, centerSm, centerMd, centerLg, centerXl, rightXs, rightSm, rightMd, rightLg, rightXl, aroundXs, aroundSm, aroundMd, aroundLg, aroundXl, betweenXs, betweenSm, betweenMd, betweenLg, betweenXl, HAlign)
 
 {-| General utility for creating a Horizontal alignment option (i.e. flex-justify-)
 
@@ -35,6 +7,7 @@ module Bootstrap.General.HAlign
 -}
 
 import Bootstrap.General.Internal as Internal exposing (HorizontalAlign(..), ScreenSize(..))
+
 
 {-| Internal representation of a Horizontal alignment option.
 -}

@@ -1,8 +1,8 @@
-module Bootstrap.Internal.Role exposing (toClass, Role(..))
-
+module Bootstrap.Internal.Role exposing (Role(..), toClass)
 
 import Html
 import Html.Attributes exposing (class)
+
 
 type Role
     = Primary
@@ -13,7 +13,6 @@ type Role
     | Danger
     | Light
     | Dark
-
 
 
 toClass : String -> Role -> Html.Attribute msg

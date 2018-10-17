@@ -1,11 +1,9 @@
 {
-    "version": "4.1.0",
+    "type": "package",
+    "name": "rundis/elm-bootstrap",
     "summary": "Elm Bootstrap is a comprehensive library for working with Twitter Bootstrap 4",
-    "repository": "https://github.com/rundis/elm-bootstrap.git",
-    "license": "BSD3",
-    "source-directories": [
-        "src/"
-    ],
+    "license": "BSD-3-Clause",
+    "version": "5.0.0",
     "exposed-modules": [
         "Bootstrap.Accordion",
         "Bootstrap.Alert",
@@ -47,13 +45,16 @@
         "Bootstrap.Utilities.Size",
         "Bootstrap.Utilities.Spacing"
     ],
+    "elm-version": "0.19.0 <= v < 0.20.0",
     "dependencies": {
-        "debois/elm-dom": "1.0.0 <= v < 2.0.0",
-        "elm-lang/animation-frame": "1.0.1 <= v < 2.0.0",
-        "elm-lang/core": "5.0.0 <= v < 6.0.0",
-        "elm-lang/html": "2.0.0 <= v < 3.0.0",
-        "elm-lang/mouse": "1.0.1 <= v < 2.0.0",
-        "elm-lang/window": "1.0.1 <= v < 2.0.0"
+        "avh4/elm-color": "1.0.0 <= v < 2.0.0",
+        "elm/browser": "1.0.0 <= v < 2.0.0",
+        "elm/core": "1.0.0 <= v < 2.0.0",
+        "elm/html": "1.0.0 <= v < 2.0.0",
+        "elm/json": "1.0.0 <= v < 2.0.0",
+        "elm/time": "1.0.0 <= v < 2.0.0"
     },
-    "elm-version": "0.18.0 <= v < 0.19.0"
+    "test-dependencies": {
+        "elm-explorations/test": "1.0.0 <= v < 2.0.0"
+    }
 }

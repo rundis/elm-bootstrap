@@ -1,25 +1,37 @@
-module Bootstrap.Utilities.Border exposing (..)
+module Bootstrap.Utilities.Border exposing
+    ( all, top, bottom, left, right
+    , none, topNone, bottomNone, leftNone, rightNone
+    , primary, secondary, info, success, warning, danger, light, dark
+    , rounded, roundedTop, roundedBottom, roundedLeft, roundedRight, roundedNone, circle
+    )
 
 {-| Use border utilities to quickly style the border and border-radius of an element. Great for images, buttons, or any other element.
 
+
 # Additive
+
 @docs all, top, bottom, left, right
 
+
 # Subtractive
+
 @docs none, topNone, bottomNone, leftNone, rightNone
 
+
 # Colored
+
 @docs primary, secondary, info, success, warning, danger, light, dark
 
-# Border radius
-@docs rounded, roundedTop, roundedBottom, roundedLeft, roundedRight, roundedNone, circle
 
+# Border radius
+
+@docs rounded, roundedTop, roundedBottom, roundedLeft, roundedRight, roundedNone, circle
 
 -}
 
-import Html.Attributes exposing (class)
-import Html exposing (Attribute)
 import Bootstrap.Internal.Role as Role
+import Html exposing (Attribute)
+import Html.Attributes exposing (class)
 
 
 {-| All sides bordered.
@@ -27,6 +39,7 @@ import Bootstrap.Internal.Role as Role
 all : Attribute msg
 all =
     class "border"
+
 
 {-| Add top border.
 -}
@@ -48,11 +61,13 @@ left : Attribute msg
 left =
     class "border-left"
 
+
 {-| Add right border.
 -}
 right : Attribute msg
 right =
     class "border-right"
+
 
 {-| Force all borders to be removed.
 -}
@@ -60,17 +75,20 @@ none : Attribute msg
 none =
     class "border-0"
 
+
 {-| Force top border to be removed.
 -}
 topNone : Attribute msg
 topNone =
     class "border-top-0"
 
+
 {-| Force bottom border to be removed.
 -}
 bottomNone : Attribute msg
 bottomNone =
     class "border-botton-0"
+
 
 {-| Force left border to be removed.
 -}
@@ -89,6 +107,7 @@ rightNone =
 {-| Color borders with primary color
 
 **Note**: Assumes the element has borders. You might want to use togther with [`all`](#all)
+
 -}
 primary : Attribute msg
 primary =
@@ -98,6 +117,7 @@ primary =
 {-| Color borders with secondary color
 
 **Note**: Assumes the element has borders. You might want to use togther with [`all`](#all)
+
 -}
 secondary : Attribute msg
 secondary =
@@ -107,6 +127,7 @@ secondary =
 {-| Color borders with success color
 
 **Note**: Assumes the element has borders. You might want to use togther with [`all`](#all)
+
 -}
 success : Attribute msg
 success =
@@ -116,6 +137,7 @@ success =
 {-| Color borders with info color
 
 **Note**: Assumes the element has borders. You might want to use togther with [`all`](#all)
+
 -}
 info : Attribute msg
 info =
@@ -125,6 +147,7 @@ info =
 {-| Color borders with danger color
 
 **Note**: Assumes the element has borders. You might want to use togther with [`all`](#all)
+
 -}
 danger : Attribute msg
 danger =
@@ -134,6 +157,7 @@ danger =
 {-| Color borders with warning color
 
 **Note**: Assumes the element has borders. You might want to use togther with [`all`](#all)
+
 -}
 warning : Attribute msg
 warning =
@@ -143,6 +167,7 @@ warning =
 {-| Color borders with dark color
 
 **Note**: Assumes the element has borders. You might want to use togther with [`all`](#all)
+
 -}
 dark : Attribute msg
 dark =
@@ -152,10 +177,12 @@ dark =
 {-| Color borders with light color
 
 **Note**: Assumes the element has borders. You might want to use togther with [`all`](#all)
+
 -}
 light : Attribute msg
 light =
     Role.toClass "border" Role.Light
+
 
 {-| Give the element rounded corners (through border-radius)
 -}
@@ -191,11 +218,13 @@ roundedRight : Attribute msg
 roundedRight =
     class "rounded-right"
 
+
 {-| Remove any border radius that might be set on the element.
 -}
 roundedNone : Attribute msg
 roundedNone =
     class "rounded-0"
+
 
 {-| Turn your element into a circle.
 -}

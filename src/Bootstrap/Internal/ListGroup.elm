@@ -1,9 +1,8 @@
-module Bootstrap.Internal.ListGroup exposing (..)
+module Bootstrap.Internal.ListGroup exposing (CustomItem(..), Item(..), ItemOption(..), ItemOptions, applyModifier, defaultOptions, itemAttributes, preventClick, renderCustomItem, renderItem)
 
-import Html
-import Html.Attributes as Attr exposing (classList, class)
 import Bootstrap.Internal.Role as Role exposing (Role(..))
-
+import Html
+import Html.Attributes as Attr exposing (class, classList)
 
 
 type ItemOption msg
@@ -12,8 +11,6 @@ type ItemOption msg
     | Disabled
     | Action
     | Attrs (List (Html.Attribute msg))
-
-
 
 
 type alias ItemOptions msg =

@@ -1,58 +1,14 @@
-module Bootstrap.Table
-    exposing
-        ( table
-        , thead
-        , tbody
-        , keyedTBody
-        , tr
-        , keyedTr
-        , td
-        , th
-        , simpleTable
-        , simpleThead
-        , attr
-        , headAttr
-        , rowAttr
-        , cellAttr
-        , inversed
-        , striped
-        , bordered
-        , hover
-        , small
-        , responsive
-        , responsiveSm
-        , responsiveMd
-        , responsiveLg
-        , responsiveXl
-        , inversedHead
-        , defaultHead
-        , rowActive
-        , rowDanger
-        , rowInfo
-        , rowSuccess
-        , rowWarning
-        , rowPrimary
-        , rowSecondary
-        , rowLight
-        , rowDark
-        , cellActive
-        , cellDanger
-        , cellInfo
-        , cellSuccess
-        , cellWarning
-        , cellPrimary
-        , cellSecondary
-        , cellLight
-        , cellDark
-        , THead
-        , TBody
-        , Row
-        , Cell
-        , TableOption
-        , TableHeadOption
-        , RowOption
-        , CellOption
-        )
+module Bootstrap.Table exposing
+    ( simpleTable, table
+    , inversed, striped, bordered, hover, small, responsive, responsiveSm, responsiveMd, responsiveLg, responsiveXl, attr, TableOption
+    , simpleThead, thead, headAttr, THead
+    , defaultHead, inversedHead, TableHeadOption
+    , tbody, keyedTBody, TBody
+    , tr, keyedTr, Row
+    , rowActive, rowPrimary, rowSecondary, rowInfo, rowSuccess, rowWarning, rowDanger, rowLight, rowDark, rowAttr, RowOption
+    , td, th, Cell
+    , cellActive, cellPrimary, cellSecondary, cellInfo, cellSuccess, cellWarning, cellDanger, cellLight, cellDark, cellAttr, CellOption
+    )
 
 {-| Create simple and customizable tables in a fairly type safe manner!
 
@@ -103,11 +59,11 @@ module Bootstrap.Table
 
 -}
 
+import Bootstrap.General.Internal exposing (ScreenSize(..), screenSizeOption)
+import Bootstrap.Internal.Role as Role exposing (Role(..))
 import Html
 import Html.Attributes exposing (class)
 import Html.Keyed as Keyed
-import Bootstrap.Internal.Role as Role exposing (Role(..))
-import Bootstrap.General.Internal exposing (ScreenSize(..), screenSizeOption)
 
 
 {-| Opaque type representing possible styling options for a table
@@ -279,19 +235,19 @@ responsiveXl =
 
 -}
 simpleTable : ( THead msg, TBody msg ) -> Html.Html msg
-simpleTable ( thead, tbody ) =
+simpleTable ( thead_, tbody_ ) =
     table
         { options = []
-        , thead = thead
-        , tbody = tbody
+        , thead = thead_
+        , tbody = tbody_
         }
 
 
 {-| When you need to customize a table element with a standard Html.Attribute, use this function to create it as a [`TableOption`](#TableOption)
 -}
 attr : Html.Attribute msg -> TableOption msg
-attr attr =
-    TableAttr attr
+attr attr_ =
+    TableAttr attr_
 
 
 {-| Create a customizable table
@@ -309,20 +265,20 @@ table :
     , tbody : TBody msg
     }
     -> Html.Html msg
-table { options, thead, tbody } =
+table rec =
     let
         classOptions =
-            List.filter (\opt -> not (isResponsive opt)) options
+            List.filter (\opt -> not (isResponsive opt)) rec.options
 
         isInversed =
-            List.any (\opt -> opt == Inversed) options
+            List.any (\opt -> opt == Inversed) rec.options
     in
-        Html.table
-            (tableAttributes classOptions)
-            [ maybeMapInversedTHead isInversed thead |> renderTHead
-            , maybeMapInversedTBody isInversed tbody |> renderTBody
-            ]
-            |> maybeWrapResponsive options
+    Html.table
+        (tableAttributes classOptions)
+        [ maybeMapInversedTHead isInversed rec.thead |> renderTHead
+        , maybeMapInversedTBody isInversed rec.tbody |> renderTBody
+        ]
+        |> maybeWrapResponsive rec.options
 
 
 isResponsive : TableOption msg -> Bool
@@ -336,24 +292,25 @@ isResponsive option =
 
 
 maybeMapInversedTHead : Bool -> THead msg -> THead msg
-maybeMapInversedTHead isTableInversed (THead thead) =
+maybeMapInversedTHead isTableInversed (THead thead_) =
     let
         isHeadInversed =
-            List.any (\opt -> opt == InversedHead) thead.options
+            List.any (\opt -> opt == InversedHead) thead_.options
     in
-        (if (isTableInversed || isHeadInversed) then
-            { thead | rows = List.map mapInversedRow thead.rows }
-         else
-            thead
-        )
-            |> THead
+    (if isTableInversed || isHeadInversed then
+        { thead_ | rows = List.map mapInversedRow thead_.rows }
+
+     else
+        thead_
+    )
+        |> THead
 
 
 maybeMapInversedTBody : Bool -> TBody msg -> TBody msg
-maybeMapInversedTBody isTableInversed tbody =
-    case ( isTableInversed, tbody ) of
+maybeMapInversedTBody isTableInversed tbody_ =
+    case ( isTableInversed, tbody_ ) of
         ( False, _ ) ->
-            tbody
+            tbody_
 
         ( True, TBody body ) ->
             TBody { body | rows = List.map mapInversedRow body.rows }
@@ -377,18 +334,18 @@ mapInversedRow row =
                 )
                 options
     in
-        case row of
-            Row { options, cells } ->
-                Row
-                    { options = inversedOptions options
-                    , cells = List.map mapInversedCell cells
-                    }
+    case row of
+        Row { options, cells } ->
+            Row
+                { options = inversedOptions options
+                , cells = List.map mapInversedCell cells
+                }
 
-            KeyedRow { options, cells } ->
-                KeyedRow
-                    { options = inversedOptions options
-                    , cells = List.map (\( key, cell ) -> ( key, mapInversedCell cell )) cells
-                    }
+        KeyedRow { options, cells } ->
+            KeyedRow
+                { options = inversedOptions options
+                , cells = List.map (\( key, cell ) -> ( key, mapInversedCell cell )) cells
+                }
 
 
 mapInversedCell : Cell msg -> Cell msg
@@ -406,16 +363,16 @@ mapInversedCell cell =
                 )
                 options
     in
-        case cell of
-            Th cellCfg ->
-                Th { cellCfg | options = inverseOptions cellCfg.options }
+    case cell of
+        Th cellCfg ->
+            Th { cellCfg | options = inverseOptions cellCfg.options }
 
-            Td cellCfg ->
-                Td { cellCfg | options = inverseOptions cellCfg.options }
+        Td cellCfg ->
+            Td { cellCfg | options = inverseOptions cellCfg.options }
 
 
 maybeWrapResponsive : List (TableOption msg) -> Html.Html msg -> Html.Html msg
-maybeWrapResponsive options table =
+maybeWrapResponsive options table_ =
     let
         responsiveClass =
             List.filter isResponsive options
@@ -435,10 +392,11 @@ maybeWrapResponsive options table =
                 |> (++) "table-responsive"
                 |> class
     in
-        if (List.any isResponsive options) then
-            Html.div [ responsiveClass ] [ table ]
-        else
-            table
+    if List.any isResponsive options then
+        Html.div [ responsiveClass ] [ table_ ]
+
+    else
+        table_
 
 
 {-| Option to inverse thead element. Dark background and light text color
@@ -458,8 +416,8 @@ defaultHead =
 {-| When you need to customize a thead element with a standard Html.Attribute, use this function to create a [`TableHeadOption`](#TableHeadOption)
 -}
 headAttr : Html.Attribute msg -> TableHeadOption msg
-headAttr attr =
-    HeadAttr attr
+headAttr attr_ =
+    HeadAttr attr_
 
 
 {-| Create a default thead with one row of cells (typically th elements)
@@ -558,7 +516,7 @@ maybeAddScopeToFirstCell row =
                 first :: rest ->
                     Row
                         { options = options
-                        , cells = (addScopeIfTh first) :: rest
+                        , cells = addScopeIfTh first :: rest
                         }
 
         KeyedRow { options, cells } ->
@@ -569,7 +527,7 @@ maybeAddScopeToFirstCell row =
                 ( firstKey, first ) :: rest ->
                     KeyedRow
                         { options = options
-                        , cells = ( firstKey, (addScopeIfTh first) ) :: rest
+                        , cells = ( firstKey, addScopeIfTh first ) :: rest
                         }
 
 
@@ -652,8 +610,8 @@ rowDark =
 {-| When you need to customize a tr element with standard Html.Attribute attributes, use this function
 -}
 rowAttr : Html.Attribute msg -> RowOption msg
-rowAttr attr =
-    RowAttr attr
+rowAttr attr_ =
+    RowAttr attr_
 
 
 {-| Create a table row
@@ -664,6 +622,7 @@ rowAttr attr =
         [ Table.td [] [ text "Some cell" ]
         , Table.td [] [ text "Another cell" ]
         ]
+
 
     -- alternatively when creating a thead
     Table.tr
@@ -700,8 +659,8 @@ keyedTr options keyedCells =
 {-| When you need to customize a td or th with standard Html.Attribute attributes, use this function
 -}
 cellAttr : Html.Attribute msg -> CellOption msg
-cellAttr attr =
-    CellAttr attr
+cellAttr attr_ =
+    CellAttr attr_
 
 
 {-| Option to style an individual cell with the active color
@@ -769,7 +728,7 @@ cellDark =
 
 {-| Create a td element
 
-    Table.td [ Table.cellInfo ] [ text "Some info cell"]
+    Table.td [ Table.cellInfo ] [ text "Some info cell" ]
 
   - `options` List of options for customizing
   - `children` List of child elements
@@ -788,7 +747,7 @@ td options children =
 
 {-| Create a th element
 
-    Table.th [ Table.cellInfo ] [ text "Some info header cell"]
+    Table.th [ Table.cellInfo ] [ text "Some info header cell" ]
 
   - `options` List of options for customizing
   - `children` List of child elements
@@ -835,7 +794,7 @@ renderCell cell =
 
 tableAttributes : List (TableOption msg) -> List (Html.Attribute msg)
 tableAttributes options =
-    (class "table")
+    class "table"
         :: (List.map tableClass options
                 |> List.filterMap identity
            )
@@ -865,8 +824,8 @@ tableClass option =
         Reflow ->
             Just <| class "table-reflow"
 
-        TableAttr attr ->
-            Just attr
+        TableAttr attr_ ->
+            Just attr_
 
 
 theadAttributes : List (TableHeadOption msg) -> List (Html.Attribute msg)
@@ -883,8 +842,8 @@ theadAttribute option =
         DefaultHead ->
             class <| "thead-default"
 
-        HeadAttr attr ->
-            attr
+        HeadAttr attr_ ->
+            attr_
 
 
 rowAttributes : List (RowOption msg) -> List (Html.Attribute msg)
@@ -895,20 +854,20 @@ rowAttributes options =
 rowClass : RowOption msg -> Html.Attribute msg
 rowClass option =
     case option of
-        RoledRow (Roled role) ->
-            Role.toClass "table" role
+        RoledRow (Roled role_) ->
+            Role.toClass "table" role_
 
         RoledRow Active ->
             class "table-active"
 
-        InversedRow (Roled role) ->
-            Role.toClass "bg" role
+        InversedRow (Roled role_) ->
+            Role.toClass "bg" role_
 
         InversedRow Active ->
             class "bg-active"
 
-        RowAttr attr ->
-            attr
+        RowAttr attr_ ->
+            attr_
 
 
 cellAttributes : List (CellOption msg) -> List (Html.Attribute msg)
@@ -931,5 +890,5 @@ cellAttribute option =
         InversedCell Active ->
             class "bg-active"
 
-        CellAttr attr ->
-            attr
+        CellAttr attr_ ->
+            attr_
