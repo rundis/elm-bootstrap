@@ -106,13 +106,13 @@ import Bootstrap.Internal.Role as RoleInternal
 import Bootstrap.Utilities.DomHelper as DomHelper
 import Browser.Dom
 import Browser.Events
+import Color exposing (Color)
 import Dict
 import Html
 import Html.Attributes exposing (class, classList, href, id, style, type_)
 import Html.Events exposing (custom, on, onClick)
 import Json.Decode as Json
 import Task
-import Color exposing (Color)
 
 
 {-| Opaque type representing the view state of the navbar and any navbar dropdown menus
@@ -197,8 +197,6 @@ type BackgroundColor
     = Roled RoleInternal.Role
     | Custom Color
     | Class String
-
-
 
 
 {-| Opaque type representing a selectable menu item

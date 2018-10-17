@@ -32,7 +32,7 @@ module Bootstrap.Carousel exposing
 import Bootstrap.Carousel.Slide as Slide
 import Bootstrap.Carousel.SlideInternal as SlideInternal
 import Browser.Events
-import Html exposing (a, div, span, text, button)
+import Html exposing (a, button, div, span, text)
 import Html.Attributes as Attributes exposing (attribute, class, classList, href)
 import Html.Events exposing (on, onClick, onMouseEnter, onMouseLeave)
 import Html.Keyed as Keyed
