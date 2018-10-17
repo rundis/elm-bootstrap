@@ -112,6 +112,7 @@ import Html.Attributes exposing (class, classList, href, id, style, type_)
 import Html.Events exposing (custom, on, onClick)
 import Json.Decode as Json
 import Task
+import Color exposing (Color)
 
 
 {-| Opaque type representing the view state of the navbar and any navbar dropdown menus
@@ -194,17 +195,10 @@ type LinkModifier
 
 type BackgroundColor
     = Roled RoleInternal.Role
-    | Custom RGBColor
+    | Custom Color
     | Class String
 
 
-{-| Workaround to handle the removal of Color from elm/core.
--}
-type alias RGBColor =
-    { red : Int
-    , green : Int
-    , blue : Int
-    }
 
 
 {-| Opaque type representing a selectable menu item
@@ -546,14 +540,14 @@ danger =
 
 {-| Option to color menu using a dark custom background color
 -}
-darkCustom : RGBColor -> Config msg -> Config msg
+darkCustom : Color -> Config msg -> Config msg
 darkCustom color =
     scheme Dark <| Custom color
 
 
 {-| Option to color menu using a light custom background color
 -}
-lightCustom : RGBColor -> Config msg -> Config msg
+lightCustom : Color -> Config msg -> Config msg
 lightCustom color =
     scheme Light <| Custom color
 
@@ -1153,15 +1147,10 @@ backgroundColorOption bgClass =
             RoleInternal.toClass "bg" role
 
         Custom color ->
-            style "background-color" <| toRGBString color
+            style "background-color" <| Color.toCssString color
 
         Class classString ->
             class classString
-
-
-toRGBString : RGBColor -> String
-toRGBString { red, green, blue } =
-    "RGB(" ++ String.fromInt red ++ "," ++ String.fromInt green ++ "," ++ String.fromInt blue ++ ")"
 
 
 visibilityTransition : Bool -> Visibility -> Visibility
