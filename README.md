@@ -103,6 +103,8 @@ There's a bunch of work left to do, especially when it comes to documentation an
 
 
 ## Release history
+* 5.0.0 **Elm 0.19 Upgrade.** Contains a few breaking changes. Please consult release notes on the releases tab on GitHub. No further maintenance is planned for an 0.18 compatible version.
+
 * 4.0.0 Updated to support Twitter Bootstrap 4.0 release version
   * **Breaking changes** - There's quite a few breaking changes. Please consult `elm-package diff` for details. For a large part the breaking changes are caused by major changes from Twitter Bootstrap Alpha 6 to Twitter Bootstrap 4 release. Since it was going to be breaking changes regardless, we took the liberty of refactoring some modules to improve the API as well.
   * **New feature**: Support breadcrumb

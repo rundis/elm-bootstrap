@@ -538,14 +538,14 @@ danger =
     scheme Dark <| Roled RoleInternal.Danger
 
 
-{-| Option to color menu using a dark custom background color
+{-| Option to color menu using a dark custom background color (see avh4/elm-color)
 -}
 darkCustom : Color -> Config msg -> Config msg
 darkCustom color =
     scheme Dark <| Custom color
 
 
-{-| Option to color menu using a light custom background color
+{-| Option to color menu using a light custom background color (see avh4/elm-color)
 -}
 lightCustom : Color -> Config msg -> Config msg
 lightCustom color =
