@@ -53,16 +53,10 @@ simpleTabs =
                     nav
                         |> Query.findAll [ class "nav-item" ]
                         |> Query.count (Expect.equal 2)
-            , test "Expect item1 to have href='#tabItem1'" <|
+            , test "Expect link buttons to have children" <|
                 \() ->
                     nav
-                        |> Query.findAll [ tag "a" ]
-                        |> Query.index 0
-                        |> Query.has [ attribute <| Attributes.attribute "href" "#tabItem1" ]
-            , test "Expect links to have children" <|
-                \() ->
-                    nav
-                        |> Query.findAll [ tag "a" ]
+                        |> Query.findAll [ tag "button" ]
                         |> Query.index 0
                         |> Query.has [ Selector.text "Tab 1" ]
             ]
