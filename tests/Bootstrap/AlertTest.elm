@@ -1,4 +1,13 @@
-module Bootstrap.AlertTest exposing (Msg(..), alertClosed, alertIsDismissable, alertWithAttributes, alertWithHeaders, alertWithLink, alertWithOptions, simpleAlerts)
+module Bootstrap.AlertTest exposing
+    ( Msg(..)
+    , alertClosed
+    , alertIsDismissable
+    , alertWithAttributes
+    , alertWithHeaders
+    , alertWithLink
+    , alertWithOptions
+    , simpleAlerts
+    )
 
 import Bootstrap.Alert as Alert
 import Expect
@@ -217,5 +226,5 @@ alertClosed =
             \() ->
                 html
                     |> Query.fromHtml
-                    |> Query.has [ Test.Html.Selector.style [ ( "display", "none" ) ] ]
+                    |> Query.has [ Test.Html.Selector.style "display" "none" ]
         ]

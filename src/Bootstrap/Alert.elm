@@ -259,56 +259,56 @@ simple role_ attributes children_ =
 -}
 primary : Config msg -> Config msg
 primary conf =
-    role Primary config
+    role Primary conf
 
 
 {-| Configure alert to use secondary colors.
 -}
 secondary : Config msg -> Config msg
 secondary conf =
-    role Secondary config
+    role Secondary conf
 
 
 {-| Configure alert to use success colors.
 -}
 success : Config msg -> Config msg
 success conf =
-    role Success config
+    role Success conf
 
 
 {-| Configure alert to use info colors.
 -}
 info : Config msg -> Config msg
 info conf =
-    role Info config
+    role Info conf
 
 
 {-| Configure alert to use warning colors.
 -}
 warning : Config msg -> Config msg
 warning conf =
-    role Warning config
+    role Warning conf
 
 
 {-| Configure alert to use danger colors.
 -}
 danger : Config msg -> Config msg
 danger conf =
-    role Danger config
+    role Danger conf
 
 
 {-| Configure alert to use dark colors.
 -}
 dark : Config msg -> Config msg
 dark conf =
-    role Dark config
+    role Dark conf
 
 
 {-| Configure alert to use light colors.
 -}
 light : Config msg -> Config msg
 light conf =
-    role Light config
+    role Light conf
 
 
 role : Role -> Config msg -> Config msg
