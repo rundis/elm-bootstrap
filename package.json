@@ -1,0 +1,17 @@
+{
+  "license": "UNLICENSED",
+  "name": "elm",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "elm": "^0.19",
+    "elm-format": "0.8.1",
+    "elm-test": "0.19.0-beta12"
+  },
+  "devDependencies": {
+  },
+  "resolutions": {
+  },
+  "scripts": {
+  }
+}

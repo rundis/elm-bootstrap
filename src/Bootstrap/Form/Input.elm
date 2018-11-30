@@ -61,6 +61,14 @@ type Option msg
     | Attrs (List (Html.Attribute msg))
 
 
+{-| Type representing legal read only settings for the read-only attribute
+-}
+type ReadonlySetting
+    = Yes
+    | No
+    | Plain
+
+
 type InputType
     = Text
     | Password
