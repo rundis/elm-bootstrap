@@ -1,6 +1,7 @@
 module Bootstrap.Form.Input exposing
     ( text, password, datetimeLocal, date, month, time, week, number, email, url, search, tel, color
-    , id, small, large, value, disabled, readonly, onInput, placeholder, attrs, Option
+    , id, small, large, value, disabled, onInput, placeholder, attrs, Option
+    , ReadonlySetting(..), readonly
     , success, danger
     )
 
@@ -14,7 +15,14 @@ module Bootstrap.Form.Input exposing
 
 # Options
 
-@docs id, small, large, value, disabled, readonly, onInput, placeholder, attrs, Option
+@docs id, small, large, value, disabled, onInput, placeholder, attrs, Option
+
+
+# ReadonlySetting
+
+Refers to whether a form element is read only (Yes) or not (No) or read only plain test (Plain)
+
+@docs ReadonlySetting, readonly
 
 
 # Validation
@@ -49,7 +57,7 @@ type Option msg
     | OnInput (String -> msg)
     | Validation FormInternal.Validation
     | Placeholder String
-    | Readonly Bool
+    | Readonly ReadonlySetting
     | Attrs (List (Html.Attribute msg))
 
 
@@ -78,7 +86,7 @@ type alias Options msg =
     , placeholder : Maybe String
     , onInput : Maybe (String -> msg)
     , validation : Maybe FormInternal.Validation
-    , readonly : Bool
+    , readonly : ReadonlySetting
     , attributes : List (Html.Attribute msg)
     }
 
@@ -256,7 +264,7 @@ disabled disabled_ =
 
 {-| Shorthand for setting the readonly attribute of an input
 -}
-readonly : Bool -> Option msg
+readonly : ReadonlySetting -> Option msg
 readonly readonly_ =
     Readonly readonly_
 
@@ -281,9 +289,9 @@ toAttributes modifiers =
         options =
             List.foldl applyModifier defaultOptions modifiers
     in
-    [ Attributes.class "form-control"
+    [ Attributes.class (formControl options)
     , Attributes.disabled options.disabled
-    , Attributes.readonly options.readonly
+    , readOnly options
     , typeAttribute options.tipe
     ]
         ++ ([ Maybe.map Attributes.id options.id
@@ -298,6 +306,27 @@ toAttributes modifiers =
         ++ options.attributes
 
 
+formControl : Options msg -> String
+formControl options =
+    case options.readonly of
+        Plain ->
+            "form-control-plaintext"
+
+        _ ->
+            "form-control"
+
+
+readOnly : Options msg -> Html.Attribute msg
+readOnly options =
+    Attributes.readonly <|
+        case options.readonly of
+            No ->
+                False
+
+            _ ->
+                True
+
+
 defaultOptions : Options msg
 defaultOptions =
     { tipe = Text
@@ -308,7 +337,7 @@ defaultOptions =
     , placeholder = Nothing
     , onInput = Nothing
     , validation = Nothing
-    , readonly = False
+    , readonly = No
     , attributes = []
     }
 
