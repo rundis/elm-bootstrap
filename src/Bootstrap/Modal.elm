@@ -6,6 +6,7 @@ module Bootstrap.Modal exposing
     , body, Body
     , footer, Footer
     , withAnimation, subscriptions, hiddenAnimated
+    , hideBorder, transparent
     )
 
 {-| Modals are streamlined, but flexible dialog prompts. They support a number of use cases from user notifications to completely custom content and feature a handful of helpful subcomponents, sizes, and more.
@@ -127,7 +128,6 @@ is a few more things you must wire-up and keep in mind.
             AnimateModal visibility ->
                 { state | modalVisibility = visibility }
 
-
     -- Animations for modal doesn't work without a subscription.
     -- DON´T forget this !
     subscriptions : Model -> Sub msg
@@ -234,6 +234,8 @@ type alias Options =
     { modalSize : Maybe ScreenSize
     , hideOnBackdropClick : Bool
     , centered : Bool
+    , hideBorder : Bool
+    , transparent : Bool
     }
 
 
@@ -282,6 +284,16 @@ hideOnBackdropClick hide (Config ({ options } as conf)) =
     Config { conf | options = { options | hideOnBackdropClick = hide } }
 
 
+hideBorder : Bool -> Config msg -> Config msg
+hideBorder hide (Config ({ options } as conf)) =
+    Config { conf | options = { options | hideBorder = hide } }
+
+
+transparent : Bool -> Config msg -> Config msg
+transparent hide (Config ({ options } as conf)) =
+    Config { conf | options = { options | transparent = hide } }
+
+
 {-| Configure the modal to support fade-in/out animations. You'll need to provide
 a message to handle animation.
 -}
@@ -318,7 +330,20 @@ view visibility (Config conf) =
                        )
                 )
                 [ Html.div
-                    [ Attr.class "modal-content" ]
+                    ([ Attr.class "modal-content" ]
+                        ++ (if conf.options.hideBorder then
+                                [ Attr.style "border" "none" ]
+
+                            else
+                                []
+                           )
+                        ++ (if conf.options.transparent then
+                                [ Attr.style "background-color" "#fff0" ]
+
+                            else
+                                []
+                           )
+                    )
                     (List.filterMap
                         identity
                         [ renderHeader conf
@@ -407,6 +432,8 @@ config closeMsg =
             { modalSize = Nothing
             , hideOnBackdropClick = True
             , centered = True
+            , hideBorder = False
+            , transparent = False
             }
         , header = Nothing
         , body = Nothing
