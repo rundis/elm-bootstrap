@@ -1,6 +1,6 @@
 module Bootstrap.Form exposing
     ( form, formInline
-    , group, label, Option
+    , group, label, Option, attrs
     , row, col, colLabel, colLabelSm, colLabelLg, Col
     , validFeedback, invalidFeedback
     , help, helpInline
@@ -18,7 +18,7 @@ module Bootstrap.Form exposing
 
 Use form groups to group items together (label + input is a typical simple example)
 
-@docs group, label, Option
+@docs group, label, Option, attrs
 
 
 # Grid layouts
@@ -173,8 +173,16 @@ defaultOptions =
 applyModifier : Option msg -> Options msg -> Options msg
 applyModifier modifier options =
     case modifier of
-        Attrs attrs ->
-            { options | attributes = options.attributes ++ attrs }
+        Attrs value ->
+            { options | attributes = options.attributes ++ value }
+
+
+{-| Use this function to handle any Html.Attribute option you wish for your form
+group.
+-}
+attrs : List (Html.Attribute msg) -> Option msg
+attrs =
+    Attrs
 
 
 
