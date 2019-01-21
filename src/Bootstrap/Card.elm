@@ -80,7 +80,7 @@ You can customize the look and feel of your cards using the following options
 
 # Blocks
 
-@docs block, listGroup
+@docs block, listGroup, customListGroup
 
 
 # Composing cards
