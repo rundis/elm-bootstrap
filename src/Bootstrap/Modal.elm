@@ -1,7 +1,7 @@
 module Bootstrap.Modal exposing
     ( view, config, Config
     , hidden, shown, Visibility
-    , small, large, hideOnBackdropClick
+    , small, large, hideOnBackdropClick, attrs
     , header, h1, h2, h3, h4, h5, h6, Header
     , body, Body
     , footer, Footer
@@ -80,7 +80,7 @@ module Bootstrap.Modal exposing
 
 # Modal options
 
-@docs small, large, hideOnBackdropClick
+@docs small, large, hideOnBackdropClick, attrs
 
 
 # Header
@@ -126,7 +126,6 @@ is a few more things you must wire-up and keep in mind.
             -- You need to handle the extra animation message
             AnimateModal visibility ->
                 { state | modalVisibility = visibility }
-
 
     -- Animations for modal doesn't work without a subscription.
     -- DON´T forget this !
@@ -226,14 +225,15 @@ type alias ConfigRec msg =
     , header : Maybe (Header msg)
     , body : Maybe (Body msg)
     , footer : Maybe (Footer msg)
-    , options : Options
+    , options : Options msg
     }
 
 
-type alias Options =
+type alias Options msg =
     { modalSize : Maybe ScreenSize
     , hideOnBackdropClick : Bool
     , centered : Bool
+    , attrs : List (Html.Attribute msg)
     }
 
 
@@ -280,6 +280,13 @@ large (Config ({ options } as conf)) =
 hideOnBackdropClick : Bool -> Config msg -> Config msg
 hideOnBackdropClick hide (Config ({ options } as conf)) =
     Config { conf | options = { options | hideOnBackdropClick = hide } }
+
+
+{-| Use this function to add any Html.Attribute options you wish to the Modal
+-}
+attrs : List (Html.Attribute msg) -> Config msg -> Config msg
+attrs values (Config ({ options } as conf)) =
+    Config { conf | options = { options | attrs = values ++ options.attrs } }
 
 
 {-| Configure the modal to support fade-in/out animations. You'll need to provide
@@ -407,6 +414,7 @@ config closeMsg =
             { modalSize = Nothing
             , hideOnBackdropClick = True
             , centered = True
+            , attrs = []
             }
         , header = Nothing
         , body = Nothing
@@ -593,14 +601,15 @@ footer attributes children (Config conf) =
         |> Config
 
 
-modalAttributes : Options -> List (Html.Attribute msg)
+modalAttributes : Options msg -> List (Html.Attribute msg)
 modalAttributes options =
-    [ Attr.classList
-        [ ( "modal-dialog", True )
-        , ( "modal-dialog-centered", options.centered )
-        ]
-    , Attr.style "pointer-events" "auto"
-    ]
+    options.attrs
+        ++ [ Attr.classList
+                [ ( "modal-dialog", True )
+                , ( "modal-dialog-centered", options.centered )
+                ]
+           , Attr.style "pointer-events" "auto"
+           ]
         ++ (Maybe.map modalClass options.modalSize
                 |> Maybe.withDefault []
            )
