@@ -359,7 +359,7 @@ dropdownMenu ((State { status, menuSize }) as state) config items =
             ([ classList
                 [ ( "dropdown-menu", True )
                 , ( "dropdown-menu-right", config.hasMenuRight )
-                , ( "show", True )
+                , ( "show", status /= Closed )
                 ]
              ]
                 ++ menuStyles state config
