@@ -87,12 +87,12 @@ li options children =
 
     ListGroup.custom
         [ ListGroup.button
-            [ ListGroup.attr <| onClick "MyItem1Msg"
+            [ ListGroup.attrs [ onClick "MyItem1Msg" ]
             , ListGroup.info
             ]
             [ text "List item 1" ]
         , ListGroup.button
-            [ ListGroup.attr <| onClick "MyItem2Msg"
+            [ ListGroup.attrs [ onClick "MyItem2Msg" ]
             , ListGroup.warning
             ]
             [ text "List item 2" ]
