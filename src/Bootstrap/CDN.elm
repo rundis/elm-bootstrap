@@ -28,7 +28,7 @@ stylesheet : Html msg
 stylesheet =
     node "link"
         [ rel "stylesheet"
-        , href "https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+        , href "https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
         ]
         []
 
