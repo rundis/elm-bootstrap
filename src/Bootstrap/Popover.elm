@@ -11,17 +11,14 @@ module Bootstrap.Popover exposing
     type alias Model =
         { popoverState : Popover.State }
 
-
     -- Define a message to handle popover state changes
     type Msg
         = PopoverMsg Popover.State
-
 
     -- Initialize the popover state
     initialState : ( Model, Cmd Msg )
     initialState =
         ( { popoverState = Popover.initialState }, Cmd.none )
-
 
     -- Step the popover state forward in your update function
     update : Msg -> Model -> ( Model, Cmd Msg )
@@ -29,7 +26,6 @@ module Bootstrap.Popover exposing
         case msg of
             PopoverMsg state ->
                 ( { model | popoverState = state }, Cmd.none )
-
 
     -- Compose a popover in your view (or a view helper function)
     view : Model -> Html Msg

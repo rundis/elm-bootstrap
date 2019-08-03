@@ -19,7 +19,6 @@ The navbar is designed to be responsive by default and made interactive with a t
     type alias Model =
         { navbarState : Navbar.State }
 
-
     -- The navbar needs to know the initial window size, so the inital state for a navbar requires a command to be run by the Elm runtime
     initialState : ( Model, Cmd Msg )
     initialState =
@@ -29,11 +28,9 @@ The navbar is designed to be responsive by default and made interactive with a t
         in
         ( { navbarState = navbarState }, navbarCmd )
 
-
     -- Define a message for the navbar
     type Msg
         = NavbarMsg Navbar.State
-
 
     -- You need to handle navbar messages in your update function to step the navbar state forward
     update : Msg -> Model -> ( Model, Cmd Msg )
@@ -52,7 +49,6 @@ The navbar is designed to be responsive by default and made interactive with a t
                 , Navbar.itemLink [ href "#" ] [ text "Item 2" ]
                 ]
             |> Navbar.view model.navbarState
-
 
     -- If you use animations as above or you use dropdowns in your navbar you need to configure subscriptions too
     subscriptions : Model -> Sub Msg

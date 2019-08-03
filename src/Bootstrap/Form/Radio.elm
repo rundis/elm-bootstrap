@@ -1,8 +1,8 @@
 module Bootstrap.Form.Radio exposing
-    ( radio, custom, Radio, Label, advancedRadio, advancedCustom, label
+    ( radio, custom, Label, advancedRadio, advancedCustom, label
     , id, checked, name, inline, onClick, disabled, attrs, Option
     , success, danger
-    , radioList, create, createCustom, createAdvanced, createCustomAdvanced
+    , radioList, create, createCustom, createAdvanced, createCustomAdvanced, Radio
     )
 
 {-| This module allows you to create Bootstrap styled radios.

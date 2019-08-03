@@ -623,7 +623,6 @@ rowAttr attr_ =
         , Table.td [] [ text "Another cell" ]
         ]
 
-
     -- alternatively when creating a thead
     Table.tr
         [ Table.rowInfo ]

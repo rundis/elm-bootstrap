@@ -21,12 +21,10 @@ module Bootstrap.Dropdown exposing
         , myDrop1State : Dropdown.State
         }
 
-
     -- Msg
     type Msg
         = MyDrop1Msg Dropdown.State
         | MyDrop2Msg Dropdown.State
-
 
     -- init
     init : ( Model, Cmd Msg )
@@ -36,7 +34,6 @@ module Bootstrap.Dropdown exposing
           }
         , Cmd.none
         )
-
 
     -- update
     update : Msg -> Model -> ( Model, Cmd msg )
@@ -51,7 +48,6 @@ module Bootstrap.Dropdown exposing
                 ( { model | myDrop2State = state }
                 , Cmd.none
                 )
-
 
     -- ... and cases for the drop down actions
     subscriptions : Model -> Sub Msg

@@ -70,7 +70,6 @@ To support dismissable alerts you must keep track of the alerts visibility in yo
                 ]
             |> Alert.view model.alertVisibility
 
-
     -- Subscriptions are only needed when you choose to use dismissableWithAnimation
     subscriptions : Model -> Sub Msg
     subscriptions model =
