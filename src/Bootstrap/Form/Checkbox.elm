@@ -1,5 +1,5 @@
 module Bootstrap.Form.Checkbox exposing
-    ( checkbox, custom
+    ( checkbox, custom, label, advancedCheckbox, advancedCustom, Label
     , id, checked, inline, indeterminate, disabled, onCheck, attrs, success, danger, Option
     )
 
@@ -8,7 +8,7 @@ module Bootstrap.Form.Checkbox exposing
 
 # Creating
 
-@docs checkbox, custom
+@docs checkbox, custom, label, advancedCheckbox, advancedCustom, Label
 
 
 # Options
@@ -28,7 +28,16 @@ import Html.Events as Events
 type Checkbox msg
     = Checkbox
         { options : List (Option msg)
-        , label : String
+        , label : Label msg
+        }
+
+
+{-| Opaque type representing a Checkbox label.
+-}
+type Label msg
+    = Label
+        { attributes : List (Html.Attribute msg)
+        , children : List (Html.Html msg)
         }
 
 
@@ -70,11 +79,12 @@ type alias Options msg =
         , Checkbox.checked True
         , Checkbox.onCheck MyCheckMsg
         ]
+        "My checkbox"
 
 -}
 checkbox : List (Option msg) -> String -> Html.Html msg
-checkbox options label =
-    create options label |> view
+checkbox options labelText =
+    create options (label [] [ Html.text labelText ]) |> view
 
 
 {-| Create a composable Bootstrap custom styled checkbox
@@ -84,18 +94,60 @@ checkbox options label =
         , Checkbox.checked True
         , Checkbox.onCheck MyCheckMsg
         ]
+        "My Custom Checkbox"
 
 -}
 custom : List (Option msg) -> String -> Html.Html msg
-custom options =
-    view << create (Custom :: options)
+custom options labelText =
+    create (Custom :: options) (label [] [ Html.text labelText ]) |> view
 
 
-create : List (Option msg) -> String -> Checkbox msg
-create options label =
+{-| Create a label for a checkbox when using advancedCheckbox or advancedCustom
+
+    Checkbox.label [ style "font-size" "24px" ] [ div [ class "disclaimer" ] [ text "My disclaimer" ] ]
+
+-}
+label : List (Html.Attribute msg) -> List (Html.Html msg) -> Label msg
+label attributes children =
+    Label
+        { attributes = attributes, children = children }
+
+
+{-| Create a checkbox element with customized label
+
+    Checkbox.advancedCheckbox
+        [ Checkbox.id "myChk"
+        , Checkbox.checked True
+        , Checkbox.onCheck MyCheckMsg
+        ]
+        (Checkbox.label [ class "mylabelclass" ] [ text "Hello" ])
+
+-}
+advancedCheckbox : List (Option msg) -> Label msg -> Html.Html msg
+advancedCheckbox options label_ =
+    create options label_ |> view
+
+
+{-| Create a custom bootstrap styled checkbox element with customized label
+
+    Checkbox.advancedCustom
+        [ Checkbox.id "myChk"
+        , Checkbox.checked True
+        , Checkbox.onCheck MyCheckMsg
+        ]
+        (Checkbox.label [ class "mylabelclass" ] [ text "Hello" ])
+
+-}
+advancedCustom : List (Option msg) -> Label msg -> Html.Html msg
+advancedCustom options label_ =
+    create (Custom :: options) label_ |> view
+
+
+create : List (Option msg) -> Label msg -> Checkbox msg
+create options label_ =
     Checkbox
         { options = options
-        , label = label
+        , label = label_
         }
 
 
@@ -104,6 +156,9 @@ view (Checkbox chk) =
     let
         opts =
             List.foldl applyModifier defaultOptions chk.options
+
+        (Label label_) =
+            chk.label
     in
     Html.div
         [ Attributes.classList
@@ -116,11 +171,12 @@ view (Checkbox chk) =
         ]
         [ Html.input (toAttributes opts) []
         , Html.label
-            ([ Attributes.classList
-                [ ( "form-check-label", not opts.custom )
-                , ( "custom-control-label", opts.custom )
-                ]
-             ]
+            (label_.attributes
+                ++ [ Attributes.classList
+                        [ ( "form-check-label", not opts.custom )
+                        , ( "custom-control-label", opts.custom )
+                        ]
+                   ]
                 ++ (case opts.id of
                         Just v ->
                             [ Attributes.for v ]
@@ -129,7 +185,7 @@ view (Checkbox chk) =
                             []
                    )
             )
-            [ Html.text chk.label ]
+            label_.children
         ]
 
 

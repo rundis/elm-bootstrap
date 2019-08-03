@@ -1,8 +1,8 @@
 module Bootstrap.Form.Radio exposing
-    ( radio, custom, Radio
+    ( radio, custom, Radio, Label, advancedRadio, advancedCustom, label
     , id, checked, name, inline, onClick, disabled, attrs, Option
     , success, danger
-    , radioList, create, createCustom
+    , radioList, create, createCustom, createAdvanced, createCustomAdvanced
     )
 
 {-| This module allows you to create Bootstrap styled radios.
@@ -10,7 +10,7 @@ module Bootstrap.Form.Radio exposing
 
 # Creating
 
-@docs radio, custom, Radio
+@docs radio, custom, Label, advancedRadio, advancedCustom, label, Label
 
 
 # Options
@@ -25,7 +25,7 @@ module Bootstrap.Form.Radio exposing
 
 # Composing
 
-@docs radioList, create, createCustom
+@docs radioList, create, createCustom, createAdvanced, createCustomAdvanced, Radio
 
 -}
 
@@ -40,7 +40,16 @@ import Html.Events as Events
 type Radio msg
     = Radio
         { options : List (Option msg)
-        , label : String
+        , label : Label msg
+        }
+
+
+{-| Opaque type representing a Radio label.
+-}
+type Label msg
+    = Label
+        { attributes : List (Html.Attribute msg)
+        , children : List (Html.Html msg)
         }
 
 
@@ -78,11 +87,12 @@ type alias Options msg =
         , Radio.checked True
         , Radio.onClick MyRadioMsg
         ]
+        "My radio"
 
 -}
 radio : List (Option msg) -> String -> Html.Html msg
-radio options label =
-    create options label |> view
+radio options label_ =
+    create options label_ |> view
 
 
 {-| Create a single radio input with customized Bootstrap styling.
@@ -92,11 +102,53 @@ radio options label =
         , Radio.checked True
         , Radio.onClick MyRadioMsg
         ]
+        "My custom radio"
 
 -}
 custom : List (Option msg) -> String -> Html.Html msg
-custom options label =
-    createCustom options label |> view
+custom options label_ =
+    createCustom options label_ |> view
+
+
+{-| Create a label for a radio when using advancedRadio or advancedCustom
+
+    Radio.label [ style "font-size" "24px" ] [ div [ class "disclaimer" ] [ text "My disclaimer" ] ]
+
+-}
+label : List (Html.Attribute msg) -> List (Html.Html msg) -> Label msg
+label attributes children =
+    Label
+        { attributes = attributes, children = children }
+
+
+{-| Create a radio element with customized label
+
+    Radio.advancedRadio
+        [ Radio.id "myChk"
+        , Radio.checked True
+        , Radio.onCheck MyRadioMsg
+        ]
+        (Radio.label [ class "mylabelclass" ] [ text "Hello" ])
+
+-}
+advancedRadio : List (Option msg) -> Label msg -> Html.Html msg
+advancedRadio options label_ =
+    createAdvanced options label_ |> view
+
+
+{-| Create a radio element with customized label
+
+    Radio.advancedCustom
+        [ Radio.id "myChk"
+        , Radio.checked True
+        , Radio.onCheck MyRadioMsg
+        ]
+        (Radio.label [ class "mylabelclass" ] [ text "Hello" ])
+
+-}
+advancedCustom : List (Option msg) -> Label msg -> Html.Html msg
+advancedCustom options label_ =
+    createCustomAdvanced options label_ |> view
 
 
 {-| In most cases you would probably create multiple radios as a group.
@@ -143,10 +195,17 @@ radioList groupName radios =
 {-| Create a composable radio for use in a [`radioList`](#radioList)
 -}
 create : List (Option msg) -> String -> Radio msg
-create options label =
+create options label_ =
+    createAdvanced options (label [] [ Html.text label_ ])
+
+
+{-| Create a composable radio with customized label for use in a [`radioList`](#radioList)
+-}
+createAdvanced : List (Option msg) -> Label msg -> Radio msg
+createAdvanced options label_ =
     Radio
         { options = options
-        , label = label
+        , label = label_
         }
 
 
@@ -155,6 +214,13 @@ create options label =
 createCustom : List (Option msg) -> String -> Radio msg
 createCustom options =
     create (Custom :: options)
+
+
+{-| Create a composable custom radio with customized label for use in a [`radioList`](#radioList)
+-}
+createCustomAdvanced : List (Option msg) -> Label msg -> Radio msg
+createCustomAdvanced options =
+    createAdvanced (Custom :: options)
 
 
 addOption : Option msg -> Radio msg -> Radio msg
@@ -167,6 +233,9 @@ view (Radio radio_) =
     let
         opts =
             List.foldl applyModifier defaultOptions radio_.options
+
+        (Label label_) =
+            radio_.label
     in
     Html.div
         [ Attributes.classList
@@ -179,11 +248,12 @@ view (Radio radio_) =
         ]
         [ Html.input (toAttributes opts) []
         , Html.label
-            ([ Attributes.classList
-                [ ( "form-check-label", not opts.custom )
-                , ( "custom-control-label", opts.custom )
-                ]
-             ]
+            (label_.attributes
+                ++ [ Attributes.classList
+                        [ ( "form-check-label", not opts.custom )
+                        , ( "custom-control-label", opts.custom )
+                        ]
+                   ]
                 ++ (case opts.id of
                         Just v ->
                             [ Attributes.for v ]
@@ -192,7 +262,7 @@ view (Radio radio_) =
                             []
                    )
             )
-            [ Html.text radio_.label ]
+            label_.children
         ]
 
 
