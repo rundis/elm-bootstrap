@@ -92,7 +92,7 @@ config input_ =
 
 
 {-| Create the view representation for an Input group based on
-a [´configuration\`](#Config)
+a Config
 -}
 view : Config msg -> Html.Html msg
 view (Config conf) =
