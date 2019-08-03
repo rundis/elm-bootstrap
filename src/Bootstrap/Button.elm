@@ -5,6 +5,7 @@ module Bootstrap.Button exposing
     , outlinePrimary, outlineSecondary, outlineSuccess, outlineInfo, outlineWarning, outlineDanger, outlineLight, outlineDark
     , small, large
     , block
+    , resetButton, submitButton
     )
 
 {-| Use Bootstrap’s custom button styles for actions in forms, dialogs, and more. Includes support for a handful of contextual variations and sizes.
@@ -45,7 +46,7 @@ You can also group a series of buttons together on a single line with the button
 import Bootstrap.General.Internal exposing (ScreenSize(..))
 import Bootstrap.Internal.Button as ButtonInternal
 import Html
-import Html.Attributes as Attributes exposing (class, classList)
+import Html.Attributes as Attributes exposing (class, classList, type_)
 import Html.Events as Events
 import Json.Decode as Decode
 
@@ -139,6 +140,36 @@ checkboxButton :
 checkboxButton checked options children =
     Html.label (classList [ ( "active", checked ) ] :: ButtonInternal.buttonAttributes options)
         (Html.input [ Attributes.type_ "checkbox", Attributes.checked checked, Attributes.autocomplete False ] [] :: children)
+
+
+{-| Shorthand to creae a button with type "submit"
+
+    Button.submitButton [ Button.primary ] [ text "Primary" ]
+
+  - `options` List of styling options
+  - `children` List of child elements
+
+-}
+submitButton : List (Option msg) -> List (Html.Html msg) -> Html.Html msg
+submitButton options children =
+    Html.button
+        (type_ "submit" :: ButtonInternal.buttonAttributes options)
+        children
+
+
+{-| Shorthand to creae a button with type "reset"
+
+    Button.resetButton [ Button.primary ] [ text "Primary" ]
+
+  - `options` List of styling options
+  - `children` List of child elements
+
+-}
+resetButton : List (Option msg) -> List (Html.Html msg) -> Html.Html msg
+resetButton options children =
+    Html.button
+        (type_ "reset" :: ButtonInternal.buttonAttributes options)
+        children
 
 
 {-| When you need to customize a button element with standard Html.Attribute use this function to create it as a button option
