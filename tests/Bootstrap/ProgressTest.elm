@@ -77,12 +77,14 @@ options =
                 Progress.progress [ Progress.value 42, Progress.label label ]
                     |> Query.fromHtml
                     |> Query.has [ text label ]
-{-         , fuzz Fuzz.string "expect no label when value is not set" <|
-            \label ->
-                Progress.progress [ Progress.label label ]
-                    |> Query.fromHtml
-                    --|> Query.has [ text label ]
-                    |> Query.hasNot [ text label ] -}
+
+        {- , fuzz Fuzz.string "expect no label when value is not set" <|
+           \label ->
+               Progress.progress [ Progress.label label ]
+                   |> Query.fromHtml
+                   --|> Query.has [ text label ]
+                   |> Query.hasNot [ text label ]
+        -}
         , test "expect a custom label" <|
             \() ->
                 Progress.progress [ Progress.customLabel [ Html.div [ Attr.class "custom-label" ] [] ] ]
