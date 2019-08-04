@@ -29,6 +29,7 @@ import Bootstrap.Tab as Tab
 import Bootstrap.Table as Table
 import Bootstrap.Text as Text
 import Browser
+import Color
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -404,7 +405,7 @@ navbar model =
         |> Navbar.withAnimation
         |> Navbar.container
         |> Navbar.fixTop
-        |> Navbar.darkCustom { red = 193, green = 125, blue = 17 }
+        |> Navbar.darkCustom (Color.rgb255 193 125 17)
         |> Navbar.collapseMedium
         |> Navbar.brand [ href "#" ] [ text "Logo" ]
         |> Navbar.items
