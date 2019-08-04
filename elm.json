@@ -36,6 +36,7 @@
         "Bootstrap.Pagination.Item",
         "Bootstrap.Popover",
         "Bootstrap.Progress",
+        "Bootstrap.Spinner",
         "Bootstrap.Tab",
         "Bootstrap.Table",
         "Bootstrap.Text",
