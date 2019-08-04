@@ -454,7 +454,7 @@ block =
 {-| Create a List Group element for use in an accordion.
 List groups are block elements just like [`block`](#block)
 
-    Accordion.listGroup 
+    Accordion.listGroup
         [ ListGroup.li [] [ text "Item 1" ]
         , ListGroup.li [] [ text "Item 2" ]
         ]
