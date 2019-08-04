@@ -1,6 +1,6 @@
 module Bootstrap.Form.Input exposing
     ( text, password, datetimeLocal, date, month, time, week, number, email, url, search, tel, color
-    , id, small, large, value, disabled, readonly, onInput, placeholder, attrs, Option
+    , id, small, large, value, disabled, readonly, plainText, onInput, placeholder, attrs, Option
     , success, danger
     )
 
@@ -14,7 +14,7 @@ module Bootstrap.Form.Input exposing
 
 # Options
 
-@docs id, small, large, value, disabled, readonly, onInput, placeholder, attrs, Option
+@docs id, small, large, value, disabled, readonly, plainText, onInput, placeholder, attrs, Option
 
 
 # Validation
@@ -50,6 +50,7 @@ type Option msg
     | Validation FormInternal.Validation
     | Placeholder String
     | Readonly Bool
+    | PlainText Bool
     | Attrs (List (Html.Attribute msg))
 
 
@@ -79,6 +80,7 @@ type alias Options msg =
     , onInput : Maybe (String -> msg)
     , validation : Maybe FormInternal.Validation
     , readonly : Bool
+    , plainText : Bool
     , attributes : List (Html.Attribute msg)
     }
 
@@ -261,6 +263,13 @@ readonly readonly_ =
     Readonly readonly_
 
 
+{-| Shorthand for displaying the input as plaintext. Will also set read only if true
+-}
+plainText : Bool -> Option msg
+plainText val =
+    PlainText val
+
+
 {-| Option to add a success marker icon for your input.
 -}
 success : Option msg
@@ -281,9 +290,14 @@ toAttributes modifiers =
         options =
             List.foldl applyModifier defaultOptions modifiers
     in
-    [ Attributes.class "form-control"
+    [ Attributes.class <|
+        if options.plainText then
+            "form-control-plaintext"
+
+        else
+            "form-control"
     , Attributes.disabled options.disabled
-    , Attributes.readonly options.readonly
+    , Attributes.readonly (options.readonly || options.plainText)
     , typeAttribute options.tipe
     ]
         ++ ([ Maybe.map Attributes.id options.id
@@ -309,6 +323,7 @@ defaultOptions =
     , onInput = Nothing
     , validation = Nothing
     , readonly = False
+    , plainText = False
     , attributes = []
     }
 
@@ -342,6 +357,9 @@ applyModifier modifier options =
 
         Readonly val ->
             { options | readonly = val }
+
+        PlainText val ->
+            { options | plainText = val }
 
         Attrs attrs_ ->
             { options | attributes = options.attributes ++ attrs_ }
