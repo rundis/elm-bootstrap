@@ -1,6 +1,6 @@
 module Bootstrap.Form.Range exposing
     ( range, Range
-    , id, min, max, value, step, disabled, onInput, attrs, Option
+    , id, min, max, step, value, disabled, onInput, attrs, Option
     )
 
 {-| This module allows you to create Bootstrap styled range inputs.
