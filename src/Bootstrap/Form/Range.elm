@@ -1,7 +1,6 @@
 module Bootstrap.Form.Range exposing
     ( range, Range
-    , id, min, max, step, disabled, onInput, attrs, Option
-    , success, danger
+    , id, min, max, value, step, disabled, onInput, attrs, Option
     )
 
 {-| This module allows you to create Bootstrap styled range inputs.
@@ -14,12 +13,7 @@ module Bootstrap.Form.Range exposing
 
 # Options
 
-@docs id, min, max, step, disabled, onInput, disabled, attrs, Option
-
-
-# Validation
-
-@docs success, danger
+@docs id, min, max, step, value, disabled, onInput, disabled, attrs, Option
 
 -}
 
@@ -29,12 +23,10 @@ import Html.Attributes as Attributes
 import Html.Events as Events
 
 
-{-| Opaque composable type representing a Radio.
+{-| Opaque composable type representing a Range.
 -}
 type Range msg
-    = Range
-        { options : List (Option msg)
-        }
+    = Range (List (Option msg))
 
 
 {-| Opaque type representing valid customization options for a radio
@@ -43,10 +35,10 @@ type Option msg
     = Id String
     | Min String
     | Max String
+    | Value String
     | Step String
     | OnInput (Maybe (String -> msg))
     | Disabled Bool
-    | Validation FormInternal.Validation
     | Attrs (List (Html.Attribute msg))
 
 
@@ -54,10 +46,10 @@ type alias Options msg =
     { id : Maybe String
     , min : Maybe String
     , max : Maybe String
+    , value : Maybe String
     , step : Maybe String
     , disabled : Bool
     , onInput : Maybe (String -> msg)
-    , validation : Maybe FormInternal.Validation
     , attributes : List (Html.Attribute msg)
     }
 
@@ -79,21 +71,14 @@ range options =
 
 create : List (Option msg) -> Range msg
 create options =
-    Range
-        { options = options
-        }
-
-
-addOption : Option msg -> Range msg -> Range msg
-addOption opt (Range ({ options } as range_)) =
-    Range { range_ | options = opt :: options }
+    Range options
 
 
 view : Range msg -> Html.Html msg
-view (Range range_) =
+view (Range options) =
     let
         opts =
-            List.foldl applyModifier defaultOptions range_.options
+            List.foldl applyModifier defaultOptions options
     in
     Html.input (toAttributes opts) []
 
@@ -117,6 +102,13 @@ min val =
 max : String -> Option msg
 max val =
     Max val
+
+
+{-| Option to set the value for the range.
+-}
+value : String -> Option msg
+value val =
+    Value val
 
 
 {-| Option to set the step value for the range.
@@ -147,20 +139,6 @@ id theId =
     Id theId
 
 
-{-| Option to color a range with success.
--}
-success : Option msg
-success =
-    Validation FormInternal.Success
-
-
-{-| Option to color a range with danger.
--}
-danger : Option msg
-danger =
-    Validation FormInternal.Danger
-
-
 applyModifier : Option msg -> Options msg -> Options msg
 applyModifier modifier options =
     case modifier of
@@ -173,6 +151,9 @@ applyModifier modifier options =
         Max val ->
             { options | max = Just val }
 
+        Value val ->
+            { options | value = Just val }
+
         Step val ->
             { options | step = Just val }
 
@@ -181,9 +162,6 @@ applyModifier modifier options =
 
         Disabled val ->
             { options | disabled = val }
-
-        Validation validation ->
-            { options | validation = Just validation }
 
         Attrs attrs_ ->
             { options | attributes = options.attributes ++ attrs_ }
@@ -200,6 +178,7 @@ toAttributes options =
             , Maybe.map Attributes.min options.min
             , Maybe.map Attributes.max options.max
             , Maybe.map Attributes.step options.step
+            , Maybe.map Attributes.value options.value
             ]
                 |> List.filterMap identity
            )
@@ -211,9 +190,9 @@ defaultOptions =
     { id = Nothing
     , min = Nothing
     , max = Nothing
+    , value = Nothing
     , step = Nothing
     , disabled = False
     , onInput = Nothing
-    , validation = Nothing
     , attributes = []
     }
