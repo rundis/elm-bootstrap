@@ -1,7 +1,7 @@
 module Bootstrap.Modal exposing
     ( view, config, Config
     , hidden, shown, Visibility
-    , small, large, hideOnBackdropClick, scrollable, attrs
+    , small, large, centered, hideOnBackdropClick, scrollableBody, attrs
     , header, h1, h2, h3, h4, h5, h6, Header
     , body, Body
     , footer, Footer
@@ -80,7 +80,7 @@ module Bootstrap.Modal exposing
 
 # Modal options
 
-@docs small, large, hideOnBackdropClick, scrollable, attrs
+@docs small, large, centered, hideOnBackdropClick, scrollableBody, attrs
 
 
 # Header
@@ -233,6 +233,7 @@ type alias Options msg =
     { modalSize : Maybe ScreenSize
     , hideOnBackdropClick : Bool
     , centered : Bool
+    , scrollableBody : Bool
     , attrs : List (Html.Attribute msg)
     }
 
@@ -286,14 +287,21 @@ hideOnBackdropClick hide (Config ({ options } as conf)) =
 -}
 attrs : List (Html.Attribute msg) -> Config msg -> Config msg
 attrs values (Config ({ options } as conf)) =
-    Config { conf | options = { options | attrs = values ++ options.attrs } }
+    Config { conf | options = { options | attrs = values } }
 
 
-{-| Use this function to make the Modal scrollable
+{-| Use this function to make the Modal body scrollable.
 -}
-scrollable : Config msg -> Config msg
-scrollable conf =
-    attrs [ Attr.class "modal-dialog-scrollable" ] conf
+scrollableBody : Bool -> Config msg -> Config msg
+scrollableBody scrollable (Config ({ options } as conf)) =
+    Config { conf | options = { options | scrollableBody = scrollable } }
+
+
+{-| If you don't like the modal vertically centered, override with False here!
+-}
+centered : Bool -> Config msg -> Config msg
+centered val (Config ({ options } as conf)) =
+    Config { conf | options = { options | centered = val } }
 
 
 {-| Configure the modal to support fade-in/out animations. You'll need to provide
@@ -421,6 +429,7 @@ config closeMsg =
             { modalSize = Nothing
             , hideOnBackdropClick = True
             , centered = True
+            , scrollableBody = False
             , attrs = []
             }
         , header = Nothing
@@ -614,6 +623,7 @@ modalAttributes options =
         ++ [ Attr.classList
                 [ ( "modal-dialog", True )
                 , ( "modal-dialog-centered", options.centered )
+                , ( "modal-dialog-scrollable", options.scrollableBody )
                 ]
            , Attr.style "pointer-events" "auto"
            ]
