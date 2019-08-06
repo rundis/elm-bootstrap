@@ -103,6 +103,7 @@ There's a bunch of work left to do, especially when it comes to documentation an
 
 
 ## Release history
+* Going forward check out the [GitHub releases](https://github.com/rundis/elm-bootstrap/releases)
 * 5.0.0 **Elm 0.19 Upgrade.** Contains a few breaking changes. Please consult release notes on the releases tab on GitHub. No further maintenance is planned for an 0.18 compatible version.
 
 * 4.0.0 Updated to support Twitter Bootstrap 4.0 release version
