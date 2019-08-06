@@ -1,5 +1,5 @@
 module Bootstrap.Form.Radio exposing
-    ( radio, custom, Label, advancedRadio, advancedCustom, label
+    ( radio, custom, advancedRadio, advancedCustom, label, Label
     , id, checked, name, inline, onClick, disabled, attrs, Option
     , success, danger
     , radioList, create, createCustom, createAdvanced, createCustomAdvanced, Radio
@@ -10,7 +10,7 @@ module Bootstrap.Form.Radio exposing
 
 # Creating
 
-@docs radio, custom, Label, advancedRadio, advancedCustom, label, Label
+@docs radio, custom, advancedRadio, advancedCustom, label, Label
 
 
 # Options

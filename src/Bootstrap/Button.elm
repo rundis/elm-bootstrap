@@ -1,11 +1,10 @@
 module Bootstrap.Button exposing
-    ( button, linkButton, radioButton, checkboxButton
+    ( button, linkButton, radioButton, checkboxButton, submitButton, resetButton
     , attrs, onClick, disabled, Option
     , primary, secondary, success, info, warning, danger, light, dark, roleLink
     , outlinePrimary, outlineSecondary, outlineSuccess, outlineInfo, outlineWarning, outlineDanger, outlineLight, outlineDark
     , small, large
     , block
-    , resetButton, submitButton
     )
 
 {-| Use Bootstrap’s custom button styles for actions in forms, dialogs, and more. Includes support for a handful of contextual variations and sizes.
@@ -14,7 +13,7 @@ You can also group a series of buttons together on a single line with the button
 
 # Buttons
 
-@docs button, linkButton, radioButton, checkboxButton
+@docs button, linkButton, radioButton, checkboxButton, submitButton, resetButton
 
 
 # Button options
