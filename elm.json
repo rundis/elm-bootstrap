@@ -3,7 +3,7 @@
     "name": "rundis/elm-bootstrap",
     "summary": "Elm Bootstrap is a comprehensive library for working with Twitter Bootstrap 4",
     "license": "BSD-3-Clause",
-    "version": "5.1.0",
+    "version": "5.2.0",
     "exposed-modules": [
         "Bootstrap.Accordion",
         "Bootstrap.Alert",
