@@ -277,7 +277,7 @@ groupAttributes toggle modifiers =
     in
     [ attribute "role" "group"
     , classList
-        [ ( "btn-group", True )
+        [ ( "btn-group", not options.vertical )
         , ( "btn-group-toggle", toggle )
         , ( "btn-group-vertical", options.vertical )
         ]
