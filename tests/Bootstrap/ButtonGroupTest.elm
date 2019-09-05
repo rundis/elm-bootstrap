@@ -23,7 +23,7 @@ simpleGroup =
             \() ->
                 html
                     |> Query.fromHtml
-                    |> Query.has [ tag "div", attribute <| Attr.attribute "role" "group" ]
+                    |> Query.has [ tag "div", class "btn-group", attribute <| Attr.attribute "role" "group" ]
         , test "expect btn class" <|
             \() ->
                 html
@@ -48,8 +48,7 @@ groupWithOptions =
                     |> Query.fromHtml
                     |> Query.has
                         [ classes
-                            [ "btn-group"
-                            , "btn-group-sm"
+                            [ "btn-group-sm"
                             , "btn-group-vertical"
                             , "my-class"
                             ]
