@@ -7,7 +7,7 @@ module Bootstrap.Accordion exposing
 {-| An accordion is a group of stacked cards where you can toggle the visibility (slide up/down) of each card
 
     type alias Model =
-        { accordionState = Accordion.state }
+        { accordionState : Accordion.State }
 
 
     init : (Model, Cmd Msg)
