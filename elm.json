@@ -23,6 +23,7 @@
         "Bootstrap.Form.Input",
         "Bootstrap.Form.InputGroup",
         "Bootstrap.Form.Radio",
+        "Bootstrap.Form.Range",
         "Bootstrap.Form.Select",
         "Bootstrap.Form.Textarea",
         "Bootstrap.General.HAlign",

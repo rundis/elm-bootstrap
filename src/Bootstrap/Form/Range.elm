@@ -17,7 +17,6 @@ module Bootstrap.Form.Range exposing
 
 -}
 
-import Bootstrap.Form.FormInternal as FormInternal
 import Html
 import Html.Attributes as Attributes
 import Html.Events as Events
@@ -60,7 +59,7 @@ type alias Options msg =
         [ Range.id "myRange"
         , Range.min "-10"
         , Range.max "10"
-        , Radio.onInput MyRangeMsg
+        , Range.onInput MyRangeMsg
         ]
 
 -}
