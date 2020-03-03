@@ -48,8 +48,7 @@ groupWithOptions =
                     |> Query.fromHtml
                     |> Query.has
                         [ classes
-                            [ "btn-group"
-                            , "btn-group-sm"
+                            [ "btn-group-sm"
                             , "btn-group-vertical"
                             , "my-class"
                             ]
