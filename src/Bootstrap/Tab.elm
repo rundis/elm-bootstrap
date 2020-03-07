@@ -13,7 +13,7 @@ module Bootstrap.Tab exposing
 
     init : ( Model, Cmd Msg )
     init =
-        ( { tabState = Tab.initalState }, Cmd.none )
+        ( { tabState = Tab.initialState }, Cmd.none )
 
     type Msg
         = TabMsg Tab.State
