@@ -7,6 +7,7 @@ module Bootstrap.Navbar exposing
     , customItems, textItem, formItem, customItem, CustomItem
     , initialState, State
     , subscriptions
+    , withItemsRight
     )
 
 {-| The navbar is a wrapper that positions branding, navigation, and other elements in a concise header.
@@ -148,6 +149,7 @@ type DropdownStatus
   - `brand` Optional [`brand`](#brand) element (typically a logo)
   - `items` List of menu items that the user can select from
   - `customItems` List of custom (inline) items that you may place to the right of the std. navigation items
+  - `itemsLeft` Whether navbar items should be left or right aligned.
 
 -}
 type Config msg
@@ -161,6 +163,7 @@ type alias ConfigRec msg =
     , brand : Maybe (Brand msg)
     , items : List (Item msg)
     , customItems : List (CustomItem msg)
+    , itemsOnLeft : Bool
     }
 
 
@@ -378,6 +381,7 @@ config toMsg =
             , toggleAt = XS
             , attributes = []
             }
+        , itemsOnLeft = True
         }
 
 
@@ -446,6 +450,13 @@ view state ((Config configRec) as conf) =
 withAnimation : Config msg -> Config msg
 withAnimation config_ =
     updateConfig (\conf -> { conf | withAnimation = True }) config_
+
+
+{-| Align navbar items on the right instead of on the left
+-}
+withItemsRight : Config msg -> Config msg
+withItemsRight config_ =
+    updateConfig (\conf -> { conf | itemsOnLeft = False }) config_
 
 
 {-| Option to fix the menu to the top of the viewport
@@ -1021,7 +1032,13 @@ renderNav :
     -> Html.Html msg
 renderNav state configRec navItems =
     Html.ul
-        [ class "navbar-nav mr-auto" ]
+        [ class "navbar-nav"
+        , if configRec.itemsOnLeft then
+            class "mr-auto"
+
+          else
+            class "ml-auto"
+        ]
         (List.map
             (\item ->
                 case item of
