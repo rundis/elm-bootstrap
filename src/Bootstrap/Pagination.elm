@@ -9,14 +9,14 @@ module Bootstrap.Pagination exposing
 
 ## Simple list example
 
-    import Bootstrap.HAlign as HAlign
+    import Bootstrap.General.HAlign as HAlign
     import Bootstrap.Pagination as Pagination
 
     simplePaginationList : Model -> Html Msg
     simplePaginationList model =
         Pagination.defaultConfig
             |> Pagination.ariaLabel "Pagination"
-            |> Pagination HAlign.centerXs
+            |> Pagination.align HAlign.centerXs
             |> Pagination.large
             |> Pagination.itemsList
                 { selectedMsg = PaginationMsg
