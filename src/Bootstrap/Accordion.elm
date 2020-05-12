@@ -7,7 +7,7 @@ module Bootstrap.Accordion exposing
 {-| An accordion is a group of stacked cards where you can toggle the visibility (slide up/down) of each card
 
     type alias Model =
-        { accordionState = Accordion.state }
+        { accordionState = Accordion.State }
 
 
     init : (Model, Cmd Msg)
@@ -97,7 +97,7 @@ import Json.Decode as Json
 {-| Opaque type that defines the view configuration information of your accordion
 
   - You create an initial configuration by calling the [`config`](#config) function
-  - The [`withAnimtion`](#withAnimation) function allows you to define that the contents of cards should animate up/down
+  - The [`withAnimation`](#withAnimation) function allows you to define that the contents of cards should animate up/down
   - The [`cards`](#cards) function defines the List of cards to be displayed
 
 -}
