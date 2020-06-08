@@ -117,7 +117,9 @@ value val =
     Value val
 
 
-{-| Option to specify the height (in pixels) for the progress bar
+{-| Option to specify the height (in pixels) for the progress bar.
+Note that the option is applied to the wrapper div so doing using this is
+equivalent to adding "style=NNpx;" to the [`wrapperAttrs`](#wrapperAttrs)
 -}
 height : Int -> Option msg
 height height_ =
@@ -209,7 +211,13 @@ applyOption modifier (Options options) =
                 { options | value = value_ }
 
             Height height_ ->
-                { options | height = height_ }
+                { options | wrapperAttributes = List.append
+                    (case height_ of
+                        Just h ->
+                            [ style "height" <| String.fromInt h ++ "px" ]
+                        Nothing ->
+                            [])
+                    options.wrapperAttributes}
 
             Label label_ ->
                 { options | label = label_ }
@@ -244,12 +252,6 @@ toAttributes (Options options) =
                 , ( "progress-bar-animated", options.animated )
                 ]
           ]
-        , case options.height of
-            Just height_ ->
-                [ style "height" <| String.fromInt height_ ++ "px" ]
-
-            Nothing ->
-                []
         , case options.role of
             Just role_ ->
                 [ roleClass role_ ]
