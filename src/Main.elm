@@ -541,6 +541,7 @@ modal modalState =
                 [ text "Close" ]
             ]
         |> Modal.small
+        |> Modal.showBackdrop True
         |> Modal.view modalState
 
 

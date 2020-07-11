@@ -6,6 +6,7 @@ module Bootstrap.Modal exposing
     , body, Body
     , footer, Footer
     , withAnimation, subscriptions, hiddenAnimated
+    , showBackdrop
     )
 
 {-| Modals are streamlined, but flexible dialog prompts. They support a number of use cases from user notifications to completely custom content and feature a handful of helpful subcomponents, sizes, and more.
@@ -234,6 +235,7 @@ type alias Options msg =
     , hideOnBackdropClick : Bool
     , centered : Bool
     , scrollableBody : Bool
+    , backdrop : Bool
     , attrs : List (Html.Attribute msg)
     }
 
@@ -281,6 +283,13 @@ large (Config ({ options } as conf)) =
 hideOnBackdropClick : Bool -> Config msg -> Config msg
 hideOnBackdropClick hide (Config ({ options } as conf)) =
     Config { conf | options = { options | hideOnBackdropClick = hide } }
+
+
+{-| Option to show the backdrop with dialog. Default True.
+-}
+showBackdrop : Bool -> Config msg -> Config msg
+showBackdrop show (Config ({ options } as conf)) =
+    Config { conf | options = { options | backdrop = show } }
 
 
 {-| Use this function to add any Html.Attribute options you wish to the Modal
@@ -430,6 +439,7 @@ config closeMsg =
             , hideOnBackdropClick = True
             , centered = True
             , scrollableBody = False
+            , backdrop = True
             , attrs = []
             }
         , header = Nothing
@@ -705,7 +715,7 @@ backdrop visibility conf =
             case visibility of
                 Show ->
                     [ Attr.classList
-                        [ ( "modal-backdrop", True )
+                        [ ( "modal-backdrop", conf.options.backdrop )
                         , ( "fade", isFade conf )
                         , ( "show", True )
                         ]
@@ -719,7 +729,7 @@ backdrop visibility conf =
 
                 StartClose ->
                     [ Attr.classList
-                        [ ( "modal-backdrop", True )
+                        [ ( "modal-backdrop", conf.options.backdrop )
                         , ( "fade", True )
                         , ( "show", True )
                         ]
@@ -727,7 +737,7 @@ backdrop visibility conf =
 
                 FadeClose ->
                     [ Attr.classList
-                        [ ( "modal-backdrop", True )
+                        [ ( "modal-backdrop", conf.options.backdrop )
                         , ( "fade", True )
                         , ( "show", False )
                         ]
