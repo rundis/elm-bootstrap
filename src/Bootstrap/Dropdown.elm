@@ -18,7 +18,7 @@ module Bootstrap.Dropdown exposing
     -- Model
     type alias Model =
         { myDrop1State : Dropdown.State
-        , myDrop1State : Dropdown.State
+        , myDrop2State : Dropdown.State
         }
 
     -- Msg
