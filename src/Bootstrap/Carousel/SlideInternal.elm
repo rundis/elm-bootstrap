@@ -41,7 +41,7 @@ view (Config { attributes, content, caption }) =
                     text ""
 
                 Just rec ->
-                    div (rec.attributes ++ [ class "carousel-caption d-none d-md-block" ]) rec.children
+                    div (rec.attributes ++ [ class "carousel-caption" ]) rec.children
     in
     div (attributes ++ [ class "carousel-item" ]) <|
         case content of
